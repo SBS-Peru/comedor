@@ -4,27 +4,836 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <!-- Configuración PWA para instalar como App Nativa en iOS y Android -->
+  <!-- Configuración PWA Instalable en Inicio (iPhone / Android) -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#13392a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1046/1046857.png">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
-    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #13392a; }
-    iframe { width: 100%; height: 100%; border: none; display: block; }
+    :root {
+      --sbs-primary: #13392a;
+      --sbs-accent: #10b981;
+      --sbs-orange: #ea580c;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+    .app-shell {
+      width: 95vw; height: 94vh; max-width: 580px; background: var(--card);
+      border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
+    }
+    .app-shell.wide-rrhh { max-width: 900px; }
+
+    #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 32px 26px; text-align: center; }
+    .logo-badge {
+      width: 58px; height: 58px; border-radius: 15px; background: var(--sbs-primary); color: white;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px;
+    }
+    .dni-input {
+      width: 100%; padding: 14px; font-size: 22px; text-align: center; border: 2px solid var(--border);
+      border-radius: 12px; margin: 18px 0 14px; letter-spacing: 4px; font-weight: 700; outline: none;
+    }
+    .dni-input:focus { border-color: var(--sbs-primary); }
+
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-primary { background: var(--sbs-primary); color: white; }
+    .btn-success { background: var(--sbs-accent); color: white; }
+    .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; background: #94a3b8 !important; color: #ffffff !important; }
+
+    #view-main { display: none; flex-direction: column; height: 100%; }
+    .top-bar { background: var(--sbs-primary); color: white; padding: 15px 18px 13px; flex-shrink: 0; }
+    .top-bar-row { display: flex; justify-content: space-between; align-items: center; }
+    .top-bar h2 { margin: 0; font-size: 18px; }
+    .top-bar p { margin: 3px 0 0; font-size: 12px; opacity: 0.85; }
+    .btn-salir { background: rgba(255,255,255,0.16); color: white; border: none; padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; }
+    .header-kpi-strip {
+      margin-top: 11px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px;
+    }
+    .header-kpi-total { background: #10b981; color: #ffffff; font-weight: 800; padding: 3px 9px; border-radius: 7px; font-size: 13px; }
+
+    .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .tab { flex: 1; text-align: center; padding: 11px 6px; font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
+    .tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
+
+    .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); }
+    .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+    .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; margin-bottom: 9px; }
+    .menu-box { background: #f8fafc; border-radius: 9px; padding: 9px 12px; font-size: 13px; color: var(--muted); margin-bottom: 11px; line-height: 1.45; }
+    .menu-box b { color: var(--text); }
+
+    .srv-grid { display: flex; gap: 10px; align-items: stretch; }
+
+    .srv-split-card { flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white; display: flex; flex-direction: column; overflow: hidden; transition: 0.15s; }
+    .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
+    .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
+    .srv-split-card.disabled-card { opacity: 0.55; background: #f1f5f9; pointer-events: none; }
+
+    .srv-split-top { padding: 10px 7px; text-align: center; cursor: pointer; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .srv-split-top .title { font-size: 14.5px; font-weight: 700; display: block; color: var(--text); }
+    .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
+    .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
+    
+    .srv-split-top .status { font-size: 12px; color: var(--muted); display: block; margin-top: 4px; line-height: 1.3; }
+    .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
+    .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
+    
+    .srv-split-bottom { display: flex; border-top: 1.5px solid var(--border); background: #f8fafc; }
+    .srv-split-card.active-des .srv-split-bottom { border-top-color: #fdba74; }
+    .srv-split-card.active-alm .srv-split-bottom { border-top-color: #a7f3d0; }
+    
+    .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 9px 2px; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.15s; }
+    .op-sub-btn:last-child { border-right: none; }
+    
+    .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
+    .srv-split-card.active-alm .op-sub-btn.selected-op { background: var(--sbs-accent); color: white; }
+
+    @media (max-width: 480px) {
+      .app-shell { width: 100vw; height: 100vh; border-radius: 0; }
+      .top-bar { padding: 12px 14px 10px; }
+      .top-bar h2 { font-size: 16.5px; }
+      .header-kpi-strip { margin-top: 8px; padding: 6px 10px; font-size: 12px; }
+      .tab { padding: 9px 4px; font-size: 13px; }
+      .scroll-area { padding: 10px 12px; }
+      .day-card { padding: 11px; margin-bottom: 10px; }
+      .day-header { font-size: 14px; margin-bottom: 7px; }
+      .menu-box { padding: 7px 10px; font-size: 12px; margin-bottom: 9px; }
+      .srv-grid { gap: 8px; }
+      .srv-split-top { padding: 8px 5px; }
+      .srv-split-top .title { font-size: 13.5px; }
+      .srv-split-top .status { font-size: 11px; margin-top: 3px; }
+      .op-sub-btn { padding: 8px 2px; font-size: 11.5px; }
+      .btn { padding: 12px; font-size: 14px; }
+    }
+
+    #box-qr-reader { display: none; background: white; border: 2px solid var(--sbs-accent); border-radius: 14px; padding: 12px; margin-top: 10px; text-align: center; }
+    
+    .rrhh-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .rrhh-box h4 { margin: 0 0 10px; font-size: 15px; color: var(--sbs-primary); }
+    .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .form-control { flex: 1; min-width: 130px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13.5px; }
+    .table-wrap { overflow-x: auto; max-height: 340px; border: 1px solid var(--border); border-radius: 9px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+    th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; }
+
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 13.5px; font-weight: 600; display: none; z-index: 999; text-align: center; width: max-content; max-width: 90vw; }
   </style>
 </head>
 <body>
-  <!-- El atributo allow="camera *" desbloquea la cámara en vivo para tu Apps Script -->
-  <iframe id="sbs-frame" allow="camera *; microphone *; fullscreen *; clipboard-write *"></iframe>
+
+  <div class="app-shell" id="app-shell">
+    <div id="view-login">
+      <div class="logo-badge">🍽️</div>
+      <h2 style="margin:0;">Comedor SBS</h2>
+      <p style="color:var(--muted); font-size:14.5px; margin-top:6px;">Ingresa tu DNI para gestionar tu alimentación</p>
+      <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
+      <button class="btn btn-primary" id="btn-ingresar" onclick="iniciarSesion()">Ingresar</button>
+      <p style="font-size:12.5px; color:var(--muted); margin-top:18px; line-height:1.45;">
+        • <b>Desayuno:</b> Solicitar hasta las 3:00 PM del día anterior.<br>
+        • <b>Almuerzo:</b> Cancelar hasta las 10:00 AM del mismo día.
+      </p>
+    </div>
+
+    <div id="view-main">
+      <div class="top-bar">
+        <div class="top-bar-row">
+          <div><h2 id="lbl-nombre">Hola</h2><p id="lbl-estado-rol">Tarifas aplicadas según planilla</p></div>
+          <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
+        </div>
+        <div class="header-kpi-strip">
+          <span id="hdr-resumen-cant">☕ 0 Des. | 🍲 0 Alm.</span>
+          <span class="header-kpi-total" id="hdr-resumen-total">Total: S/ 0.00</span>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Hoy</div>
+        <div class="tab" id="tab-btn-semana" onclick="cambiarTab('SEMANA')">Mi Semana</div>
+        <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">⚙️ RRHH</div>
+      </div>
+
+      <div class="scroll-area">
+        <div id="pane-principal">
+          <div id="ticket-confirmado" style="display:none; background:#ecfdf5; border:2px solid #10b981; border-radius:14px; padding:12px; margin-bottom:10px; text-align:center;">
+            <div style="font-size:24px;">✅</div>
+            <div id="ticket-titulo" style="font-size:15px; font-weight:800; color:#065f46; margin-top:2px;">CONSUMO REGISTRADO</div>
+            <div id="ticket-sub" style="font-size:12.5px; color:#047857; font-weight:600; margin-top:2px;"></div>
+          </div>
+
+          <div id="contenedor-principal"></div>
+
+          <button class="btn btn-success" id="btn-escanear-qr" style="margin-top:2px;" onclick="abrirEscanerQR()">
+            📷 Escanear QR en Comedor
+          </button>
+
+          <div id="link-contingencia-camara" style="text-align:center; margin-top:7px;">
+            <a href="javascript:void(0)" onclick="mostrarBoxPinContingencia()" style="font-size:11.5px; color:var(--muted); text-decoration:underline; font-weight:600;">
+              ¿Cámara malograda? Ingresar código del comedor
+            </a>
+          </div>
+          
+          <div id="box-qr-reader">
+            <p style="font-size:13px; font-weight:700; margin:0 0 8px; color:var(--sbs-primary);">
+              Apunta al código QR del comedor (Lectura en vivo)
+            </p>
+            <div id="qr-reader" style="width:100%; border-radius:10px; overflow:hidden;"></div>
+            <button class="btn btn-outline" style="margin-top:8px; padding:8px; font-size:12px; color:var(--muted);" onclick="cerrarEscanerQR()">
+              Cerrar Cámara
+            </button>
+          </div>
+
+          <div id="box-pin-contingencia" style="display:none; background:white; border:2px solid #f59e0b; border-radius:14px; padding:12px; margin-top:10px; text-align:center;">
+            <p style="font-size:12.5px; font-weight:700; margin:0 0 5px; color:#b45309;">
+              🔓 Registro por Cámara Malograda
+            </p>
+            <p style="font-size:11px; color:var(--muted); margin:0 0 8px;">
+              Ingresa el código de 3 dígitos que figura al pie del cartel QR en el comedor:
+            </p>
+            <div style="display:flex; gap:8px;">
+              <input type="tel" id="txt-pin-comedor" maxlength="4" placeholder="Código (Ej. 727)" style="flex:1; padding:9px; font-size:15px; text-align:center; font-weight:700; border:1.5px solid var(--border); border-radius:10px; letter-spacing:3px;">
+              <button class="btn btn-primary" style="flex:1; padding:9px; font-size:13px;" onclick="confirmarPinCamaraMalograda()">
+                Validar
+              </button>
+            </div>
+            <button class="btn btn-outline" style="margin-top:7px; padding:6px; font-size:11.5px; color:var(--muted);" onclick="document.getElementById('box-pin-contingencia').style.display='none'">
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+        <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
+
+        <div id="pane-rrhh" style="display:none;">
+          <div class="rrhh-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <h4 style="margin:0;">📊 Reporte Mensual Planilla (25 al 24)</h4>
+              <button class="btn btn-outline" style="width:auto; padding:7px 12px; font-size:12.5px;" onclick="imprimirAficheQR()">
+                🖨️ Imprimir Hoja QR Comedor
+              </button>
+            </div>
+            <div class="form-row">
+              <input type="date" id="rep-ini" class="form-control">
+              <input type="date" id="rep-fin" class="form-control">
+              <button class="btn btn-primary" style="flex:0.45; padding:10px;" onclick="cargarReporteRRHH()">Consultar</button>
+              <button class="btn btn-success" style="flex:0.85; padding:10px;" onclick="descargarExcelDosHojas()">📥 Excel (.xls)</button>
+            </div>
+            <div id="resumen-rep-rrhh" style="font-size:13px; font-weight:700; margin-bottom:8px; color:var(--sbs-primary);"></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>DNI</th><th>Nombres</th><th># Des.</th><th>Costo Des.</th><th># Alm.</th><th>Costo Alm.</th><th style="background:#dcfce7; color:#166534;">Costo Total</th></tr></thead>
+                <tbody id="tbody-rep-rrhh"><tr><td colspan="7" style="text-align:center; color:var(--muted);">Selecciona un rango y presiona Consultar</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD9X84fQ5IFEI6mjHB1ZptE66rIEXYccIhf_Hax-Itk8fUBqia4wpryaiN_mSFSKI/exec";
-    // Si escanearon el QR de la pared (?checkin=1), le pasa el parámetro automáticamente a tu Apps Script
-    const params = window.location.search || "";
-    document.getElementById('sbs-frame').src = APPS_SCRIPT_URL + params;
+    // ========================================================================
+    // 🔗 PEGA AQUÍ TU ENLACE /exec DE GOOGLE APPS SCRIPT
+    // ========================================================================
+    const APPS_SCRIPT_URL = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT_EXEC";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
+
+    let STATE = {
+      bootstrapCargado: false,
+      cargandoBootstrap: false,
+      hoyStr: '',
+      horaPeru: 0,
+      pasoCorteAlmuerzo: false,
+      modoDemo: false,
+      etiquetaDemo: '',
+      diccionarioUsuarios: {},
+      usuario: null,
+      diasSemana: [],
+      hoyFisico: null,
+      colaboradores: [],
+      resumenReporte: [],
+      ultimasFilasReporte: [],
+      html5QrCode: null,
+      procesandoEscaneo: false,
+      idxPrincipal: 0
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const dniGuardado = localStorage.getItem('SBS_COMEDOR_DNI');
+      if (dniGuardado) {
+        document.getElementById('txt-dni').value = dniGuardado;
+      }
+      cargarCacheInicial(() => {
+        if (window.AUTO_CHECKIN_QR === '1' && dniGuardado && STATE.diccionarioUsuarios[dniGuardado]) {
+          validarDNIEnMemoria(dniGuardado);
+        }
+      });
+      document.getElementById('txt-dni').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') iniciarSesion();
+      });
+    });
+
+    // Motor híbrido: funciona en GitHub Pages (fetch directo sin bloqueo de cookies) y también dentro de Apps Script
+    async function ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos = 3) {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        const runner = google.script.run.withSuccessHandler(onSuccess).withFailureHandler(err => {
+          if (intentos > 1) setTimeout(() => ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos - 1), 600);
+          else if (onError) onError(err);
+        });
+        runner[nombreFuncion].apply(runner, argsArray);
+        return;
+      }
+
+      for (let i = 0; i < intentos; i++) {
+        try {
+          const resp = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: nombreFuncion, args: argsArray })
+          });
+          const data = await resp.json();
+          if (onSuccess) onSuccess(data);
+          return;
+        } catch (err) {
+          if (i === intentos - 1) {
+            if (onError) onError(err);
+          } else {
+            await new Promise(r => setTimeout(r, 600));
+          }
+        }
+      }
+    }
+
+    function normalizarDniCliente(val) {
+      let s = String(val || '').replace(/\D/g, '').trim();
+      return (s.length === 7) ? '0' + s : s;
+    }
+
+    function cargarCacheInicial(callback) {
+      if (STATE.cargandoBootstrap && !callback) return;
+      STATE.cargandoBootstrap = true;
+      ejecutarConReintento('obtenerBootstrapInicial', [], res => {
+        STATE.cargandoBootstrap = false;
+        if (res && res.ok) {
+          STATE.bootstrapCargado = true;
+          STATE.hoyStr = res.hoyStr;
+          STATE.horaPeru = res.horaPeru;
+          STATE.pasoCorteAlmuerzo = res.pasoCorteAlmuerzo;
+          STATE.modoDemo = res.modoDemo;
+          STATE.etiquetaDemo = res.etiquetaDemo;
+          STATE.diccionarioUsuarios = res.diccionarioUsuarios || {};
+          STATE.colaboradores = res.colaboradores || [];
+          if (callback) callback();
+        }
+      }, () => {
+        STATE.cargandoBootstrap = false;
+        document.getElementById('btn-ingresar').disabled = false;
+        document.getElementById('btn-ingresar').textContent = 'Ingresar';
+        mostrarToast('⚠️ Verifica que APPS_SCRIPT_URL esté configurada y publicada para Cualquier persona.');
+      });
+    }
+
+    function mostrarToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3200);
+    }
+
+    function iniciarSesion() {
+      const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
+      if (dni.length < 7) {
+        mostrarToast('⚠️ Ingresa un DNI válido de 8 dígitos.');
+        return;
+      }
+      if (!STATE.bootstrapCargado) {
+        document.getElementById('btn-ingresar').disabled = true;
+        document.getElementById('btn-ingresar').textContent = 'Conectando...';
+        cargarCacheInicial(() => {
+          document.getElementById('btn-ingresar').disabled = false;
+          document.getElementById('btn-ingresar').textContent = 'Ingresar';
+          validarDNIEnMemoria(dni);
+        });
+        return;
+      }
+      validarDNIEnMemoria(dni);
+    }
+
+    function validarDNIEnMemoria(dni) {
+      const registro = STATE.diccionarioUsuarios[dni];
+      if (!registro) {
+        document.getElementById('btn-ingresar').disabled = true;
+        document.getElementById('btn-ingresar').textContent = 'Validando DNI...';
+        ejecutarConReintento('loginEnVivo', [dni], res => {
+          document.getElementById('btn-ingresar').disabled = false;
+          document.getElementById('btn-ingresar').textContent = 'Ingresar';
+          if (res && res.ok) {
+            STATE.diccionarioUsuarios = res.data.diccionarioUsuarios;
+            STATE.colaboradores = res.data.colaboradores;
+            asignarUsuarioYEntrar(STATE.diccionarioUsuarios[dni]);
+          } else {
+            mostrarToast('❌ DNI no registrado en BD_COLABORADORES.');
+          }
+        }, () => {
+          document.getElementById('btn-ingresar').disabled = false;
+          document.getElementById('btn-ingresar').textContent = 'Ingresar';
+          mostrarToast('❌ Error de conexión con el servidor.');
+        });
+        return;
+      }
+      asignarUsuarioYEntrar(registro);
+    }
+
+    function asignarUsuarioYEntrar(registro) {
+      STATE.usuario = registro.usuario;
+      STATE.diasSemana = registro.diasSemana;
+      STATE.hoyFisico = registro.hoyFisico;
+      localStorage.setItem('SBS_COMEDOR_DNI', STATE.usuario.dni);
+      renderizarVistaPrincipal();
+
+      if (window.AUTO_CHECKIN_QR === '1') {
+        window.AUTO_CHECKIN_QR = '0';
+        if (!document.getElementById('btn-escanear-qr').disabled) {
+          procesarRegistroQRInteligente('QR_INVERSO_DIRECTO');
+        }
+      }
+    }
+
+    function cerrarSesion() {
+      cerrarEscanerQR();
+      STATE.usuario = null;
+      document.getElementById('ticket-confirmado').style.display = 'none';
+      document.getElementById('box-pin-contingencia').style.display = 'none';
+      document.getElementById('app-shell').classList.remove('wide-rrhh');
+      document.getElementById('view-main').style.display = 'none';
+      document.getElementById('view-login').style.display = 'flex';
+    }
+
+    function renderizarVistaPrincipal() {
+      document.getElementById('view-login').style.display = 'none';
+      document.getElementById('view-main').style.display = 'flex';
+      document.getElementById('lbl-nombre').textContent = 'Hola, ' + STATE.usuario.nombre.split(' ')[0];
+      const badgeDemo = STATE.modoDemo ? ` • [DEMO: ${STATE.etiquetaDemo}]` : '';
+      document.getElementById('lbl-estado-rol').textContent = (STATE.usuario.estado !== 'ACTIVO')
+        ? `Estado: ${STATE.usuario.estado} (Excluido)`
+        : `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}${badgeDemo}`;
+      document.getElementById('tab-btn-rrhh').style.display = (STATE.usuario.rol === 'Admin_RRHH') ? 'block' : 'none';
+      if (STATE.usuario.rol === 'Admin_RRHH') inicializarControlesRRHH();
+
+      let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
+      if (idxHoyFisico === -1) {
+        STATE.idxPrincipal = 0;
+      } else if (STATE.pasoCorteAlmuerzo && idxHoyFisico < STATE.diasSemana.length - 1) {
+        STATE.idxPrincipal = idxHoyFisico + 1;
+      } else {
+        STATE.idxPrincipal = idxHoyFisico;
+      }
+
+      document.getElementById('tab-btn-principal').textContent = STATE.diasSemana[STATE.idxPrincipal].diaTexto;
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+      cambiarTab('PRINCIPAL');
+    }
+
+    function actualizarResumenHeader() {
+      let cDes = 0, cAlm = 0;
+      STATE.diasSemana.forEach(d => {
+        if (d.desayuno !== 'NO') cDes++;
+        if (d.almuerzo !== 'NO') cAlm++;
+      });
+      const totSoles = (cDes * STATE.usuario.costoDesayuno) + (cAlm * STATE.usuario.costoAlmuerzo);
+      document.getElementById('hdr-resumen-cant').textContent = `☕ ${cDes} Des. | 🍲 ${cAlm} Alm.`;
+      document.getElementById('hdr-resumen-total').textContent = `Total: S/ ${totSoles.toFixed(2)}`;
+    }
+
+    function actualizarEstadoBotonQR() {
+      const btn = document.getElementById('btn-escanear-qr');
+      const linkPin = document.getElementById('link-contingencia-camara');
+      const hf = STATE.hoyFisico;
+      if (!hf) return;
+
+      if (!hf.reservoDes && !hf.reservoAlm) {
+        btn.disabled = true;
+        btn.textContent = '🚫 Sin servicios reservados para hoy';
+        linkPin.style.display = 'none';
+        return;
+      }
+
+      const desListo = (!hf.reservoDes || hf.consumioDes);
+      const almListo = (!hf.reservoAlm || hf.consumioAlm);
+      if (desListo && almListo) {
+        btn.disabled = true;
+        btn.textContent = '✅ Servicios de hoy ya registrados';
+        linkPin.style.display = 'none';
+        return;
+      }
+
+      if (STATE.horaPeru < 11.5) {
+        if (hf.reservoDes && hf.consumioDes) {
+          btn.disabled = true;
+          btn.textContent = '✅ Desayuno registrado (Almuerzo desde 11:30 AM)';
+          linkPin.style.display = 'none';
+          return;
+        }
+        if (!hf.reservoDes && hf.reservoAlm) {
+          btn.disabled = true;
+          btn.textContent = '🕒 QR Almuerzo disponible desde 11:30 AM';
+          linkPin.style.display = 'none';
+          return;
+        }
+        btn.disabled = false;
+        btn.textContent = '📷 Escanear QR en Comedor (Desayuno)';
+        linkPin.style.display = 'block';
+      } else {
+        if (hf.reservoAlm && hf.consumioAlm) {
+          btn.disabled = true;
+          btn.textContent = '✅ Almuerzo ya registrado hoy';
+          linkPin.style.display = 'none';
+          return;
+        }
+        if (!hf.reservoAlm) {
+          btn.disabled = true;
+          btn.textContent = '🚫 Sin almuerzo reservado para hoy';
+          linkPin.style.display = 'none';
+          return;
+        }
+        btn.disabled = false;
+        btn.textContent = '📷 Escanear QR en Comedor (Almuerzo)';
+        linkPin.style.display = 'block';
+      }
+    }
+
+    function renderizarTarjetas() {
+      actualizarResumenHeader();
+      document.getElementById('contenedor-principal').innerHTML = crearHTMLTarjetaDia(STATE.diasSemana[STATE.idxPrincipal], true);
+      document.getElementById('contenedor-semana').innerHTML = STATE.diasSemana.map(d => crearHTMLTarjetaDia(d, false)).join('');
+    }
+
+    function crearHTMLTarjetaDia(d, esVistaPrincipal) {
+      const desActivo = (d.desayuno !== 'NO'), almActivo = (d.almuerzo !== 'NO');
+
+      let detalleDes = '';
+      if (d.desayuno === 'OP1') detalleDes = '1 bebida + 2 panes';
+      else if (d.desayuno === 'OP2') detalleDes = '1 bebida + 3 huevos';
+      else if (d.desayuno === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
+
+      const txtDes = desActivo ? `Solicitado: ${detalleDes}` : 'No solicitado';
+      const txtAlm = almActivo ? `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}` : 'Cancelado';
+
+      const lockDesClass = !d.puedeEditarDesayuno ? 'disabled-card' : '';
+      const lockAlmClass = !d.puedeEditarAlmuerzo ? 'disabled-card' : '';
+      const avisoDes = !d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Op. 1, 2 o 3 abajo');
+      const avisoAlm = !d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo');
+
+      return `
+        <div class="day-card" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
+          <div class="day-header">
+            <span>${d.diaTexto} (${d.fecha})</span>
+            ${d.esHoyFisico ? '<span style="background:#dcfce7; color:#166534; padding:3px 9px; border-radius:7px; font-size:11.5px;">HOY</span>' : ''}
+          </div>
+          <div class="menu-box">
+            <div>☕ <b>Desayuno:</b> ${d.menuDesayuno}</div>
+            <div style="margin-top:4px;">🍲 <b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
+          </div>
+          <div class="srv-grid">
+            <div class="srv-split-card ${desActivo ? 'active-des' : ''} ${lockDesClass}">
+              <div class="srv-split-top" onclick="seleccionarOpcionDesayuno('${d.fecha}', '${desActivo ? 'NO' : 'OP1'}')">
+                <span class="title">☕ Desayuno</span>
+                <span class="status">${txtDes}</span>
+                <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoDes}</span>
+              </div>
+              <div class="srv-split-bottom">
+                <button class="op-sub-btn ${d.desayuno === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Op. 1</button>
+                <button class="op-sub-btn ${d.desayuno === 'OP2' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP2')">Op. 2</button>
+                <button class="op-sub-btn ${d.desayuno === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Op. 3</button>
+              </div>
+            </div>
+
+            <div class="srv-split-card ${almActivo ? 'active-alm' : ''} ${lockAlmClass}">
+              <div class="srv-split-top" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', '${almActivo ? 'NO' : 'REGULAR'}')">
+                <span class="title">🍲 Almuerzo</span>
+                <span class="status">${txtAlm}</span>
+                <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoAlm}</span>
+              </div>
+              <div class="srv-split-bottom">
+                <button class="op-sub-btn ${d.almuerzo === 'REGULAR' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')">Regular</button>
+                <button class="op-sub-btn ${d.almuerzo === 'DIETA' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'DIETA')">Dieta</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function seleccionarOpcionDesayuno(fecha, opElegida) {
+      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
+      if (!dia || !dia.puedeEditarDesayuno) return;
+      const vAnt = dia.desayuno;
+      const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
+      dia.desayuno = nVal;
+      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (nVal !== 'NO');
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+      mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno Op. ${nVal.replace('OP','')} reservado`);
+      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni, esAdminOverride: false }], res => {
+        if (!res.ok) {
+          dia.desayuno = vAnt;
+          if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (vAnt !== 'NO');
+          renderizarTarjetas();
+          actualizarEstadoBotonQR();
+          mostrarToast('⚠️ ' + res.msg);
+        }
+      });
+    }
+
+    function seleccionarOpcionAlmuerzo(fecha, opElegida) {
+      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
+      if (!dia || !dia.puedeEditarAlmuerzo) return;
+      const vAnt = dia.almuerzo;
+      const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
+      dia.almuerzo = nVal;
+      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (nVal !== 'NO');
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+      mostrarToast(nVal === 'NO' ? '✅ Almuerzo cancelado' : `✅ Almuerzo ${nVal.charAt(0) + nVal.slice(1).toLowerCase()} confirmado`);
+      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni, esAdminOverride: false }], res => {
+        if (!res.ok) {
+          dia.almuerzo = vAnt;
+          if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (vAnt !== 'NO');
+          renderizarTarjetas();
+          actualizarEstadoBotonQR();
+          mostrarToast('⚠️ ' + res.msg);
+        }
+      });
+    }
+
+    function cambiarTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('pane-principal').style.display = 'none';
+      document.getElementById('pane-semana').style.display = 'none';
+      document.getElementById('pane-rrhh').style.display = 'none';
+      document.getElementById('app-shell').classList.remove('wide-rrhh');
+
+      if (tab === 'PRINCIPAL') {
+        document.getElementById('tab-btn-principal').classList.add('active');
+        document.getElementById('pane-principal').style.display = 'block';
+      } else if (tab === 'SEMANA') {
+        cerrarEscanerQR();
+        document.getElementById('tab-btn-semana').classList.add('active');
+        document.getElementById('pane-semana').style.display = 'block';
+      } else if (tab === 'RRHH') {
+        cerrarEscanerQR();
+        document.getElementById('tab-btn-rrhh').classList.add('active');
+        document.getElementById('pane-rrhh').style.display = 'block';
+        document.getElementById('app-shell').classList.add('wide-rrhh');
+        cargarReporteRRHH();
+      }
+    }
+
+    async function abrirEscanerQR() {
+      if (document.getElementById('btn-escanear-qr').disabled) return;
+      document.getElementById('box-pin-contingencia').style.display = 'none';
+
+      const box = document.getElementById('box-qr-reader');
+      box.style.display = 'block';
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      if (!STATE.html5QrCode) STATE.html5QrCode = new Html5Qrcode("qr-reader");
+      if (STATE.html5QrCode.isScanning) return;
+
+      STATE.procesandoEscaneo = false;
+      try {
+        await STATE.html5QrCode.start(
+          { facingMode: { ideal: "environment" } },
+          { fps: 24, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
+          (decodedText) => {
+            if (STATE.procesandoEscaneo) return;
+            STATE.procesandoEscaneo = true;
+            cerrarEscanerQR();
+            procesarRegistroQRInteligente('QR_VIVO_APP');
+          },
+          () => {}
+        );
+      } catch (errCamara) {
+        cerrarEscanerQR();
+        mostrarBoxPinContingencia();
+        mostrarToast('⚠️ No se pudo iniciar tu cámara. Ingresa el código de 3 dígitos del cartel.');
+      }
+    }
+
+    function cerrarEscanerQR() {
+      document.getElementById('box-qr-reader').style.display = 'none';
+      if (STATE.html5QrCode && STATE.html5QrCode.isScanning) {
+        STATE.html5QrCode.stop().catch(() => {});
+      }
+    }
+
+    function mostrarBoxPinContingencia() {
+      cerrarEscanerQR();
+      const boxPin = document.getElementById('box-pin-contingencia');
+      boxPin.style.display = 'block';
+      document.getElementById('txt-pin-comedor').value = '';
+      document.getElementById('txt-pin-comedor').focus();
+    }
+
+    function confirmarPinCamaraMalograda() {
+      const pin = document.getElementById('txt-pin-comedor').value.trim();
+      if (pin.length < 3) {
+        mostrarToast('⚠️ Ingresa el código de 3 dígitos del comedor.');
+        return;
+      }
+      document.getElementById('box-pin-contingencia').style.display = 'none';
+      const btn = document.getElementById('btn-escanear-qr');
+      btn.disabled = true;
+      btn.textContent = '⏳ Validando código...';
+
+      ejecutarConReintento('validarPinYRegistrarConsumo', [STATE.usuario.dni, pin], res => {
+        if (res.ok) {
+          if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
+          if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+          mostrarTicketVerdeConfirmado(res.servicioRegistrado);
+          mostrarToast('✅ ' + res.msg);
+        } else {
+          mostrarToast('❌ ' + res.msg);
+        }
+        actualizarEstadoBotonQR();
+      });
+    }
+
+    function procesarRegistroQRInteligente(metodo = 'QR_APP') {
+      const btn = document.getElementById('btn-escanear-qr');
+      btn.disabled = true;
+      btn.textContent = '⏳ Registrando asistencia...';
+
+      ejecutarConReintento('registrarConsumoInteligente', [STATE.usuario.dni, metodo], res => {
+        if (res.ok) {
+          if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
+          if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+          mostrarTicketVerdeConfirmado(res.servicioRegistrado);
+          mostrarToast('✅ ' + res.msg);
+        } else {
+          mostrarToast('⚠️ ' + res.msg);
+        }
+        actualizarEstadoBotonQR();
+      });
+    }
+
+    function mostrarTicketVerdeConfirmado(servicio) {
+      const box = document.getElementById('ticket-confirmado');
+      document.getElementById('ticket-titulo').textContent = `¡${servicio} REGISTRADO!`;
+      document.getElementById('ticket-sub').textContent = `${STATE.usuario.nombre} • ${STATE.hoyStr}`;
+      box.style.display = 'block';
+    }
+
+    function imprimirAficheQR() {
+      const urlCheckin = 'https://sbs-peru.github.io/comedor/?checkin=1';
+      const qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(urlCheckin);
+
+      const w = window.open('', '_blank');
+      w.document.write(`
+        <html><head><title>Cartel Oficial Comedor SBS</title></head>
+        <body style="font-family:sans-serif; text-align:center; padding:35px;">
+          <h1 style="color:#13392a; margin-bottom:6px; font-size:32px;">🍽️ COMEDOR SBS</h1>
+          <p style="color:#334155; font-size:18px; margin-top:0;">
+            <b>Opción 1:</b> Abre la cámara de tu celular y apunta al QR.<br>
+            <b>Opción 2:</b> Escanea desde el botón dentro de la App Comedor SBS.
+          </p>
+          <div style="margin:24px auto; padding:24px; border:5px solid #13392a; display:inline-block; border-radius:22px;">
+            <img src="${qrApi}" width="330" height="330" alt="QR Comedor SBS"/>
+          </div>
+          <div style="margin:15px auto; max-width:420px; background:#fffbeb; border:2px dashed #f59e0b; padding:14px; border-radius:14px;">
+            <div style="font-size:14px; color:#92400e; font-weight:bold;">¿CÁMARA DEL CELULAR MALOGRADA?</div>
+            <div style="font-size:22px; color:#b45309; font-weight:900; margin-top:4px; letter-spacing:2px;">CÓDIGO MANUAL: 727</div>
+          </div>
+          <script>setTimeout(() => window.print(), 700);<\/script>
+        </body></html>
+      `);
+      w.document.close();
+    }
+
+    function inicializarControlesRRHH() {
+      const hoyDate = new Date(STATE.hoyStr + 'T00:00:00');
+      let mes = hoyDate.getMonth(), anio = hoyDate.getFullYear();
+      if (hoyDate.getDate() <= 24) mes = mes - 1;
+      document.getElementById('rep-ini').value = new Date(anio, mes, 25).toISOString().split('T')[0];
+      document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
+    }
+
+    function cargarReporteRRHH() {
+      const fIni = document.getElementById('rep-ini').value, fFin = document.getElementById('rep-fin').value;
+      document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Calculando consolidado...</td></tr>';
+      ejecutarConReintento('obtenerReportePlanillaRRHH', [fIni, fFin], res => {
+        STATE.resumenReporte = res.resumen || [];
+        STATE.ultimasFilasReporte = res.filas || [];
+        if (STATE.resumenReporte.length === 0) {
+          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos.</td></tr>';
+          document.getElementById('resumen-rep-rrhh').textContent = 'Total Planilla: S/ 0.00';
+          return;
+        }
+        let granTot = 0;
+        document.getElementById('tbody-rep-rrhh').innerHTML = STATE.resumenReporte.map(r => {
+          granTot += Number(r.costoTotal);
+          return `<tr><td>${r.dni}</td><td><b>${r.nombre}</b></td><td style="text-align:center;">${r.cantDesayunos}</td><td>S/ ${r.costoDesayunos.toFixed(2)}</td><td style="text-align:center;">${r.cantAlmuerzos}</td><td>S/ ${r.costoAlmuerzos.toFixed(2)}</td><td style="background:#ecfdf5; color:#047857; font-weight:800;">S/ ${r.costoTotal.toFixed(2)}</td></tr>`;
+        }).join('');
+        document.getElementById('resumen-rep-rrhh').textContent = `Total Descuento Planilla: S/ ${granTot.toFixed(2)}`;
+      });
+    }
+
+    function descargarExcelDosHojas() {
+      if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
+        mostrarToast('⚠️ Consulta un rango primero.');
+        return;
+      }
+      let sumTotal = 0;
+      const xml1 = STATE.resumenReporte.map(r => {
+        sumTotal += Number(r.costoTotal);
+        return `<Row><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${r.dni}</Data></Cell><Cell ss:StyleID="sCell"><Data ss:Type="String">${r.nombre}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="Number">${r.cantDesayunos}</Data></Cell><Cell ss:StyleID="sMoney"><Data ss:Type="Number">${r.costoDesayunos}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="Number">${r.cantAlmuerzos}</Data></Cell><Cell ss:StyleID="sMoney"><Data ss:Type="Number">${r.costoAlmuerzos}</Data></Cell><Cell ss:StyleID="sTotalCol"><Data ss:Type="Number">${r.costoTotal}</Data></Cell></Row>`;
+      }).join('');
+      const xml2 = STATE.ultimasFilasReporte.map(d => `<Row><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.fecha}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.dni}</Data></Cell><Cell ss:StyleID="sCell"><Data ss:Type="String">${d.nombre}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.servicio}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.reservo}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.consumio}</Data></Cell><Cell ss:StyleID="sMoney"><Data ss:Type="Number">${d.montoCobrar}</Data></Cell></Row>`).join('');
+
+      const wb = `<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+ <Styles>
+  <Style ss:ID="sTitle"><Font ss:Bold="1" ss:Size="13" ss:Color="#13392A"/></Style>
+  <Style ss:ID="sHeader"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#13392A" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>
+  <Style ss:ID="sHeaderTotal"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#047857" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>
+  <Style ss:ID="sCell"><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/></Borders></Style>
+  <Style ss:ID="sCellCenter" ss:Parent="sCell"><Alignment ss:Horizontal="Center"/></Style>
+  <Style ss:ID="sMoney" ss:Parent="sCell"><NumberFormat ss:Format="&quot;S/&quot;\\ #,##0.00"/></Style>
+  <Style ss:ID="sTotalCol" ss:Parent="sCell"><Font ss:Bold="1" ss:Color="#065F46"/><Interior ss:Color="#D1FAE5" ss:Pattern="Solid"/><NumberFormat ss:Format="&quot;S/&quot;\\ #,##0.00"/></Style>
+ </Styles>
+ <Worksheet ss:Name="1_Consolidado_RRHH"><Table><Column ss:Width="85"/><Column ss:Width="190"/><Column ss:Width="85"/><Column ss:Width="105"/><Column ss:Width="85"/><Column ss:Width="105"/><Column ss:Width="115"/>
+  <Row><Cell ss:StyleID="sTitle"><Data ss:Type="String">DESCUENTO PLANILLA SBS</Data></Cell></Row><Row></Row>
+  <Row><Cell ss:StyleID="sHeader"><Data ss:Type="String">DNI</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Nombres</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String"># Desayunos</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Costo Desayunos</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String"># Almuerzos</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Costo Almuerzos</Data></Cell><Cell ss:StyleID="sHeaderTotal"><Data ss:Type="String">Costo Total</Data></Cell></Row>
+  ${xml1}
+  <Row><Cell><Data ss:Type="String">TOTAL PLANILLA</Data></Cell><Cell ss:Index="7" ss:StyleID="sTotalCol"><Data ss:Type="Number">${sumTotal}</Data></Cell></Row></Table></Worksheet>
+ <Worksheet ss:Name="2_Detalle_Fechas"><Table><Column ss:Width="85"/><Column ss:Width="85"/><Column ss:Width="190"/><Column ss:Width="130"/><Column ss:Width="85"/><Column ss:Width="100"/><Column ss:Width="95"/>
+  <Row><Cell ss:StyleID="sHeader"><Data ss:Type="String">Fecha</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">DNI</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Colaborador</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Servicio</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Reservó</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Asistió_Comedor</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Monto</Data></Cell></Row>
+  ${xml2}</Table></Worksheet></Workbook>`;
+
+      const blob = new Blob([wb], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Planilla_Comedor_${STATE.hoyStr}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   </script>
 </body>
 </html>

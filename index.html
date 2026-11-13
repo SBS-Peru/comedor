@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Comedor SBS</title>
+  <!-- Configuración PWA para instalar como App Nativa en iOS y Android -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#13392a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Comedor SBS">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1046/1046857.png">
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #13392a; }
+    iframe { width: 100%; height: 100%; border: none; display: block; }
+  </style>
+</head>
+<body>
+  <!-- El atributo allow="camera *" desbloquea la cámara en vivo para tu Apps Script -->
+  <iframe id="sbs-frame" allow="camera *; microphone *; fullscreen *; clipboard-write *"></iframe>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD9X84fQ5IFEI6mjHB1ZptE66rIEXYccIhf_Hax-Itk8fUBqia4wpryaiN_mSFSKI/exec";
+    // Si escanearon el QR de la pared (?checkin=1), le pasa el parámetro automáticamente a tu Apps Script
+    const params = window.location.search || "";
+    document.getElementById('sbs-frame').src = APPS_SCRIPT_URL + params;
+  </script>
+</body>
+</html>

@@ -653,26 +653,65 @@
       box.style.display = 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-      if (!STATE.html5QrCode) STATE.html5QrCode = new Html5Qrcode("qr-reader");
-      if (STATE.html5QrCode.isScanning) return;
+      // Esperar 150ms para que el DOM pinte el ancho real del div antes de iniciar el video en iOS/Android
+      await new Promise(r => setTimeout(r, 150));
+
+      try {
+        if (STATE.html5QrCode) {
+          if (STATE.html5QrCode.isScanning) {
+            await STATE.html5QrCode.stop().catch(() => {});
+          }
+          STATE.html5QrCode.clear();
+        } else {
+          STATE.html5QrCode = new Html5Qrcode("qr-reader");
+        }
+      } catch (e) {
+        STATE.html5QrCode = new Html5Qrcode("qr-reader");
+      }
 
       STATE.procesandoEscaneo = false;
+
+      const configQR = {
+        fps: 20,
+        qrbox: { width: 220, height: 220 },
+        aspectRatio: 1.0
+      };
+
+      const onScanExito = (decodedText) => {
+        if (STATE.procesandoEscaneo) return;
+        STATE.procesandoEscaneo = true;
+        cerrarEscanerQR();
+        procesarRegistroQRInteligente('QR_VIVO_APP');
+      };
+
       try {
+        // Intento 1: Sintaxis estricta compatible con iOS Safari y Android Chrome
         await STATE.html5QrCode.start(
-          { facingMode: { ideal: "environment" } },
-          { fps: 24, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
-          (decodedText) => {
-            if (STATE.procesandoEscaneo) return;
-            STATE.procesandoEscaneo = true;
-            cerrarEscanerQR();
-            procesarRegistroQRInteligente('QR_VIVO_APP');
-          },
+          { facingMode: "environment" },
+          configQR,
+          onScanExito,
           () => {}
         );
-      } catch (errCamara) {
-        cerrarEscanerQR();
-        mostrarBoxPinContingencia();
-        mostrarToast('⚠️ No se pudo iniciar tu cámara. Ingresa el código de 3 dígitos del cartel.');
+      } catch (err1) {
+        try {
+          // Intento 2: Buscar explícitamente el ID de la cámara trasera del dispositivo
+          const camaras = await Html5Qrcode.getCameras();
+          if (camaras && camaras.length > 0) {
+            const camTrasera = camaras.find(c => /back|trasera|environment|posterior/i.test(c.label)) || camaras[camaras.length - 1];
+            await STATE.html5QrCode.start(
+              camTrasera.id,
+              configQR,
+              onScanExito,
+              () => {}
+            );
+          } else {
+            throw err1;
+          }
+        } catch (errFinal) {
+          cerrarEscanerQR();
+          mostrarBoxPinContingencia();
+          mostrarToast('⚠️ Permiso de cámara bloqueado (' + (errFinal.name || errFinal) + '). Usa el código o habilita la cámara en el candado del navegador.');
+        }
       }
     }
 

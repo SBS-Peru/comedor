@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <!-- Sin viewport-fit=cover para evitar que iOS 18 aplique desenfoque sobre el saludo superior -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
   <link rel="manifest" href="manifest.json">
@@ -10,14 +9,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <!-- Ícono para iPhone / Android combinando el logo oficial SBS + Comedor -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23ffffff'/><text x='256' y='295' font-family='Arial Black, sans-serif' font-weight='900' font-size='180' fill='%232b5c56' text-anchor='middle' letter-spacing='-6'>SBS</text><path d='M 110 350 Q 256 400 402 350' fill='none' stroke='%2322996e' stroke-width='24' stroke-linecap='round'/><circle cx='395' cy='115' r='54' fill='%2310b981'/><text x='395' y='135' font-size='56' text-anchor='middle'>🍽️</text></svg>">
+  <!-- Usa directamente tu imagen subida como logo.jpg en el ícono de iPhone/Android -->
+  <link rel="apple-touch-icon" href="./logo.jpg">
+  <link rel="icon" type="image/jpeg" href="./logo.jpg">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
       --sbs-primary: #13392a;
-      --sbs-teal: #2b5c56;
       --sbs-accent: #10b981;
       --sbs-orange: #ea580c;
       --bg: #f1f5f9;
@@ -43,17 +42,19 @@
     }
     .app-shell.wide-rrhh { max-width: 900px; }
 
-    #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 32px 26px; text-align: center; background: var(--card); }
-    .sbs-logo-box {
-      width: 148px; height: 84px; margin: 0 auto 12px;
-      background: #ffffff; border: 2px solid var(--border); border-radius: 18px;
-      display: inline-flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 14px rgba(19, 57, 42, 0.08);
-      position: relative;
+    /* LOGIN CON TU IMAGEN TAL CUAL Y SIN TEXTO "COMEDOR SBS" */
+    #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: var(--card); }
+    .login-logo-img {
+      width: 155px;
+      height: 155px;
+      object-fit: contain;
+      border-radius: 22px;
+      margin-bottom: 10px;
+      display: block;
     }
     .dni-input {
       width: 100%; padding: 14px; font-size: 22px; text-align: center; border: 2px solid var(--border);
-      border-radius: 12px; margin: 18px 0 14px; letter-spacing: 4px; font-weight: 700; outline: none;
+      border-radius: 12px; margin: 16px 0 14px; letter-spacing: 4px; font-weight: 700; outline: none;
     }
     .dni-input:focus { border-color: var(--sbs-primary); }
 
@@ -63,9 +64,8 @@
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; background: #94a3b8 !important; color: #ffffff !important; }
 
+    /* HEADER DE LA PANTALLA PRINCIPAL (SIN LOGO) */
     #view-main { display: none; flex-direction: column; height: 100%; background: var(--bg); }
-    
-    /* Encabezado 100% nítido en iOS: separado de la zona de desenfoque del reloj del iPhone */
     .top-bar {
       background: var(--sbs-primary);
       color: white;
@@ -122,7 +122,6 @@
 
     @media (max-width: 480px) {
       .app-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
-      /* Espacio superior limpio para que iOS jamás superponga el reloj ni difumine el saludo */
       .top-bar { padding: 14px 14px 10px; }
       .top-bar h2 { font-size: 17px; }
       .header-kpi-strip { margin-top: 8px; padding: 6px 10px; font-size: 12px; }
@@ -156,18 +155,10 @@
 <body>
 
   <div class="app-shell" id="app-shell">
+    <!-- 1. PANTALLA LOGIN: CON TU IMAGEN TAL CUAL Y SIN TEXTO "COMEDOR SBS" -->
     <div id="view-login">
-      <!-- LOGO OFICIAL COMBINADO SBS + COMEDOR -->
-      <div class="sbs-logo-box">
-        <svg viewBox="0 0 240 125" width="132" height="72" xmlns="http://www.w3.org/2000/svg">
-          <text x="112" y="76" font-family="Arial Black, Impact, system-ui, sans-serif" font-weight="900" font-size="76" fill="#2b5c56" text-anchor="middle" letter-spacing="-3">SBS</text>
-          <path d="M 42 96 Q 112 118 182 96" fill="none" stroke="#22996e" stroke-width="8.5" stroke-linecap="round"/>
-          <circle cx="204" cy="28" r="21" fill="#10b981"/>
-          <text x="204" y="36" font-size="22" text-anchor="middle">🍽️</text>
-        </svg>
-      </div>
-      <h2 style="margin:0; color:var(--sbs-primary);">Comedor SBS</h2>
-      <p style="color:var(--muted); font-size:14.5px; margin-top:6px;">Ingresa tu DNI para gestionar tu alimentación</p>
+      <img src="./logo.jpg" alt="SBS" class="login-logo-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22><rect width=%22500%22 height=%22500%22 fill=%22%23dcebe6%22/><g fill=%22%23000000%22><path d=%22M165 65 C158 65 155 75 162 95 L222 162 L158 228 C150 236 155 246 164 254 C172 262 182 265 190 256 L252 192 L315 256 C323 265 333 262 341 254 C350 246 355 236 346 228 L282 162 L342 98 C348 92 338 82 325 95 L298 122 L292 116 L322 86 C328 80 318 70 308 80 L280 108 L274 102 L302 74 C308 68 298 58 286 70 L252 106 C244 114 244 126 250 134 L240 144 L182 72 C175 65 170 65 165 65 Z%22/></g><text x=%22250%22 y=%22395%22 font-family=%22Arial Black, sans-serif%22 font-weight=%22900%22 font-size=%22148%22 fill=%22%232b5c56%22 text-anchor=%22middle%22 letter-spacing=%22-5%22>SBS</text><path d=%22M 120 432 Q 250 472 380 432%22 fill=%22none%22 stroke=%22%2322996e%22 stroke-width=%2216%22 stroke-linecap=%22round%22/></svg>'">
+      <p style="color:var(--muted); font-size:14.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
       <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
       <button class="btn btn-primary" id="btn-ingresar" onclick="iniciarSesion()">Ingresar</button>
       <p style="font-size:12.5px; color:var(--muted); margin-top:18px; line-height:1.45;">
@@ -176,21 +167,13 @@
       </p>
     </div>
 
+    <!-- 2. PANTALLA PRINCIPAL: SIN LOGO EN EL HEADER -->
     <div id="view-main">
       <div class="top-bar">
         <div class="top-bar-row">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <!-- Mini badge SBS en el Header -->
-            <div style="background:white; border-radius:9px; padding:3px 7px; display:flex; align-items:center; justify-content:center;">
-              <svg viewBox="0 0 130 70" width="38" height="22" xmlns="http://www.w3.org/2000/svg">
-                <text x="65" y="46" font-family="Arial Black, sans-serif" font-weight="900" font-size="48" fill="#2b5c56" text-anchor="middle" letter-spacing="-2">SBS</text>
-                <path d="M 18 58 Q 65 72 112 58" fill="none" stroke="#22996e" stroke-width="6" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div>
-              <h2 id="lbl-nombre">Hola</h2>
-              <p id="lbl-estado-rol">Tarifas aplicadas según planilla</p>
-            </div>
+          <div>
+            <h2 id="lbl-nombre">Hola</h2>
+            <p id="lbl-estado-rol">Tarifas aplicadas según planilla</p>
           </div>
           <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
         </div>
@@ -220,7 +203,6 @@
             📷 Escanear QR en Comedor
           </button>
 
-          <!-- Enlace actualizado a "¿Problemas con la cámara?" -->
           <div id="link-contingencia-camara" style="text-align:center; margin-top:7px;">
             <a href="javascript:void(0)" onclick="mostrarBoxPinContingencia()" style="font-size:11.5px; color:var(--muted); text-decoration:underline; font-weight:600;">
               ¿Problemas con la cámara? Ingresar código
@@ -237,7 +219,6 @@
             </button>
           </div>
 
-          <!-- Módulo de Código de Comedor (para cuando hay problemas con la cámara) -->
           <div id="box-pin-contingencia" style="display:none; background:white; border:2px solid #f59e0b; border-radius:14px; padding:12px; margin-top:10px; text-align:center;">
             <p style="font-size:12.5px; font-weight:700; margin:0 0 5px; color:#b45309;">
               🔓 Registro con Código del Comedor
@@ -598,12 +579,13 @@
       else if (d.desayuno === 'OP2') detalleDes = '1 bebida + 3 huevos';
       else if (d.desayuno === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
 
-      const txtDes = desActivo ? `Solicitado: ${detalleDes}` : 'No solicitado';
+      // Muestra directamente el detalle de la opción sin la palabra "Solicitado:"
+      const txtDes = desActivo ? detalleDes : 'No solicitado';
       const txtAlm = almActivo ? `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}` : 'Cancelado';
 
       const lockDesClass = !d.puedeEditarDesayuno ? 'disabled-card' : '';
       const lockAlmClass = !d.puedeEditarAlmuerzo ? 'disabled-card' : '';
-      const avisoDes = !d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Op. 1, 2 o 3 abajo');
+      const avisoDes = !d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Opc. 1, 2 o 3 abajo');
       const avisoAlm = !d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo');
 
       const fechaVisual = d.fechaCorta || formatearDiaMesCorto(d.fecha);
@@ -626,9 +608,9 @@
                 <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoDes}</span>
               </div>
               <div class="srv-split-bottom">
-                <button class="op-sub-btn ${d.desayuno === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Op. 1</button>
-                <button class="op-sub-btn ${d.desayuno === 'OP2' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP2')">Op. 2</button>
-                <button class="op-sub-btn ${d.desayuno === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Op. 3</button>
+                <button class="op-sub-btn ${d.desayuno === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Opc. 1</button>
+                <button class="op-sub-btn ${d.desayuno === 'OP2' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP2')">Opc. 2</button>
+                <button class="op-sub-btn ${d.desayuno === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Opc. 3</button>
               </div>
             </div>
 
@@ -657,7 +639,7 @@
       if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (nVal !== 'NO');
       renderizarTarjetas();
       actualizarEstadoBotonQR();
-      mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno Op. ${nVal.replace('OP','')} reservado`);
+      mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno Opc. ${nVal.replace('OP','')} reservado`);
       ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni, esAdminOverride: false }], res => {
         if (!res.ok) {
           dia.desayuno = vAnt;
@@ -988,7 +970,7 @@
           { v: String(d.fecha), t: 's', s: centerStyle },
           { v: String(d.dni), t: 's', s: centerStyle },
           { v: d.nombre, t: 's', s: textStyle },
-          { v: d.servicio, t: 's', s: centerStyle },
+          { v: String(d.servicio).replace('Op.', 'Opc.'), t: 's', s: centerStyle },
           { v: d.reservo, t: 's', s: centerStyle },
           { v: d.consumio, t: 's', s: centerStyle },
           { v: Number(d.montoCobrar), t: 'n', s: moneyStyle }

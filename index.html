@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=2">
-  <meta name="theme-color" content="#13392a">
+  <link rel="manifest" href="manifest.json?v=4">
+  <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=2">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=2">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=2">
+  <!-- Ícono con ?v=4 para forzar a iOS y Android a usar el nuevo Logo.jpg con fondo blanco -->
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=4">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=4">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=4">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -30,7 +31,7 @@
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body {
       margin: 0; padding: 0;
-      background-color: var(--sbs-primary);
+      background-color: #ffffff;
       color: var(--text);
       display: flex; justify-content: center; align-items: center;
       min-height: 100vh; width: 100%; overflow: hidden;
@@ -38,28 +39,28 @@
 
     .app-shell {
       width: 95vw; height: 94vh; max-width: 580px; background: var(--card);
-      border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       display: flex; flex-direction: column; overflow: hidden; position: relative;
     }
     .app-shell.wide-rrhh { max-width: 900px; }
 
-    #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: var(--card); }
+    #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: #ffffff; }
     .login-logo-wrap {
-      width: 155px;
-      height: 155px;
+      width: 165px;
+      height: 165px;
       border-radius: 22px;
       overflow: hidden;
       margin-bottom: 12px;
-      background: #dcebe6;
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 14px rgba(19, 57, 42, 0.1);
     }
     .login-logo-wrap img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      background: #ffffff;
       display: block;
     }
     .dni-input {
@@ -171,20 +172,18 @@
 <body>
 
   <div class="app-shell" id="app-shell">
-    <!-- 1. PANTALLA LOGIN CON CONTRASEÑA OCULTA Y SESIÓN PERMANENTE -->
+    <!-- 1. PANTALLA LOGIN CON FONDO BLANCO -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=4" alt="SBS">
       </div>
 
-      <!-- Paso 1: Ingreso de DNI -->
       <div id="step-dni" style="width:100%;">
         <p style="color:var(--muted); font-size:14.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
         <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
         <button class="btn btn-primary" id="btn-ingresar" onclick="verificarPasoDNI()">Continuar</button>
       </div>
 
-      <!-- Paso 2: Contraseña Encriptada (Creación en 1er ingreso o Validación) -->
       <div id="step-clave" style="display:none; width:100%;">
         <div id="lbl-saludo-login" style="font-size:16px; font-weight:800; color:var(--sbs-primary); margin-bottom:4px;"></div>
         <p id="lbl-instruccion-clave" style="color:var(--muted); font-size:13px; margin:0 0 6px; line-height:1.4;"></p>
@@ -278,7 +277,6 @@
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
         <div id="pane-rrhh" style="display:none;">
-          <!-- Módulo de Reseteo de Contraseña por DNI para RRHH -->
           <div class="rrhh-box">
             <h4>🔑 Resetear Contraseña de Colaborador</h4>
             <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
@@ -333,7 +331,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=4').catch(() => {});
       });
     }
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -365,6 +363,7 @@
       modoPruebaQR: false,
       diccionarioUsuarios: {},
       registroPendienteLogin: null,
+      tokenActivo: '',
       usuario: null,
       diasSemana: [],
       hoyFisico: null,
@@ -376,6 +375,9 @@
       idxPrincipal: 0
     };
 
+    // ========================================================================
+    // ⚡ ARRANQUE INSTANTÁNEO (0.0 SEGUNDOS) CON CACHÉ PERSISTENTE EN EL CELULAR
+    // ========================================================================
     window.addEventListener('DOMContentLoaded', () => {
       const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
       let sesionGuardada = null;
@@ -383,30 +385,30 @@
         try { sesionGuardada = JSON.parse(sesionStr); } catch (e) {}
       }
 
-      if (sesionGuardada && sesionGuardada.dni) {
-        document.getElementById('txt-dni').value = sesionGuardada.dni;
-        document.getElementById('btn-ingresar').disabled = true;
-        document.getElementById('btn-ingresar').textContent = 'Restaurando sesión...';
+      // 1. Si ya había iniciado sesión antes y tenemos su snapshot local, abre la pantalla principal en 0ms sin pasar por el login
+      if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token && sesionGuardada.snapshot) {
+        STATE.tokenActivo = sesionGuardada.token;
+        STATE.hoyStr = sesionGuardada.snapshot.hoyStr || '';
+        STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
+        STATE.horaPeru = sesionGuardada.snapshot.horaPeru || 9;
+        STATE.pasoCorteAlmuerzo = !!sesionGuardada.snapshot.pasoCorteAlmuerzo;
+        STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
+        STATE.usuario = sesionGuardada.snapshot.usuario;
+        STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
+        STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
+        renderizarVistaPrincipal();
       }
 
+      // 2. Sincroniza en segundo plano con el servidor sin bloquear al usuario
       cargarCacheInicial(() => {
-        if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token && STATE.diccionarioUsuarios[sesionGuardada.dni]) {
-          // Verifica que su contraseña no haya sido reseteada por RRHH y entra directo sin pedir login
-          ejecutarConReintento('validarSesionGuardada', [sesionGuardada.dni, sesionGuardada.token], valRes => {
-            document.getElementById('btn-ingresar').disabled = false;
-            document.getElementById('btn-ingresar').textContent = 'Continuar';
-            if (valRes && valRes.ok) {
-              asignarUsuarioYEntrar(STATE.diccionarioUsuarios[sesionGuardada.dni], sesionGuardada.token);
-            } else {
-              localStorage.removeItem('SBS_COMEDOR_AUTH');
-            }
-          }, () => {
-            document.getElementById('btn-ingresar').disabled = false;
-            document.getElementById('btn-ingresar').textContent = 'Continuar';
-          });
-        } else {
-          document.getElementById('btn-ingresar').disabled = false;
-          document.getElementById('btn-ingresar').textContent = 'Continuar';
+        if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
+          const regFresco = STATE.diccionarioUsuarios[sesionGuardada.dni];
+          if (regFresco && regFresco.usuario.tieneClave) {
+            asignarUsuarioYEntrar(regFresco, sesionGuardada.token);
+          } else {
+            // Solo si RRHH reseteó su clave o fue eliminado, cierra la sesión
+            cerrarSesion();
+          }
         }
       });
 
@@ -417,6 +419,26 @@
         if (e.key === 'Enter') confirmarClaveLogin();
       });
     });
+
+    function guardarSnapshotLocal() {
+      if (!STATE.usuario || !STATE.tokenActivo) return;
+      try {
+        localStorage.setItem('SBS_COMEDOR_AUTH', JSON.stringify({
+          dni: STATE.usuario.dni,
+          token: STATE.tokenActivo,
+          snapshot: {
+            hoyStr: STATE.hoyStr,
+            hoyPeruCompleto: STATE.hoyPeruCompleto,
+            horaPeru: STATE.horaPeru,
+            pasoCorteAlmuerzo: STATE.pasoCorteAlmuerzo,
+            modoPruebaQR: STATE.modoPruebaQR,
+            usuario: STATE.usuario,
+            diasSemana: STATE.diasSemana,
+            hoyFisico: STATE.hoyFisico
+          }
+        }));
+      } catch (e) {}
+    }
 
     async function ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos = 3) {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
@@ -493,50 +515,46 @@
       setTimeout(() => { t.style.display = 'none'; }, 3500);
     }
 
+    // Siempre valida en vivo el estado de la contraseña para evitar que un equipo nuevo pida crear clave si ya fue creada en otro celular
     function verificarPasoDNI() {
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
         mostrarToast('⚠️ Ingresa un DNI válido de 8 dígitos.');
         return;
       }
-      if (!STATE.bootstrapCargado) {
-        document.getElementById('btn-ingresar').disabled = true;
-        document.getElementById('btn-ingresar').textContent = 'Conectando...';
-        cargarCacheInicial(() => {
-          document.getElementById('btn-ingresar').disabled = false;
-          document.getElementById('btn-ingresar').textContent = 'Continuar';
-          buscarDNIYMostrarPasoClave(dni);
-        });
-        return;
-      }
-      buscarDNIYMostrarPasoClave(dni);
-    }
 
-    function buscarDNIYMostrarPasoClave(dni) {
-      const registro = STATE.diccionarioUsuarios[dni];
-      if (!registro) {
-        document.getElementById('btn-ingresar').disabled = true;
-        document.getElementById('btn-ingresar').textContent = 'Validando DNI...';
-        ejecutarConReintento('loginEnVivo', [dni], res => {
-          document.getElementById('btn-ingresar').disabled = false;
-          document.getElementById('btn-ingresar').textContent = 'Continuar';
-          if (res && res.ok) {
-            STATE.modoPruebaQR = !!res.data.modoPruebaQR;
-            STATE.etiquetaCiclo = res.data.etiquetaCiclo || STATE.etiquetaCiclo;
-            STATE.diccionarioUsuarios = res.data.diccionarioUsuarios;
-            STATE.colaboradores = res.data.colaboradores;
-            abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
-          } else {
-            mostrarToast('❌ DNI no registrado en BD_COLABORADORES.');
-          }
-        }, () => {
-          document.getElementById('btn-ingresar').disabled = false;
-          document.getElementById('btn-ingresar').textContent = 'Continuar';
-          mostrarToast('❌ No se pudo conectar con el servidor.');
-        });
+      const regMemoria = STATE.diccionarioUsuarios[dni];
+      // Si ya está en memoria y ya consta que tiene clave creada, abre al instante el campo de contraseña
+      if (STATE.bootstrapCargado && regMemoria && regMemoria.usuario.tieneClave) {
+        abrirFormularioClave(regMemoria);
         return;
       }
-      abrirFormularioClave(registro);
+
+      // Si no consta que tenga clave (o acaba de crearla en otro equipo Android/iOS), consulta en vivo al servidor
+      document.getElementById('btn-ingresar').disabled = true;
+      document.getElementById('btn-ingresar').textContent = 'Verificando...';
+      ejecutarConReintento('loginEnVivo', [dni], res => {
+        document.getElementById('btn-ingresar').disabled = false;
+        document.getElementById('btn-ingresar').textContent = 'Continuar';
+        if (res && res.ok) {
+          STATE.bootstrapCargado = true;
+          STATE.hoyStr = res.data.hoyStr;
+          STATE.hoyPeruCompleto = res.data.hoyPeruCompleto || res.data.hoyStr;
+          STATE.horaPeru = res.data.horaPeru;
+          STATE.pasoCorteAlmuerzo = res.data.pasoCorteAlmuerzo;
+          STATE.modoPruebaQR = !!res.data.modoPruebaQR;
+          STATE.etiquetaCiclo = res.data.etiquetaCiclo || STATE.etiquetaCiclo;
+          STATE.diccionarioUsuarios = res.data.diccionarioUsuarios;
+          STATE.colaboradores = res.data.colaboradores;
+          abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
+        } else {
+          mostrarToast('❌ DNI no registrado en BD_COLABORADORES.');
+        }
+      }, () => {
+        document.getElementById('btn-ingresar').disabled = false;
+        document.getElementById('btn-ingresar').textContent = 'Continuar';
+        mostrarToast('❌ No se pudo conectar con el servidor.');
+      });
     }
 
     function abrirFormularioClave(registro) {
@@ -602,11 +620,9 @@
       STATE.diasSemana = registro.diasSemana;
       STATE.hoyFisico = registro.hoyFisico;
       if (tokenSesion) {
-        localStorage.setItem('SBS_COMEDOR_AUTH', JSON.stringify({
-          dni: STATE.usuario.dni,
-          token: tokenSesion
-        }));
+        STATE.tokenActivo = tokenSesion;
       }
+      guardarSnapshotLocal();
       renderizarVistaPrincipal();
 
       if (window.AUTO_CHECKIN_QR === '1') {
@@ -621,6 +637,7 @@
       cerrarEscanerQR();
       localStorage.removeItem('SBS_COMEDOR_AUTH');
       STATE.usuario = null;
+      STATE.tokenActivo = '';
       STATE.registroPendienteLogin = null;
       document.getElementById('txt-dni').value = '';
       document.getElementById('txt-clave').value = '';
@@ -839,6 +856,7 @@
       const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
       dia.desayuno = nVal;
       if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (nVal !== 'NO');
+      guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno Opc. ${nVal.replace('OP','')} reservado`);
@@ -846,6 +864,7 @@
         if (!res.ok) {
           dia.desayuno = vAnt;
           if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (vAnt !== 'NO');
+          guardarSnapshotLocal();
           renderizarTarjetas();
           actualizarEstadoBotonQR();
           mostrarToast('⚠️ ' + res.msg);
@@ -860,6 +879,7 @@
       const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
       dia.almuerzo = nVal;
       if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (nVal !== 'NO');
+      guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       mostrarToast(nVal === 'NO' ? '✅ Almuerzo cancelado' : `✅ Almuerzo ${nVal.charAt(0) + nVal.slice(1).toLowerCase()} confirmado`);
@@ -867,6 +887,7 @@
         if (!res.ok) {
           dia.almuerzo = vAnt;
           if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (vAnt !== 'NO');
+          guardarSnapshotLocal();
           renderizarTarjetas();
           actualizarEstadoBotonQR();
           mostrarToast('⚠️ ' + res.msg);
@@ -985,6 +1006,7 @@
           if (!res.modoPrueba) {
             if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
             if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+            guardarSnapshotLocal();
           }
           mostrarTicketVerdeConfirmado(res.servicioRegistrado);
           mostrarToast('✅ ' + res.msg);
@@ -1005,6 +1027,7 @@
           if (!res.modoPrueba) {
             if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
             if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+            guardarSnapshotLocal();
           }
           mostrarTicketVerdeConfirmado(res.servicioRegistrado);
           mostrarToast('✅ ' + res.msg);

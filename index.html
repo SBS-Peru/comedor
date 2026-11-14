@@ -2,21 +2,22 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- Sin viewport-fit=cover para evitar que iOS 18 aplique desenfoque sobre el saludo superior -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <!-- Configuración PWA sin fog difuminado en iOS -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#13392a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1046/1046857.png">
-  <!-- Librería Cámara QR en Vivo + Librería Oficial Excel Nativo (.xlsx con estilos) -->
+  <!-- Ícono para iPhone / Android combinando el logo oficial SBS + Comedor -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23ffffff'/><text x='256' y='295' font-family='Arial Black, sans-serif' font-weight='900' font-size='180' fill='%232b5c56' text-anchor='middle' letter-spacing='-6'>SBS</text><path d='M 110 350 Q 256 400 402 350' fill='none' stroke='%2322996e' stroke-width='24' stroke-linecap='round'/><circle cx='395' cy='115' r='54' fill='%2310b981'/><text x='395' y='135' font-size='56' text-anchor='middle'>🍽️</text></svg>">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
       --sbs-primary: #13392a;
+      --sbs-teal: #2b5c56;
       --sbs-accent: #10b981;
       --sbs-orange: #ea580c;
       --bg: #f1f5f9;
@@ -43,9 +44,12 @@
     .app-shell.wide-rrhh { max-width: 900px; }
 
     #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 32px 26px; text-align: center; background: var(--card); }
-    .logo-badge {
-      width: 58px; height: 58px; border-radius: 15px; background: var(--sbs-primary); color: white;
-      display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px;
+    .sbs-logo-box {
+      width: 148px; height: 84px; margin: 0 auto 12px;
+      background: #ffffff; border: 2px solid var(--border); border-radius: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(19, 57, 42, 0.08);
+      position: relative;
     }
     .dni-input {
       width: 100%; padding: 14px; font-size: 22px; text-align: center; border: 2px solid var(--border);
@@ -60,17 +64,22 @@
     .btn:disabled { opacity: 0.55; cursor: not-allowed; background: #94a3b8 !important; color: #ffffff !important; }
 
     #view-main { display: none; flex-direction: column; height: 100%; background: var(--bg); }
+    
+    /* Encabezado 100% nítido en iOS: separado de la zona de desenfoque del reloj del iPhone */
     .top-bar {
-      background: var(--sbs-primary); color: white;
-      padding: calc(14px + env(safe-area-inset-top, 0px)) 18px 13px;
+      background: var(--sbs-primary);
+      color: white;
+      padding: 16px 18px 13px;
       flex-shrink: 0;
+      position: relative;
+      z-index: 10;
     }
     .top-bar-row { display: flex; justify-content: space-between; align-items: center; }
-    .top-bar h2 { margin: 0; font-size: 18px; }
-    .top-bar p { margin: 3px 0 0; font-size: 12px; opacity: 0.85; }
-    .btn-salir { background: rgba(255,255,255,0.16); color: white; border: none; padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; }
+    .top-bar h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.2px; }
+    .top-bar p { margin: 3px 0 0; font-size: 12px; color: rgba(255,255,255,0.88); }
+    .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; }
     .header-kpi-strip {
-      margin-top: 11px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      margin-top: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
       border-radius: 10px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px;
     }
     .header-kpi-total { background: #10b981; color: #ffffff; font-weight: 800; padding: 3px 9px; border-radius: 7px; font-size: 13px; }
@@ -113,8 +122,9 @@
 
     @media (max-width: 480px) {
       .app-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
-      .top-bar { padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px; }
-      .top-bar h2 { font-size: 16.5px; }
+      /* Espacio superior limpio para que iOS jamás superponga el reloj ni difumine el saludo */
+      .top-bar { padding: 14px 14px 10px; }
+      .top-bar h2 { font-size: 17px; }
       .header-kpi-strip { margin-top: 8px; padding: 6px 10px; font-size: 12px; }
       .tab { padding: 9px 4px; font-size: 13px; }
       .scroll-area { padding: 10px 12px; }
@@ -147,8 +157,16 @@
 
   <div class="app-shell" id="app-shell">
     <div id="view-login">
-      <div class="logo-badge">🍽️</div>
-      <h2 style="margin:0;">Comedor SBS</h2>
+      <!-- LOGO OFICIAL COMBINADO SBS + COMEDOR -->
+      <div class="sbs-logo-box">
+        <svg viewBox="0 0 240 125" width="132" height="72" xmlns="http://www.w3.org/2000/svg">
+          <text x="112" y="76" font-family="Arial Black, Impact, system-ui, sans-serif" font-weight="900" font-size="76" fill="#2b5c56" text-anchor="middle" letter-spacing="-3">SBS</text>
+          <path d="M 42 96 Q 112 118 182 96" fill="none" stroke="#22996e" stroke-width="8.5" stroke-linecap="round"/>
+          <circle cx="204" cy="28" r="21" fill="#10b981"/>
+          <text x="204" y="36" font-size="22" text-anchor="middle">🍽️</text>
+        </svg>
+      </div>
+      <h2 style="margin:0; color:var(--sbs-primary);">Comedor SBS</h2>
       <p style="color:var(--muted); font-size:14.5px; margin-top:6px;">Ingresa tu DNI para gestionar tu alimentación</p>
       <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
       <button class="btn btn-primary" id="btn-ingresar" onclick="iniciarSesion()">Ingresar</button>
@@ -161,7 +179,19 @@
     <div id="view-main">
       <div class="top-bar">
         <div class="top-bar-row">
-          <div><h2 id="lbl-nombre">Hola</h2><p id="lbl-estado-rol">Tarifas aplicadas según planilla</p></div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <!-- Mini badge SBS en el Header -->
+            <div style="background:white; border-radius:9px; padding:3px 7px; display:flex; align-items:center; justify-content:center;">
+              <svg viewBox="0 0 130 70" width="38" height="22" xmlns="http://www.w3.org/2000/svg">
+                <text x="65" y="46" font-family="Arial Black, sans-serif" font-weight="900" font-size="48" fill="#2b5c56" text-anchor="middle" letter-spacing="-2">SBS</text>
+                <path d="M 18 58 Q 65 72 112 58" fill="none" stroke="#22996e" stroke-width="6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h2 id="lbl-nombre">Hola</h2>
+              <p id="lbl-estado-rol">Tarifas aplicadas según planilla</p>
+            </div>
+          </div>
           <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
         </div>
         <div class="header-kpi-strip">
@@ -190,9 +220,10 @@
             📷 Escanear QR en Comedor
           </button>
 
+          <!-- Enlace actualizado a "¿Problemas con la cámara?" -->
           <div id="link-contingencia-camara" style="text-align:center; margin-top:7px;">
             <a href="javascript:void(0)" onclick="mostrarBoxPinContingencia()" style="font-size:11.5px; color:var(--muted); text-decoration:underline; font-weight:600;">
-              ¿Cámara malograda? Ingresar código del comedor
+              ¿Problemas con la cámara? Ingresar código
             </a>
           </div>
           
@@ -206,15 +237,16 @@
             </button>
           </div>
 
+          <!-- Módulo de Código de Comedor (para cuando hay problemas con la cámara) -->
           <div id="box-pin-contingencia" style="display:none; background:white; border:2px solid #f59e0b; border-radius:14px; padding:12px; margin-top:10px; text-align:center;">
             <p style="font-size:12.5px; font-weight:700; margin:0 0 5px; color:#b45309;">
-              🔓 Registro por Cámara Malograda
+              🔓 Registro con Código del Comedor
             </p>
             <p style="font-size:11px; color:var(--muted); margin:0 0 8px;">
-              Ingresa el código de 3 dígitos que figura al pie del cartel QR en el comedor:
+              Ingresa el código de 3 dígitos que figura en el cartel del comedor:
             </p>
             <div style="display:flex; gap:8px;">
-              <input type="tel" id="txt-pin-comedor" maxlength="4" placeholder="Código (Ej. 727)" style="flex:1; padding:9px; font-size:15px; text-align:center; font-weight:700; border:1.5px solid var(--border); border-radius:10px; letter-spacing:3px;">
+              <input type="tel" id="txt-pin-comedor" maxlength="4" placeholder="Código (727)" style="flex:1; padding:9px; font-size:15px; text-align:center; font-weight:700; border:1.5px solid var(--border); border-radius:10px; letter-spacing:3px;">
               <button class="btn btn-primary" style="flex:1; padding:9px; font-size:13px;" onclick="confirmarPinCamaraMalograda()">
                 Validar
               </button>
@@ -230,7 +262,10 @@
         <div id="pane-rrhh" style="display:none;">
           <div class="rrhh-box">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-              <h4 style="margin:0;">📊 Reporte Mensual Planilla (25 al 24)</h4>
+              <div>
+                <h4 style="margin:0;">📊 Reporte Mensual Planilla (25 al 24)</h4>
+                <span style="font-size:11.5px; color:var(--muted);">🔑 Código vigente para problemas con la cámara: <b style="color:var(--sbs-primary);">727</b></span>
+              </div>
               <button class="btn btn-outline" style="width:auto; padding:7px 12px; font-size:12.5px;" onclick="imprimirAficheQR()">
                 🖨️ Imprimir Hoja QR Comedor
               </button>
@@ -260,7 +295,7 @@
     // ========================================================================
     // 🔗 PEGA AQUÍ TU ENLACE /exec DE GOOGLE APPS SCRIPT
     // ========================================================================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD9X84fQ5IFEI6mjHB1ZptE66rIEXYccIhf_Hax-Itk8fUBqia4wpryaiN_mSFSKI/exec";
+    const APPS_SCRIPT_URL = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT_EXEC";
 
     const urlParams = new URLSearchParams(window.location.search);
     window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
@@ -337,7 +372,6 @@
       return (s.length === 7) ? '0' + s : s;
     }
 
-    // Convierte '2026-11-16' a '16/11'
     function formatearDiaMesCorto(isoStr) {
       if (!isoStr) return '';
       const p = String(isoStr).split('-');
@@ -492,7 +526,6 @@
       const hf = STATE.hoyFisico;
       if (!hf) return;
 
-      // Si el Modo Prueba está activo en Google Sheets, siempre permite volver a escanear
       if (STATE.modoPruebaQR) {
         btn.disabled = false;
         btn.textContent = '🧪 Escanear QR en Comedor (Modo Prueba Infinito)';
@@ -727,7 +760,7 @@
         } catch (errFinal) {
           cerrarEscanerQR();
           mostrarBoxPinContingencia();
-          mostrarToast('⚠️ Cámara bloqueada. Usa el código del comedor.');
+          mostrarToast('⚠️ ¿Problemas con la cámara? Ingresa el código del comedor.');
         }
       }
     }
@@ -817,8 +850,8 @@
             <img src="${qrApi}" width="330" height="330" alt="QR Comedor SBS"/>
           </div>
           <div style="margin:15px auto; max-width:420px; background:#fffbeb; border:2px dashed #f59e0b; padding:14px; border-radius:14px;">
-            <div style="font-size:14px; color:#92400e; font-weight:bold;">¿CÁMARA DEL CELULAR MALOGRADA?</div>
-            <div style="font-size:22px; color:#b45309; font-weight:900; margin-top:4px; letter-spacing:2px;">CÓDIGO MANUAL: 727</div>
+            <div style="font-size:14px; color:#92400e; font-weight:bold;">¿PROBLEMAS CON LA CÁMARA?</div>
+            <div style="font-size:22px; color:#b45309; font-weight:900; margin-top:4px; letter-spacing:2px;">CÓDIGO COMEDOR: 727</div>
           </div>
           <script>setTimeout(() => window.print(), 700);<\/script>
         </body></html>
@@ -854,7 +887,6 @@
       });
     }
 
-    // GENERADOR DE EXCEL (.XLSX BINARIO REAL) CON 2 HOJAS Y ESTILOS (CERO CARTEL DE ADVERTENCIA EN OFFICE)
     function descargarExcelDosHojas() {
       if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
         mostrarToast('⚠️ Consulta un rango primero.');
@@ -891,7 +923,6 @@
       const centerStyle = { alignment: { horizontal: "center" }, border: cellBorder };
       const textStyle = { border: cellBorder };
 
-      // HOJA 1: CONSOLIDADO POR COLABORADOR
       const aoa1 = [
         [{ v: "CONSOLIDADO DE DESCUENTO POR PLANILLA - COMEDOR SBS", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
         [],
@@ -938,7 +969,6 @@
       ws1['!cols'] = [{ wch: 13 }, { wch: 30 }, { wch: 14 }, { wch: 17 }, { wch: 14 }, { wch: 17 }, { wch: 17 }];
       XLSX.utils.book_append_sheet(wb, ws1, "1_Consolidado_RRHH");
 
-      // HOJA 2: DETALLE POR FECHAS
       const aoa2 = [
         [{ v: "DETALLE DIARIO DE RESERVAS Y ASISTENCIA EN COMEDOR", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
         [],

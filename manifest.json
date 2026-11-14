@@ -3,13 +3,13 @@
   "short_name": "Comedor SBS",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#13392a",
+  "background_color": "#dcebe6",
   "theme_color": "#13392a",
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%23ffffff'/><rect x='16' y='16' width='480' height='480' rx='100' fill='none' stroke='%2313392a' stroke-width='12'/><text x='256' y='290' font-family='Arial Black, Impact, sans-serif' font-weight='900' font-size='175' fill='%232b5c56' text-anchor='middle' letter-spacing='-6'>SBS</text><path d='M 110 345 Q 256 395 402 345' fill='none' stroke='%2322996e' stroke-width='22' stroke-linecap='round'/><circle cx='395' cy='115' r='52' fill='%2310b981'/><text x='395' y='135' font-size='55' text-anchor='middle'>🍽️</text></svg>",
+      "src": "./logo.jpg",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ]

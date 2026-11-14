@@ -9,7 +9,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <!-- Usa directamente tu imagen subida como logo.jpg en el ícono de iPhone/Android -->
   <link rel="apple-touch-icon" href="./logo.jpg">
   <link rel="icon" type="image/jpeg" href="./logo.jpg">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -42,14 +41,24 @@
     }
     .app-shell.wide-rrhh { max-width: 900px; }
 
-    /* LOGIN CON TU IMAGEN TAL CUAL Y SIN TEXTO "COMEDOR SBS" */
+    /* PANTALLA LOGIN: SOLO EL LOGO CENTRADO SIN TEXTO "COMEDOR SBS" */
     #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: var(--card); }
-    .login-logo-img {
-      width: 155px;
-      height: 155px;
-      object-fit: contain;
+    .login-logo-wrap {
+      width: 160px;
+      height: 160px;
       border-radius: 22px;
-      margin-bottom: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      background: #dcebe6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(19, 57, 42, 0.1);
+    }
+    .login-logo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       display: block;
     }
     .dni-input {
@@ -64,7 +73,7 @@
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; background: #94a3b8 !important; color: #ffffff !important; }
 
-    /* HEADER DE LA PANTALLA PRINCIPAL (SIN LOGO) */
+    /* HEADER DE LA PANTALLA PRINCIPAL SIN LOGO */
     #view-main { display: none; flex-direction: column; height: 100%; background: var(--bg); }
     .top-bar {
       background: var(--sbs-primary);
@@ -155,9 +164,11 @@
 <body>
 
   <div class="app-shell" id="app-shell">
-    <!-- 1. PANTALLA LOGIN: CON TU IMAGEN TAL CUAL Y SIN TEXTO "COMEDOR SBS" -->
+    <!-- 1. PANTALLA LOGIN: CON TU LOGO SIN MODIFICACIONES Y SIN TEXTO "COMEDOR SBS" -->
     <div id="view-login">
-      <img src="./logo.jpg" alt="SBS" class="login-logo-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 500 500%22><rect width=%22500%22 height=%22500%22 fill=%22%23dcebe6%22/><g fill=%22%23000000%22><path d=%22M165 65 C158 65 155 75 162 95 L222 162 L158 228 C150 236 155 246 164 254 C172 262 182 265 190 256 L252 192 L315 256 C323 265 333 262 341 254 C350 246 355 236 346 228 L282 162 L342 98 C348 92 338 82 325 95 L298 122 L292 116 L322 86 C328 80 318 70 308 80 L280 108 L274 102 L302 74 C308 68 298 58 286 70 L252 106 C244 114 244 126 250 134 L240 144 L182 72 C175 65 170 65 165 65 Z%22/></g><text x=%22250%22 y=%22395%22 font-family=%22Arial Black, sans-serif%22 font-weight=%22900%22 font-size=%22148%22 fill=%22%232b5c56%22 text-anchor=%22middle%22 letter-spacing=%22-5%22>SBS</text><path d=%22M 120 432 Q 250 472 380 432%22 fill=%22none%22 stroke=%22%2322996e%22 stroke-width=%2216%22 stroke-linecap=%22round%22/></svg>'">
+      <div class="login-logo-wrap">
+        <img id="img-logo-login" src="./logo.jpg" alt="SBS" onerror="cargarLogoAlternativo(this)">
+      </div>
       <p style="color:var(--muted); font-size:14.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
       <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
       <button class="btn btn-primary" id="btn-ingresar" onclick="iniciarSesion()">Ingresar</button>
@@ -274,9 +285,40 @@
 
   <script>
     // ========================================================================
-    // 🔗 PEGA AQUÍ TU ENLACE /exec DE GOOGLE APPS SCRIPT
+    // 🔗 IMPORTANTE: PEGA AQUÍ TU ENLACE /exec DE GOOGLE APPS SCRIPT
     // ========================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD9X84fQ5IFEI6mjHB1ZptE66rIEXYccIhf_Hax-Itk8fUBqia4wpryaiN_mSFSKI/exec";
+
+    // Detector multi-nombre para el logo que subiste a GitHub
+    const NOMBRES_POSIBLES_LOGO = [
+      "./Diseño sin título.jpg",
+      "./logo.png",
+      "./Logo.jpg",
+      "./LOGO.JPG"
+    ];
+    let intentoLogoIdx = 0;
+
+    function cargarLogoAlternativo(imgEl) {
+      if (intentoLogoIdx < NOMBRES_POSIBLES_LOGO.length) {
+        imgEl.src = NOMBRES_POSIBLES_LOGO[intentoLogoIdx++];
+      } else {
+        // Respaldo vectorial idéntico a tu imagen (cuchillo y tenedor cruzados + SBS sobre fondo verde agua)
+        imgEl.onerror = null;
+        imgEl.src = "data:image/svg+xml;utf8," + encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+            <rect width="500" height="500" fill="#dcebe6"/>
+            <g transform="translate(250,155) rotate(-42) translate(-16,-115)" fill="#000000">
+              <path d="M12 0 C4 12 2 55 4 115 L10 125 L8 225 C8 232 24 232 24 225 L22 125 L26 115 L26 0 Z"/>
+            </g>
+            <g transform="translate(250,155) rotate(42) translate(-18,-115)" fill="#000000">
+              <path d="M4 0 L4 65 C4 82 13 88 13 102 L11 225 C11 232 25 232 25 225 L23 102 C23 88 32 82 32 65 L32 0 L28 0 L28 52 L23 52 L23 0 L19 0 L19 52 L14 52 L14 0 L9 0 L9 52 L4 52 Z"/>
+            </g>
+            <text x="250" y="390" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="145" fill="#2d5c56" text-anchor="middle" letter-spacing="-5">SBS</text>
+            <path d="M 125 432 Q 250 462 375 432" fill="none" stroke="#1ca36e" stroke-width="12" stroke-linecap="round"/>
+          </svg>
+        `);
+      }
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
@@ -325,6 +367,12 @@
           else if (onError) onError(err);
         });
         runner[nombreFuncion].apply(runner, argsArray);
+        return;
+      }
+
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGA_AQUI')) {
+        mostrarToast('⚠️ Falta pegar tu enlace /exec en la línea APPS_SCRIPT_URL de index.html en GitHub.');
+        if (onError) onError(new Error('URL no configurada'));
         return;
       }
 
@@ -381,7 +429,6 @@
         STATE.cargandoBootstrap = false;
         document.getElementById('btn-ingresar').disabled = false;
         document.getElementById('btn-ingresar').textContent = 'Ingresar';
-        mostrarToast('⚠️ Verifica que APPS_SCRIPT_URL esté configurada.');
       });
     }
 
@@ -389,7 +436,7 @@
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 3200);
+      setTimeout(() => { t.style.display = 'none'; }, 3500);
     }
 
     function iniciarSesion() {
@@ -430,7 +477,7 @@
         }, () => {
           document.getElementById('btn-ingresar').disabled = false;
           document.getElementById('btn-ingresar').textContent = 'Ingresar';
-          mostrarToast('❌ Error de conexión con el servidor.');
+          mostrarToast('❌ No se pudo conectar con Apps Script. Revisa APPS_SCRIPT_URL.');
         });
         return;
       }
@@ -579,7 +626,7 @@
       else if (d.desayuno === 'OP2') detalleDes = '1 bebida + 3 huevos';
       else if (d.desayuno === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
 
-      // Muestra directamente el detalle de la opción sin la palabra "Solicitado:"
+      // Muestra directamente el detalle de la opción (sin decir "Solicitado:")
       const txtDes = desActivo ? detalleDes : 'No solicitado';
       const txtAlm = almActivo ? `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}` : 'Cancelado';
 

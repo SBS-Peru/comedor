@@ -45,8 +45,8 @@
 
     #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: var(--card); }
     .login-logo-wrap {
-      width: 160px;
-      height: 160px;
+      width: 155px;
+      height: 155px;
       border-radius: 22px;
       overflow: hidden;
       margin-bottom: 12px;
@@ -63,10 +63,16 @@
       display: block;
     }
     .dni-input {
-      width: 100%; padding: 14px; font-size: 22px; text-align: center; border: 2px solid var(--border);
-      border-radius: 12px; margin: 16px 0 14px; letter-spacing: 4px; font-weight: 700; outline: none;
+      width: 100%; padding: 14px; font-size: 21px; text-align: center; border: 2px solid var(--border);
+      border-radius: 12px; margin: 14px 0 12px; letter-spacing: 4px; font-weight: 700; outline: none;
     }
     .dni-input:focus { border-color: var(--sbs-primary); }
+
+    .pass-input {
+      width: 100%; padding: 14px; font-size: 18px; text-align: center; border: 2px solid var(--border);
+      border-radius: 12px; margin: 8px 0 12px; font-weight: 700; outline: none;
+    }
+    .pass-input:focus { border-color: var(--sbs-primary); }
 
     .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-primary { background: var(--sbs-primary); color: white; }
@@ -74,7 +80,6 @@
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; background: #94a3b8 !important; color: #ffffff !important; }
 
-    /* HEADER CON MAYOR AIRE Y ESPACIADO ENTRE SALUDO, TARIFAS Y CONTEO MENSUAL */
     #view-main { display: none; flex-direction: column; height: 100%; background: var(--bg); }
     .top-bar {
       background: var(--sbs-primary);
@@ -166,18 +171,34 @@
 <body>
 
   <div class="app-shell" id="app-shell">
-    <!-- 1. PANTALLA LOGIN -->
+    <!-- 1. PANTALLA LOGIN CON CONTRASEÑA OCULTA Y SESIÓN PERMANENTE -->
     <div id="view-login">
       <div class="login-logo-wrap">
         <img id="img-logo-login" src="./Logo.jpg" alt="SBS">
       </div>
-      <p style="color:var(--muted); font-size:14.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
-      <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
-      <button class="btn btn-primary" id="btn-ingresar" onclick="iniciarSesion()">Ingresar</button>
+
+      <!-- Paso 1: Ingreso de DNI -->
+      <div id="step-dni" style="width:100%;">
+        <p style="color:var(--muted); font-size:14.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
+        <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
+        <button class="btn btn-primary" id="btn-ingresar" onclick="verificarPasoDNI()">Continuar</button>
+      </div>
+
+      <!-- Paso 2: Contraseña Encriptada (Creación en 1er ingreso o Validación) -->
+      <div id="step-clave" style="display:none; width:100%;">
+        <div id="lbl-saludo-login" style="font-size:16px; font-weight:800; color:var(--sbs-primary); margin-bottom:4px;"></div>
+        <p id="lbl-instruccion-clave" style="color:var(--muted); font-size:13px; margin:0 0 6px; line-height:1.4;"></p>
+        <input type="password" id="txt-clave" class="pass-input" placeholder="••••••••" autocomplete="current-password">
+        <button class="btn btn-primary" id="btn-confirmar-clave" onclick="confirmarClaveLogin()">Ingresar</button>
+        <button class="btn btn-outline" style="margin-top:8px; padding:10px; font-size:13px; color:var(--muted);" onclick="volverAPasoDNI()">
+          ← Cambiar DNI
+        </button>
+      </div>
+
       <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:10px; padding:11px; font-size:13.5px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
         📲 Instalar App en pantalla de inicio
       </button>
-      <p style="font-size:12.5px; color:var(--muted); margin-top:18px; line-height:1.45;">
+      <p style="font-size:12.5px; color:var(--muted); margin-top:16px; line-height:1.45;">
         • <b>Desayuno:</b> Solicitar hasta las 3:00 PM del día anterior.<br>
         • <b>Almuerzo:</b> Cancelar hasta las 10:00 AM del mismo día.
       </p>
@@ -191,7 +212,7 @@
             <h2 id="lbl-nombre">Hola</h2>
             <p id="lbl-estado-rol">Tarifas aplicadas según planilla</p>
           </div>
-          <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
+          <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión para ingresar con otro DNI">Salir</button>
         </div>
         <div class="header-kpi-strip">
           <span id="hdr-resumen-cant">☕ 0 Des. | 🍲 0 Alm.</span>
@@ -219,7 +240,6 @@
             📷 Escanear QR en Comedor
           </button>
 
-          <!-- Módulo de código por problemas con la cámara: INACTIVO por defecto -->
           <div id="link-contingencia-camara" style="display:none; text-align:center; margin-top:7px;">
             <a href="javascript:void(0)" onclick="mostrarBoxPinContingencia()" style="font-size:11.5px; color:var(--muted); text-decoration:underline; font-weight:600;">
               ¿Problemas con la cámara? Ingresar código
@@ -258,6 +278,20 @@
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
         <div id="pane-rrhh" style="display:none;">
+          <!-- Módulo de Reseteo de Contraseña por DNI para RRHH -->
+          <div class="rrhh-box">
+            <h4>🔑 Resetear Contraseña de Colaborador</h4>
+            <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
+              Si un colaborador olvidó su contraseña, ingresa su DNI aquí para limpiarla. En su próximo acceso la App le pedirá crear una nueva.
+            </p>
+            <div class="form-row" style="margin-bottom:0;">
+              <input type="tel" id="rrhh-dni-reset" class="form-control" placeholder="DNI del colaborador (8 dígitos)" maxlength="8">
+              <button class="btn btn-primary" id="btn-reset-clave" style="flex:0.6; padding:10px;" onclick="ejecutarReseteoClaveRRHH()">
+                Resetear Clave
+              </button>
+            </div>
+          </div>
+
           <div class="rrhh-box">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
               <div>
@@ -294,7 +328,6 @@
     // ========================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD9X84fQ5IFEI6mjHB1ZptE66rIEXYccIhf_Hax-Itk8fUBqia4wpryaiN_mSFSKI/exec";
 
-    // 🔒 Interruptor de módulo con código manual (Inactivo por defecto; cambiar a true si se requiere activar)
     let HABILITAR_MODO_CODIGO = false;
 
     let deferredPromptPWA = null;
@@ -331,6 +364,7 @@
       pasoCorteAlmuerzo: false,
       modoPruebaQR: false,
       diccionarioUsuarios: {},
+      registroPendienteLogin: null,
       usuario: null,
       diasSemana: [],
       hoyFisico: null,
@@ -343,17 +377,44 @@
     };
 
     window.addEventListener('DOMContentLoaded', () => {
-      const dniGuardado = localStorage.getItem('SBS_COMEDOR_DNI');
-      if (dniGuardado) {
-        document.getElementById('txt-dni').value = dniGuardado;
+      const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
+      let sesionGuardada = null;
+      if (sesionStr) {
+        try { sesionGuardada = JSON.parse(sesionStr); } catch (e) {}
       }
+
+      if (sesionGuardada && sesionGuardada.dni) {
+        document.getElementById('txt-dni').value = sesionGuardada.dni;
+        document.getElementById('btn-ingresar').disabled = true;
+        document.getElementById('btn-ingresar').textContent = 'Restaurando sesión...';
+      }
+
       cargarCacheInicial(() => {
-        if (window.AUTO_CHECKIN_QR === '1' && dniGuardado && STATE.diccionarioUsuarios[dniGuardado]) {
-          validarDNIEnMemoria(dniGuardado);
+        if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token && STATE.diccionarioUsuarios[sesionGuardada.dni]) {
+          // Verifica que su contraseña no haya sido reseteada por RRHH y entra directo sin pedir login
+          ejecutarConReintento('validarSesionGuardada', [sesionGuardada.dni, sesionGuardada.token], valRes => {
+            document.getElementById('btn-ingresar').disabled = false;
+            document.getElementById('btn-ingresar').textContent = 'Continuar';
+            if (valRes && valRes.ok) {
+              asignarUsuarioYEntrar(STATE.diccionarioUsuarios[sesionGuardada.dni], sesionGuardada.token);
+            } else {
+              localStorage.removeItem('SBS_COMEDOR_AUTH');
+            }
+          }, () => {
+            document.getElementById('btn-ingresar').disabled = false;
+            document.getElementById('btn-ingresar').textContent = 'Continuar';
+          });
+        } else {
+          document.getElementById('btn-ingresar').disabled = false;
+          document.getElementById('btn-ingresar').textContent = 'Continuar';
         }
       });
+
       document.getElementById('txt-dni').addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') iniciarSesion();
+        if (e.key === 'Enter') verificarPasoDNI();
+      });
+      document.getElementById('txt-clave').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') confirmarClaveLogin();
       });
     });
 
@@ -421,7 +482,7 @@
       }, () => {
         STATE.cargandoBootstrap = false;
         document.getElementById('btn-ingresar').disabled = false;
-        document.getElementById('btn-ingresar').textContent = 'Ingresar';
+        document.getElementById('btn-ingresar').textContent = 'Continuar';
       });
     }
 
@@ -432,7 +493,7 @@
       setTimeout(() => { t.style.display = 'none'; }, 3500);
     }
 
-    function iniciarSesion() {
+    function verificarPasoDNI() {
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
         mostrarToast('⚠️ Ingresa un DNI válido de 8 dígitos.');
@@ -443,46 +504,109 @@
         document.getElementById('btn-ingresar').textContent = 'Conectando...';
         cargarCacheInicial(() => {
           document.getElementById('btn-ingresar').disabled = false;
-          document.getElementById('btn-ingresar').textContent = 'Ingresar';
-          validarDNIEnMemoria(dni);
+          document.getElementById('btn-ingresar').textContent = 'Continuar';
+          buscarDNIYMostrarPasoClave(dni);
         });
         return;
       }
-      validarDNIEnMemoria(dni);
+      buscarDNIYMostrarPasoClave(dni);
     }
 
-    function validarDNIEnMemoria(dni) {
+    function buscarDNIYMostrarPasoClave(dni) {
       const registro = STATE.diccionarioUsuarios[dni];
       if (!registro) {
         document.getElementById('btn-ingresar').disabled = true;
         document.getElementById('btn-ingresar').textContent = 'Validando DNI...';
         ejecutarConReintento('loginEnVivo', [dni], res => {
           document.getElementById('btn-ingresar').disabled = false;
-          document.getElementById('btn-ingresar').textContent = 'Ingresar';
+          document.getElementById('btn-ingresar').textContent = 'Continuar';
           if (res && res.ok) {
             STATE.modoPruebaQR = !!res.data.modoPruebaQR;
             STATE.etiquetaCiclo = res.data.etiquetaCiclo || STATE.etiquetaCiclo;
             STATE.diccionarioUsuarios = res.data.diccionarioUsuarios;
             STATE.colaboradores = res.data.colaboradores;
-            asignarUsuarioYEntrar(STATE.diccionarioUsuarios[dni]);
+            abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
           } else {
             mostrarToast('❌ DNI no registrado en BD_COLABORADORES.');
           }
         }, () => {
           document.getElementById('btn-ingresar').disabled = false;
-          document.getElementById('btn-ingresar').textContent = 'Ingresar';
+          document.getElementById('btn-ingresar').textContent = 'Continuar';
           mostrarToast('❌ No se pudo conectar con el servidor.');
         });
         return;
       }
-      asignarUsuarioYEntrar(registro);
+      abrirFormularioClave(registro);
     }
 
-    function asignarUsuarioYEntrar(registro) {
+    function abrirFormularioClave(registro) {
+      STATE.registroPendienteLogin = registro;
+      const primerNombre = registro.usuario.nombre.split(' ')[0];
+      document.getElementById('step-dni').style.display = 'none';
+      document.getElementById('step-clave').style.display = 'block';
+      document.getElementById('lbl-saludo-login').textContent = `Hola, ${primerNombre}`;
+
+      if (!registro.usuario.tieneClave) {
+        document.getElementById('lbl-instruccion-clave').textContent = 'Primer ingreso: Crea una contraseña para dejar tu sesión abierta en este equipo.';
+        document.getElementById('btn-confirmar-clave').textContent = 'Guardar Contraseña e Ingresar';
+      } else {
+        document.getElementById('lbl-instruccion-clave').textContent = 'Ingresa tu contraseña para continuar:';
+        document.getElementById('btn-confirmar-clave').textContent = 'Ingresar';
+      }
+      document.getElementById('txt-clave').value = '';
+      document.getElementById('txt-clave').focus();
+    }
+
+    function volverAPasoDNI() {
+      STATE.registroPendienteLogin = null;
+      document.getElementById('step-clave').style.display = 'none';
+      document.getElementById('step-dni').style.display = 'block';
+      document.getElementById('txt-clave').value = '';
+    }
+
+    function confirmarClaveLogin() {
+      if (!STATE.registroPendienteLogin) return;
+      const clave = document.getElementById('txt-clave').value;
+      if (!clave || clave.trim().length === 0) {
+        mostrarToast('⚠️ Escribe tu contraseña.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-confirmar-clave');
+      const txtOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Verificando...';
+
+      const dni = STATE.registroPendienteLogin.usuario.dni;
+      const esCreacion = !STATE.registroPendienteLogin.usuario.tieneClave;
+
+      ejecutarConReintento('autenticarOConfigurarClave', [dni, clave, esCreacion], res => {
+        btn.disabled = false;
+        btn.textContent = txtOriginal;
+        if (res && res.ok) {
+          STATE.registroPendienteLogin.usuario.tieneClave = true;
+          document.getElementById('txt-clave').value = '';
+          asignarUsuarioYEntrar(STATE.registroPendienteLogin, res.tokenSesion);
+        } else {
+          mostrarToast('❌ ' + (res ? res.msg : 'Error al validar contraseña.'));
+        }
+      }, () => {
+        btn.disabled = false;
+        btn.textContent = txtOriginal;
+        mostrarToast('❌ Error de conexión con el servidor.');
+      });
+    }
+
+    function asignarUsuarioYEntrar(registro, tokenSesion) {
       STATE.usuario = registro.usuario;
       STATE.diasSemana = registro.diasSemana;
       STATE.hoyFisico = registro.hoyFisico;
-      localStorage.setItem('SBS_COMEDOR_DNI', STATE.usuario.dni);
+      if (tokenSesion) {
+        localStorage.setItem('SBS_COMEDOR_AUTH', JSON.stringify({
+          dni: STATE.usuario.dni,
+          token: tokenSesion
+        }));
+      }
       renderizarVistaPrincipal();
 
       if (window.AUTO_CHECKIN_QR === '1') {
@@ -495,7 +619,13 @@
 
     function cerrarSesion() {
       cerrarEscanerQR();
+      localStorage.removeItem('SBS_COMEDOR_AUTH');
       STATE.usuario = null;
+      STATE.registroPendienteLogin = null;
+      document.getElementById('txt-dni').value = '';
+      document.getElementById('txt-clave').value = '';
+      document.getElementById('step-clave').style.display = 'none';
+      document.getElementById('step-dni').style.display = 'block';
       document.getElementById('ticket-confirmado').style.display = 'none';
       document.getElementById('box-pin-contingencia').style.display = 'none';
       document.getElementById('app-shell').classList.remove('wide-rrhh');
@@ -503,7 +633,35 @@
       document.getElementById('view-login').style.display = 'flex';
     }
 
-    // Vista idéntica a producción: sin etiquetas de DEMO ni MODO PRUEBA en la interfaz
+    function ejecutarReseteoClaveRRHH() {
+      const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
+      if (dniTarget.length < 7) {
+        mostrarToast('⚠️ Ingresa el DNI de 8 dígitos del colaborador a resetear.');
+        return;
+      }
+      const btn = document.getElementById('btn-reset-clave');
+      btn.disabled = true;
+      btn.textContent = 'Reseteando...';
+
+      ejecutarConReintento('resetearClaveColaboradorRRHH', [STATE.usuario.dni, dniTarget], res => {
+        btn.disabled = false;
+        btn.textContent = 'Resetear Clave';
+        if (res && res.ok) {
+          if (STATE.diccionarioUsuarios[res.dniReseteado]) {
+            STATE.diccionarioUsuarios[res.dniReseteado].usuario.tieneClave = false;
+          }
+          document.getElementById('rrhh-dni-reset').value = '';
+          mostrarToast('✅ ' + res.msg);
+        } else {
+          mostrarToast('⚠️ ' + (res ? res.msg : 'No se pudo resetear la clave.'));
+        }
+      }, () => {
+        btn.disabled = false;
+        btn.textContent = 'Resetear Clave';
+        mostrarToast('❌ Error de conexión.');
+      });
+    }
+
     function renderizarVistaPrincipal() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-main').style.display = 'flex';
@@ -530,7 +688,6 @@
       cambiarTab('PRINCIPAL');
     }
 
-    // Conteo mensual según el ciclo de corte (del 25 al 24): suma el histórico del ciclo + la semana activa
     function actualizarResumenHeader() {
       let cDes = Number(STATE.usuario.baseCicloDes || 0);
       let cAlm = Number(STATE.usuario.baseCicloAlm || 0);
@@ -551,7 +708,6 @@
       const hf = STATE.hoyFisico;
       if (!hf) return;
 
-      // En Modo Prueba, el botón luce exactamente igual que en producción pero permanece habilitado
       if (STATE.modoPruebaQR) {
         btn.disabled = false;
         btn.textContent = (STATE.horaPeru < 11.5)
@@ -686,7 +842,7 @@
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno Opc. ${nVal.replace('OP','')} reservado`);
-      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni, esAdminOverride: false }], res => {
+      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni }], res => {
         if (!res.ok) {
           dia.desayuno = vAnt;
           if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (vAnt !== 'NO');
@@ -707,7 +863,7 @@
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       mostrarToast(nVal === 'NO' ? '✅ Almuerzo cancelado' : `✅ Almuerzo ${nVal.charAt(0) + nVal.slice(1).toLowerCase()} confirmado`);
-      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni, esAdminOverride: false }], res => {
+      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni }], res => {
         if (!res.ok) {
           dia.almuerzo = vAnt;
           if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (vAnt !== 'NO');

@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json?v=2">
   <meta name="theme-color" content="#13392a">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./logo.jpg">
-  <link rel="icon" type="image/jpeg" href="./logo.jpg">
+  <!-- Apunta exactamente a ./Logo.jpg (con L mayúscula como está en tu GitHub) -->
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=2">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=2">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=2">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -164,14 +167,18 @@
 <body>
 
   <div class="app-shell" id="app-shell">
-    <!-- 1. PANTALLA LOGIN: CON TU LOGO SIN MODIFICACIONES Y SIN TEXTO "COMEDOR SBS" -->
+    <!-- 1. PANTALLA LOGIN: CON ./Logo.jpg Y SIN TEXTO "COMEDOR SBS" -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./logo.jpg" alt="SBS" onerror="cargarLogoAlternativo(this)">
+        <img id="img-logo-login" src="./Logo.jpg" alt="SBS">
       </div>
       <p style="color:var(--muted); font-size:14.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
       <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
       <button class="btn btn-primary" id="btn-ingresar" onclick="iniciarSesion()">Ingresar</button>
+      <!-- Botón directo para instalar en Android cuando el navegador lo soporte -->
+      <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:10px; padding:11px; font-size:13.5px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
+        📲 Instalar App en pantalla de inicio
+      </button>
       <p style="font-size:12.5px; color:var(--muted); margin-top:18px; line-height:1.45;">
         • <b>Desayuno:</b> Solicitar hasta las 3:00 PM del día anterior.<br>
         • <b>Almuerzo:</b> Cancelar hasta las 10:00 AM del mismo día.
@@ -285,39 +292,30 @@
 
   <script>
     // ========================================================================
-    // 🔗 IMPORTANTE: PEGA AQUÍ TU ENLACE /exec DE GOOGLE APPS SCRIPT
+    // 🔗 URL PERMANENTE DE TU APPS SCRIPT YA INTEGRADA
     // ========================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD9X84fQ5IFEI6mjHB1ZptE66rIEXYccIhf_Hax-Itk8fUBqia4wpryaiN_mSFSKI/exec";
 
-    // Detector multi-nombre para el logo que subiste a GitHub
-    const NOMBRES_POSIBLES_LOGO = [
-      "./Diseño sin título.jpg",
-      "./logo.png",
-      "./Logo.jpg",
-      "./LOGO.JPG"
-    ];
-    let intentoLogoIdx = 0;
+    // Registro de Service Worker e instalador nativo para Android
+    let deferredPromptPWA = null;
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPromptPWA = e;
+      const btnInst = document.getElementById('btn-instalar-pwa');
+      if (btnInst) btnInst.style.display = 'inline-flex';
+    });
 
-    function cargarLogoAlternativo(imgEl) {
-      if (intentoLogoIdx < NOMBRES_POSIBLES_LOGO.length) {
-        imgEl.src = NOMBRES_POSIBLES_LOGO[intentoLogoIdx++];
-      } else {
-        // Respaldo vectorial idéntico a tu imagen (cuchillo y tenedor cruzados + SBS sobre fondo verde agua)
-        imgEl.onerror = null;
-        imgEl.src = "data:image/svg+xml;utf8," + encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
-            <rect width="500" height="500" fill="#dcebe6"/>
-            <g transform="translate(250,155) rotate(-42) translate(-16,-115)" fill="#000000">
-              <path d="M12 0 C4 12 2 55 4 115 L10 125 L8 225 C8 232 24 232 24 225 L22 125 L26 115 L26 0 Z"/>
-            </g>
-            <g transform="translate(250,155) rotate(42) translate(-18,-115)" fill="#000000">
-              <path d="M4 0 L4 65 C4 82 13 88 13 102 L11 225 C11 232 25 232 25 225 L23 102 C23 88 32 82 32 65 L32 0 L28 0 L28 52 L23 52 L23 0 L19 0 L19 52 L14 52 L14 0 L9 0 L9 52 L4 52 Z"/>
-            </g>
-            <text x="250" y="390" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="145" fill="#2d5c56" text-anchor="middle" letter-spacing="-5">SBS</text>
-            <path d="M 125 432 Q 250 462 375 432" fill="none" stroke="#1ca36e" stroke-width="12" stroke-linecap="round"/>
-          </svg>
-        `);
-      }
+    async function instalarPWAAndroid() {
+      if (!deferredPromptPWA) return;
+      deferredPromptPWA.prompt();
+      await deferredPromptPWA.userChoice;
+      deferredPromptPWA = null;
+      document.getElementById('btn-instalar-pwa').style.display = 'none';
     }
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -367,12 +365,6 @@
           else if (onError) onError(err);
         });
         runner[nombreFuncion].apply(runner, argsArray);
-        return;
-      }
-
-      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGA_AQUI')) {
-        mostrarToast('⚠️ Falta pegar tu enlace /exec en la línea APPS_SCRIPT_URL de index.html en GitHub.');
-        if (onError) onError(new Error('URL no configurada'));
         return;
       }
 
@@ -477,7 +469,7 @@
         }, () => {
           document.getElementById('btn-ingresar').disabled = false;
           document.getElementById('btn-ingresar').textContent = 'Ingresar';
-          mostrarToast('❌ No se pudo conectar con Apps Script. Revisa APPS_SCRIPT_URL.');
+          mostrarToast('❌ No se pudo conectar con el servidor. Verifica que la última versión del script esté publicada.');
         });
         return;
       }
@@ -626,7 +618,6 @@
       else if (d.desayuno === 'OP2') detalleDes = '1 bebida + 3 huevos';
       else if (d.desayuno === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
 
-      // Muestra directamente el detalle de la opción (sin decir "Solicitado:")
       const txtDes = desActivo ? detalleDes : 'No solicitado';
       const txtAlm = almActivo ? `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}` : 'Cancelado';
 

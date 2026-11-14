@@ -2,16 +2,18 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Comedor SBS</title>
-  <!-- Configuración PWA Instalable en Inicio (iPhone / Android) -->
+  <!-- Configuración PWA sin fog difuminado en iOS -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#13392a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1046/1046857.png">
+  <!-- Librería Cámara QR en Vivo + Librería Oficial Excel Nativo (.xlsx con estilos) -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
       --sbs-primary: #13392a;
@@ -24,17 +26,23 @@
       --border: #e2e8f0;
     }
 
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      background-color: var(--sbs-primary);
+      color: var(--text);
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; width: 100%; overflow: hidden;
+    }
 
     .app-shell {
       width: 95vw; height: 94vh; max-width: 580px; background: var(--card);
-      border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       display: flex; flex-direction: column; overflow: hidden; position: relative;
     }
     .app-shell.wide-rrhh { max-width: 900px; }
 
-    #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 32px 26px; text-align: center; }
+    #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 32px 26px; text-align: center; background: var(--card); }
     .logo-badge {
       width: 58px; height: 58px; border-radius: 15px; background: var(--sbs-primary); color: white;
       display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px;
@@ -51,8 +59,12 @@
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; background: #94a3b8 !important; color: #ffffff !important; }
 
-    #view-main { display: none; flex-direction: column; height: 100%; }
-    .top-bar { background: var(--sbs-primary); color: white; padding: 15px 18px 13px; flex-shrink: 0; }
+    #view-main { display: none; flex-direction: column; height: 100%; background: var(--bg); }
+    .top-bar {
+      background: var(--sbs-primary); color: white;
+      padding: calc(14px + env(safe-area-inset-top, 0px)) 18px 13px;
+      flex-shrink: 0;
+    }
     .top-bar-row { display: flex; justify-content: space-between; align-items: center; }
     .top-bar h2 { margin: 0; font-size: 18px; }
     .top-bar p { margin: 3px 0 0; font-size: 12px; opacity: 0.85; }
@@ -100,8 +112,8 @@
     .srv-split-card.active-alm .op-sub-btn.selected-op { background: var(--sbs-accent); color: white; }
 
     @media (max-width: 480px) {
-      .app-shell { width: 100vw; height: 100vh; border-radius: 0; }
-      .top-bar { padding: 12px 14px 10px; }
+      .app-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
+      .top-bar { padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px; }
       .top-bar h2 { font-size: 16.5px; }
       .header-kpi-strip { margin-top: 8px; padding: 6px 10px; font-size: 12px; }
       .tab { padding: 9px 4px; font-size: 13px; }
@@ -227,7 +239,7 @@
               <input type="date" id="rep-ini" class="form-control">
               <input type="date" id="rep-fin" class="form-control">
               <button class="btn btn-primary" style="flex:0.45; padding:10px;" onclick="cargarReporteRRHH()">Consultar</button>
-              <button class="btn btn-success" style="flex:0.85; padding:10px;" onclick="descargarExcelDosHojas()">📥 Excel (.xls)</button>
+              <button class="btn btn-success" style="flex:0.85; padding:10px;" onclick="descargarExcelDosHojas()">📥 Descargar Excel (.xlsx)</button>
             </div>
             <div id="resumen-rep-rrhh" style="font-size:13px; font-weight:700; margin-bottom:8px; color:var(--sbs-primary);"></div>
             <div class="table-wrap">
@@ -257,9 +269,11 @@
       bootstrapCargado: false,
       cargandoBootstrap: false,
       hoyStr: '',
+      hoyPeruCompleto: '',
       horaPeru: 0,
       pasoCorteAlmuerzo: false,
       modoDemo: false,
+      modoPruebaQR: false,
       etiquetaDemo: '',
       diccionarioUsuarios: {},
       usuario: null,
@@ -288,7 +302,6 @@
       });
     });
 
-    // Motor híbrido: funciona en GitHub Pages (fetch directo sin bloqueo de cookies) y también dentro de Apps Script
     async function ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos = 3) {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         const runner = google.script.run.withSuccessHandler(onSuccess).withFailureHandler(err => {
@@ -324,6 +337,13 @@
       return (s.length === 7) ? '0' + s : s;
     }
 
+    // Convierte '2026-11-16' a '16/11'
+    function formatearDiaMesCorto(isoStr) {
+      if (!isoStr) return '';
+      const p = String(isoStr).split('-');
+      return p.length === 3 ? `${p[2]}/${p[1]}` : isoStr;
+    }
+
     function cargarCacheInicial(callback) {
       if (STATE.cargandoBootstrap && !callback) return;
       STATE.cargandoBootstrap = true;
@@ -332,9 +352,11 @@
         if (res && res.ok) {
           STATE.bootstrapCargado = true;
           STATE.hoyStr = res.hoyStr;
+          STATE.hoyPeruCompleto = res.hoyPeruCompleto || res.hoyStr;
           STATE.horaPeru = res.horaPeru;
           STATE.pasoCorteAlmuerzo = res.pasoCorteAlmuerzo;
           STATE.modoDemo = res.modoDemo;
+          STATE.modoPruebaQR = !!res.modoPruebaQR;
           STATE.etiquetaDemo = res.etiquetaDemo;
           STATE.diccionarioUsuarios = res.diccionarioUsuarios || {};
           STATE.colaboradores = res.colaboradores || [];
@@ -344,7 +366,7 @@
         STATE.cargandoBootstrap = false;
         document.getElementById('btn-ingresar').disabled = false;
         document.getElementById('btn-ingresar').textContent = 'Ingresar';
-        mostrarToast('⚠️ Verifica que APPS_SCRIPT_URL esté configurada y publicada para Cualquier persona.');
+        mostrarToast('⚠️ Verifica que APPS_SCRIPT_URL esté configurada.');
       });
     }
 
@@ -383,6 +405,7 @@
           document.getElementById('btn-ingresar').disabled = false;
           document.getElementById('btn-ingresar').textContent = 'Ingresar';
           if (res && res.ok) {
+            STATE.modoPruebaQR = !!res.data.modoPruebaQR;
             STATE.diccionarioUsuarios = res.data.diccionarioUsuarios;
             STATE.colaboradores = res.data.colaboradores;
             asignarUsuarioYEntrar(STATE.diccionarioUsuarios[dni]);
@@ -429,9 +452,10 @@
       document.getElementById('view-main').style.display = 'flex';
       document.getElementById('lbl-nombre').textContent = 'Hola, ' + STATE.usuario.nombre.split(' ')[0];
       const badgeDemo = STATE.modoDemo ? ` • [DEMO: ${STATE.etiquetaDemo}]` : '';
+      const badgeTest = STATE.modoPruebaQR ? ' • 🧪 MODO PRUEBA' : '';
       document.getElementById('lbl-estado-rol').textContent = (STATE.usuario.estado !== 'ACTIVO')
         ? `Estado: ${STATE.usuario.estado} (Excluido)`
-        : `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}${badgeDemo}`;
+        : `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}${badgeDemo}${badgeTest}`;
       document.getElementById('tab-btn-rrhh').style.display = (STATE.usuario.rol === 'Admin_RRHH') ? 'block' : 'none';
       if (STATE.usuario.rol === 'Admin_RRHH') inicializarControlesRRHH();
 
@@ -444,7 +468,8 @@
         STATE.idxPrincipal = idxHoyFisico;
       }
 
-      document.getElementById('tab-btn-principal').textContent = STATE.diasSemana[STATE.idxPrincipal].diaTexto;
+      const dPrin = STATE.diasSemana[STATE.idxPrincipal];
+      document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${dPrin.fechaCorta || formatearDiaMesCorto(dPrin.fecha)}`;
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       cambiarTab('PRINCIPAL');
@@ -466,6 +491,14 @@
       const linkPin = document.getElementById('link-contingencia-camara');
       const hf = STATE.hoyFisico;
       if (!hf) return;
+
+      // Si el Modo Prueba está activo en Google Sheets, siempre permite volver a escanear
+      if (STATE.modoPruebaQR) {
+        btn.disabled = false;
+        btn.textContent = '🧪 Escanear QR en Comedor (Modo Prueba Infinito)';
+        linkPin.style.display = 'block';
+        return;
+      }
 
       if (!hf.reservoDes && !hf.reservoAlm) {
         btn.disabled = true;
@@ -540,10 +573,12 @@
       const avisoDes = !d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Op. 1, 2 o 3 abajo');
       const avisoAlm = !d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo');
 
+      const fechaVisual = d.fechaCorta || formatearDiaMesCorto(d.fecha);
+
       return `
         <div class="day-card" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
           <div class="day-header">
-            <span>${d.diaTexto} (${d.fecha})</span>
+            <span>${d.diaTexto} ${fechaVisual}</span>
             ${d.esHoyFisico ? '<span style="background:#dcfce7; color:#166534; padding:3px 9px; border-radius:7px; font-size:11.5px;">HOY</span>' : ''}
           </div>
           <div class="menu-box">
@@ -653,7 +688,6 @@
       box.style.display = 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-      // Esperar 150ms para que el DOM pinte el ancho real del div antes de iniciar el video en iOS/Android
       await new Promise(r => setTimeout(r, 150));
 
       try {
@@ -670,12 +704,7 @@
       }
 
       STATE.procesandoEscaneo = false;
-
-      const configQR = {
-        fps: 20,
-        qrbox: { width: 220, height: 220 },
-        aspectRatio: 1.0
-      };
+      const configQR = { fps: 20, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
 
       const onScanExito = (decodedText) => {
         if (STATE.procesandoEscaneo) return;
@@ -685,32 +714,20 @@
       };
 
       try {
-        // Intento 1: Sintaxis estricta compatible con iOS Safari y Android Chrome
-        await STATE.html5QrCode.start(
-          { facingMode: "environment" },
-          configQR,
-          onScanExito,
-          () => {}
-        );
+        await STATE.html5QrCode.start({ facingMode: "environment" }, configQR, onScanExito, () => {});
       } catch (err1) {
         try {
-          // Intento 2: Buscar explícitamente el ID de la cámara trasera del dispositivo
           const camaras = await Html5Qrcode.getCameras();
           if (camaras && camaras.length > 0) {
             const camTrasera = camaras.find(c => /back|trasera|environment|posterior/i.test(c.label)) || camaras[camaras.length - 1];
-            await STATE.html5QrCode.start(
-              camTrasera.id,
-              configQR,
-              onScanExito,
-              () => {}
-            );
+            await STATE.html5QrCode.start(camTrasera.id, configQR, onScanExito, () => {});
           } else {
             throw err1;
           }
         } catch (errFinal) {
           cerrarEscanerQR();
           mostrarBoxPinContingencia();
-          mostrarToast('⚠️ Permiso de cámara bloqueado (' + (errFinal.name || errFinal) + '). Usa el código o habilita la cámara en el candado del navegador.');
+          mostrarToast('⚠️ Cámara bloqueada. Usa el código del comedor.');
         }
       }
     }
@@ -743,8 +760,10 @@
 
       ejecutarConReintento('validarPinYRegistrarConsumo', [STATE.usuario.dni, pin], res => {
         if (res.ok) {
-          if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
-          if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+          if (!res.modoPrueba) {
+            if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
+            if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+          }
           mostrarTicketVerdeConfirmado(res.servicioRegistrado);
           mostrarToast('✅ ' + res.msg);
         } else {
@@ -761,8 +780,10 @@
 
       ejecutarConReintento('registrarConsumoInteligente', [STATE.usuario.dni, metodo], res => {
         if (res.ok) {
-          if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
-          if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+          if (!res.modoPrueba) {
+            if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
+            if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+          }
           mostrarTicketVerdeConfirmado(res.servicioRegistrado);
           mostrarToast('✅ ' + res.msg);
         } else {
@@ -775,7 +796,7 @@
     function mostrarTicketVerdeConfirmado(servicio) {
       const box = document.getElementById('ticket-confirmado');
       document.getElementById('ticket-titulo').textContent = `¡${servicio} REGISTRADO!`;
-      document.getElementById('ticket-sub').textContent = `${STATE.usuario.nombre} • ${STATE.hoyStr}`;
+      document.getElementById('ticket-sub').textContent = `${STATE.usuario.nombre} • ${STATE.hoyPeruCompleto}`;
       box.style.display = 'block';
     }
 
@@ -833,45 +854,124 @@
       });
     }
 
+    // GENERADOR DE EXCEL (.XLSX BINARIO REAL) CON 2 HOJAS Y ESTILOS (CERO CARTEL DE ADVERTENCIA EN OFFICE)
     function descargarExcelDosHojas() {
       if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
         mostrarToast('⚠️ Consulta un rango primero.');
         return;
       }
-      let sumTotal = 0;
-      const xml1 = STATE.resumenReporte.map(r => {
-        sumTotal += Number(r.costoTotal);
-        return `<Row><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${r.dni}</Data></Cell><Cell ss:StyleID="sCell"><Data ss:Type="String">${r.nombre}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="Number">${r.cantDesayunos}</Data></Cell><Cell ss:StyleID="sMoney"><Data ss:Type="Number">${r.costoDesayunos}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="Number">${r.cantAlmuerzos}</Data></Cell><Cell ss:StyleID="sMoney"><Data ss:Type="Number">${r.costoAlmuerzos}</Data></Cell><Cell ss:StyleID="sTotalCol"><Data ss:Type="Number">${r.costoTotal}</Data></Cell></Row>`;
-      }).join('');
-      const xml2 = STATE.ultimasFilasReporte.map(d => `<Row><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.fecha}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.dni}</Data></Cell><Cell ss:StyleID="sCell"><Data ss:Type="String">${d.nombre}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.servicio}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.reservo}</Data></Cell><Cell ss:StyleID="sCellCenter"><Data ss:Type="String">${d.consumio}</Data></Cell><Cell ss:StyleID="sMoney"><Data ss:Type="Number">${d.montoCobrar}</Data></Cell></Row>`).join('');
 
-      const wb = `<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
- <Styles>
-  <Style ss:ID="sTitle"><Font ss:Bold="1" ss:Size="13" ss:Color="#13392A"/></Style>
-  <Style ss:ID="sHeader"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#13392A" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>
-  <Style ss:ID="sHeaderTotal"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#047857" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>
-  <Style ss:ID="sCell"><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/></Borders></Style>
-  <Style ss:ID="sCellCenter" ss:Parent="sCell"><Alignment ss:Horizontal="Center"/></Style>
-  <Style ss:ID="sMoney" ss:Parent="sCell"><NumberFormat ss:Format="&quot;S/&quot;\\ #,##0.00"/></Style>
-  <Style ss:ID="sTotalCol" ss:Parent="sCell"><Font ss:Bold="1" ss:Color="#065F46"/><Interior ss:Color="#D1FAE5" ss:Pattern="Solid"/><NumberFormat ss:Format="&quot;S/&quot;\\ #,##0.00"/></Style>
- </Styles>
- <Worksheet ss:Name="1_Consolidado_RRHH"><Table><Column ss:Width="85"/><Column ss:Width="190"/><Column ss:Width="85"/><Column ss:Width="105"/><Column ss:Width="85"/><Column ss:Width="105"/><Column ss:Width="115"/>
-  <Row><Cell ss:StyleID="sTitle"><Data ss:Type="String">DESCUENTO PLANILLA SBS</Data></Cell></Row><Row></Row>
-  <Row><Cell ss:StyleID="sHeader"><Data ss:Type="String">DNI</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Nombres</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String"># Desayunos</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Costo Desayunos</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String"># Almuerzos</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Costo Almuerzos</Data></Cell><Cell ss:StyleID="sHeaderTotal"><Data ss:Type="String">Costo Total</Data></Cell></Row>
-  ${xml1}
-  <Row><Cell><Data ss:Type="String">TOTAL PLANILLA</Data></Cell><Cell ss:Index="7" ss:StyleID="sTotalCol"><Data ss:Type="Number">${sumTotal}</Data></Cell></Row></Table></Worksheet>
- <Worksheet ss:Name="2_Detalle_Fechas"><Table><Column ss:Width="85"/><Column ss:Width="85"/><Column ss:Width="190"/><Column ss:Width="130"/><Column ss:Width="85"/><Column ss:Width="100"/><Column ss:Width="95"/>
-  <Row><Cell ss:StyleID="sHeader"><Data ss:Type="String">Fecha</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">DNI</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Colaborador</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Servicio</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Reservó</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Asistió_Comedor</Data></Cell><Cell ss:StyleID="sHeader"><Data ss:Type="String">Monto</Data></Cell></Row>
-  ${xml2}</Table></Worksheet></Workbook>`;
+      const wb = XLSX.utils.book_new();
 
-      const blob = new Blob([wb], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `Planilla_Comedor_${STATE.hoyStr}.xls`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const headerStyle = {
+        fill: { fgColor: { rgb: "13392A" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
+      };
+      const headerTotalStyle = {
+        fill: { fgColor: { rgb: "047857" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
+      };
+      const cellBorder = {
+        top: { style: "thin", color: { rgb: "CBD5E1" } },
+        bottom: { style: "thin", color: { rgb: "CBD5E1" } },
+        left: { style: "thin", color: { rgb: "CBD5E1" } },
+        right: { style: "thin", color: { rgb: "CBD5E1" } }
+      };
+      const totalColStyle = {
+        fill: { fgColor: { rgb: "D1FAE5" } },
+        font: { color: { rgb: "065F46" }, bold: true },
+        numFmt: '"S/" #,##0.00',
+        border: cellBorder
+      };
+      const moneyStyle = { numFmt: '"S/" #,##0.00', border: cellBorder };
+      const centerStyle = { alignment: { horizontal: "center" }, border: cellBorder };
+      const textStyle = { border: cellBorder };
+
+      // HOJA 1: CONSOLIDADO POR COLABORADOR
+      const aoa1 = [
+        [{ v: "CONSOLIDADO DE DESCUENTO POR PLANILLA - COMEDOR SBS", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [
+          { v: "DNI", s: headerStyle },
+          { v: "Nombres", s: headerStyle },
+          { v: "# Desayunos", s: headerStyle },
+          { v: "Costo Desayunos", s: headerStyle },
+          { v: "# Almuerzos", s: headerStyle },
+          { v: "Costo Almuerzos", s: headerStyle },
+          { v: "Costo Total", s: headerTotalStyle }
+        ]
+      ];
+
+      let sumDesC = 0, sumDesM = 0, sumAlmC = 0, sumAlmM = 0, sumTot = 0;
+      STATE.resumenReporte.forEach(r => {
+        sumDesC += Number(r.cantDesayunos);
+        sumDesM += Number(r.costoDesayunos);
+        sumAlmC += Number(r.cantAlmuerzos);
+        sumAlmM += Number(r.costoAlmuerzos);
+        sumTot += Number(r.costoTotal);
+        aoa1.push([
+          { v: String(r.dni), t: 's', s: centerStyle },
+          { v: r.nombre, t: 's', s: textStyle },
+          { v: Number(r.cantDesayunos), t: 'n', s: centerStyle },
+          { v: Number(r.costoDesayunos), t: 'n', s: moneyStyle },
+          { v: Number(r.cantAlmuerzos), t: 'n', s: centerStyle },
+          { v: Number(r.costoAlmuerzos), t: 'n', s: moneyStyle },
+          { v: Number(r.costoTotal), t: 'n', s: totalColStyle }
+        ]);
+      });
+
+      aoa1.push([
+        { v: "TOTAL PLANILLA", t: 's', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: "", t: 's', s: textStyle },
+        { v: sumDesC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: sumDesM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
+        { v: sumAlmC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: sumAlmM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
+        { v: sumTot, t: 'n', s: totalColStyle }
+      ]);
+
+      const ws1 = XLSX.utils.aoa_to_sheet(aoa1);
+      ws1['!cols'] = [{ wch: 13 }, { wch: 30 }, { wch: 14 }, { wch: 17 }, { wch: 14 }, { wch: 17 }, { wch: 17 }];
+      XLSX.utils.book_append_sheet(wb, ws1, "1_Consolidado_RRHH");
+
+      // HOJA 2: DETALLE POR FECHAS
+      const aoa2 = [
+        [{ v: "DETALLE DIARIO DE RESERVAS Y ASISTENCIA EN COMEDOR", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [
+          { v: "Fecha", s: headerStyle },
+          { v: "DNI", s: headerStyle },
+          { v: "Colaborador", s: headerStyle },
+          { v: "Servicio", s: headerStyle },
+          { v: "Reservó", s: headerStyle },
+          { v: "Asistió_Comedor", s: headerStyle },
+          { v: "Monto", s: headerStyle }
+        ]
+      ];
+
+      STATE.ultimasFilasReporte.forEach(d => {
+        aoa2.push([
+          { v: String(d.fecha), t: 's', s: centerStyle },
+          { v: String(d.dni), t: 's', s: centerStyle },
+          { v: d.nombre, t: 's', s: textStyle },
+          { v: d.servicio, t: 's', s: centerStyle },
+          { v: d.reservo, t: 's', s: centerStyle },
+          { v: d.consumio, t: 's', s: centerStyle },
+          { v: Number(d.montoCobrar), t: 'n', s: moneyStyle }
+        ]);
+      });
+
+      const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
+      ws2['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 30 }, { wch: 22 }, { wch: 12 }, { wch: 16 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws2, "2_Detalle_Fechas");
+
+      const fechaArchivo = (STATE.hoyPeruCompleto || STATE.hoyStr).replace(/\//g, '-');
+      XLSX.writeFile(wb, `Planilla_Comedor_SBS_${fechaArchivo}.xlsx`);
+      mostrarToast('📥 Excel (.xlsx) descargado.');
     }
   </script>
 </body>

@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=8">
+  <link rel="manifest" href="manifest.json?v=9">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=8">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=8">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=9">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=9">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -97,7 +97,7 @@
 <body>
   <div class="app-shell" id="app-shell">
     <div id="view-login">
-      <div class="login-logo-wrap"><img src="./Logo.jpg?v=8" alt="SBS"></div>
+      <div class="login-logo-wrap"><img src="./Logo.jpg?v=9" alt="SBS"></div>
       <div id="step-dni" style="width:100%;">
         <p style="color:var(--muted); font-size:14px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
         <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
@@ -292,7 +292,7 @@
     function verificarPasoDNI() {
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) { mostrarToast('⚠️ Ingresa un DNI válido.'); return; }
-      
+
       const btn = document.getElementById('btn-ingresar');
       btn.disabled = true;
       btn.textContent = 'Verificando...';
@@ -451,18 +451,49 @@
 
     function crearHTMLTarjetaDia(d, esVistaPrincipal) {
       const desActivo = (d.desayuno !== 'NO'), almActivo = (d.almuerzo !== 'NO');
-      let detalleDes = d.desayuno === 'SI' ? 'Desayuno General' : (d.desayuno.startsWith('OP') ? `1 bebida + ${d.desayuno==='OP1'?'2 panes':d.desayuno==='OP2'?'3 huevos':'1 pan + 1 huevo'}` : '');
+      let detalleDes = '';
+      if (d.desayuno === 'SI') detalleDes = 'Desayuno General (Sin opción)';
+      else if (d.desayuno === 'OP1') detalleDes = '1 bebida + 2 panes';
+      else if (d.desayuno === 'OP2') detalleDes = '1 bebida + 3 huevos';
+      else if (d.desayuno === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
+
       const txtDes = desActivo ? detalleDes : 'No solicitado';
       const txtAlm = almActivo ? (d.almuerzo === 'SI' ? 'Almuerzo General' : `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}`) : 'Cancelado';
 
+      const lockDesClass = !d.puedeEditarDesayuno ? 'disabled-card' : '';
+      const lockAlmClass = !d.puedeEditarAlmuerzo ? 'disabled-card' : '';
+      const avisoDes = !d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Opc. 1, 2 o 3 abajo');
+      const avisoAlm = !d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo');
+
+      const fechaVisual = d.fechaCorta || formatearDiaMesCorto(d.fecha);
+
+      let badgeHtml = '';
+      if (d.esHoyFisico) {
+        badgeHtml = '<span style="background:#dcfce7; color:#166534; padding:3px 9px; border-radius:7px; font-size:11.5px;">HOY</span>';
+      } else {
+        const idxHoy = STATE.diasSemana.findIndex(x => x.esHoyFisico);
+        const thisIdx = STATE.diasSemana.findIndex(x => x.fecha === d.fecha);
+        if (idxHoy !== -1 && thisIdx === idxHoy + 1 && STATE.horaPeru >= 14.0) {
+          badgeHtml = '<span style="background:#ffedd5; color:#ea580c; padding:3px 9px; border-radius:7px; font-size:11.5px; font-weight:bold;">MAÑANA</span>';
+        }
+      }
+
       return `
         <div class="day-card" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
-          <div class="day-header"><span>${d.diaTexto} ${d.fechaCorta || formatearDiaMesCorto(d.fecha)}</span></div>
-          <div class="menu-box"><div>☕ <b>Desayuno:</b> ${d.menuDesayuno}</div><div style="margin-top:4px;">🍲 <b>Almuerzo:</b> ${d.menuAlmuerzo}</div></div>
+          <div class="day-header">
+            <span>${d.diaTexto} ${fechaVisual}</span>
+            ${badgeHtml}
+          </div>
+          <div class="menu-box">
+            <div>☕ <b>Desayuno:</b> ${d.menuDesayuno}</div>
+            <div style="margin-top:4px;">🍲 <b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
+          </div>
           <div class="srv-grid">
-            <div class="srv-split-card ${desActivo ? 'active-des' : ''}">
+            <div class="srv-split-card ${desActivo ? 'active-des' : ''} ${lockDesClass}">
               <div class="srv-split-top" onclick="seleccionarOpcionDesayuno('${d.fecha}', '${desActivo ? 'NO' : 'OP1'}')">
-                <span class="title">☕ Desayuno</span><span class="status">${txtDes}</span>
+                <span class="title">☕ Desayuno</span>
+                <span class="status">${txtDes}</span>
+                <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoDes}</span>
               </div>
               <div class="srv-split-bottom">
                 <button class="op-sub-btn ${d.desayuno === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Opc. 1</button>
@@ -470,9 +501,12 @@
                 <button class="op-sub-btn ${d.desayuno === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Opc. 3</button>
               </div>
             </div>
-            <div class="srv-split-card ${almActivo ? 'active-alm' : ''}">
+
+            <div class="srv-split-card ${almActivo ? 'active-alm' : ''} ${lockAlmClass}">
               <div class="srv-split-top" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', '${almActivo ? 'NO' : 'REGULAR'}')">
-                <span class="title">🍲 Almuerzo</span><span class="status">${txtAlm}</span>
+                <span class="title">🍲 Almuerzo</span>
+                <span class="status">${txtAlm}</span>
+                <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoAlm}</span>
               </div>
               <div class="srv-split-bottom">
                 <button class="op-sub-btn ${d.almuerzo === 'REGULAR' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')">Regular</button>
@@ -486,20 +520,48 @@
 
     function seleccionarOpcionDesayuno(fecha, opElegida) {
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia) return;
-      const nVal = (dia.desayuno === opElegida) ? 'NO' : opElegida;
+      if (!dia || !dia.puedeEditarDesayuno) return;
+      const vAnt = dia.desayuno;
+      const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
       dia.desayuno = nVal;
-      guardarSnapshotLocal(); renderizarTarjetas();
-      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: nVal }]);
+      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (nVal !== 'NO');
+      guardarSnapshotLocal();
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+      mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno ${nVal.startsWith('OP') ? 'Opc. '+nVal.replace('OP','') : 'reservado'}`);
+      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni }], res => {
+        if (!res.ok) {
+          dia.desayuno = vAnt;
+          if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (vAnt !== 'NO');
+          guardarSnapshotLocal();
+          renderizarTarjetas();
+          actualizarEstadoBotonQR();
+          mostrarToast('⚠️ ' + res.msg);
+        }
+      });
     }
 
     function seleccionarOpcionAlmuerzo(fecha, opElegida) {
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia) return;
-      const nVal = (dia.almuerzo === opElegida) ? 'NO' : opElegida;
+      if (!dia || !dia.puedeEditarAlmuerzo) return;
+      const vAnt = dia.almuerzo;
+      const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
       dia.almuerzo = nVal;
-      guardarSnapshotLocal(); renderizarTarjetas();
-      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: nVal }]);
+      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (nVal !== 'NO');
+      guardarSnapshotLocal();
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+      mostrarToast(nVal === 'NO' ? '✅ Almuerzo cancelado' : `✅ Almuerzo ${nVal === 'SI' ? 'General' : nVal.charAt(0) + nVal.slice(1).toLowerCase()} confirmado`);
+      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: nVal }], res => {
+        if (!res.ok) {
+          dia.almuerzo = vAnt;
+          if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (vAnt !== 'NO');
+          guardarSnapshotLocal();
+          renderizarTarjetas();
+          actualizarEstadoBotonQR();
+          mostrarToast('⚠️ ' + res.msg);
+        }
+      });
     }
 
     function cambiarTab(tab) {
@@ -508,53 +570,139 @@
       document.getElementById('pane-semana').style.display = 'none';
       document.getElementById('pane-rrhh').style.display = 'none';
       document.getElementById('app-shell').classList.remove('wide-rrhh');
-      if (tab === 'PRINCIPAL') { document.getElementById('tab-btn-principal').classList.add('active'); document.getElementById('pane-principal').style.display = 'block'; }
-      else if (tab === 'SEMANA') { document.getElementById('tab-btn-semana').classList.add('active'); document.getElementById('pane-semana').style.display = 'block'; }
-      else if (tab === 'RRHH') { document.getElementById('tab-btn-rrhh').classList.add('active'); document.getElementById('pane-rrhh').style.display = 'block'; document.getElementById('app-shell').classList.add('wide-rrhh'); cargarReporteRRHH(); }
+
+      if (tab === 'PRINCIPAL') {
+        document.getElementById('tab-btn-principal').classList.add('active');
+        document.getElementById('pane-principal').style.display = 'block';
+      } else if (tab === 'SEMANA') {
+        cerrarEscanerQR();
+        document.getElementById('tab-btn-semana').classList.add('active');
+        document.getElementById('pane-semana').style.display = 'block';
+      } else if (tab === 'RRHH') {
+        cerrarEscanerQR();
+        document.getElementById('tab-btn-rrhh').classList.add('active');
+        document.getElementById('pane-rrhh').style.display = 'block';
+        document.getElementById('app-shell').classList.add('wide-rrhh');
+        cargarReporteRRHH();
+      }
     }
 
     async function abrirEscanerQR() {
-      document.getElementById('modal-qr-overlay').style.display = 'flex';
+      if (document.getElementById('btn-escanear-qr').disabled) return;
+      const overlay = document.getElementById('modal-qr-overlay');
+      overlay.style.display = 'flex';
+
       await new Promise(r => setTimeout(r, 100));
-      STATE.html5QrCode = new Html5Qrcode("qr-reader");
-      STATE.html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: 220 }, () => {
-        cerrarEscanerQR(); procesarRegistroQRInteligente('QR_VIVO_APP');
-      }, () => {});
+
+      try {
+        if (STATE.html5QrCode) {
+          if (STATE.html5QrCode.isScanning) {
+            await STATE.html5QrCode.stop().catch(() => {});
+          }
+          STATE.html5QrCode.clear();
+        } else {
+          STATE.html5QrCode = new Html5Qrcode("qr-reader");
+        }
+      } catch (e) {
+        STATE.html5QrCode = new Html5Qrcode("qr-reader");
+      }
+
+      STATE.procesandoEscaneo = false;
+      const configQR = { fps: 20, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
+
+      const onScanExito = (decodedText) => {
+        if (STATE.procesandoEscaneo) return;
+        STATE.procesandoEscaneo = true;
+        cerrarEscanerQR();
+        procesarRegistroQRInteligente('QR_VIVO_APP');
+      };
+
+      try {
+        await STATE.html5QrCode.start({ facingMode: "environment" }, configQR, onScanExito, () => {});
+      } catch (err1) {
+        try {
+          const camaras = await Html5Qrcode.getCameras();
+          if (camaras && camaras.length > 0) {
+            const camTrasera = camaras.find(c => /back|trasera|environment|posterior/i.test(c.label)) || camaras[camaras.length - 1];
+            await STATE.html5QrCode.start(camTrasera.id, configQR, onScanExito, () => {});
+          } else {
+            throw err1;
+          }
+        } catch (errFinal) {
+          cerrarEscanerQR();
+          mostrarToast('⚠️ Asegúrate de permitir el acceso a la cámara.');
+        }
+      }
     }
 
     function cerrarEscanerQR() {
       document.getElementById('modal-qr-overlay').style.display = 'none';
-      if (STATE.html5QrCode && STATE.html5QrCode.isScanning) STATE.html5QrCode.stop().catch(() => {});
+      if (STATE.html5QrCode && STATE.html5QrCode.isScanning) {
+        STATE.html5QrCode.stop().catch(() => {});
+      }
     }
 
-    function procesarRegistroQRInteligente(metodo) {
+    function procesarRegistroQRInteligente(metodo = 'QR_APP') {
+      const btn = document.getElementById('btn-escanear-qr');
+      btn.disabled = true;
+      btn.textContent = '⏳ Registrando asistencia...';
+
       ejecutarConReintento('registrarConsumoInteligente', [STATE.usuario.dni, metodo], res => {
-        if (res && res.ok) {
+        if (res.ok) {
+          if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
+          if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+          guardarSnapshotLocal();
           document.getElementById('ticket-confirmado').style.display = 'block';
           mostrarToast('✅ ' + res.msg);
-        } else { mostrarToast('⚠️ ' + (res ? res.msg : 'Error')); }
+        } else {
+          mostrarToast('⚠️ ' + res.msg);
+        }
+        actualizarEstadoBotonQR();
       });
     }
 
     function imprimirAficheQR() {
       const urlCheckin = 'https://sbs-peru.github.io/comedor/?checkin=1';
+      const qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(urlCheckin);
+
       const w = window.open('', '_blank');
-      w.document.write(`<h1 style="text-align:center;">COMEDOR SBS</h1><img src="https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(urlCheckin)}" style="display:block;margin:auto;"/>`);
+      w.document.write(`
+        <html><head><title>Cartel Oficial Comedor SBS</title></head>
+        <body style="font-family:sans-serif; text-align:center; padding:40px;">
+          <h1 style="color:#13392a; margin-bottom:6px; font-size:32px;">🍽️ COMEDOR SBS</h1>
+          <p style="color:#334155; font-size:18px; margin-top:0;">
+            Escanea este código QR desde la App Comedor SBS o con la cámara de tu celular
+          </p>
+          <div style="margin:28px auto; padding:24px; border:5px solid #13392a; display:inline-block; border-radius:22px;">
+            <img src="${qrApi}" width="340" height="340" alt="QR Comedor SBS"/>
+          </div>
+          <script>setTimeout(() => window.print(), 700);<\/script>
+        </body></html>
+      `);
       w.document.close();
     }
 
     function inicializarControlesRRHH() {
-      const d = new Date();
-      document.getElementById('rep-ini').value = new Date(d.getFullYear(), d.getMonth(), 25).toISOString().split('T')[0];
-      document.getElementById('rep-fin').value = new Date(d.getFullYear(), d.getMonth() + 1, 24).toISOString().split('T')[0];
+      const hoyDate = new Date(STATE.hoyStr + 'T00:00:00');
+      let mes = hoyDate.getMonth(), anio = hoyDate.getFullYear();
+      if (hoyDate.getDate() <= 24) mes = mes - 1;
+      document.getElementById('rep-ini').value = new Date(anio, mes, 25).toISOString().split('T')[0];
+      document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
     }
 
     function cargarReporteRRHH() {
       const fIni = document.getElementById('rep-ini').value, fFin = document.getElementById('rep-fin').value;
+      document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Calculando consolidado...</td></tr>';
       ejecutarConReintento('obtenerReportePlanillaRRHH', [fIni, fFin], res => {
-        if (!res || !res.resumen) return;
+        STATE.resumenReporte = res.resumen || [];
+        STATE.ultimasFilasReporte = res.filas || [];
+        if (STATE.resumenReporte.length === 0) {
+          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos.</td></tr>';
+          document.getElementById('resumen-rep-rrhh').textContent = 'Total Planilla: S/ 0.00';
+          return;
+        }
         let granTot = 0;
-        document.getElementById('tbody-rep-rrhh').innerHTML = res.resumen.map(r => {
+        document.getElementById('tbody-rep-rrhh').innerHTML = STATE.resumenReporte.map(r => {
           granTot += Number(r.costoTotal);
           return `<tr><td>${r.dni}</td><td><b>${r.nombre}</b></td><td style="text-align:center;">${r.cantDesayunos}</td><td>S/ ${r.costoDesayunos.toFixed(2)}</td><td style="text-align:center;">${r.cantAlmuerzos}</td><td>S/ ${r.costoAlmuerzos.toFixed(2)}</td><td style="background:#ecfdf5; color:#047857; font-weight:800;">S/ ${r.costoTotal.toFixed(2)}</td></tr>`;
         }).join('');
@@ -567,10 +715,116 @@
         mostrarToast('⚠️ Consulta un rango primero.');
         return;
       }
+
       const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(STATE.resumenReporte);
-      XLSX.utils.book_append_sheet(wb, ws, "Consolidado");
-      XLSX.writeFile(wb, "Planilla_Comedor.xlsx");
+
+      const headerStyle = {
+        fill: { fgColor: { rgb: "13392A" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
+      };
+      const headerTotalStyle = {
+        fill: { fgColor: { rgb: "047857" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
+      };
+      const cellBorder = {
+        top: { style: "thin", color: { rgb: "CBD5E1" } },
+        bottom: { style: "thin", color: { rgb: "CBD5E1" } },
+        left: { style: "thin", color: { rgb: "CBD5E1" } },
+        right: { style: "thin", color: { rgb: "CBD5E1" } }
+      };
+      const totalColStyle = {
+        fill: { fgColor: { rgb: "D1FAE5" } },
+        font: { color: { rgb: "065F46" }, bold: true },
+        numFmt: '"S/" #,##0.00',
+        border: cellBorder
+      };
+      const moneyStyle = { numFmt: '"S/" #,##0.00', border: cellBorder };
+      const centerStyle = { alignment: { horizontal: "center" }, border: cellBorder };
+      const textStyle = { border: cellBorder };
+
+      const aoa1 = [
+        [{ v: "CONSOLIDADO DE DESCUENTO POR PLANILLA - COMEDOR SBS", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [
+          { v: "DNI", s: headerStyle },
+          { v: "Nombres", s: headerStyle },
+          { v: "# Desayunos", s: headerStyle },
+          { v: "Costo Desayunos", s: headerStyle },
+          { v: "# Almuerzos", s: headerStyle },
+          { v: "Costo Almuerzos", s: headerStyle },
+          { v: "Costo Total", s: headerTotalStyle }
+        ]
+      ];
+
+      let sumDesC = 0, sumDesM = 0, sumAlmC = 0, sumAlmM = 0, sumTot = 0;
+      STATE.resumenReporte.forEach(r => {
+        sumDesC += Number(r.cantDesayunos);
+        sumDesM += Number(r.costoDesayunos);
+        sumAlmC += Number(r.cantAlmuerzos);
+        sumAlmM += Number(r.costoAlmuerzos);
+        sumTot += Number(r.costoTotal);
+        aoa1.push([
+          { v: String(r.dni), t: 's', s: centerStyle },
+          { v: r.nombre, t: 's', s: textStyle },
+          { v: Number(r.cantDesayunos), t: 'n', s: centerStyle },
+          { v: Number(r.costoDesayunos), t: 'n', s: moneyStyle },
+          { v: Number(r.cantAlmuerzos), t: 'n', s: centerStyle },
+          { v: Number(r.costoAlmuerzos), t: 'n', s: moneyStyle },
+          { v: Number(r.costoTotal), t: 'n', s: totalColStyle }
+        ]);
+      });
+
+      aoa1.push([
+        { v: "TOTAL PLANILLA", t: 's', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: "", t: 's', s: textStyle },
+        { v: sumDesC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: sumDesM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
+        { v: sumAlmC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: sumAlmM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
+        { v: sumTot, t: 'n', s: totalColStyle }
+      ]);
+
+      const ws1 = XLSX.utils.aoa_to_sheet(aoa1);
+      ws1['!cols'] = [{ wch: 13 }, { wch: 30 }, { wch: 14 }, { wch: 17 }, { wch: 14 }, { wch: 17 }, { wch: 17 }];
+      XLSX.utils.book_append_sheet(wb, ws1, "1_Consolidado_RRHH");
+
+      const aoa2 = [
+        [{ v: "DETALLE DIARIO DE RESERVAS Y ASISTENCIA EN COMEDOR", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [
+          { v: "Fecha", s: headerStyle },
+          { v: "DNI", s: headerStyle },
+          { v: "Colaborador", s: headerStyle },
+          { v: "Servicio", s: headerStyle },
+          { v: "Reservó", s: headerStyle },
+          { v: "Asistió_Comedor", s: headerStyle },
+          { v: "Monto", s: headerStyle }
+        ]
+      ];
+
+      STATE.ultimasFilasReporte.forEach(d => {
+        aoa2.push([
+          { v: String(d.fecha), t: 's', s: centerStyle },
+          { v: String(d.dni), t: 's', s: centerStyle },
+          { v: d.nombre, t: 's', s: textStyle },
+          { v: String(d.servicio).replace('Op.', 'Opc.'), t: 's', s: centerStyle },
+          { v: d.reservo, t: 's', s: centerStyle },
+          { v: d.consumio, t: 's', s: centerStyle },
+          { v: Number(d.montoCobrar), t: 'n', s: moneyStyle }
+        ]);
+      });
+
+      const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
+      ws2['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 30 }, { wch: 22 }, { wch: 12 }, { wch: 16 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws2, "2_Detalle_Fechas");
+
+      const fechaArchivo = (STATE.hoyPeruCompleto || STATE.hoyStr).replace(/\//g, '-');
+      XLSX.writeFile(wb, `Planilla_Comedor_SBS_${fechaArchivo}.xlsx`);
+      mostrarToast('📥 Excel (.xlsx) descargado.');
     }
   </script>
 </body>

@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=7">
+  <link rel="manifest" href="manifest.json?v=8">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=7">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=7">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=8">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=8">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -37,7 +37,7 @@
     }
     .app-shell.wide-rrhh { max-width: 900px; }
     #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: #ffffff; }
-    .login-logo-wrap { width: 165px; height: 165px; border-radius: 22px; overflow: hidden; margin-bottom: 12px; background: #ffffff; display: flex; align-items: center; justify-content: center; }
+    .login-logo-wrap { width: 155px; height: 155px; border-radius: 22px; overflow: hidden; margin-bottom: 12px; background: #ffffff; display: flex; align-items: center; justify-content: center; }
     .login-logo-wrap img { width: 100%; height: 100%; object-fit: contain; background: #ffffff; display: block; }
     .dni-input { width: 100%; padding: 14px; font-size: 21px; text-align: center; border: 2px solid var(--border); border-radius: 12px; margin: 14px 0 12px; letter-spacing: 4px; font-weight: 700; outline: none; }
     .dni-input:focus { border-color: var(--sbs-primary); }
@@ -51,18 +51,18 @@
     #view-main { display: none; flex-direction: column; height: 100%; background: var(--bg); }
     .top-bar { background: var(--sbs-primary); color: white; padding: 20px 20px 16px; flex-shrink: 0; position: relative; z-index: 10; }
     .top-bar-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .top-bar h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.2; }
-    .top-bar p { margin: 7px 0 0; font-size: 13px; color: rgba(255,255,255,0.9); line-height: 1.35; }
-    .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 8px 15px; border-radius: 9px; font-size: 13px; cursor: pointer; font-weight: 600; flex-shrink: 0; }
-    .header-kpi-strip { margin-top: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); border-radius: 11px; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; }
-    .header-kpi-total { background: #10b981; color: #ffffff; font-weight: 800; padding: 4px 11px; border-radius: 8px; font-size: 13.5px; }
+    .top-bar h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.2; }
+    .top-bar p { margin: 7px 0 0; font-size: 12px; color: rgba(255,255,255,0.9); line-height: 1.35; }
+    .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 8px 15px; border-radius: 9px; font-size: 12px; cursor: pointer; font-weight: 600; flex-shrink: 0; }
+    .header-kpi-strip { margin-top: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); border-radius: 11px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; }
+    .header-kpi-total { background: #10b981; color: #ffffff; font-weight: 800; padding: 4px 10px; border-radius: 8px; font-size: 12.5px; }
     .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .tab { flex: 1; text-align: center; padding: 11px 6px; font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
+    .tab { flex: 1; text-align: center; padding: 11px 6px; font-size: 13.5px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
     .tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
     .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); }
     .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
-    .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; margin-bottom: 9px; }
-    .menu-box { background: #f8fafc; border-radius: 9px; padding: 9px 12px; font-size: 13px; color: var(--muted); margin-bottom: 11px; line-height: 1.45; }
+    .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 14px; margin-bottom: 9px; }
+    .menu-box { background: #f8fafc; border-radius: 9px; padding: 9px 12px; font-size: 12.5px; color: var(--muted); margin-bottom: 11px; line-height: 1.45; }
     .menu-box b { color: var(--text); }
     .srv-grid { display: flex; gap: 10px; align-items: stretch; }
     .srv-split-card { flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white; display: flex; flex-direction: column; overflow: hidden; transition: 0.15s; }
@@ -70,45 +70,47 @@
     .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
     .srv-split-card.disabled-card { opacity: 0.55; background: #f1f5f9; pointer-events: none; }
     .srv-split-top { padding: 10px 7px; text-align: center; cursor: pointer; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    .srv-split-top .title { font-size: 14.5px; font-weight: 700; display: block; color: var(--text); }
+    .srv-split-top .title { font-size: 13.5px; font-weight: 700; display: block; color: var(--text); }
     .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
     .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
-    .srv-split-top .status { font-size: 12px; color: var(--muted); display: block; margin-top: 4px; line-height: 1.3; }
+    .srv-split-top .status { font-size: 11.5px; color: var(--muted); display: block; margin-top: 4px; line-height: 1.3; }
+    .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
+    .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
     .srv-split-bottom { display: flex; border-top: 1.5px solid var(--border); background: #f8fafc; }
-    .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 9px 2px; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.15s; }
+    .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 9px 2px; font-size: 11.5px; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.15s; }
     .op-sub-btn:last-child { border-right: none; }
     .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
     .srv-split-card.active-alm .op-sub-btn.selected-op { background: var(--sbs-accent); color: white; }
     #modal-qr-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); z-index: 9999; justify-content: center; align-items: center; padding: 20px; }
     #modal-qr-content { background: white; width: 100%; max-width: 380px; border-radius: 18px; padding: 20px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
     .rrhh-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
-    .rrhh-box h4 { margin: 0 0 10px; font-size: 15px; color: var(--sbs-primary); }
+    .rrhh-box h4 { margin: 0 0 10px; font-size: 14.5px; color: var(--sbs-primary); }
     .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-    .form-control { flex: 1; min-width: 130px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13.5px; }
+    .form-control { flex: 1; min-width: 130px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13px; }
     .table-wrap { overflow-x: auto; max-height: 340px; border: 1px solid var(--border); border-radius: 9px; }
-    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-    th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 8px 9px; border-bottom: 1px solid var(--border); text-align: left; }
     th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; }
-    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 13.5px; font-weight: 600; display: none; z-index: 999; text-align: center; width: max-content; max-width: 90vw; }
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 13px; font-weight: 600; display: none; z-index: 999; text-align: center; width: max-content; max-width: 90vw; }
   </style>
 </head>
 <body>
   <div class="app-shell" id="app-shell">
     <div id="view-login">
-      <div class="login-logo-wrap"><img src="./Logo.jpg?v=7" alt="SBS"></div>
+      <div class="login-logo-wrap"><img src="./Logo.jpg?v=8" alt="SBS"></div>
       <div id="step-dni" style="width:100%;">
-        <p style="color:var(--muted); font-size:14.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
+        <p style="color:var(--muted); font-size:14px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
         <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
         <button class="btn btn-primary" id="btn-ingresar" onclick="verificarPasoDNI()">Continuar</button>
       </div>
       <div id="step-clave" style="display:none; width:100%;">
-        <div id="lbl-saludo-login" style="font-size:16px; font-weight:800; color:var(--sbs-primary); margin-bottom:4px;"></div>
-        <p id="lbl-instruccion-clave" style="color:var(--muted); font-size:13px; margin:0 0 6px; line-height:1.4;"></p>
+        <div id="lbl-saludo-login" style="font-size:15px; font-weight:800; color:var(--sbs-primary); margin-bottom:4px;"></div>
+        <p id="lbl-instruccion-clave" style="color:var(--muted); font-size:12.5px; margin:0 0 6px; line-height:1.4;"></p>
         <input type="password" id="txt-clave" class="pass-input" placeholder="••••••••" autocomplete="current-password">
         <button class="btn btn-primary" id="btn-confirmar-clave" onclick="confirmarClaveLogin()">Ingresar</button>
-        <button class="btn btn-outline" style="margin-top:8px; padding:10px; font-size:13px; color:var(--muted);" onclick="volverAPasoDNI()">← Cambiar DNI</button>
+        <button class="btn btn-outline" style="margin-top:8px; padding:10px; font-size:12.5px; color:var(--muted);" onclick="volverAPasoDNI()">← Cambiar DNI</button>
       </div>
-      <p style="font-size:12.5px; color:var(--muted); margin-top:16px; line-height:1.45;">• <b>Desayuno:</b> Solicitar hasta las 3:00 PM del día anterior.<br>• <b>Almuerzo:</b> Cancelar hasta las 10:00 AM del mismo día.</p>
+      <p style="font-size:12px; color:var(--muted); margin-top:16px; line-height:1.45;">• <b>Desayuno:</b> Solicitar hasta las 3:00 PM del día anterior.<br>• <b>Almuerzo:</b> Cancelar hasta las 10:00 AM del mismo día.</p>
     </div>
 
     <div id="view-main">
@@ -131,21 +133,26 @@
         <div id="pane-principal">
           <div id="ticket-confirmado" style="display:none; background:#ecfdf5; border:2px solid #10b981; border-radius:14px; padding:12px; margin-bottom:10px; text-align:center;">
             <div style="font-size:24px;">✅</div>
-            <div id="ticket-titulo" style="font-size:15px; font-weight:800; color:#065f46; margin-top:2px;">CONSUMO REGISTRADO</div>
-            <div id="ticket-sub" style="font-size:12.5px; color:#047857; font-weight:600; margin-top:2px;"></div>
+            <div id="ticket-titulo" style="font-size:14.5px; font-weight:800; color:#065f46; margin-top:2px;">CONSUMO REGISTRADO</div>
+            <div id="ticket-sub" style="font-size:12px; color:#047857; font-weight:600; margin-top:2px;"></div>
           </div>
           <div id="contenedor-principal"></div>
           <button class="btn btn-success" id="btn-escanear-qr" style="margin-top:2px;" onclick="abrirEscanerQR()">📷 Escanear QR en Comedor</button>
           <div id="modal-qr-overlay">
             <div id="modal-qr-content">
-              <p style="font-size:14px; font-weight:700; margin:0 0 10px; color:var(--sbs-primary);">Apunta al código QR del comedor</p>
+              <p style="font-size:13.5px; font-weight:700; margin:0 0 10px; color:var(--sbs-primary);">Apunta al código QR del comedor</p>
               <div id="qr-reader" style="width:100%; border-radius:10px; overflow:hidden;"></div>
-              <button class="btn btn-outline" style="margin-top:12px; padding:10px; font-size:13px; color:var(--muted);" onclick="cerrarEscanerQR()">Cancelar / Cerrar</button>
+              <button class="btn btn-outline" style="margin-top:12px; padding:10px; font-size:12.5px; color:var(--muted);" onclick="cerrarEscanerQR()">Cancelar / Cerrar</button>
             </div>
           </div>
         </div>
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
         <div id="pane-rrhh" style="display:none;">
+          <div class="rrhh-box">
+            <h4 style="margin:0 0 8px; font-size:14px; color:var(--sbs-primary);">🩺 Salud de la App & Registro de Errores en Vivo</h4>
+            <div id="panel-salud-app" style="font-size:12px; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">Cargando métricas...</div>
+            <button class="btn btn-outline" style="padding:8px; font-size:12px;" onclick="cargarPanelSalud()">🔄 Actualizar Estado de Salud</button>
+          </div>
           <div class="rrhh-box">
             <h4>🔑 Resetear Contraseña de Colaborador</h4>
             <div class="form-row" style="margin-bottom:0;">
@@ -156,7 +163,7 @@
           <div class="rrhh-box">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
               <h4 style="margin:0;">📊 Reporte Mensual Planilla</h4>
-              <button class="btn btn-outline" style="width:auto; padding:7px 12px; font-size:12.5px;" onclick="imprimirAficheQR()">🖨️ Imprimir Hoja QR</button>
+              <button class="btn btn-outline" style="width:auto; padding:7px 12px; font-size:12px;" onclick="imprimirAficheQR()">🖨️ Imprimir Hoja QR</button>
             </div>
             <div class="form-row">
               <input type="date" id="rep-ini" class="form-control">
@@ -164,7 +171,7 @@
               <button class="btn btn-primary" style="flex:0.45; padding:10px;" onclick="cargarReporteRRHH()">Consultar</button>
               <button class="btn btn-success" style="flex:0.85; padding:10px;" onclick="descargarExcelDosHojas()">📥 Descargar Excel</button>
             </div>
-            <div id="resumen-rep-rrhh" style="font-size:13px; font-weight:700; margin-bottom:8px; color:var(--sbs-primary);"></div>
+            <div id="resumen-rep-rrhh" style="font-size:12.5px; font-weight:700; margin-bottom:8px; color:var(--sbs-primary);"></div>
             <div class="table-wrap">
               <table>
                 <thead><tr><th>DNI</th><th>Nombres</th><th># Des.</th><th>Costo Des.</th><th># Alm.</th><th>Costo Alm.</th><th>Costo Total</th></tr></thead>
@@ -211,6 +218,13 @@
             asignarUsuarioYEntrar(regFresco, sesionGuardada.token);
           } else { cerrarSesion(); }
         }
+      });
+
+      document.getElementById('txt-dni').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') verificarPasoDNI();
+      });
+      document.getElementById('txt-clave').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') confirmarClaveLogin();
       });
     });
 
@@ -278,7 +292,14 @@
     function verificarPasoDNI() {
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) { mostrarToast('⚠️ Ingresa un DNI válido.'); return; }
+      
+      const btn = document.getElementById('btn-ingresar');
+      btn.disabled = true;
+      btn.textContent = 'Verificando...';
+
       ejecutarConReintento('loginEnVivo', [dni], res => {
+        btn.disabled = false;
+        btn.textContent = 'Continuar';
         if (res && res.ok) {
           STATE.bootstrapCargado = true;
           STATE.hoyStr = res.data.hoyStr;
@@ -287,6 +308,10 @@
           STATE.diccionarioUsuarios = res.data.diccionarioUsuarios;
           abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
         } else { mostrarToast('❌ DNI no registrado.'); }
+      }, () => {
+        btn.disabled = false;
+        btn.textContent = 'Continuar';
+        mostrarToast('❌ Error de conexión.');
       });
     }
 
@@ -313,11 +338,21 @@
       const dni = STATE.registroPendienteLogin.usuario.dni;
       const esCreacion = !STATE.registroPendienteLogin.usuario.tieneClave;
 
+      const btn = document.getElementById('btn-confirmar-clave');
+      btn.disabled = true;
+      btn.textContent = 'Ingresando...';
+
       ejecutarConReintento('autenticarOConfigurarClave', [dni, clave, esCreacion], res => {
+        btn.disabled = false;
+        btn.textContent = 'Ingresar';
         if (res && res.ok) {
           STATE.registroPendienteLogin.usuario.tieneClave = true;
           asignarUsuarioYEntrar(STATE.registroPendienteLogin, res.tokenSesion);
         } else { mostrarToast('❌ ' + (res ? res.msg : 'Error')); }
+      }, () => {
+        btn.disabled = false;
+        btn.textContent = 'Ingresar';
+        mostrarToast('❌ Error de conexión.');
       });
     }
 
@@ -351,13 +386,33 @@
       });
     }
 
+    function cargarPanelSalud() {
+      document.getElementById('panel-salud-app').innerHTML = '⏳ Verificando salud en tiempo real...';
+      ejecutarConReintento('obtenerEstadisticasSaludApp', [STATE.usuario.dni], res => {
+        if (!res || !res.ok) {
+          document.getElementById('panel-salud-app').innerHTML = '❌ No se pudo consultar la salud.';
+          return;
+        }
+        let htmlLogs = (res.ultimosLogs && res.ultimosLogs.length > 0) 
+          ? res.ultimosLogs.map(l => `• [${l[0]}] <b>${l[1]}</b>: ${l[2]}`).join('<br>') 
+          : 'Sin errores registrados hoy. ¡Sistema estable!';
+        
+        document.getElementById('panel-salud-app').innerHTML = `
+          🟢 <b>Estado del Servidor:</b> ${res.salud}<br>
+          📱 <b>Escaneos QR hoy:</b> ${res.escaneosHoy}<br>
+          ⚠️ <b>Errores registrados hoy:</b> ${res.totalErroresHoy}<br>
+          <div style="margin-top:6px; border-top:1px solid #cbd5e1; padding-top:4px;"><b>Últimos registros / errores:</b><br>${htmlLogs}</div>
+        `;
+      });
+    }
+
     function renderizarVistaPrincipal() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-main').style.display = 'flex';
       document.getElementById('lbl-nombre').textContent = 'Hola, ' + STATE.usuario.nombre.split(' ')[0];
       document.getElementById('lbl-estado-rol').textContent = `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}`;
       document.getElementById('tab-btn-rrhh').style.display = (STATE.usuario.rol === 'Admin_RRHH') ? 'block' : 'none';
-      if (STATE.usuario.rol === 'Admin_RRHH') inicializarControlesRRHH();
+      if (STATE.usuario.rol === 'Admin_RRHH') { inicializarControlesRRHH(); cargarPanelSalud(); }
 
       let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
       if (idxHoyFisico === -1) STATE.idxPrincipal = 0;
@@ -508,7 +563,14 @@
     }
 
     function descargarExcelDosHojas() {
-      mostrarToast('📥 Generando Excel...');
+      if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
+        mostrarToast('⚠️ Consulta un rango primero.');
+        return;
+      }
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(STATE.resumenReporte);
+      XLSX.utils.book_append_sheet(wb, ws, "Consolidado");
+      XLSX.writeFile(wb, "Planilla_Comedor.xlsx");
     }
   </script>
 </body>

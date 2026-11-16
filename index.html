@@ -4,16 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=4">
+  <link rel="manifest" href="manifest.json?v=6">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <!-- Ícono con ?v=4 para forzar a iOS y Android a usar el nuevo Logo.jpg con fondo blanco -->
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=4">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=4">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=4">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=6">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=6">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=6">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -46,23 +45,10 @@
 
     #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: #ffffff; }
     .login-logo-wrap {
-      width: 165px;
-      height: 165px;
-      border-radius: 22px;
-      overflow: hidden;
-      margin-bottom: 12px;
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 165px; height: 165px; border-radius: 22px; overflow: hidden; margin-bottom: 12px; background: #ffffff;
+      display: flex; align-items: center; justify-content: center;
     }
-    .login-logo-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #ffffff;
-      display: block;
-    }
+    .login-logo-wrap img { width: 100%; height: 100%; object-fit: contain; background: #ffffff; display: block; }
     .dni-input {
       width: 100%; padding: 14px; font-size: 21px; text-align: center; border: 2px solid var(--border);
       border-radius: 12px; margin: 14px 0 12px; letter-spacing: 4px; font-weight: 700; outline: none;
@@ -83,12 +69,7 @@
 
     #view-main { display: none; flex-direction: column; height: 100%; background: var(--bg); }
     .top-bar {
-      background: var(--sbs-primary);
-      color: white;
-      padding: 20px 20px 16px;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 10;
+      background: var(--sbs-primary); color: white; padding: 20px 20px 16px; flex-shrink: 0; position: relative; z-index: 10;
     }
     .top-bar-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
     .top-bar h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.2; }
@@ -136,6 +117,20 @@
     .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
     .srv-split-card.active-alm .op-sub-btn.selected-op { background: var(--sbs-accent); color: white; }
 
+    /* REGLA 3: Ventana emergente (Modal) centrada para el escáner QR */
+    #modal-qr-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.75); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
+    }
+    #modal-qr-content {
+      background: white; width: 100%; max-width: 380px; border-radius: 18px; padding: 20px; text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3); animation: popModal 0.2s ease-out;
+    }
+    @keyframes popModal {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
     @media (max-width: 480px) {
       .app-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
       .top-bar { padding: 18px 16px 14px; }
@@ -155,8 +150,6 @@
       .btn { padding: 12px; font-size: 14px; }
     }
 
-    #box-qr-reader { display: none; background: white; border: 2px solid var(--sbs-accent); border-radius: 14px; padding: 12px; margin-top: 10px; text-align: center; }
-    
     .rrhh-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
     .rrhh-box h4 { margin: 0 0 10px; font-size: 15px; color: var(--sbs-primary); }
     .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -172,10 +165,9 @@
 <body>
 
   <div class="app-shell" id="app-shell">
-    <!-- 1. PANTALLA LOGIN CON FONDO BLANCO -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=4" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=6" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -203,7 +195,6 @@
       </p>
     </div>
 
-    <!-- 2. PANTALLA PRINCIPAL -->
     <div id="view-main">
       <div class="top-bar">
         <div class="top-bar-row">
@@ -211,7 +202,7 @@
             <h2 id="lbl-nombre">Hola</h2>
             <p id="lbl-estado-rol">Tarifas aplicadas según planilla</p>
           </div>
-          <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión para ingresar con otro DNI">Salir</button>
+          <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
         </div>
         <div class="header-kpi-strip">
           <span id="hdr-resumen-cant">☕ 0 Des. | 🍲 0 Alm.</span>
@@ -239,20 +230,17 @@
             📷 Escanear QR en Comedor
           </button>
 
-          <div id="link-contingencia-camara" style="display:none; text-align:center; margin-top:7px;">
-            <a href="javascript:void(0)" onclick="mostrarBoxPinContingencia()" style="font-size:11.5px; color:var(--muted); text-decoration:underline; font-weight:600;">
-              ¿Problemas con la cámara? Ingresar código
-            </a>
-          </div>
-          
-          <div id="box-qr-reader">
-            <p style="font-size:13px; font-weight:700; margin:0 0 8px; color:var(--sbs-primary);">
-              Apunta al código QR del comedor (Lectura en vivo)
-            </p>
-            <div id="qr-reader" style="width:100%; border-radius:10px; overflow:hidden;"></div>
-            <button class="btn btn-outline" style="margin-top:8px; padding:8px; font-size:12px; color:var(--muted);" onclick="cerrarEscanerQR()">
-              Cerrar Cámara
-            </button>
+          <!-- REGLA 3: MODAL EMERGENTE CENTRADO PARA EL ESCÁNER QR -->
+          <div id="modal-qr-overlay">
+            <div id="modal-qr-content">
+              <p style="font-size:14px; font-weight:700; margin:0 0 10px; color:var(--sbs-primary);">
+                Apunta al código QR del comedor
+              </p>
+              <div id="qr-reader" style="width:100%; border-radius:10px; overflow:hidden;"></div>
+              <button class="btn btn-outline" style="margin-top:12px; padding:10px; font-size:13px; color:var(--muted);" onclick="cerrarEscanerQR()">
+                Cancelar / Cerrar
+              </button>
+            </div>
           </div>
 
           <div id="box-pin-contingencia" style="display:none; background:white; border:2px solid #f59e0b; border-radius:14px; padding:12px; margin-top:10px; text-align:center;">
@@ -321,17 +309,14 @@
   <div id="toast"></div>
 
   <script>
-    // ========================================================================
-    // 🔗 URL PERMANENTE DE TU APPS SCRIPT
-    // ========================================================================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxD9X84fQ5IFEI6mjHB1ZptE66rIEXYccIhf_Hax-Itk8fUBqia4wpryaiN_mSFSKI/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
     let HABILITAR_MODO_CODIGO = false;
 
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=6').catch(() => {});
       });
     }
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -375,9 +360,6 @@
       idxPrincipal: 0
     };
 
-    // ========================================================================
-    // ⚡ ARRANQUE INSTANTÁNEO (0.0 SEGUNDOS) CON CACHÉ PERSISTENTE EN EL CELULAR
-    // ========================================================================
     window.addEventListener('DOMContentLoaded', () => {
       const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
       let sesionGuardada = null;
@@ -385,9 +367,8 @@
         try { sesionGuardada = JSON.parse(sesionStr); } catch (e) {}
       }
 
-      // 1. Si ya había iniciado sesión antes y tenemos su snapshot local, abre la pantalla principal en 0ms sin pasar por el login
-      if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token && sesionGuardada.snapshot) {
-        STATE.tokenActivo = sesionGuardada.token;
+      if (sesionGuardada && sesionGuardada.dni && sesionGuardada.snapshot) {
+        STATE.tokenActivo = sesionGuardada.token || '';
         STATE.hoyStr = sesionGuardada.snapshot.hoyStr || '';
         STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
         STATE.horaPeru = sesionGuardada.snapshot.horaPeru || 9;
@@ -399,14 +380,12 @@
         renderizarVistaPrincipal();
       }
 
-      // 2. Sincroniza en segundo plano con el servidor sin bloquear al usuario
       cargarCacheInicial(() => {
         if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
           const regFresco = STATE.diccionarioUsuarios[sesionGuardada.dni];
           if (regFresco && regFresco.usuario.tieneClave) {
             asignarUsuarioYEntrar(regFresco, sesionGuardada.token);
           } else {
-            // Solo si RRHH reseteó su clave o fue eliminado, cierra la sesión
             cerrarSesion();
           }
         }
@@ -515,7 +494,6 @@
       setTimeout(() => { t.style.display = 'none'; }, 3500);
     }
 
-    // Siempre valida en vivo el estado de la contraseña para evitar que un equipo nuevo pida crear clave si ya fue creada en otro celular
     function verificarPasoDNI() {
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
@@ -523,14 +501,6 @@
         return;
       }
 
-      const regMemoria = STATE.diccionarioUsuarios[dni];
-      // Si ya está en memoria y ya consta que tiene clave creada, abre al instante el campo de contraseña
-      if (STATE.bootstrapCargado && regMemoria && regMemoria.usuario.tieneClave) {
-        abrirFormularioClave(regMemoria);
-        return;
-      }
-
-      // Si no consta que tenga clave (o acaba de crearla en otro equipo Android/iOS), consulta en vivo al servidor
       document.getElementById('btn-ingresar').disabled = true;
       document.getElementById('btn-ingresar').textContent = 'Verificando...';
       ejecutarConReintento('loginEnVivo', [dni], res => {
@@ -692,10 +662,14 @@
       let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
       if (idxHoyFisico === -1) {
         STATE.idxPrincipal = 0;
-      } else if (STATE.pasoCorteAlmuerzo && idxHoyFisico < STATE.diasSemana.length - 1) {
-        STATE.idxPrincipal = idxHoyFisico + 1;
       } else {
-        STATE.idxPrincipal = idxHoyFisico;
+        // REGLA 5: A partir de las 2:00 PM (14.0 hrs), la vista por defecto pasa al día siguiente ("MAÑANA")
+        const horaActualDecimal = STATE.horaPeru;
+        if (horaActualDecimal >= 14.0 && idxHoyFisico < STATE.diasSemana.length - 1) {
+          STATE.idxPrincipal = idxHoyFisico + 1;
+        } else {
+          STATE.idxPrincipal = idxHoyFisico;
+        }
       }
 
       const dPrin = STATE.diasSemana[STATE.idxPrincipal];
@@ -727,7 +701,7 @@
 
       if (STATE.modoPruebaQR) {
         btn.disabled = false;
-        btn.textContent = (STATE.horaPeru < 11.5)
+        btn.textContent = (STATE.horaPeru < 14.0)
           ? '📷 Escanear QR en Comedor (Desayuno)'
           : '📷 Escanear QR en Comedor (Almuerzo)';
         linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
@@ -750,16 +724,16 @@
         return;
       }
 
-      if (STATE.horaPeru < 11.5) {
+      if (STATE.horaPeru < 14.0) {
         if (hf.reservoDes && hf.consumioDes) {
           btn.disabled = true;
-          btn.textContent = '✅ Desayuno registrado (Almuerzo desde 11:30 AM)';
+          btn.textContent = '✅ Desayuno registrado (Almuerzo disponible desde 2:00 PM)';
           linkPin.style.display = 'none';
           return;
         }
         if (!hf.reservoDes && hf.reservoAlm) {
           btn.disabled = true;
-          btn.textContent = '🕒 QR Almuerzo disponible desde 11:30 AM';
+          btn.textContent = '🕒 QR Almuerzo disponible desde 2:00 PM';
           linkPin.style.display = 'none';
           return;
         }
@@ -795,25 +769,38 @@
       const desActivo = (d.desayuno !== 'NO'), almActivo = (d.almuerzo !== 'NO');
 
       let detalleDes = '';
-      if (d.desayuno === 'OP1') detalleDes = '1 bebida + 2 panes';
+      if (d.desayuno === 'SI') detalleDes = 'Desayuno General (Sin opción)';
+      else if (d.desayuno === 'OP1') detalleDes = '1 bebida + 2 panes';
       else if (d.desayuno === 'OP2') detalleDes = '1 bebida + 3 huevos';
       else if (d.desayuno === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
 
       const txtDes = desActivo ? detalleDes : 'No solicitado';
-      const txtAlm = almActivo ? `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}` : 'Cancelado';
+      const txtAlm = almActivo ? (d.almuerzo === 'SI' ? 'Almuerzo General' : `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}`) : 'Cancelado';
 
       const lockDesClass = !d.puedeEditarDesayuno ? 'disabled-card' : '';
       const lockAlmClass = !d.puedeEditarAlmuerzo ? 'disabled-card' : '';
-      const avisoDes = !d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Opc. 1, 2 o 3 abajo');
-      const avisoAlm = !d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo');
+      const avisoDes = !d.puedeEditarDesayuno ? '🔒 Cerrado' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Opc. 1, 2 o 3 abajo');
+      const avisoAlm = !d.puedeEditarAlmuerzo ? '🔒 Cerrado' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo');
 
       const fechaVisual = d.fechaCorta || formatearDiaMesCorto(d.fecha);
+
+      // REGLA 5: Etiqueta dinámica HOY (verde) o MAÑANA (naranja a partir de las 2pm si es el día siguiente)
+      let badgeHtml = '';
+      if (d.esHoyFisico) {
+        badgeHtml = '<span style="background:#dcfce7; color:#166534; padding:3px 9px; border-radius:7px; font-size:11.5px;">HOY</span>';
+      } else {
+        const idxHoy = STATE.diasSemana.findIndex(x => x.esHoyFisico);
+        const thisIdx = STATE.diasSemana.findIndex(x => x.fecha === d.fecha);
+        if (idxHoy !== -1 && thisIdx === idxHoy + 1 && STATE.horaPeru >= 14.0) {
+          badgeHtml = '<span style="background:#ffedd5; color:#ea580c; padding:3px 9px; border-radius:7px; font-size:11.5px; font-weight:bold;">MAÑANA</span>';
+        }
+      }
 
       return `
         <div class="day-card" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
           <div class="day-header">
             <span>${d.diaTexto} ${fechaVisual}</span>
-            ${d.esHoyFisico ? '<span style="background:#dcfce7; color:#166534; padding:3px 9px; border-radius:7px; font-size:11.5px;">HOY</span>' : ''}
+            ${badgeHtml}
           </div>
           <div class="menu-box">
             <div>☕ <b>Desayuno:</b> ${d.menuDesayuno}</div>
@@ -859,7 +846,7 @@
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
-      mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno Opc. ${nVal.replace('OP','')} reservado`);
+      mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno ${nVal.startsWith('OP') ? 'Opc. '+nVal.replace('OP','') : 'reservado'}`);
       ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni }], res => {
         if (!res.ok) {
           dia.desayuno = vAnt;
@@ -882,8 +869,8 @@
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
-      mostrarToast(nVal === 'NO' ? '✅ Almuerzo cancelado' : `✅ Almuerzo ${nVal.charAt(0) + nVal.slice(1).toLowerCase()} confirmado`);
-      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni }], res => {
+      mostrarToast(nVal === 'NO' ? '✅ Almuerzo cancelado' : `✅ Almuerzo ${nVal === 'SI' ? 'General' : nVal.charAt(0) + nVal.slice(1).toLowerCase()} confirmado`);
+      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: nVal }], res => {
         if (!res.ok) {
           dia.almuerzo = vAnt;
           if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (vAnt !== 'NO');
@@ -918,15 +905,15 @@
       }
     }
 
+    // REGLA 3: Apertura instantánea de la ventana emergente central (*Modal*) para la cámara
     async function abrirEscanerQR() {
       if (document.getElementById('btn-escanear-qr').disabled) return;
       document.getElementById('box-pin-contingencia').style.display = 'none';
 
-      const box = document.getElementById('box-qr-reader');
-      box.style.display = 'block';
-      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const overlay = document.getElementById('modal-qr-overlay');
+      overlay.style.display = 'flex';
 
-      await new Promise(r => setTimeout(r, 150));
+      await new Promise(r => setTimeout(r, 100));
 
       try {
         if (STATE.html5QrCode) {
@@ -975,7 +962,7 @@
     }
 
     function cerrarEscanerQR() {
-      document.getElementById('box-qr-reader').style.display = 'none';
+      document.getElementById('modal-qr-overlay').style.display = 'none';
       if (STATE.html5QrCode && STATE.html5QrCode.isScanning) {
         STATE.html5QrCode.stop().catch(() => {});
       }
@@ -991,7 +978,7 @@
     }
 
     function confirmarPinCamaraMalograda() {
-      const pin = document.getElementById('txt-pin-comedor').value.trim();
+      const pin = document.getElementById('txt-pin-contingencia').value.trim();
       if (pin.length < 3) {
         mostrarToast('⚠️ Ingresa el código de 3 dígitos del comedor.');
         return;

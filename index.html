@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=15">
+  <link rel="manifest" href="manifest.json?v=16">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=15">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=15">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=15">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=16">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=16">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=16">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -100,12 +100,17 @@
 
     .srv-grid { display: flex; gap: 10px; align-items: stretch; }
 
-    .srv-split-card { flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white; display: flex; flex-direction: column; overflow: hidden; transition: 0.15s; min-width: 0; }
+    /* Altura normalizada en las tarjetas de servicio para que OP1, OP2 y OP3 midan exactamente igual */
+    .srv-split-card {
+      flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white;
+      display: flex; flex-direction: column; overflow: hidden; transition: 0.15s;
+      min-width: 0; min-height: 128px;
+    }
     .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
     .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
     .srv-split-card.disabled-card { opacity: 0.55; background: #f1f5f9; pointer-events: none; }
 
-    .srv-split-top { padding: 9px 6px 7px; text-align: center; cursor: pointer; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .srv-split-top { padding: 8px 6px 6px; text-align: center; cursor: pointer; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     .srv-split-top .title { font-size: 14.5px; font-weight: 700; display: block; color: var(--text); }
     .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
     .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
@@ -116,15 +121,19 @@
 
     .pan-dropdown-wrap {
       display: flex; gap: 4px; padding: 0 5px 6px; justify-content: center; align-items: center;
+      min-height: 33px;
     }
     .pan-select {
-      flex: 1; min-width: 0; width: 100%; padding: 5px 3px; font-size: 11px; font-weight: 700;
-      color: #9a3412; background: #ffffff; border: 1.5px solid #fdba74; border-radius: 7px;
-      outline: none; text-overflow: ellipsis; cursor: pointer;
+      flex: 1; min-width: 0; width: 100%; height: 27px; padding: 0 4px;
+      font-size: 11px; font-weight: 700; color: #9a3412; background: #ffffff;
+      border: 1.5px solid #fdba74; border-radius: 7px; outline: none;
+      text-align: center; text-align-last: center; -moz-text-align-last: center;
+      cursor: pointer;
     }
+    .pan-select option { text-align: center; }
     .pan-select:focus { border-color: var(--sbs-orange); }
     
-    .srv-split-bottom { display: flex; border-top: 1.5px solid var(--border); background: #f8fafc; }
+    .srv-split-bottom { display: flex; border-top: 1.5px solid var(--border); background: #f8fafc; flex-shrink: 0; }
     .srv-split-card.active-des .srv-split-bottom { border-top-color: #fdba74; }
     .srv-split-card.active-alm .srv-split-bottom { border-top-color: #a7f3d0; }
     
@@ -159,10 +168,12 @@
       .day-header { font-size: 14px; margin-bottom: 7px; }
       .menu-box { padding: 7px 9px; font-size: 11.4px; letter-spacing: -0.2px; margin-bottom: 9px; }
       .srv-grid { gap: 8px; }
-      .srv-split-top { padding: 8px 4px 6px; }
+      .srv-split-card { min-height: 120px; }
+      .srv-split-top { padding: 7px 4px 5px; }
       .srv-split-top .title { font-size: 13.5px; }
       .srv-split-top .status { font-size: 10.8px; margin-top: 2px; }
-      .pan-select { font-size: 10.5px; padding: 4px 2px; }
+      .pan-dropdown-wrap { min-height: 31px; padding: 0 4px 5px; }
+      .pan-select { font-size: 10.5px; height: 25px; padding: 0 2px; }
       .op-sub-btn { padding: 8px 2px; font-size: 11.2px; }
       .btn { padding: 12px; font-size: 14px; }
     }
@@ -190,7 +201,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=15" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=16" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -296,28 +307,28 @@
         <!-- PESTAÑA 2: MI SEMANA -->
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
-        <!-- PESTAÑA 3A: PERFIL GEP EN MÓVIL (SOLO RESETEO DE CLAVE Y ENLACE AL PORTAL DESKTOP) -->
+        <!-- PESTAÑA 3A: PERFIL GEP EN MÓVIL -->
         <div id="pane-rrhh" style="display:none;">
           <div class="rrhh-box">
-            <h4>🔑 Resetear Contraseña de Colaborador</h4>
+            <h4>🔑 Restablecer Contraseña de Colaborador</h4>
             <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
               Si un colaborador olvidó su contraseña, ingresa su DNI aquí para limpiarla. En su próximo acceso la App le pedirá crear una nueva.
             </p>
             <div class="form-row" style="margin-bottom:0;">
               <input type="tel" id="rrhh-dni-reset" class="form-control" placeholder="DNI del colaborador (8 dígitos)" maxlength="8">
               <button class="btn btn-primary" id="btn-reset-clave" style="flex:0.6; padding:10px;" onclick="ejecutarReseteoClaveRRHH()">
-                Resetear Clave
+                Restablecer
               </button>
             </div>
           </div>
 
           <div class="rrhh-box">
-            <h4>💻 Portal GEP - Comedor (Versión Escritorio)</h4>
+            <h4>💻 Portal GEP • Comedor (Escritorio)</h4>
             <p style="font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
-              El monitoreo en tiempo real de reservas y asistencias QR, la administración de colaboradores, el menú semanal y la descarga del reporte de planilla en Excel están disponibles en el Portal Web de Escritorio.
+              El monitoreo en tiempo real, la base de colaboradores, el menú semanal y el reporte de planilla en Excel están disponibles en el Portal Web de Escritorio.
             </p>
             <a href="./gep.html" target="_blank" class="btn btn-outline" style="font-size:13px; padding:11px; border-color:var(--sbs-primary); color:var(--sbs-primary);">
-              Abrir Portal GEP - Comedor
+              Abrir Portal GEP
             </a>
           </div>
         </div>
@@ -379,9 +390,10 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    const FECHA_ARRANQUE_ALMUERZO = "2026-11-17";
-    const FECHA_ARRANQUE_DESAYUNO = "2026-11-18";
-    const PANES_POR_DEFECTO = ["Pollo", "Queso fresco", "Aceituna", "Huevo o tortilla", "Hot dog"];
+    // Primer escaneo oficial: Miércoles 18/11 en Almuerzo (Desayuno desde Jueves 19/11)
+    const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
+    const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
+    const PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
     let HABILITAR_MODO_CODIGO = false;
     let TIMERS_DEBOUNCE_SERVICIO = {};
@@ -389,7 +401,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=15').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=16').catch(() => {});
       });
     }
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -437,26 +449,41 @@
       if (!p) return '';
       const low = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       if (low.includes('pollo')) return 'Pollo';
-      if (low.includes('queso')) return 'Queso fresco';
+      if (low.includes('queso')) return 'Queso';
       if (low.includes('aceituna')) return 'Aceituna';
-      if (low.includes('huevo') || low.includes('tortilla')) return 'Huevo o tortilla';
+      if (low.includes('tortilla') && !low.includes('huevo')) return 'Tortilla';
+      if (low.includes('huevo')) return 'Huevo';
       if (low.includes('hot') || low.includes('dog')) return 'Hot dog';
       return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
     }
 
     function obtenerInfoMenuDia(d) {
-      if (Array.isArray(d.panesDisponibles) && d.panesDisponibles.length > 0 && d.bebidasTexto) {
-        return { panes: d.panesDisponibles, bebidas: d.bebidasTexto };
-      }
       const raw = String(d.menuDesayuno || '');
       const partes = raw.split('+');
       const izq = String(partes[0] || '').trim();
       const der = partes.length > 1 ? partes.slice(1).join('+').trim() : 'Avena / Maca / Infusión / Café';
 
-      let panes = izq.split('/').map(x => normalizarPanCliente(x)).filter(Boolean);
-      if (panes.length === 0) panes = PANES_POR_DEFECTO.slice();
+      const panes = [];
+      const origenPanes = (Array.isArray(d.panesDisponibles) && d.panesDisponibles.length > 0)
+        ? d.panesDisponibles
+        : izq.split('/');
 
-      const bebidas = der.split('/').map(b => String(b || '').trim()).filter(Boolean).join(' o ');
+      origenPanes.forEach(item => {
+        const lowItem = String(item || '').toLowerCase();
+        if (lowItem.includes('huevo') && lowItem.includes('tortilla')) {
+          if (!panes.includes('Huevo')) panes.push('Huevo');
+          if (!panes.includes('Tortilla')) panes.push('Tortilla');
+        } else {
+          const n = normalizarPanCliente(item);
+          if (n && !panes.includes(n)) panes.push(n);
+        }
+      });
+
+      if (panes.length === 0) {
+        PANES_POR_DEFECTO.forEach(p => panes.push(p));
+      }
+
+      const bebidas = d.bebidasTexto || der.split('/').map(b => String(b || '').trim()).filter(Boolean).join(' o ');
       return { panes: panes, bebidas: bebidas || 'Avena o Maca o Infusión o Café' };
     }
 
@@ -474,7 +501,7 @@
         const m = raw.match(/\(([^)]+)\)/);
         if (!m || !m[1].trim()) return 'NO';
         if (op === 'OP2') return 'OP2';
-        const items = m[1].split(/\s+y\s+|\s+o\s+|[,\/;+\-]/i).map(x => normalizarPanCliente(x)).filter(Boolean);
+        const items = m[1].split(/[,\/;+]/).map(x => normalizarPanCliente(x)).filter(Boolean);
         if (items.length === 0) return 'NO';
         if (op === 'OP1') return `OP1|${items[0]}|${items[1] || items[0]}`;
         if (op === 'OP3') return `OP3|${items[0]}`;
@@ -519,8 +546,8 @@
       }
       const p = norm.split('|');
       const op = p[0];
-      const p1 = p[1] || listaPanes[0];
-      const p2 = p[2] || p1;
+      const p1 = normalizarPanCliente(p[1] || listaPanes[0]) || listaPanes[0];
+      const p2 = normalizarPanCliente(p[2] || p1) || p1;
       return { op: op, pan1: p1, pan2: p2 };
     }
 
@@ -898,7 +925,7 @@
         infoBox.innerHTML = `
           <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
           <b>Triggers Automáticos:</b> ${valSeguro(res.triggersActivos, '-')}  | 
-          <b>Inicio App:</b> Alm 17/11 • Des 18/11<br>
+          <b>Inicio App:</b> Alm 18/11 • Des 19/11<br>
           <b>Registros en PLANIFICACION:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
           <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
@@ -944,21 +971,21 @@
     }
 
     // ========================================================================
-    // MÓDULO GEP EN APP MÓVIL (RESETEO DE CLAVE)
+    // MÓDULO GEP EN APP MÓVIL
     // ========================================================================
     function ejecutarReseteoClaveRRHH() {
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
       if (dniTarget.length < 7) {
-        mostrarToast('⚠️ Ingresa el DNI de 8 dígitos del colaborador a resetear.');
+        mostrarToast('⚠️ Ingresa el DNI de 8 dígitos del colaborador.');
         return;
       }
       const btn = document.getElementById('btn-reset-clave');
       btn.disabled = true;
-      btn.textContent = 'Reseteando...';
+      btn.textContent = 'Procesando...';
 
       ejecutarConReintento('resetearClaveColaboradorRRHH', [STATE.usuario.dni, dniTarget], res => {
         btn.disabled = false;
-        btn.textContent = 'Resetear Clave';
+        btn.textContent = 'Restablecer';
         if (res && res.ok) {
           if (STATE.diccionarioUsuarios[res.dniReseteado]) {
             STATE.diccionarioUsuarios[res.dniReseteado].usuario.tieneClave = false;
@@ -966,11 +993,11 @@
           document.getElementById('rrhh-dni-reset').value = '';
           mostrarToast('✅ ' + res.msg);
         } else {
-          mostrarToast('⚠️ ' + (res ? res.msg : 'No se pudo resetear la clave.'));
+          mostrarToast('⚠️ ' + (res ? res.msg : 'No se pudo restablecer la clave.'));
         }
       }, () => {
         btn.disabled = false;
-        btn.textContent = 'Resetear Clave';
+        btn.textContent = 'Restablecer';
         mostrarToast('❌ Error de conexión.');
       });
     }
@@ -1039,7 +1066,7 @@
 
       if (!hf.reservoDes && !hf.reservoAlm) {
         btn.disabled = true;
-        btn.textContent = '🚫 Sin servicios reservados para hoy';
+        btn.textContent = '🚫 Sin servicios reservados en App para hoy';
         linkPin.style.display = 'none';
         return;
       }
@@ -1114,10 +1141,14 @@
       const desActivo = habDes && (opBase !== 'NO');
       const almActivo = habAlm && (d.almuerzo !== 'NO');
 
+      // Texto interactivo en el recuadro superior: si los 2 panes son iguales dice "2 panes con ..."
       let lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> ${d.menuDesayuno}`;
       if (desActivo) {
         if (opBase === 'OP1') {
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} / ${infoDes.pan2}</span> + ${infoMenu.bebidas}`;
+          const textoPanes = (infoDes.pan1.toLowerCase() === infoDes.pan2.toLowerCase())
+            ? `2 panes con ${infoDes.pan1}`
+            : `Pan con ${infoDes.pan1} / ${infoDes.pan2}`;
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">${textoPanes}</span> + ${infoMenu.bebidas}`;
         } else if (opBase === 'OP2') {
           lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> + ${infoMenu.bebidas}`;
         } else if (opBase === 'OP3') {
@@ -1125,14 +1156,15 @@
         }
       }
 
+      // Textos normalizados de detalle de cada opción
       let detalleDes = '';
-      if (opBase === 'OP1') detalleDes = '1 bebida + 2 panes';
-      else if (opBase === 'OP2') detalleDes = '1 bebida + 3 huevos';
-      else if (opBase === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
+      if (opBase === 'OP1') detalleDes = 'bebida + 2 panes';
+      else if (opBase === 'OP2') detalleDes = 'bebida + 3 huevos';
+      else if (opBase === 'OP3') detalleDes = 'bebida + pan + huevo';
 
-      const txtDes = !habDes ? 'Registro en hoja física' : (desActivo ? detalleDes : 'No solicitado');
+      const txtDes = !habDes ? 'Registro en hoja GEP' : (desActivo ? detalleDes : 'No solicitado');
       const txtAlm = !habAlm
-        ? 'Registro en hoja física'
+        ? 'Registro en hoja GEP'
         : (almActivo
           ? `Confirmado: ${d.almuerzo === 'ALTERNATIVO' ? 'Alternativo' : 'Regular'}`
           : 'Cancelado');
@@ -1141,10 +1173,10 @@
       const lockAlmClass = (!habAlm || !d.puedeEditarAlmuerzo) ? 'disabled-card' : '';
 
       const avisoDes = !habDes
-        ? 'Inicia Mié 18/11'
+        ? ''
         : (!d.puedeEditarDesayuno ? '🔒 Cerrado (4pm día ant.)' : (!desActivo ? 'Elige Opc. 1, 2 o 3 abajo' : ''));
       const avisoAlm = !habAlm
-        ? 'Inicia Mar 17/11'
+        ? ''
         : (!d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (!almActivo ? 'Elige Regular o Alternativo' : ''));
 
       let dropdownsPanesHtml = '';
@@ -1159,12 +1191,14 @@
             </div>
           `;
         } else if (opBase === 'OP3') {
-          const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>Pan: ${p}</option>`).join('');
+          const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>${p}</option>`).join('');
           dropdownsPanesHtml = `
             <div class="pan-dropdown-wrap" onclick="event.stopPropagation()">
               <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 1, this.value)" title="Tipo de pan">${opts1}</select>
             </div>
           `;
+        } else if (opBase === 'OP2') {
+          dropdownsPanesHtml = `<div class="pan-dropdown-wrap"></div>`;
         }
       }
 

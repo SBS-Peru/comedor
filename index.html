@@ -4,17 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=14">
+  <link rel="manifest" href="manifest.json?v=15">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=14">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=14">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=14">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=15">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=15">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=15">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
       --sbs-primary: #13392a;
@@ -67,7 +66,7 @@
     }
     .pass-input:focus { border-color: var(--sbs-primary); }
 
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
     .btn-primary { background: var(--sbs-primary); color: white; }
     .btn-success { background: var(--sbs-accent); color: white; }
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
@@ -115,7 +114,6 @@
     .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
     .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
 
-    /* Contenedor de listas desplegables de panes justo encima de los botones de opción */
     .pan-dropdown-wrap {
       display: flex; gap: 4px; padding: 0 5px 6px; justify-content: center; align-items: center;
     }
@@ -192,7 +190,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=14" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=15" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -239,7 +237,7 @@
       <div class="tabs">
         <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Hoy</div>
         <div class="tab" id="tab-btn-semana" onclick="cambiarTab('SEMANA')">Mi Semana</div>
-        <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">⚙️ RRHH</div>
+        <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">⚙️ GEP</div>
         <div class="tab" id="tab-btn-tecnico" style="display:none;" onclick="cambiarTab('TECNICO')">Técnico</div>
       </div>
 
@@ -298,7 +296,7 @@
         <!-- PESTAÑA 2: MI SEMANA -->
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
-        <!-- PESTAÑA 3A: PERFIL EXCLUSIVO RRHH -->
+        <!-- PESTAÑA 3A: PERFIL GEP EN MÓVIL (SOLO RESETEO DE CLAVE Y ENLACE AL PORTAL DESKTOP) -->
         <div id="pane-rrhh" style="display:none;">
           <div class="rrhh-box">
             <h4>🔑 Resetear Contraseña de Colaborador</h4>
@@ -314,27 +312,13 @@
           </div>
 
           <div class="rrhh-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-              <div>
-                <h4 style="margin:0;">📊 Reporte Mensual Planilla (25 al 24)</h4>
-              </div>
-              <button class="btn btn-outline" style="width:auto; padding:7px 12px; font-size:12.5px;" onclick="imprimirAficheQR()">
-                🖨️ Imprimir Hoja QR Comedor
-              </button>
-            </div>
-            <div class="form-row">
-              <input type="date" id="rep-ini" class="form-control">
-              <input type="date" id="rep-fin" class="form-control">
-              <button class="btn btn-primary" style="flex:0.45; padding:10px;" onclick="cargarReporteRRHH()">Consultar</button>
-              <button class="btn btn-success" style="flex:0.85; padding:10px;" onclick="descargarExcelDosHojas()">📥 Descargar Excel (.xlsx)</button>
-            </div>
-            <div id="resumen-rep-rrhh" style="font-size:13px; font-weight:700; margin-bottom:8px; color:var(--sbs-primary);"></div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>DNI</th><th>Nombres</th><th># Des.</th><th>Costo Des.</th><th># Alm.</th><th>Costo Alm.</th><th style="background:#dcfce7; color:#166534;">Costo Total</th></tr></thead>
-                <tbody id="tbody-rep-rrhh"><tr><td colspan="7" style="text-align:center; color:var(--muted);">Selecciona un rango y presiona Consultar</td></tr></tbody>
-              </table>
-            </div>
+            <h4>💻 Portal GEP - Comedor (Versión Escritorio)</h4>
+            <p style="font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
+              El monitoreo en tiempo real de reservas y asistencias QR, la administración de colaboradores, el menú semanal y la descarga del reporte de planilla en Excel están disponibles en el Portal Web de Escritorio.
+            </p>
+            <a href="./gep.html" target="_blank" class="btn btn-outline" style="font-size:13px; padding:11px; border-color:var(--sbs-primary); color:var(--sbs-primary);">
+              Abrir Portal GEP - Comedor
+            </a>
           </div>
         </div>
 
@@ -405,7 +389,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=14').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=15').catch(() => {});
       });
     }
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -442,16 +426,11 @@
       diasSemana: [],
       hoyFisico: null,
       colaboradores: [],
-      resumenReporte: [],
-      ultimasFilasReporte: [],
       html5QrCode: null,
       procesandoEscaneo: false,
       idxPrincipal: 0
     };
 
-    // ========================================================================
-    // PARSEO Y NORMALIZACIÓN DE PANES Y BEBIDAS DESDE MENU_SEMANAL
-    // ========================================================================
     function normalizarPanCliente(rawPan) {
       let p = String(rawPan || '').trim();
       p = p.replace(/^pan\s+con\s+/i, '').replace(/^pan\s+de\s+/i, '').trim();
@@ -495,7 +474,7 @@
         const m = raw.match(/\(([^)]+)\)/);
         if (!m || !m[1].trim()) return 'NO';
         if (op === 'OP2') return 'OP2';
-        const items = m[1].split(/[,\/;+]/).map(x => normalizarPanCliente(x)).filter(Boolean);
+        const items = m[1].split(/\s+y\s+|\s+o\s+|[,\/;+\-]/i).map(x => normalizarPanCliente(x)).filter(Boolean);
         if (items.length === 0) return 'NO';
         if (op === 'OP1') return `OP1|${items[0]}|${items[1] || items[0]}`;
         if (op === 'OP3') return `OP3|${items[0]}`;
@@ -519,7 +498,6 @@
       }
 
       if (upper === 'OP2') return 'OP2';
-      // Si en BD vino solo OP1 u OP3 sin panes, se considera NO
       return 'NO';
     }
 
@@ -584,13 +562,6 @@
         aplicarReglaArranqueARegistro(dicc[dni]);
       });
       return dicc;
-    }
-
-    function convertirFechaPeruAISO(fStr) {
-      const s = String(fStr || '').trim();
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-      const p = s.split('/');
-      return p.length === 3 ? `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}` : s;
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -739,12 +710,6 @@
         return;
       }
 
-      const regMemoria = STATE.diccionarioUsuarios[dni];
-      if (STATE.bootstrapCargado && regMemoria && regMemoria.usuario.tieneClave) {
-        abrirFormularioClave(regMemoria);
-        return;
-      }
-
       document.getElementById('btn-ingresar').disabled = true;
       document.getElementById('btn-ingresar').textContent = 'Verificando...';
       ejecutarConReintento('loginEnVivo', [dni], res => {
@@ -876,7 +841,7 @@
       if (!u) return false;
       if (u.esRRHH) return true;
       const r = String(u.rol || '').toUpperCase().trim();
-      return r === 'ADMIN_RRHH' || r === 'RRHH';
+      return r === 'ADMIN_RRHH' || r === 'RRHH' || r === 'ADMIN_GEP' || r === 'GEP';
     }
 
     // ========================================================================
@@ -979,7 +944,7 @@
     }
 
     // ========================================================================
-    // MÓDULO RRHH
+    // MÓDULO GEP EN APP MÓVIL (RESETEO DE CLAVE)
     // ========================================================================
     function ejecutarReseteoClaveRRHH() {
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
@@ -1015,7 +980,7 @@
       document.getElementById('view-main').style.display = 'flex';
       document.getElementById('lbl-nombre').textContent = 'Hola, ' + STATE.usuario.nombre.split(' ')[0];
       document.getElementById('lbl-estado-rol').textContent = (STATE.usuario.estado !== 'ACTIVO')
-        ? `Estado: ${STATE.usuario.estado} (Excluido)`
+        ? `Estado: ${STATE.usuario.estado}${STATE.usuario.fechaFinEstado ? ' (hasta ' + formatearDiaMesCorto(STATE.usuario.fechaFinEstado) + ')' : ''}`
         : `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}`;
 
       const mostrarRRHH = esUsuarioRRHH(STATE.usuario);
@@ -1023,8 +988,6 @@
 
       document.getElementById('tab-btn-rrhh').style.display = mostrarRRHH ? 'block' : 'none';
       document.getElementById('tab-btn-tecnico').style.display = mostrarTech ? 'block' : 'none';
-
-      if (mostrarRRHH) inicializarControlesRRHH();
 
       let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
       if (idxHoyFisico === -1) {
@@ -1090,7 +1053,6 @@
         return;
       }
 
-      // Franja de la mañana (Antes de las 12:00 PM)
       if (STATE.horaPeru < 12.0) {
         if (hf.reservoDes && !hf.consumioDes) {
           if (STATE.horaPeru < 8.5) {
@@ -1117,7 +1079,6 @@
           return;
         }
       } else {
-        // Franja de la tarde (Desde las 12:00 PM en adelante)
         if (hf.reservoAlm && hf.consumioAlm) {
           btn.disabled = true;
           btn.textContent = '✅ Almuerzo ya registrado hoy';
@@ -1153,7 +1114,6 @@
       const desActivo = habDes && (opBase !== 'NO');
       const almActivo = habAlm && (d.almuerzo !== 'NO');
 
-      // 1. Texto dinámico del recuadro superior (.menu-box) según los panes seleccionados
       let lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> ${d.menuDesayuno}`;
       if (desActivo) {
         if (opBase === 'OP1') {
@@ -1165,7 +1125,6 @@
         }
       }
 
-      // 2. Estado compacto en la tarjeta de Desayuno y Almuerzo
       let detalleDes = '';
       if (opBase === 'OP1') detalleDes = '1 bebida + 2 panes';
       else if (opBase === 'OP2') detalleDes = '1 bebida + 3 huevos';
@@ -1181,7 +1140,6 @@
       const lockDesClass = (!habDes || !d.puedeEditarDesayuno) ? 'disabled-card' : '';
       const lockAlmClass = (!habAlm || !d.puedeEditarAlmuerzo) ? 'disabled-card' : '';
 
-      // Se elimina "Toca la activa para cancelar"
       const avisoDes = !habDes
         ? 'Inicia Mié 18/11'
         : (!d.puedeEditarDesayuno ? '🔒 Cerrado (4pm día ant.)' : (!desActivo ? 'Elige Opc. 1, 2 o 3 abajo' : ''));
@@ -1189,7 +1147,6 @@
         ? 'Inicia Mar 17/11'
         : (!d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (!almActivo ? 'Elige Regular o Alternativo' : ''));
 
-      // 3. Listas desplegables de panes justo encima de los botones de opción
       let dropdownsPanesHtml = '';
       if (desActivo && d.puedeEditarDesayuno) {
         if (opBase === 'OP1') {
@@ -1396,8 +1353,6 @@
         cerrarEscanerQR();
         document.getElementById('tab-btn-rrhh').classList.add('active');
         document.getElementById('pane-rrhh').style.display = 'block';
-        document.getElementById('app-shell').classList.add('wide-rrhh');
-        cargarReporteRRHH();
       } else if (tab === 'TECNICO') {
         cerrarEscanerQR();
         document.getElementById('tab-btn-tecnico').classList.add('active');
@@ -1531,211 +1486,6 @@
       document.getElementById('ticket-titulo').textContent = `¡${servicio} REGISTRADO!`;
       document.getElementById('ticket-sub').textContent = `${STATE.usuario.nombre} • ${STATE.hoyPeruCompleto}`;
       box.style.display = 'block';
-    }
-
-    function imprimirAficheQR() {
-      const urlCheckin = 'https://sbs-peru.github.io/comedor/?checkin=1';
-      const qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(urlCheckin);
-
-      const w = window.open('', '_blank');
-      w.document.write(`
-        <html><head><title>Cartel Oficial Comedor SBS</title></head>
-        <body style="font-family:sans-serif; text-align:center; padding:40px;">
-          <h1 style="color:#13392a; margin-bottom:6px; font-size:32px;">COMEDOR SBS</h1>
-          <p style="color:#334155; font-size:18px; margin-top:0;">
-            Escanea este código QR desde la App Comedor SBS o con la cámara de tu celular
-          </p>
-          <div style="margin:28px auto; padding:24px; border:5px solid #13392a; display:inline-block; border-radius:22px;">
-            <img src="${qrApi}" width="340" height="340" alt="QR Comedor SBS"/>
-          </div>
-          <script>setTimeout(() => window.print(), 700);<\/script>
-        </body></html>
-      `);
-      w.document.close();
-    }
-
-    function inicializarControlesRRHH() {
-      const hoyDate = new Date(STATE.hoyStr + 'T00:00:00');
-      let mes = hoyDate.getMonth(), anio = hoyDate.getFullYear();
-      if (hoyDate.getDate() <= 24) mes = mes - 1;
-      document.getElementById('rep-ini').value = new Date(anio, mes, 25).toISOString().split('T')[0];
-      document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
-    }
-
-    function cargarReporteRRHH() {
-      const fIni = document.getElementById('rep-ini').value, fFin = document.getElementById('rep-fin').value;
-      document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Calculando consolidado...</td></tr>';
-      ejecutarConReintento('obtenerReportePlanillaRRHH', [fIni, fFin], res => {
-        const filasCrudas = (res && res.filas) ? res.filas : [];
-        const hoyISO = STATE.hoyStr || new Date().toISOString().split('T')[0];
-
-        const filasValidas = filasCrudas.filter(f => {
-          const iso = f.fechaISO || convertirFechaPeruAISO(f.fecha);
-          const esDes = String(f.servicio || '').toUpperCase().startsWith('DESAYUNO');
-          if (iso > hoyISO) return false;
-          if (esDes && iso < FECHA_ARRANQUE_DESAYUNO) return false;
-          if (!esDes && iso < FECHA_ARRANQUE_ALMUERZO) return false;
-          if (iso === hoyISO && String(f.consumio || '').toUpperCase() !== 'SI') return false;
-          return true;
-        });
-
-        const mapaRecalculado = {};
-        filasValidas.forEach(f => {
-          const dni = normalizarDniCliente(f.dni);
-          if (!mapaRecalculado[dni]) {
-            mapaRecalculado[dni] = {
-              dni: dni,
-              nombre: f.nombre,
-              cantDesayunos: 0,
-              costoDesayunos: 0,
-              cantAlmuerzos: 0,
-              costoAlmuerzos: 0,
-              costoTotal: 0
-            };
-          }
-          const monto = Number(f.montoCobrar || 0);
-          if (String(f.servicio || '').toUpperCase().startsWith('DESAYUNO')) {
-            mapaRecalculado[dni].cantDesayunos++;
-            mapaRecalculado[dni].costoDesayunos += monto;
-          } else {
-            mapaRecalculado[dni].cantAlmuerzos++;
-            mapaRecalculado[dni].costoAlmuerzos += monto;
-          }
-          mapaRecalculado[dni].costoTotal += monto;
-        });
-
-        STATE.ultimasFilasReporte = filasValidas;
-        STATE.resumenReporte = Object.values(mapaRecalculado).filter(r => r.costoTotal > 0);
-
-        if (STATE.resumenReporte.length === 0) {
-          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos cerrados o escaneados hasta el momento (S/ 0.00).</td></tr>';
-          document.getElementById('resumen-rep-rrhh').textContent = 'Total Descuento Planilla: S/ 0.00';
-          return;
-        }
-        let granTot = 0;
-        document.getElementById('tbody-rep-rrhh').innerHTML = STATE.resumenReporte.map(r => {
-          granTot += Number(r.costoTotal);
-          return `<tr><td>${r.dni}</td><td><b>${r.nombre}</b></td><td style="text-align:center;">${r.cantDesayunos}</td><td>S/ ${r.costoDesayunos.toFixed(2)}</td><td style="text-align:center;">${r.cantAlmuerzos}</td><td>S/ ${r.costoAlmuerzos.toFixed(2)}</td><td style="background:#ecfdf5; color:#047857; font-weight:800;">S/ ${r.costoTotal.toFixed(2)}</td></tr>`;
-        }).join('');
-        document.getElementById('resumen-rep-rrhh').textContent = `Total Descuento Planilla: S/ ${granTot.toFixed(2)}`;
-      });
-    }
-
-    function descargarExcelDosHojas() {
-      if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
-        mostrarToast('⚠️ No hay consumos registrados en este rango.');
-        return;
-      }
-
-      const wb = XLSX.utils.book_new();
-
-      const headerStyle = {
-        fill: { fgColor: { rgb: "13392A" } },
-        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
-        alignment: { horizontal: "center", vertical: "center" },
-        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
-      };
-      const headerTotalStyle = {
-        fill: { fgColor: { rgb: "047857" } },
-        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
-        alignment: { horizontal: "center", vertical: "center" },
-        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
-      };
-      const cellBorder = {
-        top: { style: "thin", color: { rgb: "CBD5E1" } },
-        bottom: { style: "thin", color: { rgb: "CBD5E1" } },
-        left: { style: "thin", color: { rgb: "CBD5E1" } },
-        right: { style: "thin", color: { rgb: "CBD5E1" } }
-      };
-      const totalColStyle = {
-        fill: { fgColor: { rgb: "D1FAE5" } },
-        font: { color: { rgb: "065F46" }, bold: true },
-        numFmt: '"S/" #,##0.00',
-        border: cellBorder
-      };
-      const moneyStyle = { numFmt: '"S/" #,##0.00', border: cellBorder };
-      const centerStyle = { alignment: { horizontal: "center" }, border: cellBorder };
-      const textStyle = { border: cellBorder };
-
-      const aoa1 = [
-        [{ v: "CONSOLIDADO DE DESCUENTO POR PLANILLA - COMEDOR SBS", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
-        [],
-        [
-          { v: "DNI", s: headerStyle },
-          { v: "Nombres", s: headerStyle },
-          { v: "# Desayunos", s: headerStyle },
-          { v: "Costo Desayunos", s: headerStyle },
-          { v: "# Almuerzos", s: headerStyle },
-          { v: "Costo Almuerzos", s: headerStyle },
-          { v: "Costo Total", s: headerTotalStyle }
-        ]
-      ];
-
-      let sumDesC = 0, sumDesM = 0, sumAlmC = 0, sumAlmM = 0, sumTot = 0;
-      STATE.resumenReporte.forEach(r => {
-        sumDesC += Number(r.cantDesayunos);
-        sumDesM += Number(r.costoDesayunos);
-        sumAlmC += Number(r.cantAlmuerzos);
-        sumAlmM += Number(r.costoAlmuerzos);
-        sumTot += Number(r.costoTotal);
-        aoa1.push([
-          { v: String(r.dni), t: 's', s: centerStyle },
-          { v: r.nombre, t: 's', s: textStyle },
-          { v: Number(r.cantDesayunos), t: 'n', s: centerStyle },
-          { v: Number(r.costoDesayunos), t: 'n', s: moneyStyle },
-          { v: Number(r.cantAlmuerzos), t: 'n', s: centerStyle },
-          { v: Number(r.costoAlmuerzos), t: 'n', s: moneyStyle },
-          { v: Number(r.costoTotal), t: 'n', s: totalColStyle }
-        ]);
-      });
-
-      aoa1.push([
-        { v: "TOTAL PLANILLA", t: 's', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
-        { v: "", t: 's', s: textStyle },
-        { v: sumDesC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
-        { v: sumDesM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
-        { v: sumAlmC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
-        { v: sumAlmM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
-        { v: sumTot, t: 'n', s: totalColStyle }
-      ]);
-
-      const ws1 = XLSX.utils.aoa_to_sheet(aoa1);
-      ws1['!cols'] = [{ wch: 13 }, { wch: 30 }, { wch: 14 }, { wch: 17 }, { wch: 14 }, { wch: 17 }, { wch: 17 }];
-      XLSX.utils.book_append_sheet(wb, ws1, "1_Consolidado_RRHH");
-
-      const aoa2 = [
-        [{ v: "DETALLE DIARIO DE RESERVAS Y ASISTENCIA EN COMEDOR", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
-        [],
-        [
-          { v: "Fecha", s: headerStyle },
-          { v: "DNI", s: headerStyle },
-          { v: "Colaborador", s: headerStyle },
-          { v: "Servicio", s: headerStyle },
-          { v: "Reservó", s: headerStyle },
-          { v: "Asistió_Comedor", s: headerStyle },
-          { v: "Monto", s: headerStyle }
-        ]
-      ];
-
-      STATE.ultimasFilasReporte.forEach(d => {
-        aoa2.push([
-          { v: String(d.fecha), t: 's', s: centerStyle },
-          { v: String(d.dni), t: 's', s: centerStyle },
-          { v: d.nombre, t: 's', s: textStyle },
-          { v: String(d.servicio).replace('Op.', 'Opc.'), t: 's', s: centerStyle },
-          { v: d.reservo, t: 's', s: centerStyle },
-          { v: d.consumio, t: 's', s: centerStyle },
-          { v: Number(d.montoCobrar), t: 'n', s: moneyStyle }
-        ]);
-      });
-
-      const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
-      ws2['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 30 }, { wch: 22 }, { wch: 12 }, { wch: 16 }, { wch: 14 }];
-      XLSX.utils.book_append_sheet(wb, ws2, "2_Detalle_Fechas");
-
-      const fechaArchivo = (STATE.hoyPeruCompleto || STATE.hoyStr).replace(/\//g, '-');
-      XLSX.writeFile(wb, `Planilla_Comedor_SBS_${fechaArchivo}.xlsx`);
-      mostrarToast('📥 Excel (.xlsx) descargado.');
     }
   </script>
 </body>

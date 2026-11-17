@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=12">
+  <link rel="manifest" href="manifest.json?v=13">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=12">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=12">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=12">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=13">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=13">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=13">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -179,7 +179,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=12" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=13" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -325,7 +325,7 @@
           </div>
         </div>
 
-        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO (SOBRIO, ROBUSTO Y SIN UNDEFINED) -->
+        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO -->
         <div id="pane-tecnico" style="display:none;">
           <div class="rrhh-box">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -382,13 +382,17 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
+    // Fechas exactas en las que arranca el sistema (lo previo fue en hojas físicas)
+    const FECHA_ARRANQUE_ALMUERZO = "2026-11-17";
+    const FECHA_ARRANQUE_DESAYUNO = "2026-11-18";
+
     let HABILITAR_MODO_CODIGO = false;
     let TIMERS_DEBOUNCE_SERVICIO = {};
 
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=12').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=13').catch(() => {});
       });
     }
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -432,6 +436,51 @@
       idxPrincipal: 0
     };
 
+    // Candado en cliente: asegura que Lunes 16/11 (Des/Alm) y Martes 17/11 (Des) jamás se marquen ni se sumen
+    function aplicarReglaArranqueARegistro(reg) {
+      if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
+      reg.usuario.baseCicloDes = 0;
+      reg.usuario.baseCicloAlm = 0;
+
+      reg.diasSemana.forEach(d => {
+        if (d.fecha < FECHA_ARRANQUE_DESAYUNO) {
+          d.desayuno = 'NO';
+          d.puedeEditarDesayuno = false;
+          d.habDes = false;
+        } else {
+          d.habDes = true;
+        }
+        if (d.fecha < FECHA_ARRANQUE_ALMUERZO) {
+          d.almuerzo = 'NO';
+          d.puedeEditarAlmuerzo = false;
+          d.habAlm = false;
+        } else {
+          d.habAlm = true;
+        }
+      });
+
+      if (reg.hoyFisico) {
+        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_DESAYUNO) reg.hoyFisico.reservoDes = false;
+        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_ALMUERZO) reg.hoyFisico.reservoAlm = false;
+      }
+      return reg;
+    }
+
+    function normalizarDiccionarioArranque(dicc) {
+      if (!dicc) return {};
+      Object.keys(dicc).forEach(dni => {
+        aplicarReglaArranqueARegistro(dicc[dni]);
+      });
+      return dicc;
+    }
+
+    function convertirFechaPeruAISO(fStr) {
+      const s = String(fStr || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const p = s.split('/');
+      return p.length === 3 ? `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}` : s;
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
       let sesionGuardada = null;
@@ -440,6 +489,7 @@
       }
 
       if (sesionGuardada && sesionGuardada.dni && sesionGuardada.snapshot) {
+        aplicarReglaArranqueARegistro(sesionGuardada.snapshot);
         STATE.tokenActivo = sesionGuardada.token || '';
         STATE.hoyStr = sesionGuardada.snapshot.hoyStr || '';
         STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
@@ -552,7 +602,7 @@
           if (typeof res.habilitarModoCodigo === 'boolean') {
             HABILITAR_MODO_CODIGO = res.habilitarModoCodigo;
           }
-          STATE.diccionarioUsuarios = res.diccionarioUsuarios || {};
+          STATE.diccionarioUsuarios = normalizarDiccionarioArranque(res.diccionarioUsuarios || {});
           STATE.colaboradores = res.colaboradores || [];
           if (callback) callback();
         }
@@ -596,7 +646,7 @@
           STATE.pasoCorteAlmuerzo = res.data.pasoCorteAlmuerzo;
           STATE.modoPruebaQR = !!res.data.modoPruebaQR;
           STATE.etiquetaCiclo = res.data.etiquetaCiclo || STATE.etiquetaCiclo;
-          STATE.diccionarioUsuarios = res.data.diccionarioUsuarios;
+          STATE.diccionarioUsuarios = normalizarDiccionarioArranque(res.data.diccionarioUsuarios || {});
           STATE.colaboradores = res.data.colaboradores;
           abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
         } else {
@@ -610,7 +660,7 @@
     }
 
     function abrirFormularioClave(registro) {
-      STATE.registroPendienteLogin = registro;
+      STATE.registroPendienteLogin = aplicarReglaArranqueARegistro(registro);
       const primerNombre = registro.usuario.nombre.split(' ')[0];
       document.getElementById('step-dni').style.display = 'none';
       document.getElementById('step-clave').style.display = 'block';
@@ -668,6 +718,7 @@
     }
 
     function asignarUsuarioYEntrar(registro, tokenSesion) {
+      aplicarReglaArranqueARegistro(registro);
       STATE.usuario = registro.usuario;
       STATE.diasSemana = registro.diasSemana;
       STATE.hoyFisico = registro.hoyFisico;
@@ -717,7 +768,7 @@
     }
 
     // ========================================================================
-    // MÓDULO TÉCNICO (BLINDADO CONTRA UNDEFINED)
+    // MÓDULO TÉCNICO
     // ========================================================================
     function cargarPanelSalud() {
       const badge = document.getElementById('badge-salud-tech');
@@ -757,9 +808,9 @@
         }
 
         const latVal = valSeguro(res.latenciaPingMs, latenciaRed);
-        const colabAct = valSeguro(res.colaboradoresActivos, '-');
+        const colabAct = valSeguro(res.colaboradoresActivos, Object.keys(STATE.diccionarioUsuarios || {}).length || '-');
         const colabClave = valSeguro(res.usuariosConClave, '-');
-        const qrDes = (res.escaneosDesHoy !== undefined) ? res.escaneosDesHoy : valSeguro(res.escaneosHoy, '-');
+        const qrDes = (res.escaneosDesHoy !== undefined) ? res.escaneosDesHoy : valSeguro(res.escaneosHoy, 0);
         const qrAlm = (res.escaneosAlmHoy !== undefined) ? res.escaneosAlmHoy : '-';
 
         document.getElementById('tkpi-latencia').textContent = `${latVal} ms`;
@@ -770,7 +821,7 @@
         infoBox.innerHTML = `
           <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
           <b>Triggers Automáticos:</b> ${valSeguro(res.triggersActivos, '-')}  | 
-          <b>Inicio Operaciones:</b> ${valSeguro(res.fechaInicioOp, '17/11/2026')}<br>
+          <b>Inicio App:</b> Alm 17/11 • Des 18/11<br>
           <b>Registros en PLANIFICACION:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
           <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
@@ -887,8 +938,8 @@
       let cAlm = Number(STATE.usuario.baseCicloAlm || 0);
       STATE.diasSemana.forEach(d => {
         if (d.enCicloActual !== false) {
-          if (d.desayuno !== 'NO') cDes++;
-          if (d.almuerzo !== 'NO') cAlm++;
+          if (d.fecha >= FECHA_ARRANQUE_DESAYUNO && d.desayuno !== 'NO') cDes++;
+          if (d.fecha >= FECHA_ARRANQUE_ALMUERZO && d.almuerzo !== 'NO') cAlm++;
         }
       });
       const totSoles = (cDes * STATE.usuario.costoDesayuno) + (cAlm * STATE.usuario.costoAlmuerzo);
@@ -969,7 +1020,11 @@
     }
 
     function crearHTMLTarjetaDia(d, esVistaPrincipal) {
-      const desActivo = (d.desayuno !== 'NO'), almActivo = (d.almuerzo !== 'NO');
+      const habDes = (d.fecha >= FECHA_ARRANQUE_DESAYUNO);
+      const habAlm = (d.fecha >= FECHA_ARRANQUE_ALMUERZO);
+
+      const desActivo = habDes && (d.desayuno !== 'NO');
+      const almActivo = habAlm && (d.almuerzo !== 'NO');
 
       let detalleDes = '';
       if (d.desayuno === 'SI') detalleDes = 'Desayuno General (Sin opción)';
@@ -977,13 +1032,13 @@
       else if (d.desayuno === 'OP2') detalleDes = '1 bebida + 3 huevos';
       else if (d.desayuno === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
 
-      const txtDes = desActivo ? detalleDes : 'No solicitado';
-      const txtAlm = almActivo ? (d.almuerzo === 'SI' ? 'Almuerzo General' : `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}`) : 'Cancelado';
+      const txtDes = !habDes ? 'Registro en hoja física' : (desActivo ? detalleDes : 'No solicitado');
+      const txtAlm = !habAlm ? 'Registro en hoja física' : (almActivo ? (d.almuerzo === 'SI' ? 'Almuerzo General' : `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}`) : 'Cancelado');
 
-      const lockDesClass = !d.puedeEditarDesayuno ? 'disabled-card' : '';
-      const lockAlmClass = !d.puedeEditarAlmuerzo ? 'disabled-card' : '';
-      const avisoDes = !d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Opc. 1, 2 o 3 abajo');
-      const avisoAlm = !d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo');
+      const lockDesClass = (!habDes || !d.puedeEditarDesayuno) ? 'disabled-card' : '';
+      const lockAlmClass = (!habAlm || !d.puedeEditarAlmuerzo) ? 'disabled-card' : '';
+      const avisoDes = !habDes ? 'Inicia Mié 18/11' : (!d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Opc. 1, 2 o 3 abajo'));
+      const avisoAlm = !habAlm ? 'Inicia Mar 17/11' : (!d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo'));
 
       const fechaVisual = d.fechaCorta || formatearDiaMesCorto(d.fecha);
 
@@ -1016,9 +1071,9 @@
                 <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoDes}</span>
               </div>
               <div class="srv-split-bottom">
-                <button class="op-sub-btn ${d.desayuno === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Opc. 1</button>
-                <button class="op-sub-btn ${d.desayuno === 'OP2' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP2')">Opc. 2</button>
-                <button class="op-sub-btn ${d.desayuno === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Opc. 3</button>
+                <button class="op-sub-btn ${desActivo && d.desayuno === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Opc. 1</button>
+                <button class="op-sub-btn ${desActivo && d.desayuno === 'OP2' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP2')">Opc. 2</button>
+                <button class="op-sub-btn ${desActivo && d.desayuno === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Opc. 3</button>
               </div>
             </div>
 
@@ -1029,8 +1084,8 @@
                 <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoAlm}</span>
               </div>
               <div class="srv-split-bottom">
-                <button class="op-sub-btn ${d.almuerzo === 'REGULAR' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')">Regular</button>
-                <button class="op-sub-btn ${d.almuerzo === 'DIETA' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'DIETA')">Dieta</button>
+                <button class="op-sub-btn ${almActivo && d.almuerzo === 'REGULAR' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')">Regular</button>
+                <button class="op-sub-btn ${almActivo && d.almuerzo === 'DIETA' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'DIETA')">Dieta</button>
               </div>
             </div>
           </div>
@@ -1039,6 +1094,7 @@
     }
 
     function seleccionarOpcionDesayuno(fecha, opElegida) {
+      if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
       if (!dia || !dia.puedeEditarDesayuno) return;
       const vAnt = dia.desayuno;
@@ -1066,6 +1122,7 @@
     }
 
     function seleccionarOpcionAlmuerzo(fecha, opElegida) {
+      if (fecha < FECHA_ARRANQUE_ALMUERZO) return;
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
       if (!dia || !dia.puedeEditarAlmuerzo) return;
       const vAnt = dia.almuerzo;
@@ -1277,12 +1334,53 @@
       document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
     }
 
+    // Doble candado en Reporte RRHH: filtra cualquier fila previa al arranque (Desayuno < 18/11, Almuerzo < 17/11) y fuera de la semana activa
     function cargarReporteRRHH() {
       const fIni = document.getElementById('rep-ini').value, fFin = document.getElementById('rep-fin').value;
       document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Calculando consolidado...</td></tr>';
       ejecutarConReintento('obtenerReportePlanillaRRHH', [fIni, fFin], res => {
-        STATE.resumenReporte = res.resumen || [];
-        STATE.ultimasFilasReporte = res.filas || [];
+        const filasCrudas = (res && res.filas) ? res.filas : [];
+        const topeSemana = (STATE.diasSemana && STATE.diasSemana.length > 0)
+          ? STATE.diasSemana[STATE.diasSemana.length - 1].fecha
+          : '2026-11-20';
+
+        const filasValidas = filasCrudas.filter(f => {
+          const iso = f.fechaISO || convertirFechaPeruAISO(f.fecha);
+          const esDes = String(f.servicio || '').toUpperCase().startsWith('DESAYUNO');
+          if (iso > topeSemana) return false;
+          if (esDes && iso < FECHA_ARRANQUE_DESAYUNO) return false;
+          if (!esDes && iso < FECHA_ARRANQUE_ALMUERZO) return false;
+          return true;
+        });
+
+        const mapaRecalculado = {};
+        filasValidas.forEach(f => {
+          const dni = normalizarDniCliente(f.dni);
+          if (!mapaRecalculado[dni]) {
+            mapaRecalculado[dni] = {
+              dni: dni,
+              nombre: f.nombre,
+              cantDesayunos: 0,
+              costoDesayunos: 0,
+              cantAlmuerzos: 0,
+              costoAlmuerzos: 0,
+              costoTotal: 0
+            };
+          }
+          const monto = Number(f.montoCobrar || 0);
+          if (String(f.servicio || '').toUpperCase().startsWith('DESAYUNO')) {
+            mapaRecalculado[dni].cantDesayunos++;
+            mapaRecalculado[dni].costoDesayunos += monto;
+          } else {
+            mapaRecalculado[dni].cantAlmuerzos++;
+            mapaRecalculado[dni].costoAlmuerzos += monto;
+          }
+          mapaRecalculado[dni].costoTotal += monto;
+        });
+
+        STATE.ultimasFilasReporte = filasValidas;
+        STATE.resumenReporte = Object.values(mapaRecalculado).filter(r => r.costoTotal > 0);
+
         if (STATE.resumenReporte.length === 0) {
           document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos registrados (S/ 0.00).</td></tr>';
           document.getElementById('resumen-rep-rrhh').textContent = 'Total Descuento Planilla: S/ 0.00';

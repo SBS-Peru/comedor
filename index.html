@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=10">
+  <link rel="manifest" href="manifest.json?v=11">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=10">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=10">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=10">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=11">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=11">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=11">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -27,7 +27,13 @@
       --border: #e2e8f0;
     }
 
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
     html, body {
       margin: 0; padding: 0;
       background-color: #ffffff;
@@ -88,7 +94,8 @@
     .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); }
     .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
     .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; margin-bottom: 9px; }
-    .menu-box { background: #f8fafc; border-radius: 9px; padding: 9px 12px; font-size: 13px; color: var(--muted); margin-bottom: 11px; line-height: 1.45; }
+    .menu-box { background: #f8fafc; border-radius: 9px; padding: 9px 11px; font-size: 12.5px; letter-spacing: -0.15px; color: var(--muted); margin-bottom: 11px; line-height: 1.45; }
+    .menu-box div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .menu-box b { color: var(--text); }
 
     .srv-grid { display: flex; gap: 10px; align-items: stretch; }
@@ -117,7 +124,6 @@
     .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
     .srv-split-card.active-alm .op-sub-btn.selected-op { background: var(--sbs-accent); color: white; }
 
-    /* Ventana emergente (Modal) centrada para el escáner QR */
     #modal-qr-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.75); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
@@ -134,14 +140,14 @@
     @media (max-width: 480px) {
       .app-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
       .top-bar { padding: 18px 16px 14px; }
-      .top-bar h2 { font-size: 18.5px; }
-      .top-bar p { margin-top: 6px; font-size: 12.5px; }
+      .top-bar h2 { font-size: 18px; }
+      .top-bar p { margin-top: 6px; font-size: 12px; }
       .header-kpi-strip { margin-top: 13px; padding: 9px 12px; font-size: 12.5px; }
       .tab { padding: 9px 4px; font-size: 13px; }
       .scroll-area { padding: 10px 12px; }
       .day-card { padding: 11px; margin-bottom: 10px; }
       .day-header { font-size: 14px; margin-bottom: 7px; }
-      .menu-box { padding: 7px 10px; font-size: 12px; margin-bottom: 9px; }
+      .menu-box { padding: 7px 9px; font-size: 11.4px; letter-spacing: -0.2px; margin-bottom: 9px; }
       .srv-grid { gap: 8px; }
       .srv-split-top { padding: 8px 5px; }
       .srv-split-top .title { font-size: 13.5px; }
@@ -159,15 +165,21 @@
     th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; }
     th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; }
 
+    .kpi-grid-tech { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .kpi-card-tech { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; }
+    .kpi-card-tech .num { font-size: 18px; font-weight: 800; color: var(--sbs-primary); display: block; }
+    .kpi-card-tech .lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
+
     #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 13.5px; font-weight: 600; display: none; z-index: 999; text-align: center; width: max-content; max-width: 90vw; }
   </style>
 </head>
 <body>
 
   <div class="app-shell" id="app-shell">
+    <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=10" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=11" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -195,6 +207,7 @@
       </p>
     </div>
 
+    <!-- 2. PANTALLA PRINCIPAL -->
     <div id="view-main">
       <div class="top-bar">
         <div class="top-bar-row">
@@ -214,9 +227,11 @@
         <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Hoy</div>
         <div class="tab" id="tab-btn-semana" onclick="cambiarTab('SEMANA')">Mi Semana</div>
         <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">⚙️ RRHH</div>
+        <div class="tab" id="tab-btn-tecnico" style="display:none;" onclick="cambiarTab('TECNICO')">🛠️ Técnico</div>
       </div>
 
       <div class="scroll-area">
+        <!-- PESTAÑA 1: HOY / MAÑANA -->
         <div id="pane-principal">
           <div id="ticket-confirmado" style="display:none; background:#ecfdf5; border:2px solid #10b981; border-radius:14px; padding:12px; margin-bottom:10px; text-align:center;">
             <div style="font-size:24px;">✅</div>
@@ -268,19 +283,11 @@
           </div>
         </div>
 
+        <!-- PESTAÑA 2: MI SEMANA -->
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
+        <!-- PESTAÑA 3A: PERFIL EXCLUSIVO RRHH (SOLO RESETEO CLAVE Y REPORTE PLANILLA) -->
         <div id="pane-rrhh" style="display:none;">
-          <div class="rrhh-box">
-            <h4>🩺 Salud de la App & Monitoreo en Tiempo Real</h4>
-            <div id="panel-salud-app" style="font-size:12.5px; background:#f8fafc; padding:10px 12px; border-radius:9px; border:1px solid var(--border); margin-bottom:10px; line-height:1.5;">
-              Verificando estado del servidor...
-            </div>
-            <button class="btn btn-outline" style="padding:9px; font-size:12.5px;" onclick="cargarPanelSalud()">
-              🔄 Actualizar Estado y Registro de Errores
-            </button>
-          </div>
-
           <div class="rrhh-box">
             <h4>🔑 Resetear Contraseña de Colaborador</h4>
             <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
@@ -318,6 +325,63 @@
             </div>
           </div>
         </div>
+
+        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO (SALUD DEL APP, CAÍDAS, LOGS DE ERRORES Y AUDITORÍA) -->
+        <div id="pane-tecnico" style="display:none;">
+          <div class="rrhh-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <h4 style="margin:0;">🩺 Estado de Salud del Sistema en Tiempo Real</h4>
+              <span id="badge-salud-tech" style="background:#dcfce7; color:#166534; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:800;">VERIFICANDO...</span>
+            </div>
+
+            <div class="kpi-grid-tech" id="grid-kpis-tech">
+              <div class="kpi-card-tech"><span class="num" id="tkpi-latencia">-- ms</span><span class="lbl">Latencia Servidor</span></div>
+              <div class="kpi-card-tech"><span class="num" id="tkpi-usuarios">--</span><span class="lbl">Activos / Con Clave</span></div>
+              <div class="kpi-card-tech"><span class="num" id="tkpi-qr-hoy">0 / 0</span><span class="lbl">QR Hoy (Des / Alm)</span></div>
+              <div class="kpi-card-tech"><span class="num" id="tkpi-errores">0</span><span class="lbl">Caídas / Errores</span></div>
+            </div>
+
+            <div id="detalle-infraestructura-tech" style="font-size:12px; color:var(--muted); background:#f8fafc; padding:9px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px;">
+              Conectando con Google Apps Script...
+            </div>
+
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-primary" style="flex:1; padding:10px; font-size:13px;" onclick="cargarPanelSalud()">
+                🔄 Refrescar Diagnóstico Ahora
+              </button>
+              <button class="btn btn-outline" style="flex:1; padding:10px; font-size:13px;" onclick="limpiarLogsErroresUI()">
+                🧹 Limpiar Historial de Errores
+              </button>
+              <button class="btn btn-outline" style="flex:1; padding:10px; font-size:13px; border-color:#dc2626; color:#dc2626;" onclick="reiniciarCeroUI()">
+                ⚠️ Dejar Reservas/Asistencia en Cero
+              </button>
+            </div>
+          </div>
+
+          <div class="rrhh-box">
+            <h4>🚨 Registro de Caídas, Excepciones y Motivos de Error (LOG_AUDIT_ERRORES)</h4>
+            <div class="table-wrap" style="max-height:220px;">
+              <table>
+                <thead><tr><th>Fecha / Hora</th><th>Función / Contexto</th><th>Motivo Exacto del Error</th></tr></thead>
+                <tbody id="tbody-errores-tech">
+                  <tr><td colspan="3" style="text-align:center; color:var(--muted);">Cargando registro de errores...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="rrhh-box">
+            <h4>🛡️ Últimos Eventos de Seguridad y Actividad en Vivo (LOG_SEGURIDAD_OCULTO)</h4>
+            <div class="table-wrap" style="max-height:220px;">
+              <table>
+                <thead><tr><th>Fecha / Hora</th><th>Evento</th><th>DNI</th><th>Servicio</th><th>Detalle</th></tr></thead>
+                <tbody id="tbody-eventos-tech">
+                  <tr><td colspan="5" style="text-align:center; color:var(--muted);">Cargando actividad reciente...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -328,11 +392,12 @@
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
     let HABILITAR_MODO_CODIGO = false;
+    let TIMERS_DEBOUNCE_SERVICIO = {};
 
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=10').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=11').catch(() => {});
       });
     }
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -435,10 +500,10 @@
       } catch (e) {}
     }
 
-    async function ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos = 3) {
+    async function ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos = 4) {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         const runner = google.script.run.withSuccessHandler(onSuccess).withFailureHandler(err => {
-          if (intentos > 1) setTimeout(() => ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos - 1), 600);
+          if (intentos > 1) setTimeout(() => ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos - 1), 500);
           else if (onError) onError(err);
         });
         runner[nombreFuncion].apply(runner, argsArray);
@@ -459,7 +524,7 @@
           if (i === intentos - 1) {
             if (onError) onError(err);
           } else {
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 450 * (i + 1)));
           }
         }
       }
@@ -507,7 +572,7 @@
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 3500);
+      setTimeout(() => { t.style.display = 'none'; }, 3200);
     }
 
     function verificarPasoDNI() {
@@ -517,7 +582,6 @@
         return;
       }
 
-      // Si el usuario ya está en caché y ya tiene clave configurada, muestra el campo de clave al instante (0ms)
       const regMemoria = STATE.diccionarioUsuarios[dni];
       if (STATE.bootstrapCargado && regMemoria && regMemoria.usuario.tieneClave) {
         abrirFormularioClave(regMemoria);
@@ -643,31 +707,120 @@
       document.getElementById('view-login').style.display = 'flex';
     }
 
+    function esUsuarioTecnico(u) {
+      if (!u) return false;
+      if (u.esTecnico) return true;
+      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      return r === 'TECNICO' || r === 'ADMIN_TECNICO' || r === 'DEV';
+    }
+
+    function esUsuarioRRHH(u) {
+      if (!u) return false;
+      if (u.esRRHH) return true;
+      const r = String(u.rol || '').toUpperCase().trim();
+      return r === 'ADMIN_RRHH' || r === 'RRHH';
+    }
+
+    // ========================================================================
+    // FUNCIONES DEL MÓDULO EXCLUSIVO "🛠️ TÉCNICO"
+    // ========================================================================
     function cargarPanelSalud() {
-      const box = document.getElementById('panel-salud-app');
-      if (!box) return;
-      box.innerHTML = '⏳ Consultando estado del servidor en vivo...';
+      const badge = document.getElementById('badge-salud-tech');
+      const infoBox = document.getElementById('detalle-infraestructura-tech');
+      if (badge) {
+        badge.textContent = 'CONSULTANDO...';
+        badge.style.background = '#e2e8f0';
+        badge.style.color = '#334155';
+      }
+      const tPingIni = performance.now();
+
       ejecutarConReintento('obtenerEstadisticasSaludApp', [STATE.usuario ? STATE.usuario.dni : ''], res => {
+        const latenciaRed = Math.round(performance.now() - tPingIni);
         if (!res || !res.ok) {
-          box.innerHTML = '❌ Error al consultar métricas de salud.';
+          if (badge) {
+            badge.textContent = 'ERROR DE CONEXIÓN';
+            badge.style.background = '#fee2e2';
+            badge.style.color = '#991b1b';
+          }
           return;
         }
-        let htmlLogs = (res.ultimosLogs && res.ultimosLogs.length > 0)
-          ? res.ultimosLogs.map(l => `• <span style="color:#64748b;">[${l[0]}]</span> <b>${l[1]}:</b> ${l[2]}`).join('<br>')
-          : '✅ Sin errores registrados en LOG_AUDIT_ERRORES.';
 
-        box.innerHTML = `
-          🟢 <b>Estado Backend:</b> ${res.salud} &nbsp;|&nbsp; 👥 <b>Colaboradores en BD:</b> ${res.colaboradoresActivos}<br>
-          📅 <b>Cambios de reserva:</b> ${res.reservasRegistradas} &nbsp;|&nbsp; 📷 <b>Escaneos QR hoy:</b> ${res.escaneosHoy} &nbsp;|&nbsp; ⚠️ <b>Errores:</b> ${res.totalErroresHoy}
-          <div style="margin-top:6px; padding-top:6px; border-top:1px solid #cbd5e1; font-size:11.5px;">
-            <b>Últimos eventos técnicos:</b><br>${htmlLogs}
-          </div>
+        if (badge) {
+          badge.textContent = res.salud;
+          badge.style.background = res.totalErrores === 0 ? '#dcfce7' : '#fef3c7';
+          badge.style.color = res.totalErrores === 0 ? '#166534' : '#92400e';
+        }
+
+        document.getElementById('tkpi-latencia').textContent = `${res.latenciaPingMs || latenciaRed} ms`;
+        document.getElementById('tkpi-usuarios').textContent = `${res.colaboradoresActivos} / ${res.usuariosConClave}`;
+        document.getElementById('tkpi-qr-hoy').textContent = `${res.escaneosDesHoy} / ${res.escaneosAlmHoy}`;
+        document.getElementById('tkpi-errores').textContent = String(res.totalErrores);
+
+        infoBox.innerHTML = `
+          ⚡ <b>Caché RAM Servidor:</b> ${res.cacheEstado}  | 
+          ⏰ <b>Triggers Automáticos:</b> ${res.triggersActivos} activos  | 
+          📅 <b>Inicio Operaciones:</b> ${res.fechaInicioOp}<br>
+          📝 <b>Cambios en PLANIFICACION:</b> ${res.reservasRegistradas} filas  | 
+          🍽️ <b>Total Histórico ASISTENCIA_REAL:</b> ${res.totalAsistHistorico} registros
         `;
-      }, () => {
-        box.innerHTML = '❌ Sin conexión con el servidor.';
+
+        const tbErr = document.getElementById('tbody-errores-tech');
+        if (!res.ultimosLogs || res.ultimosLogs.length === 0) {
+          tbErr.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#047857; font-weight:700;">✅ 0 caídas y 0 errores registrados. Sistema operando al 100%.</td></tr>';
+        } else {
+          tbErr.innerHTML = res.ultimosLogs.map(l => `
+            <tr>
+              <td style="white-space:nowrap;">${l.fecha}</td>
+              <td><b>${l.contexto}</b></td>
+              <td style="color:#dc2626; font-weight:600;">${l.motivo}</td>
+            </tr>
+          `).join('');
+        }
+
+        const tbEv = document.getElementById('tbody-eventos-tech');
+        if (!res.ultimosEventos || res.ultimosEventos.length === 0) {
+          tbEv.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted);">Sin eventos recientes.</td></tr>';
+        } else {
+          tbEv.innerHTML = res.ultimosEventos.map(ev => `
+            <tr>
+              <td style="white-space:nowrap;">${ev.fecha}</td>
+              <td><b>${ev.tipo}</b></td>
+              <td>${ev.dni}</td>
+              <td>${ev.servicio}</td>
+              <td>${ev.valor}</td>
+            </tr>
+          `).join('');
+        }
       });
     }
 
+    function limpiarLogsErroresUI() {
+      ejecutarConReintento('limpiarLogsErroresTecnico', [STATE.usuario.dni], res => {
+        if (res && res.ok) {
+          mostrarToast('✅ ' + res.msg);
+          cargarPanelSalud();
+        }
+      });
+    }
+
+    function reiniciarCeroUI() {
+      if (!confirm('¿Estás seguro de dejar PLANIFICACION y ASISTENCIA_REAL 100% en blanco para iniciar desde cero?')) return;
+      ejecutarConReintento('reiniciarDatosDesdePanelTecnico', [STATE.usuario.dni], res => {
+        if (res && res.ok) {
+          mostrarToast('✅ ' + res.msg);
+          cargarCacheInicial(() => {
+            if (STATE.diccionarioUsuarios[STATE.usuario.dni]) {
+              asignarUsuarioYEntrar(STATE.diccionarioUsuarios[STATE.usuario.dni], STATE.tokenActivo);
+            }
+            cargarPanelSalud();
+          });
+        }
+      });
+    }
+
+    // ========================================================================
+    // FUNCIONES DEL MÓDULO EXCLUSIVO "⚙️ RRHH"
+    // ========================================================================
     function ejecutarReseteoClaveRRHH() {
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
       if (dniTarget.length < 7) {
@@ -704,11 +857,14 @@
       document.getElementById('lbl-estado-rol').textContent = (STATE.usuario.estado !== 'ACTIVO')
         ? `Estado: ${STATE.usuario.estado} (Excluido)`
         : `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}`;
-      document.getElementById('tab-btn-rrhh').style.display = (STATE.usuario.rol === 'Admin_RRHH') ? 'block' : 'none';
-      if (STATE.usuario.rol === 'Admin_RRHH') {
-        inicializarControlesRRHH();
-        cargarPanelSalud();
-      }
+
+      const mostrarRRHH = esUsuarioRRHH(STATE.usuario);
+      const mostrarTech = esUsuarioTecnico(STATE.usuario);
+
+      document.getElementById('tab-btn-rrhh').style.display = mostrarRRHH ? 'block' : 'none';
+      document.getElementById('tab-btn-tecnico').style.display = mostrarTech ? 'block' : 'none';
+
+      if (mostrarRRHH) inicializarControlesRRHH();
 
       let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
       if (idxHoyFisico === -1) {
@@ -733,7 +889,7 @@
       let cDes = Number(STATE.usuario.baseCicloDes || 0);
       let cAlm = Number(STATE.usuario.baseCicloAlm || 0);
       STATE.diasSemana.forEach(d => {
-        if (d.enCicloActual !== false) {
+        if (d.enCicloActual !== false && !d.antesDeArranque) {
           if (d.desayuno !== 'NO') cDes++;
           if (d.almuerzo !== 'NO') cAlm++;
         }
@@ -885,6 +1041,7 @@
       `;
     }
 
+    // Selección silenciosa (sin Toast inferior) + Debounce de 400ms para no saturar el servidor en toques rápidos
     function seleccionarOpcionDesayuno(fecha, opElegida) {
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
       if (!dia || !dia.puedeEditarDesayuno) return;
@@ -895,17 +1052,21 @@
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
-      mostrarToast(nVal === 'NO' ? '✅ Desayuno cancelado' : `✅ Desayuno ${nVal.startsWith('OP') ? 'Opc. '+nVal.replace('OP','') : 'reservado'}`);
-      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: nVal, dniEjecutor: STATE.usuario.dni }], res => {
-        if (!res.ok) {
-          dia.desayuno = vAnt;
-          if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (vAnt !== 'NO');
-          guardarSnapshotLocal();
-          renderizarTarjetas();
-          actualizarEstadoBotonQR();
-          mostrarToast('⚠️ ' + res.msg);
-        }
-      });
+
+      const keyTimer = 'DES_' + fecha;
+      if (TIMERS_DEBOUNCE_SERVICIO[keyTimer]) clearTimeout(TIMERS_DEBOUNCE_SERVICIO[keyTimer]);
+      TIMERS_DEBOUNCE_SERVICIO[keyTimer] = setTimeout(() => {
+        ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: dia.desayuno, dniEjecutor: STATE.usuario.dni }], res => {
+          if (res && !res.ok) {
+            dia.desayuno = vAnt;
+            if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (vAnt !== 'NO');
+            guardarSnapshotLocal();
+            renderizarTarjetas();
+            actualizarEstadoBotonQR();
+            mostrarToast('⚠️ ' + res.msg);
+          }
+        });
+      }, 400);
     }
 
     function seleccionarOpcionAlmuerzo(fecha, opElegida) {
@@ -918,17 +1079,21 @@
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
-      mostrarToast(nVal === 'NO' ? '✅ Almuerzo cancelado' : `✅ Almuerzo ${nVal === 'SI' ? 'General' : nVal.charAt(0) + nVal.slice(1).toLowerCase()} confirmado`);
-      ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: nVal }], res => {
-        if (!res.ok) {
-          dia.almuerzo = vAnt;
-          if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (vAnt !== 'NO');
-          guardarSnapshotLocal();
-          renderizarTarjetas();
-          actualizarEstadoBotonQR();
-          mostrarToast('⚠️ ' + res.msg);
-        }
-      });
+
+      const keyTimer = 'ALM_' + fecha;
+      if (TIMERS_DEBOUNCE_SERVICIO[keyTimer]) clearTimeout(TIMERS_DEBOUNCE_SERVICIO[keyTimer]);
+      TIMERS_DEBOUNCE_SERVICIO[keyTimer] = setTimeout(() => {
+        ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: dia.almuerzo }], res => {
+          if (res && !res.ok) {
+            dia.almuerzo = vAnt;
+            if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (vAnt !== 'NO');
+            guardarSnapshotLocal();
+            renderizarTarjetas();
+            actualizarEstadoBotonQR();
+            mostrarToast('⚠️ ' + res.msg);
+          }
+        });
+      }, 400);
     }
 
     function cambiarTab(tab) {
@@ -936,6 +1101,7 @@
       document.getElementById('pane-principal').style.display = 'none';
       document.getElementById('pane-semana').style.display = 'none';
       document.getElementById('pane-rrhh').style.display = 'none';
+      document.getElementById('pane-tecnico').style.display = 'none';
       document.getElementById('app-shell').classList.remove('wide-rrhh');
 
       if (tab === 'PRINCIPAL') {
@@ -951,6 +1117,11 @@
         document.getElementById('pane-rrhh').style.display = 'block';
         document.getElementById('app-shell').classList.add('wide-rrhh');
         cargarReporteRRHH();
+      } else if (tab === 'TECNICO') {
+        cerrarEscanerQR();
+        document.getElementById('tab-btn-tecnico').classList.add('active');
+        document.getElementById('pane-tecnico').style.display = 'block';
+        document.getElementById('app-shell').classList.add('wide-rrhh');
         cargarPanelSalud();
       }
     }
@@ -1117,7 +1288,7 @@
         STATE.resumenReporte = res.resumen || [];
         STATE.ultimasFilasReporte = res.filas || [];
         if (STATE.resumenReporte.length === 0) {
-          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos.</td></tr>';
+          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos registrados desde el inicio de operaciones (17/11/2026).</td></tr>';
           document.getElementById('resumen-rep-rrhh').textContent = 'Total Planilla: S/ 0.00';
           return;
         }
@@ -1132,7 +1303,7 @@
 
     function descargarExcelDosHojas() {
       if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
-        mostrarToast('⚠️ Consulta un rango primero.');
+        mostrarToast('⚠️ No hay consumos para exportar en este rango.');
         return;
       }
 

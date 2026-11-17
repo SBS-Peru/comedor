@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal GEP - Comedor SBS</title>
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=15">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+  <style>
+    :root {
+      --sbs-primary: #13392a;
+      --sbs-primary-dark: #0c261b;
+      --sbs-accent: #10b981;
+      --sbs-orange: #ea580c;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { margin: 0; padding: 0; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* LOGIN DESKTOP */
+    #view-login {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+      background: linear-gradient(135deg, #13392a 0%, #0a1f17 100%);
+    }
+    .login-card {
+      background: white; width: 100%; max-width: 420px; border-radius: 18px; padding: 36px 32px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.28); text-align: center;
+    }
+    .login-logo { width: 120px; height: 120px; object-fit: contain; margin: 0 auto 12px; display: block; }
+    .login-card h1 { margin: 0 0 6px; font-size: 21px; color: var(--sbs-primary); font-weight: 800; }
+    .login-card p { margin: 0 0 18px; font-size: 13.5px; color: var(--muted); }
+    .input-lg {
+      width: 100%; padding: 13px 14px; font-size: 18px; text-align: center; font-weight: 700;
+      border: 2px solid var(--border); border-radius: 11px; margin-bottom: 12px; outline: none;
+    }
+    .input-lg:focus { border-color: var(--sbs-primary); }
+
+    /* BOTONES */
+    .btn {
+      padding: 10px 16px; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 700;
+      cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .btn-primary { background: var(--sbs-primary); color: white; }
+    .btn-primary:hover { background: var(--sbs-primary-dark); }
+    .btn-success { background: var(--sbs-accent); color: white; }
+    .btn-orange { background: var(--sbs-orange); color: white; }
+    .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-sm { padding: 7px 11px; font-size: 12px; border-radius: 8px; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* LAYOUT PRINCIPAL DESKTOP */
+    #view-portal { display: none; flex-direction: column; min-height: 100vh; }
+    .top-header {
+      background: var(--sbs-primary); color: white; padding: 14px 28px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+      position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .brand-wrap { display: flex; align-items: center; gap: 14px; }
+    .brand-logo { width: 42px; height: 42px; border-radius: 10px; background: white; object-fit: contain; padding: 3px; }
+    .brand-wrap h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
+    .brand-wrap span { font-size: 12.5px; color: rgba(255,255,255,0.82); display: block; margin-top: 2px; }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .sync-pill {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+      padding: 6px 12px; border-radius: 999px; font-size: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .dot-live { width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block; box-shadow: 0 0 8px #34d399; }
+
+    /* NAVEGACIÓN DE MÓDULOS */
+    .nav-bar {
+      background: white; border-bottom: 1px solid var(--border); padding: 0 28px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .nav-tabs { display: flex; gap: 6px; }
+    .nav-tab {
+      padding: 14px 20px; font-size: 14px; font-weight: 700; color: var(--muted);
+      cursor: pointer; border-bottom: 3px solid transparent; transition: 0.15s;
+    }
+    .nav-tab:hover { color: var(--sbs-primary); }
+    .nav-tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
+
+    .container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 22px 28px; flex: 1; }
+
+    /* TARJETAS KPI */
+    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .kpi-card {
+      background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .kpi-card .k-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .kpi-card .k-val { font-size: 26px; font-weight: 800; color: var(--sbs-primary); margin: 6px 0 4px; }
+    .kpi-card .k-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    /* PANELES Y TABLAS */
+    .panel-card {
+      background: white; border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px;
+      margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .panel-header {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .panel-header h3 { margin: 0; font-size: 16.5px; color: var(--sbs-primary); font-weight: 800; }
+
+    .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .form-input, .form-select {
+      padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 13px; color: var(--text); background: white; outline: none;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--sbs-primary); }
+
+    .table-container { overflow-x: auto; max-height: 62vh; border: 1px solid var(--border); border-radius: 11px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    th { background: #f8fafc; font-weight: 700; color: #334155; position: sticky; top: 0; z-index: 10; }
+    tr:hover td { background: #f8fafc; }
+
+    /* ETIQUETAS VISUALES (BADGES) */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px;
+      border-radius: 7px; font-size: 11.5px; font-weight: 700; white-space: nowrap;
+    }
+    .bg-green { background: #dcfce7; color: #166534; }
+    .bg-orange { background: #ffedd5; color: #c2410c; }
+    .bg-gray { background: #f1f5f9; color: #64748b; }
+    .bg-red { background: #fee2e2; color: #991b1b; }
+    .bg-blue { background: #e0f2fe; color: #075985; }
+
+    .row-modified td { background: #fffbeb !important; }
+
+    /* MODAL MENÚ SEMANAL */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.65); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
+    }
+    .modal-box {
+      background: white; width: 100%; max-width: 780px; border-radius: 16px; padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;
+    }
+    .menu-day-row {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 10px;
+    }
+    .menu-day-row label { font-size: 13px; font-weight: 800; color: var(--sbs-primary); display: block; margin-bottom: 6px; }
+    .menu-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: white;
+      padding: 13px 20px; border-radius: 11px; font-size: 13.5px; font-weight: 600;
+      display: none; z-index: 10000; box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. VISTA LOGIN GEP -->
+  <div id="view-login">
+    <div class="login-card">
+      <img src="./Logo.jpg?v=15" alt="SBS" class="login-logo">
+      <h1>Portal GEP - Comedor SBS</h1>
+      <p>Monitoreo en Tiempo Real, Base de Colaboradores y Planilla</p>
+
+      <div id="step-dni">
+        <input type="tel" id="txt-dni" class="input-lg" placeholder="DNI Administrador (8 dígitos)" maxlength="8">
+        <button class="btn btn-primary" id="btn-login-dni" style="width:100%; padding:14px; font-size:15px;" onclick="verificarDniGEP()">
+          Continuar
+        </button>
+      </div>
+
+      <div id="step-clave" style="display:none;">
+        <div id="lbl-hola-gep" style="font-size:16px; font-weight:800; color:var(--sbs-primary); margin-bottom:6px;"></div>
+        <p id="lbl-inst-gep" style="font-size:12.5px; margin-bottom:10px;"></p>
+        <input type="password" id="txt-clave" class="input-lg" placeholder="••••••••">
+        <button class="btn btn-primary" id="btn-login-clave" style="width:100%; padding:14px; font-size:15px;" onclick="confirmarClaveGEP()">
+          Ingresar al Portal GEP
+        </button>
+        <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="volverPasoDniGEP()">
+          ← Cambiar DNI
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. VISTA PRINCIPAL PORTAL GEP -->
+  <div id="view-portal">
+    <header class="top-header">
+      <div class="brand-wrap">
+        <img src="./Logo.jpg?v=15" alt="SBS" class="brand-logo">
+        <div>
+          <h2>Portal GEP • Comedor SBS</h2>
+          <span id="lbl-admin-activo">Sesión Activa</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="sync-pill">
+          <span class="dot-live"></span>
+          <span id="lbl-ultima-sync">Sincronizado en vivo</span>
+        </div>
+        <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalMenu()">
+          🍽️ Menú Semanal
+        </button>
+        <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="imprimirAficheQR()">
+          🖨️ Imprimir Cartel QR
+        </button>
+        <button class="btn btn-outline btn-sm" style="background:rgba(220,38,38,0.85); color:white; border:none;" onclick="cerrarSesionGEP()">
+          Salir
+        </button>
+      </div>
+    </header>
+
+    <nav class="nav-bar">
+      <div class="nav-tabs">
+        <div class="nav-tab active" id="tab-monitoreo" onclick="cambiarModulo('MONITOREO')">
+          📡 1. Monitoreo en Vivo (Reservas y QR)
+        </div>
+        <div class="nav-tab" id="tab-colaboradores" onclick="cambiarModulo('COLABORADORES')">
+          👥 2. Base de Colaboradores (Por Defecto y Estados)
+        </div>
+        <div class="nav-tab" id="tab-planilla" onclick="cambiarModulo('PLANILLA')">
+          📊 3. Reporte Mensual Planilla (Excel)
+        </div>
+      </div>
+
+      <div class="toolbar" style="padding: 8px 0;">
+        <label style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; cursor:pointer;">
+          <input type="checkbox" id="chk-autorefresh" checked onchange="alternarAutoRefresh()">
+          Auto-actualizar cada 20s
+        </label>
+        <button class="btn btn-outline btn-sm" id="btn-sync-ahora" onclick="cargarDatosPortal(true)">
+          🔄 Actualizar ahora
+        </button>
+      </div>
+    </nav>
+
+    <main class="container">
+      <!-- =================================================================== -->
+      <!-- MÓDULO 1: MONITOREO EN TIEMPO REAL DE RESERVAS Y ESCANEOS QR        -->
+      <!-- =================================================================== -->
+      <section id="mod-monitoreo">
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="k-title">☕ Desayunos del Día</div>
+            <div class="k-val" id="kpi-des-total">0 / 0</div>
+            <div class="k-sub" id="kpi-des-sub">Reservados vs Escaneados QR</div>
+          </div>
+          <div class="kpi-card">
+            <div class="k-title">🥐 Insumos Desayuno (Cocina)</div>
+            <div class="k-val" style="font-size:15px; line-height:1.35; margin-top:8px;" id="kpi-des-insumos">-</div>
+            <div class="k-sub">Conteo exacto de panes y huevos</div>
+          </div>
+          <div class="kpi-card">
+            <div class="k-title">🍲 Almuerzos del Día</div>
+            <div class="k-val" id="kpi-alm-total">0 / 0</div>
+            <div class="k-sub" id="kpi-alm-sub">Regular: 0 | Alternativo: 0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="k-title">📷 Asistencia QR Almuerzo</div>
+            <div class="k-val" id="kpi-alm-qr">0%</div>
+            <div class="k-sub" id="kpi-alm-pend">0 pendientes por escanear</div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3 id="titulo-monitoreo-fecha">Monitoreo en Tiempo Real</h3>
+              <span style="font-size:12.5px; color:var(--muted);">Visualiza quiénes reservaron, qué opción/panes pidieron y quiénes ya escanearon el QR en comedor</span>
+            </div>
+            <div class="toolbar">
+              <label style="font-size:12.5px; font-weight:700;">Día a consultar:</label>
+              <select id="sel-fecha-monitoreo" class="form-select" onchange="cargarDatosPortal(true)"></select>
+              <select id="sel-filtro-monitoreo" class="form-select" onchange="renderizarTablaMonitoreo()">
+                <option value="TODOS">Todos los servicios</option>
+                <option value="DES_RESERVADO">Solo reservaron Desayuno</option>
+                <option value="DES_QR">Ya escanearon QR Desayuno</option>
+                <option value="DES_FALTA">Faltan escanear QR Desayuno</option>
+                <option value="ALM_RESERVADO">Solo reservaron Almuerzo</option>
+                <option value="ALM_QR">Ya escanearon QR Almuerzo</option>
+                <option value="ALM_FALTA">Faltan escanear QR Almuerzo</option>
+              </select>
+              <input type="text" id="txt-buscar-monitoreo" class="form-input" placeholder="Buscar DNI o nombre..." oninput="renderizarTablaMonitoreo()">
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>DNI</th>
+                  <th>Colaborador</th>
+                  <th>Reserva Desayuno (Opción y Panes)</th>
+                  <th>Asistencia QR Desayuno</th>
+                  <th>Reserva Almuerzo</th>
+                  <th>Asistencia QR Almuerzo</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-monitoreo">
+                <tr><td colspan="6" style="text-align:center; color:var(--muted);">Cargando monitoreo en tiempo real...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 2: BASE DE DATOS DE COLABORADORES (SIN TOCAR EXCEL)          -->
+      <!-- =================================================================== -->
+      <section id="mod-colaboradores" style="display:none;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3>Base de Colaboradores (Configuración por Defecto y Estados)</h3>
+              <span style="font-size:12.5px; color:var(--muted);">
+                Selecciona las opciones en las listas desplegables y presiona <b>Guardar</b>. Si asignas <b>Vacaciones</b> o <b>DM</b> con fecha fin, volverá a <b>ACTIVO</b> automáticamente al vencer.
+              </span>
+            </div>
+            <div class="toolbar">
+              <select id="sel-filtro-estado-bd" class="form-select" onchange="renderizarTablaColaboradores()">
+                <option value="TODOS">Todos los estados</option>
+                <option value="ACTIVO">Solo ACTIVOS</option>
+                <option value="INACTIVO">Vacaciones / DM / Cesados</option>
+              </select>
+              <input type="text" id="txt-buscar-bd" class="form-input" placeholder="Buscar DNI o colaborador..." oninput="renderizarTablaColaboradores()">
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>DNI</th>
+                  <th>Nombre Completo</th>
+                  <th>Desayuno por Defecto</th>
+                  <th>Panes por Defecto</th>
+                  <th>Almuerzo por Defecto</th>
+                  <th>Estado</th>
+                  <th>Hasta Fecha (Vac/DM)</th>
+                  <th>Rol (Fijo)</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-colaboradores">
+                <tr><td colspan="9" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- MÓDULO 3: REPORTE MENSUAL DE PLANILLA (25 AL 24) Y DESCARGA EXCEL   -->
+      <!-- =================================================================== -->
+      <section id="mod-planilla" style="display:none;">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3>Reporte Mensual de Descuento por Planilla (Ciclo 25 al 24)</h3>
+              <span style="font-size:12.5px; color:var(--muted);">
+                Contabiliza únicamente consumos reales escaneados con QR en el día en curso y reservas confirmadas de días pasados cerrados (no proyecta días futuros).
+              </span>
+            </div>
+            <div class="toolbar">
+              <label style="font-size:12.5px; font-weight:700;">Desde:</label>
+              <input type="date" id="rep-ini" class="form-input">
+              <label style="font-size:12.5px; font-weight:700;">Hasta:</label>
+              <input type="date" id="rep-fin" class="form-input">
+              <button class="btn btn-primary" onclick="cargarReportePlanillaGEP()">Consultar Consolidado</button>
+              <button class="btn btn-success" onclick="descargarExcelPlanillaGEP()">📥 Descargar Excel (.xlsx)</button>
+            </div>
+          </div>
+
+          <div id="resumen-planilla-gep" style="font-size:15px; font-weight:800; color:var(--sbs-primary); margin-bottom:12px;">
+            Total Descuento Planilla: S/ 0.00
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>DNI</th>
+                  <th>Nombre Completo</th>
+                  <th style="text-align:center;"># Desayunos</th>
+                  <th>Costo Desayunos</th>
+                  <th style="text-align:center;"># Almuerzos</th>
+                  <th>Costo Almuerzos</th>
+                  <th style="background:#dcfce7; color:#166534;">Costo Total a Descontar</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-planilla-gep">
+                <tr><td colspan="7" style="text-align:center; color:var(--muted);">Selecciona el rango de fechas y presiona Consultar Consolidado</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL EDITOR DE MENÚ SEMANAL -->
+  <div class="modal-overlay" id="modal-menu">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div>
+          <h3 style="margin:0; font-size:18px; color:var(--sbs-primary);">🍽️ Editar Menú Semanal (Lunes a Viernes)</h3>
+          <span style="font-size:12px; color:var(--muted);">Separa los panes con <b>/</b> y usa <b>+</b> antes de las bebidas para que la App arme las listas desplegables automáticamente.</span>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalMenu()">✕ Cerrar</button>
+      </div>
+
+      <div id="contenedor-filas-menu"></div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+        <button class="btn btn-outline" onclick="cerrarModalMenu()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-guardar-menu" onclick="guardarMenuSemanalUI()">💾 Guardar y Sincronizar en la App</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
+    const FECHA_ARRANQUE_ALMUERZO = "2026-11-17";
+    const FECHA_ARRANQUE_DESAYUNO = "2026-11-18";
+    const PANES_CATALOGO_BASE = ["Pollo", "Queso fresco", "Aceituna", "Huevo o tortilla", "Hot dog"];
+
+    let STATE = {
+      admin: null,
+      token: '',
+      pendienteLogin: null,
+      hoyStr: '',
+      fechaSeleccionada: '',
+      fechasSemana: [],
+      panesCatalogo: PANES_CATALOGO_BASE.slice(),
+      colaboradoresBD: [],
+      monitoreoDia: [],
+      menuSemanal: [],
+      resumenReporte: [],
+      ultimasFilasReporte: [],
+      timerAutoRefresh: null
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const guardada = localStorage.getItem('SBS_COMEDOR_GEP_SESSION') || localStorage.getItem('SBS_COMEDOR_AUTH');
+      if (guardada) {
+        try {
+          const parsed = JSON.parse(guardada);
+          const u = parsed.admin || (parsed.snapshot && parsed.snapshot.usuario);
+          if (u && tienePermisoPortal(u)) {
+            STATE.admin = u;
+            STATE.token = parsed.token || '';
+            iniciarPortalGEP();
+          }
+        } catch (e) {}
+      }
+
+      document.getElementById('txt-dni').addEventListener('keyup', e => { if (e.key === 'Enter') verificarDniGEP(); });
+      document.getElementById('txt-clave').addEventListener('keyup', e => { if (e.key === 'Enter') confirmarClaveGEP(); });
+    });
+
+    function tienePermisoPortal(u) {
+      if (!u) return false;
+      if (u.esRRHH || u.esTecnico) return true;
+      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      return ['ADMIN_RRHH', 'RRHH', 'ADMIN_GEP', 'GEP', 'TECNICO', 'ADMIN_TECNICO', 'DEV'].includes(r);
+    }
+
+    function normalizarDni(val) {
+      let s = String(val || '').replace(/\D/g, '').trim();
+      return s.length === 7 ? '0' + s : s;
+    }
+
+    function mostrarToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3400);
+    }
+
+    async function llamarAPI(action, args = [], intentos = 3) {
+      for (let i = 0; i < intentos; i++) {
+        try {
+          const resp = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: action, args: args })
+          });
+          return await resp.json();
+        } catch (err) {
+          if (i === intentos - 1) throw err;
+          await new Promise(r => setTimeout(r, 500 * (i + 1)));
+        }
+      }
+    }
+
+    // ========================================================================
+    // LOGIN PORTAL GEP
+    // ========================================================================
+    async function verificarDniGEP() {
+      const dni = normalizarDni(document.getElementById('txt-dni').value);
+      if (dni.length < 7) {
+        mostrarToast('⚠️ Ingresa un DNI válido de 8 dígitos.');
+        return;
+      }
+      const btn = document.getElementById('btn-login-dni');
+      btn.disabled = true;
+      btn.textContent = 'Verificando...';
+
+      try {
+        const res = await llamarAPI('loginEnVivo', [dni]);
+        btn.disabled = false;
+        btn.textContent = 'Continuar';
+        if (res && res.ok && res.data && res.data.diccionarioUsuarios[dni]) {
+          const reg = res.data.diccionarioUsuarios[dni];
+          if (!tienePermisoPortal(reg.usuario)) {
+            mostrarToast('⛔ Acceso restringido únicamente al personal de GEP / Técnico.');
+            return;
+          }
+          STATE.pendienteLogin = reg.usuario;
+          document.getElementById('step-dni').style.display = 'none';
+          document.getElementById('step-clave').style.display = 'block';
+          document.getElementById('lbl-hola-gep').textContent = `Hola, ${reg.usuario.nombre.split(' ')[0]}`;
+          document.getElementById('lbl-inst-gep').textContent = reg.usuario.tieneClave
+            ? 'Ingresa tu contraseña de administrador:'
+            : 'Primer ingreso: Crea tu contraseña de administrador:';
+          document.getElementById('txt-clave').value = '';
+          document.getElementById('txt-clave').focus();
+        } else {
+          mostrarToast('❌ DNI no encontrado en BD_COLABORADORES.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Continuar';
+        mostrarToast('❌ Error de conexión con el servidor.');
+      }
+    }
+
+    function volverPasoDniGEP() {
+      STATE.pendienteLogin = null;
+      document.getElementById('step-clave').style.display = 'none';
+      document.getElementById('step-dni').style.display = 'block';
+    }
+
+    async function confirmarClaveGEP() {
+      if (!STATE.pendienteLogin) return;
+      const clave = document.getElementById('txt-clave').value;
+      if (!clave.trim()) {
+        mostrarToast('⚠️ Ingresa tu contraseña.');
+        return;
+      }
+      const btn = document.getElementById('btn-login-clave');
+      btn.disabled = true;
+      btn.textContent = 'Validando...';
+
+      try {
+        const res = await llamarAPI('autenticarOConfigurarClave', [
+          STATE.pendienteLogin.dni,
+          clave,
+          !STATE.pendienteLogin.tieneClave
+        ]);
+        btn.disabled = false;
+        btn.textContent = 'Ingresar al Portal GEP';
+
+        if (res && res.ok) {
+          STATE.admin = STATE.pendienteLogin;
+          STATE.token = res.tokenSesion || '';
+          localStorage.setItem('SBS_COMEDOR_GEP_SESSION', JSON.stringify({
+            admin: STATE.admin,
+            token: STATE.token
+          }));
+          iniciarPortalGEP();
+        } else {
+          mostrarToast('❌ ' + (res ? res.msg : 'Contraseña incorrecta.'));
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Ingresar al Portal GEP';
+        mostrarToast('❌ No se pudo conectar con el servidor.');
+      }
+    }
+
+    function cerrarSesionGEP() {
+      if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
+      localStorage.removeItem('SBS_COMEDOR_GEP_SESSION');
+      STATE.admin = null;
+      document.getElementById('view-portal').style.display = 'none';
+      document.getElementById('view-login').style.display = 'flex';
+      volverPasoDniGEP();
+    }
+
+    // ========================================================================
+    // INICIALIZACIÓN Y SINCRONIZACIÓN EN TIEMPO REAL
+    // ========================================================================
+    function iniciarPortalGEP() {
+      document.getElementById('view-login').style.display = 'none';
+      document.getElementById('view-portal').style.display = 'flex';
+      document.getElementById('lbl-admin-activo').textContent = `${STATE.admin.nombre} (${STATE.admin.rol})`;
+      cargarDatosPortal(true);
+      alternarAutoRefresh();
+    }
+
+    function alternarAutoRefresh() {
+      if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
+      if (document.getElementById('chk-autorefresh').checked) {
+        STATE.timerAutoRefresh = setInterval(() => {
+          const modMonitoreoVisible = document.getElementById('mod-monitoreo').style.display !== 'none';
+          if (modMonitoreoVisible) cargarDatosPortal(false);
+        }, 20000);
+      }
+    }
+
+    async function cargarDatosPortal(mostrarIndicador) {
+      const btn = document.getElementById('btn-sync-ahora');
+      if (mostrarIndicador && btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Sincronizando...';
+      }
+
+      const selFecha = document.getElementById('sel-fecha-monitoreo');
+      const fechaPedida = selFecha && selFecha.value ? selFecha.value : '';
+
+      try {
+        const res = await llamarAPI('obtenerDatosPortalGEP', [STATE.admin.dni, fechaPedida]);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '🔄 Actualizar ahora';
+        }
+        if (!res || !res.ok) {
+          mostrarToast('⚠️ ' + (res ? res.msg : 'Error al sincronizar.'));
+          return;
+        }
+
+        STATE.hoyStr = res.hoyStr;
+        STATE.fechaSeleccionada = res.fechaConsultada;
+        STATE.fechasSemana = res.fechasSemana || [];
+        STATE.panesCatalogo = res.panesCatalogo || PANES_CATALOGO_BASE.slice();
+        STATE.colaboradoresBD = res.colaboradoresBD || [];
+        STATE.monitoreoDia = res.monitoreoDia || [];
+        STATE.menuSemanal = res.menuSemanal || [];
+
+        document.getElementById('lbl-ultima-sync').textContent = `Sincronizado: ${res.timestampServidor.split(' ')[1] || res.timestampServidor}`;
+
+        // Poblar selector de días de la semana
+        if (selFecha && selFecha.options.length === 0) {
+          selFecha.innerHTML = STATE.fechasSemana.map(f =>
+            `<option value="${f.fecha}" ${f.fecha === STATE.fechaSeleccionada ? 'selected' : ''}>${f.etiqueta}${f.fecha === STATE.hoyStr ? ' (HOY)' : ''}</option>`
+          ).join('');
+        }
+
+        if (!document.getElementById('rep-ini').value) {
+          inicializarFechasPlanilla();
+        }
+
+        renderizarTablaMonitoreo();
+        renderizarTablaColaboradores();
+      } catch (e) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '🔄 Actualizar ahora';
+        }
+      }
+    }
+
+    function cambiarModulo(mod) {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('mod-monitoreo').style.display = 'none';
+      document.getElementById('mod-colaboradores').style.display = 'none';
+      document.getElementById('mod-planilla').style.display = 'none';
+
+      if (mod === 'MONITOREO') {
+        document.getElementById('tab-monitoreo').classList.add('active');
+        document.getElementById('mod-monitoreo').style.display = 'block';
+        cargarDatosPortal(true);
+      } else if (mod === 'COLABORADORES') {
+        document.getElementById('tab-colaboradores').classList.add('active');
+        document.getElementById('mod-colaboradores').style.display = 'block';
+        renderizarTablaColaboradores();
+      } else if (mod === 'PLANILLA') {
+        document.getElementById('tab-planilla').classList.add('active');
+        document.getElementById('mod-planilla').style.display = 'block';
+        cargarReportePlanillaGEP();
+      }
+    }
+
+    // ========================================================================
+    // MÓDULO 1: RENDERIZADO DE MONITOREO EN VIVO Y CONTEO DE PANES
+    // ========================================================================
+    function renderizarTablaMonitoreo() {
+      const lista = STATE.monitoreoDia || [];
+      const filtro = document.getElementById('sel-filtro-monitoreo').value;
+      const busq = String(document.getElementById('txt-buscar-monitoreo').value || '').toLowerCase().trim();
+
+      let totDesRes = 0, totDesQR = 0;
+      let totAlmRes = 0, totAlmQR = 0, almReg = 0, almAlt = 0;
+      const conteoPanes = {};
+      let huevosUnidad = 0;
+
+      lista.forEach(item => {
+        if (item.reservoDes) {
+          totDesRes++;
+          const raw = String(item.codigoDes || '');
+          const p = raw.split('|');
+          if (p[0] === 'OP1') {
+            const p1 = p[1] || 'Pollo';
+            const p2 = p[2] || p1;
+            conteoPanes[p1] = (conteoPanes[p1] || 0) + 1;
+            conteoPanes[p2] = (conteoPanes[p2] || 0) + 1;
+          } else if (p[0] === 'OP2') {
+            huevosUnidad += 3;
+          } else if (p[0] === 'OP3') {
+            const p1 = p[1] || 'Pollo';
+            conteoPanes[p1] = (conteoPanes[p1] || 0) + 1;
+            huevosUnidad += 1;
+          }
+        }
+        if (item.consumioDes) totDesQR++;
+
+        if (item.reservoAlm) {
+          totAlmRes++;
+          if (item.detalleAlm === 'Alternativo') almAlt++;
+          else almReg++;
+        }
+        if (item.consumioAlm) totAlmQR++;
+      });
+
+      document.getElementById('kpi-des-total').textContent = `${totDesRes} / ${totDesQR}`;
+      document.getElementById('kpi-des-sub').textContent = `${totDesRes} reservados • ${totDesQR} ya escanearon QR`;
+
+      const txtPanes = Object.keys(conteoPanes).map(k => `${k}: ${conteoPanes[k]}`).join(' | ');
+      document.getElementById('kpi-des-insumos').textContent =
+        (txtPanes || '0 panes') + (huevosUnidad > 0 ? ` | Huevos: ${huevosUnidad}` : '');
+
+      document.getElementById('kpi-alm-total').textContent = `${totAlmRes} / ${totAlmQR}`;
+      document.getElementById('kpi-alm-sub').textContent = `Regular: ${almReg} | Alternativo: ${almAlt}`;
+
+      const porcAlm = totAlmRes > 0 ? Math.round((totAlmQR / totAlmRes) * 100) : 0;
+      const faltanAlm = Math.max(0, totAlmRes - totAlmQR);
+      document.getElementById('kpi-alm-qr').textContent = `${porcAlm}% (${totAlmQR})`;
+      document.getElementById('kpi-alm-pend').textContent = `${faltanAlm} pendientes por escanear QR`;
+
+      const filtrados = lista.filter(item => {
+        if (busq && !item.dni.includes(busq) && !item.nombre.toLowerCase().includes(busq)) return false;
+        if (filtro === 'DES_RESERVADO') return item.reservoDes;
+        if (filtro === 'DES_QR') return item.consumioDes;
+        if (filtro === 'DES_FALTA') return item.reservoDes && !item.consumioDes;
+        if (filtro === 'ALM_RESERVADO') return item.reservoAlm;
+        if (filtro === 'ALM_QR') return item.consumioAlm;
+        if (filtro === 'ALM_FALTA') return item.reservoAlm && !item.consumioAlm;
+        return true;
+      });
+
+      const tbody = document.getElementById('tbody-monitoreo');
+      if (filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">No hay registros para el filtro seleccionado.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtrados.map(r => {
+        const badgeDesRes = r.reservoDes
+          ? `<span class="badge bg-orange">☕ ${r.detalleDes}</span>`
+          : `<span class="badge bg-gray">No solicitado</span>`;
+
+        const badgeDesQR = r.consumioDes
+          ? `<span class="badge bg-green">✅ Asistió (${r.horaScanDes || 'QR'})</span>`
+          : (r.reservoDes ? `<span class="badge bg-gray">⏳ Pendiente</span>` : `-`);
+
+        const badgeAlmRes = r.reservoAlm
+          ? `<span class="badge ${r.detalleAlm === 'Alternativo' ? 'bg-blue' : 'bg-green'}">🍲 ${r.detalleAlm}</span>`
+          : `<span class="badge bg-gray">Cancelado / No</span>`;
+
+        const badgeAlmQR = r.consumioAlm
+          ? `<span class="badge bg-green">✅ Asistió (${r.horaScanAlm || 'QR'})</span>`
+          : (r.reservoAlm ? `<span class="badge bg-gray">⏳ Pendiente</span>` : `-`);
+
+        return `
+          <tr>
+            <td><b>${r.dni}</b></td>
+            <td><b>${r.nombre}</b></td>
+            <td>${badgeDesRes}</td>
+            <td>${badgeDesQR}</td>
+            <td>${badgeAlmRes}</td>
+            <td>${badgeAlmQR}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ========================================================================
+    // MÓDULO 2: BASE DE DATOS DE COLABORADORES CON SELECTORES VISUALES
+    // ========================================================================
+    function desglosarCodigoDes(cod) {
+      const s = String(cod || 'NO').trim();
+      if (!s || s === 'NO') return { op: 'NO', p1: 'Pollo', p2: 'Queso fresco' };
+      if (s === 'OP2') return { op: 'OP2', p1: 'Pollo', p2: 'Queso fresco' };
+      const partes = s.split('|');
+      return {
+        op: partes[0] || 'NO',
+        p1: partes[1] || 'Pollo',
+        p2: partes[2] || partes[1] || 'Queso fresco'
+      };
+    }
+
+    function renderizarTablaColaboradores() {
+      const lista = STATE.colaboradoresBD || [];
+      const filtroEst = document.getElementById('sel-filtro-estado-bd').value;
+      const busq = String(document.getElementById('txt-buscar-bd').value || '').toLowerCase().trim();
+
+      const filtrados = lista.filter(c => {
+        if (busq && !c.dni.includes(busq) && !c.nombre.toLowerCase().includes(busq)) return false;
+        if (filtroEst === 'ACTIVO') return c.estado === 'ACTIVO';
+        if (filtroEst === 'INACTIVO') return c.estado !== 'ACTIVO';
+        return true;
+      });
+
+      const tbody = document.getElementById('tbody-colaboradores');
+      if (filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--muted);">Sin colaboradores que coincidan con la búsqueda.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtrados.map(c => {
+        const d = desglosarCodigoDes(c.desDef);
+        const mostrarP1 = (d.op === 'OP1' || d.op === 'OP3');
+        const mostrarP2 = (d.op === 'OP1');
+        const mostrarFechaFin = (c.estado === 'VACACIONES' || c.estado === 'DM');
+
+        const optsP1 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p1 ? 'selected' : ''}>${p}</option>`).join('');
+        const optsP2 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p2 ? 'selected' : ''}>${p}</option>`).join('');
+
+        return `
+          <tr id="row-colab-${c.dni}">
+            <td><b>${c.dni}</b></td>
+            <td><b>${c.nombre}</b></td>
+            <td>
+              <select class="form-select" id="opdes-${c.dni}" onchange="alCambiarOpDesFila('${c.dni}')">
+                <option value="NO" ${d.op === 'NO' ? 'selected' : ''}>NO</option>
+                <option value="OP1" ${d.op === 'OP1' ? 'selected' : ''}>Opc. 1 (2 panes)</option>
+                <option value="OP2" ${d.op === 'OP2' ? 'selected' : ''}>Opc. 2 (3 huevos)</option>
+                <option value="OP3" ${d.op === 'OP3' ? 'selected' : ''}>Opc. 3 (1 pan + 1 huevo)</option>
+              </select>
+            </td>
+            <td>
+              <div style="display:flex; gap:5px; align-items:center;">
+                <select class="form-select" id="pan1-${c.dni}" style="display:${mostrarP1 ? 'inline-block' : 'none'};" onchange="marcarFilaModificada('${c.dni}')">
+                  ${optsP1}
+                </select>
+                <select class="form-select" id="pan2-${c.dni}" style="display:${mostrarP2 ? 'inline-block' : 'none'};" onchange="marcarFilaModificada('${c.dni}')">
+                  ${optsP2}
+                </select>
+                <span id="lbl-sinpan-${c.dni}" style="display:${!mostrarP1 ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">
+                  ${d.op === 'OP2' ? '3 huevos fijos' : 'Sin desayuno'}
+                </span>
+              </div>
+            </td>
+            <td>
+              <select class="form-select" id="alm-${c.dni}" onchange="marcarFilaModificada('${c.dni}')">
+                <option value="NO" ${c.almDef === 'NO' ? 'selected' : ''}>NO</option>
+                <option value="REGULAR" ${c.almDef === 'REGULAR' ? 'selected' : ''}>REGULAR</option>
+                <option value="ALTERNATIVO" ${c.almDef === 'ALTERNATIVO' ? 'selected' : ''}>ALTERNATIVO</option>
+              </select>
+            </td>
+            <td>
+              <select class="form-select" id="est-${c.dni}" onchange="alCambiarEstadoFila('${c.dni}')">
+                <option value="ACTIVO" ${c.estado === 'ACTIVO' ? 'selected' : ''}>ACTIVO</option>
+                <option value="VACACIONES" ${c.estado === 'VACACIONES' ? 'selected' : ''}>VACACIONES</option>
+                <option value="DM" ${c.estado === 'DM' ? 'selected' : ''}>DM</option>
+                <option value="CESADO" ${c.estado === 'CESADO' ? 'selected' : ''}>CESADO</option>
+              </select>
+            </td>
+            <td>
+              <input type="date" class="form-input" id="ffin-${c.dni}" value="${c.fechaFinEstado || ''}"
+                style="display:${mostrarFechaFin ? 'inline-block' : 'none'};" onchange="marcarFilaModificada('${c.dni}')">
+              <span id="lbl-sinfecha-${c.dni}" style="display:${!mostrarFechaFin ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">-</span>
+            </td>
+            <td><span class="badge bg-gray">${c.rol}</span></td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-primary btn-sm" id="btn-save-${c.dni}" onclick="guardarFilaColaborador('${c.dni}')">
+                  Guardar
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="resetearClaveDesdeTabla('${c.dni}', '${c.nombre}')" title="Resetear contraseña">
+                  🔑
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function marcarFilaModificada(dni) {
+      const tr = document.getElementById('row-colab-' + dni);
+      if (tr) tr.classList.add('row-modified');
+    }
+
+    function alCambiarOpDesFila(dni) {
+      const op = document.getElementById('opdes-' + dni).value;
+      const s1 = document.getElementById('pan1-' + dni);
+      const s2 = document.getElementById('pan2-' + dni);
+      const lbl = document.getElementById('lbl-sinpan-' + dni);
+
+      if (op === 'OP1') {
+        s1.style.display = 'inline-block';
+        s2.style.display = 'inline-block';
+        lbl.style.display = 'none';
+      } else if (op === 'OP3') {
+        s1.style.display = 'inline-block';
+        s2.style.display = 'none';
+        lbl.style.display = 'none';
+      } else {
+        s1.style.display = 'none';
+        s2.style.display = 'none';
+        lbl.style.display = 'inline-block';
+        lbl.textContent = (op === 'OP2') ? '3 huevos fijos' : 'Sin desayuno';
+      }
+      marcarFilaModificada(dni);
+    }
+
+    function alCambiarEstadoFila(dni) {
+      const est = document.getElementById('est-' + dni).value;
+      const inpFecha = document.getElementById('ffin-' + dni);
+      const lbl = document.getElementById('lbl-sinfecha-' + dni);
+      if (est === 'VACACIONES' || est === 'DM') {
+        inpFecha.style.display = 'inline-block';
+        lbl.style.display = 'none';
+      } else {
+        inpFecha.style.display = 'none';
+        inpFecha.value = '';
+        lbl.style.display = 'inline-block';
+      }
+      marcarFilaModificada(dni);
+    }
+
+    async function guardarFilaColaborador(dni) {
+      const op = document.getElementById('opdes-' + dni).value;
+      const p1 = document.getElementById('pan1-' + dni).value;
+      const p2 = document.getElementById('pan2-' + dni).value;
+      const alm = document.getElementById('alm-' + dni).value;
+      const est = document.getElementById('est-' + dni).value;
+      const ffin = document.getElementById('ffin-' + dni).value;
+
+      if ((est === 'VACACIONES' || est === 'DM') && !ffin) {
+        mostrarToast('⚠️ Indica la fecha de fin para Vacaciones o Descanso Médico.');
+        return;
+      }
+
+      let desDefCodigo = 'NO';
+      if (op === 'OP2') desDefCodigo = 'OP2';
+      else if (op === 'OP1') desDefCodigo = `OP1|${p1}|${p2}`;
+      else if (op === 'OP3') desDefCodigo = `OP3|${p1}`;
+
+      const btn = document.getElementById('btn-save-' + dni);
+      btn.disabled = true;
+      btn.textContent = '⏳';
+
+      try {
+        const res = await llamarAPI('actualizarColaboradorDesdeGEP', [{
+          dni: dni,
+          desDefCodigo: desDefCodigo,
+          almDef: alm,
+          estado: est,
+          fechaFinEstado: ffin,
+          dniAdmin: STATE.admin.dni
+        }]);
+        btn.disabled = false;
+        btn.textContent = 'Guardar';
+
+        if (res && res.ok) {
+          const tr = document.getElementById('row-colab-' + dni);
+          if (tr) tr.classList.remove('row-modified');
+          mostrarToast('✅ ' + res.msg);
+          cargarDatosPortal(false);
+        } else {
+          mostrarToast('⚠️ ' + (res ? res.msg : 'No se pudo guardar.'));
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Guardar';
+        mostrarToast('❌ Error de red al guardar.');
+      }
+    }
+
+    async function resetearClaveDesdeTabla(dni, nombre) {
+      if (!confirm(`¿Limpiar la contraseña de ${nombre} (${dni}) para que cree una nueva en su próximo ingreso?`)) return;
+      try {
+        const res = await llamarAPI('resetearClaveColaboradorRRHH', [STATE.admin.dni, dni]);
+        if (res && res.ok) mostrarToast('✅ ' + res.msg);
+        else mostrarToast('⚠️ ' + (res ? res.msg : 'Error'));
+      } catch (e) {
+        mostrarToast('❌ Error de conexión.');
+      }
+    }
+
+    // ========================================================================
+    // MODAL DE MENÚ SEMANAL
+    // ========================================================================
+    function abrirModalMenu() {
+      const cont = document.getElementById('contenedor-filas-menu');
+      const dias = STATE.menuSemanal && STATE.menuSemanal.length === 5
+        ? STATE.menuSemanal
+        : [
+            { dia: 'Lunes', desayuno: '', almuerzo: '' },
+            { dia: 'Martes', desayuno: '', almuerzo: '' },
+            { dia: 'Miércoles', desayuno: '', almuerzo: '' },
+            { dia: 'Jueves', desayuno: '', almuerzo: '' },
+            { dia: 'Viernes', desayuno: '', almuerzo: '' }
+          ];
+
+      cont.innerHTML = dias.map((d, idx) => `
+        <div class="menu-day-row">
+          <label>${d.dia}</label>
+          <div class="menu-inputs">
+            <div>
+              <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">☕ Desayuno (Panes con / + Bebidas con /):</span>
+              <input type="text" class="form-input" style="width:100%;" id="mdes-${idx}" value="${d.desayuno.replace(/"/g, '"')}">
+            </div>
+            <div>
+              <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">🍲 Almuerzo:</span>
+              <input type="text" class="form-input" style="width:100%;" id="malm-${idx}" value="${d.almuerzo.replace(/"/g, '"')}">
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('modal-menu').style.display = 'flex';
+    }
+
+    function cerrarModalMenu() {
+      document.getElementById('modal-menu').style.display = 'none';
+    }
+
+    async function guardarMenuSemanalUI() {
+      const nuevaLista = [];
+      for (let i = 0; i < 5; i++) {
+        nuevaLista.push({
+          desayuno: document.getElementById('mdes-' + i).value,
+          almuerzo: document.getElementById('malm-' + i).value
+        });
+      }
+      const btn = document.getElementById('btn-guardar-menu');
+      btn.disabled = true;
+      btn.textContent = '⏳ Guardando y sincronizando...';
+
+      try {
+        const res = await llamarAPI('guardarMenuSemanalDesdeGEP', [STATE.admin.dni, nuevaLista]);
+        btn.disabled = false;
+        btn.textContent = '💾 Guardar y Sincronizar en la App';
+        if (res && res.ok) {
+          cerrarModalMenu();
+          mostrarToast('✅ ' + res.msg);
+          cargarDatosPortal(false);
+        } else {
+          mostrarToast('⚠️ ' + (res ? res.msg : 'Error al guardar menú.'));
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = '💾 Guardar y Sincronizar en la App';
+        mostrarToast('❌ Error de red.');
+      }
+    }
+
+    // ========================================================================
+    // MÓDULO 3: REPORTE MENSUAL PLANILLA GEP Y EXPORTACIÓN EXCEL (.XLSX)
+    // ========================================================================
+    function inicializarFechasPlanilla() {
+      const baseStr = STATE.hoyStr || new Date().toISOString().split('T')[0];
+      const hoyDate = new Date(baseStr + 'T00:00:00');
+      let mes = hoyDate.getMonth(), anio = hoyDate.getFullYear();
+      if (hoyDate.getDate() <= 24) mes = mes - 1;
+      document.getElementById('rep-ini').value = new Date(anio, mes, 25).toISOString().split('T')[0];
+      document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
+    }
+
+    function convertirFechaPeruAISO(fStr) {
+      const s = String(fStr || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const p = s.split('/');
+      return p.length === 3 ? `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}` : s;
+    }
+
+    async function cargarReportePlanillaGEP() {
+      const fIni = document.getElementById('rep-ini').value;
+      const fFin = document.getElementById('rep-fin').value;
+      const tbody = document.getElementById('tbody-planilla-gep');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Calculando consolidado de planilla...</td></tr>';
+
+      try {
+        const res = await llamarAPI('obtenerReportePlanillaRRHH', [fIni, fFin]);
+        const filasCrudas = (res && res.filas) ? res.filas : [];
+        const hoyISO = STATE.hoyStr || new Date().toISOString().split('T')[0];
+
+        const filasValidas = filasCrudas.filter(f => {
+          const iso = f.fechaISO || convertirFechaPeruAISO(f.fecha);
+          const esDes = String(f.servicio || '').toUpperCase().startsWith('DESAYUNO');
+          if (iso > hoyISO) return false;
+          if (esDes && iso < FECHA_ARRANQUE_DESAYUNO) return false;
+          if (!esDes && iso < FECHA_ARRANQUE_ALMUERZO) return false;
+          if (iso === hoyISO && String(f.consumio || '').toUpperCase() !== 'SI') return false;
+          return true;
+        });
+
+        const mapaRecalculado = {};
+        filasValidas.forEach(f => {
+          const dni = normalizarDni(f.dni);
+          if (!mapaRecalculado[dni]) {
+            mapaRecalculado[dni] = {
+              dni: dni,
+              nombre: f.nombre,
+              cantDesayunos: 0,
+              costoDesayunos: 0,
+              cantAlmuerzos: 0,
+              costoAlmuerzos: 0,
+              costoTotal: 0
+            };
+          }
+          const monto = Number(f.montoCobrar || 0);
+          if (String(f.servicio || '').toUpperCase().startsWith('DESAYUNO')) {
+            mapaRecalculado[dni].cantDesayunos++;
+            mapaRecalculado[dni].costoDesayunos += monto;
+          } else {
+            mapaRecalculado[dni].cantAlmuerzos++;
+            mapaRecalculado[dni].costoAlmuerzos += monto;
+          }
+          mapaRecalculado[dni].costoTotal += monto;
+        });
+
+        STATE.ultimasFilasReporte = filasValidas;
+        STATE.resumenReporte = Object.values(mapaRecalculado).filter(r => r.costoTotal > 0);
+
+        if (STATE.resumenReporte.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin consumos cerrados o escaneados con QR hasta el momento (S/ 0.00).</td></tr>';
+          document.getElementById('resumen-planilla-gep').textContent = 'Total Descuento Planilla: S/ 0.00';
+          return;
+        }
+
+        let granTot = 0;
+        tbody.innerHTML = STATE.resumenReporte.map(r => {
+          granTot += Number(r.costoTotal);
+          return `
+            <tr>
+              <td><b>${r.dni}</b></td>
+              <td><b>${r.nombre}</b></td>
+              <td style="text-align:center;">${r.cantDesayunos}</td>
+              <td>S/ ${r.costoDesayunos.toFixed(2)}</td>
+              <td style="text-align:center;">${r.cantAlmuerzos}</td>
+              <td>S/ ${r.costoAlmuerzos.toFixed(2)}</td>
+              <td style="background:#ecfdf5; color:#047857; font-weight:800;">S/ ${r.costoTotal.toFixed(2)}</td>
+            </tr>
+          `;
+        }).join('');
+        document.getElementById('resumen-planilla-gep').textContent = `Total Descuento Planilla: S/ ${granTot.toFixed(2)}`;
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger);">Error al consultar reporte.</td></tr>';
+      }
+    }
+
+    function descargarExcelPlanillaGEP() {
+      if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
+        mostrarToast('⚠️ No hay consumos registrados en este rango para exportar.');
+        return;
+      }
+
+      const wb = XLSX.utils.book_new();
+      const headerStyle = {
+        fill: { fgColor: { rgb: "13392A" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
+      };
+      const headerTotalStyle = {
+        fill: { fgColor: { rgb: "047857" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
+      };
+      const cellBorder = {
+        top: { style: "thin", color: { rgb: "CBD5E1" } },
+        bottom: { style: "thin", color: { rgb: "CBD5E1" } },
+        left: { style: "thin", color: { rgb: "CBD5E1" } },
+        right: { style: "thin", color: { rgb: "CBD5E1" } }
+      };
+      const totalColStyle = {
+        fill: { fgColor: { rgb: "D1FAE5" } },
+        font: { color: { rgb: "065F46" }, bold: true },
+        numFmt: '"S/" #,##0.00',
+        border: cellBorder
+      };
+      const moneyStyle = { numFmt: '"S/" #,##0.00', border: cellBorder };
+      const centerStyle = { alignment: { horizontal: "center" }, border: cellBorder };
+      const textStyle = { border: cellBorder };
+
+      const aoa1 = [
+        [{ v: "CONSOLIDADO DE DESCUENTO POR PLANILLA - GEP COMEDOR SBS", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [
+          { v: "DNI", s: headerStyle },
+          { v: "Nombres", s: headerStyle },
+          { v: "# Desayunos", s: headerStyle },
+          { v: "Costo Desayunos", s: headerStyle },
+          { v: "# Almuerzos", s: headerStyle },
+          { v: "Costo Almuerzos", s: headerStyle },
+          { v: "Costo Total", s: headerTotalStyle }
+        ]
+      ];
+
+      let sumDesC = 0, sumDesM = 0, sumAlmC = 0, sumAlmM = 0, sumTot = 0;
+      STATE.resumenReporte.forEach(r => {
+        sumDesC += Number(r.cantDesayunos);
+        sumDesM += Number(r.costoDesayunos);
+        sumAlmC += Number(r.cantAlmuerzos);
+        sumAlmM += Number(r.costoAlmuerzos);
+        sumTot += Number(r.costoTotal);
+        aoa1.push([
+          { v: String(r.dni), t: 's', s: centerStyle },
+          { v: r.nombre, t: 's', s: textStyle },
+          { v: Number(r.cantDesayunos), t: 'n', s: centerStyle },
+          { v: Number(r.costoDesayunos), t: 'n', s: moneyStyle },
+          { v: Number(r.cantAlmuerzos), t: 'n', s: centerStyle },
+          { v: Number(r.costoAlmuerzos), t: 'n', s: moneyStyle },
+          { v: Number(r.costoTotal), t: 'n', s: totalColStyle }
+        ]);
+      });
+
+      aoa1.push([
+        { v: "TOTAL PLANILLA", t: 's', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: "", t: 's', s: textStyle },
+        { v: sumDesC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: sumDesM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
+        { v: sumAlmC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: sumAlmM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
+        { v: sumTot, t: 'n', s: totalColStyle }
+      ]);
+
+      const ws1 = XLSX.utils.aoa_to_sheet(aoa1);
+      ws1['!cols'] = [{ wch: 13 }, { wch: 32 }, { wch: 14 }, { wch: 17 }, { wch: 14 }, { wch: 17 }, { wch: 17 }];
+      XLSX.utils.book_append_sheet(wb, ws1, "1_Consolidado_GEP");
+
+      const aoa2 = [
+        [{ v: "DETALLE DIARIO DE RESERVAS Y ASISTENCIA EN COMEDOR", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [
+          { v: "Fecha", s: headerStyle },
+          { v: "DNI", s: headerStyle },
+          { v: "Colaborador", s: headerStyle },
+          { v: "Servicio y Opción", s: headerStyle },
+          { v: "Reservó", s: headerStyle },
+          { v: "Asistió_Comedor", s: headerStyle },
+          { v: "Monto", s: headerStyle }
+        ]
+      ];
+
+      STATE.ultimasFilasReporte.forEach(d => {
+        aoa2.push([
+          { v: String(d.fecha), t: 's', s: centerStyle },
+          { v: String(d.dni), t: 's', s: centerStyle },
+          { v: d.nombre, t: 's', s: textStyle },
+          { v: String(d.servicio), t: 's', s: centerStyle },
+          { v: d.reservo, t: 's', s: centerStyle },
+          { v: d.consumio, t: 's', s: centerStyle },
+          { v: Number(d.montoCobrar), t: 'n', s: moneyStyle }
+        ]);
+      });
+
+      const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
+      ws2['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 32 }, { wch: 32 }, { wch: 12 }, { wch: 16 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws2, "2_Detalle_Fechas");
+
+      XLSX.writeFile(wb, `Planilla_Comedor_SBS_${STATE.hoyStr || 'GEP'}.xlsx`);
+      mostrarToast('📥 Excel (.xlsx) descargado correctamente.');
+    }
+
+    function imprimirAficheQR() {
+      const urlCheckin = 'https://sbs-peru.github.io/comedor/?checkin=1';
+      const qrApi = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(urlCheckin);
+      const w = window.open('', '_blank');
+      w.document.write(`
+        <html><head><title>Cartel Oficial Comedor SBS</title></head>
+        <body style="font-family:sans-serif; text-align:center; padding:40px;">
+          <h1 style="color:#13392a; margin-bottom:6px; font-size:32px;">COMEDOR SBS</h1>
+          <p style="color:#334155; font-size:18px; margin-top:0;">
+            Escanea este código QR desde la App Comedor SBS o con la cámara de tu celular
+          </p>
+          <div style="margin:28px auto; padding:24px; border:5px solid #13392a; display:inline-block; border-radius:22px;">
+            <img src="${qrApi}" width="340" height="340" alt="QR Comedor SBS"/>
+          </div>
+          <script>setTimeout(() => window.print(), 700);<\/script>
+        </body></html>
+      `);
+      w.document.close();
+    }
+  </script>
+</body>
+</html>

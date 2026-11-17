@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal GEP - Comedor SBS</title>
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=15">
+  <title>Portal GEP • Comedor SBS</title>
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=16">
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
@@ -23,27 +23,26 @@
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { margin: 0; padding: 0; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    /* LOGIN DESKTOP */
+    /* LOGIN */
     #view-login {
       min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
       background: linear-gradient(135deg, #13392a 0%, #0a1f17 100%);
     }
     .login-card {
-      background: white; width: 100%; max-width: 420px; border-radius: 18px; padding: 36px 32px;
+      background: white; width: 100%; max-width: 400px; border-radius: 16px; padding: 36px 32px;
       box-shadow: 0 20px 45px rgba(0,0,0,0.28); text-align: center;
     }
-    .login-logo { width: 120px; height: 120px; object-fit: contain; margin: 0 auto 12px; display: block; }
-    .login-card h1 { margin: 0 0 6px; font-size: 21px; color: var(--sbs-primary); font-weight: 800; }
-    .login-card p { margin: 0 0 18px; font-size: 13.5px; color: var(--muted); }
+    .login-logo { width: 115px; height: 115px; object-fit: contain; margin: 0 auto 14px; display: block; }
+    .login-card h1 { margin: 0 0 18px; font-size: 20px; color: var(--sbs-primary); font-weight: 800; }
     .input-lg {
-      width: 100%; padding: 13px 14px; font-size: 18px; text-align: center; font-weight: 700;
-      border: 2px solid var(--border); border-radius: 11px; margin-bottom: 12px; outline: none;
+      width: 100%; padding: 13px 14px; font-size: 17px; text-align: center; font-weight: 700;
+      border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 12px; outline: none;
     }
     .input-lg:focus { border-color: var(--sbs-primary); }
 
     /* BOTONES */
     .btn {
-      padding: 10px 16px; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 700;
+      padding: 10px 18px; border: none; border-radius: 9px; font-size: 13.5px; font-weight: 700;
       cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
     }
     .btn-primary { background: var(--sbs-primary); color: white; }
@@ -52,101 +51,97 @@
     .btn-orange { background: var(--sbs-orange); color: white; }
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
     .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
-    .btn-sm { padding: 7px 11px; font-size: 12px; border-radius: 8px; }
-    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-sm { padding: 8px 13px; font-size: 12.5px; border-radius: 8px; }
+    .btn-lg-save { padding: 10px 24px; font-size: 14px; font-weight: 800; border-radius: 9px; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    /* LAYOUT PRINCIPAL DESKTOP */
+    /* CABECERA Y NAVEGACIÓN */
     #view-portal { display: none; flex-direction: column; min-height: 100vh; }
     .top-header {
-      background: var(--sbs-primary); color: white; padding: 14px 28px;
+      background: var(--sbs-primary); color: white; padding: 13px 28px;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
-      position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    .brand-wrap { display: flex; align-items: center; gap: 14px; }
-    .brand-logo { width: 42px; height: 42px; border-radius: 10px; background: white; object-fit: contain; padding: 3px; }
-    .brand-wrap h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
-    .brand-wrap span { font-size: 12.5px; color: rgba(255,255,255,0.82); display: block; margin-top: 2px; }
+    .brand-wrap { display: flex; align-items: center; gap: 13px; }
+    .brand-logo { width: 38px; height: 38px; border-radius: 9px; background: white; object-fit: contain; padding: 3px; }
+    .brand-wrap h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.2px; }
+    .brand-wrap span { font-size: 12px; color: rgba(255,255,255,0.8); display: block; margin-top: 1px; }
 
-    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .header-actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
     .sync-pill {
-      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
       padding: 6px 12px; border-radius: 999px; font-size: 12px; display: flex; align-items: center; gap: 6px;
     }
-    .dot-live { width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block; box-shadow: 0 0 8px #34d399; }
+    .dot-live { width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block; }
 
-    /* NAVEGACIÓN DE MÓDULOS */
     .nav-bar {
       background: white; border-bottom: 1px solid var(--border); padding: 0 28px;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
     }
-    .nav-tabs { display: flex; gap: 6px; }
+    .nav-tabs { display: flex; gap: 8px; }
     .nav-tab {
-      padding: 14px 20px; font-size: 14px; font-weight: 700; color: var(--muted);
+      padding: 14px 18px; font-size: 13.5px; font-weight: 700; color: var(--muted);
       cursor: pointer; border-bottom: 3px solid transparent; transition: 0.15s;
     }
     .nav-tab:hover { color: var(--sbs-primary); }
     .nav-tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
 
-    .container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 22px 28px; flex: 1; }
+    .container { max-width: 1440px; width: 100%; margin: 0 auto; padding: 20px 28px; flex: 1; }
 
-    /* TARJETAS KPI */
-    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    /* TARJETAS DE INDICADORES */
+    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 16px; }
     .kpi-card {
-      background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      background: white; border: 1px solid var(--border); border-radius: 12px; padding: 15px 18px;
     }
-    .kpi-card .k-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
-    .kpi-card .k-val { font-size: 26px; font-weight: 800; color: var(--sbs-primary); margin: 6px 0 4px; }
-    .kpi-card .k-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .kpi-card .k-title { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .kpi-card .k-val { font-size: 24px; font-weight: 800; color: var(--sbs-primary); margin: 5px 0 3px; }
+    .kpi-card .k-sub { font-size: 12px; color: var(--muted); }
 
-    /* PANELES Y TABLAS */
-    .panel-card {
-      background: white; border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px;
-      margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    /* BARRA DE ACCIONES Y TABLA DIRECTA */
+    .action-bar {
+      background: white; border: 1px solid var(--border); border-bottom: none;
+      border-radius: 12px 12px 0 0; padding: 13px 16px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
     }
-    .panel-header {
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
-      gap: 12px; margin-bottom: 14px;
-    }
-    .panel-header h3 { margin: 0; font-size: 16.5px; color: var(--sbs-primary); font-weight: 800; }
-
-    .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .toolbar-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .form-input, .form-select {
       padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px;
       font-size: 13px; color: var(--text); background: white; outline: none;
     }
     .form-input:focus, .form-select:focus { border-color: var(--sbs-primary); }
 
-    .table-container { overflow-x: auto; max-height: 62vh; border: 1px solid var(--border); border-radius: 11px; }
+    .table-direct-wrap {
+      overflow-x: auto; max-height: calc(100vh - 220px); background: white;
+      border: 1px solid var(--border); border-radius: 0 0 12px 12px;
+    }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    th, td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
     th { background: #f8fafc; font-weight: 700; color: #334155; position: sticky; top: 0; z-index: 10; }
     tr:hover td { background: #f8fafc; }
 
-    /* ETIQUETAS VISUALES (BADGES) */
     .badge {
       display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px;
-      border-radius: 7px; font-size: 11.5px; font-weight: 700; white-space: nowrap;
+      border-radius: 6px; font-size: 11.5px; font-weight: 700; white-space: nowrap;
     }
     .bg-green { background: #dcfce7; color: #166534; }
     .bg-orange { background: #ffedd5; color: #c2410c; }
     .bg-gray { background: #f1f5f9; color: #64748b; }
-    .bg-red { background: #fee2e2; color: #991b1b; }
     .bg-blue { background: #e0f2fe; color: #075985; }
 
     .row-modified td { background: #fffbeb !important; }
 
-    /* MODAL MENÚ SEMANAL */
+    /* MODALES */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(15, 23, 42, 0.65); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
+      background: rgba(15, 23, 42, 0.6); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
     }
     .modal-box {
-      background: white; width: 100%; max-width: 780px; border-radius: 16px; padding: 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;
+      background: white; width: 100%; max-width: 740px; border-radius: 14px; padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.28); max-height: 90vh; overflow-y: auto;
     }
+    .modal-box.modal-sm { max-width: 420px; }
     .menu-day-row {
-      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 9px;
       padding: 12px 14px; margin-bottom: 10px;
     }
     .menu-day-row label { font-size: 13px; font-weight: 800; color: var(--sbs-primary); display: block; margin-bottom: 6px; }
@@ -154,62 +149,64 @@
 
     #toast {
       position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: white;
-      padding: 13px 20px; border-radius: 11px; font-size: 13.5px; font-weight: 600;
+      padding: 13px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
       display: none; z-index: 10000; box-shadow: 0 10px 25px rgba(0,0,0,0.25);
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. VISTA LOGIN GEP -->
+  <!-- 1. LOGIN -->
   <div id="view-login">
     <div class="login-card">
-      <img src="./Logo.jpg?v=15" alt="SBS" class="login-logo">
-      <h1>Portal GEP - Comedor SBS</h1>
-      <p>Monitoreo en Tiempo Real, Base de Colaboradores y Planilla</p>
+      <img src="./Logo.jpg?v=16" alt="SBS" class="login-logo">
+      <h1>Portal GEP • Comedor SBS</h1>
 
       <div id="step-dni">
-        <input type="tel" id="txt-dni" class="input-lg" placeholder="DNI Administrador (8 dígitos)" maxlength="8">
-        <button class="btn btn-primary" id="btn-login-dni" style="width:100%; padding:14px; font-size:15px;" onclick="verificarDniGEP()">
+        <input type="tel" id="txt-dni" class="input-lg" placeholder="DNI" maxlength="8">
+        <button class="btn btn-primary" id="btn-login-dni" style="width:100%; padding:13px; font-size:14.5px;" onclick="verificarDniGEP()">
           Continuar
         </button>
       </div>
 
       <div id="step-clave" style="display:none;">
-        <div id="lbl-hola-gep" style="font-size:16px; font-weight:800; color:var(--sbs-primary); margin-bottom:6px;"></div>
-        <p id="lbl-inst-gep" style="font-size:12.5px; margin-bottom:10px;"></p>
-        <input type="password" id="txt-clave" class="input-lg" placeholder="••••••••">
-        <button class="btn btn-primary" id="btn-login-clave" style="width:100%; padding:14px; font-size:15px;" onclick="confirmarClaveGEP()">
-          Ingresar al Portal GEP
+        <div id="lbl-hola-gep" style="font-size:15.5px; font-weight:800; color:var(--sbs-primary); margin-bottom:6px;"></div>
+        <p id="lbl-inst-gep" style="font-size:12.5px; color:var(--muted); margin:0 0 10px;"></p>
+        <input type="password" id="txt-clave" class="input-lg" placeholder="Contraseña">
+        <button class="btn btn-primary" id="btn-login-clave" style="width:100%; padding:13px; font-size:14.5px;" onclick="confirmarClaveGEP()">
+          Ingresar
         </button>
         <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="volverPasoDniGEP()">
-          ← Cambiar DNI
+          Cambiar DNI
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 2. VISTA PRINCIPAL PORTAL GEP -->
+  <!-- 2. PORTAL PRINCIPAL -->
   <div id="view-portal">
     <header class="top-header">
       <div class="brand-wrap">
-        <img src="./Logo.jpg?v=15" alt="SBS" class="brand-logo">
+        <img src="./Logo.jpg?v=16" alt="SBS" class="brand-logo">
         <div>
           <h2>Portal GEP • Comedor SBS</h2>
-          <span id="lbl-admin-activo">Sesión Activa</span>
+          <span id="lbl-admin-activo"></span>
         </div>
       </div>
 
       <div class="header-actions">
         <div class="sync-pill">
           <span class="dot-live"></span>
-          <span id="lbl-ultima-sync">Sincronizado en vivo</span>
+          <span id="lbl-ultima-sync">En línea</span>
         </div>
         <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalMenu()">
-          🍽️ Menú Semanal
+          Menú Semanal
+        </button>
+        <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalResetClave()">
+          Restablecer Contraseña
         </button>
         <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="imprimirAficheQR()">
-          🖨️ Imprimir Cartel QR
+          Cartel QR
         </button>
         <button class="btn btn-outline btn-sm" style="background:rgba(220,38,38,0.85); color:white; border:none;" onclick="cerrarSesionGEP()">
           Salir
@@ -220,207 +217,205 @@
     <nav class="nav-bar">
       <div class="nav-tabs">
         <div class="nav-tab active" id="tab-monitoreo" onclick="cambiarModulo('MONITOREO')">
-          📡 1. Monitoreo en Vivo (Reservas y QR)
+          Monitoreo en Vivo
         </div>
         <div class="nav-tab" id="tab-colaboradores" onclick="cambiarModulo('COLABORADORES')">
-          👥 2. Base de Colaboradores (Por Defecto y Estados)
+          Base de Colaboradores
         </div>
         <div class="nav-tab" id="tab-planilla" onclick="cambiarModulo('PLANILLA')">
-          📊 3. Reporte Mensual Planilla (Excel)
+          Reporte de Planilla
         </div>
       </div>
 
-      <div class="toolbar" style="padding: 8px 0;">
+      <div class="toolbar-group" style="padding: 8px 0;">
         <label style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; cursor:pointer;">
           <input type="checkbox" id="chk-autorefresh" checked onchange="alternarAutoRefresh()">
-          Auto-actualizar cada 20s
+          Actualización automática
         </label>
         <button class="btn btn-outline btn-sm" id="btn-sync-ahora" onclick="cargarDatosPortal(true)">
-          🔄 Actualizar ahora
+          Actualizar
         </button>
       </div>
     </nav>
 
     <main class="container">
-      <!-- =================================================================== -->
-      <!-- MÓDULO 1: MONITOREO EN TIEMPO REAL DE RESERVAS Y ESCANEOS QR        -->
-      <!-- =================================================================== -->
+      <!-- MÓDULO: MONITOREO EN VIVO -->
       <section id="mod-monitoreo">
         <div class="kpi-row">
           <div class="kpi-card">
-            <div class="k-title">☕ Desayunos del Día</div>
+            <div class="k-title">Desayunos del Día</div>
             <div class="k-val" id="kpi-des-total">0 / 0</div>
-            <div class="k-sub" id="kpi-des-sub">Reservados vs Escaneados QR</div>
+            <div class="k-sub" id="kpi-des-sub">Reservados vs Asistencias</div>
           </div>
           <div class="kpi-card">
-            <div class="k-title">🥐 Insumos Desayuno (Cocina)</div>
-            <div class="k-val" style="font-size:15px; line-height:1.35; margin-top:8px;" id="kpi-des-insumos">-</div>
-            <div class="k-sub">Conteo exacto de panes y huevos</div>
+            <div class="k-title">Insumos de Desayuno</div>
+            <div class="k-val" style="font-size:14.5px; line-height:1.35; margin-top:7px;" id="kpi-des-insumos">-</div>
+            <div class="k-sub">Total de panes y huevos solicitados</div>
           </div>
           <div class="kpi-card">
-            <div class="k-title">🍲 Almuerzos del Día</div>
+            <div class="k-title">Almuerzos del Día</div>
             <div class="k-val" id="kpi-alm-total">0 / 0</div>
             <div class="k-sub" id="kpi-alm-sub">Regular: 0 | Alternativo: 0</div>
           </div>
           <div class="kpi-card">
-            <div class="k-title">📷 Asistencia QR Almuerzo</div>
+            <div class="k-title">Asistencia Almuerzo</div>
             <div class="k-val" id="kpi-alm-qr">0%</div>
-            <div class="k-sub" id="kpi-alm-pend">0 pendientes por escanear</div>
+            <div class="k-sub" id="kpi-alm-pend">0 pendientes</div>
           </div>
         </div>
 
-        <div class="panel-card">
-          <div class="panel-header">
-            <div>
-              <h3 id="titulo-monitoreo-fecha">Monitoreo en Tiempo Real</h3>
-              <span style="font-size:12.5px; color:var(--muted);">Visualiza quiénes reservaron, qué opción/panes pidieron y quiénes ya escanearon el QR en comedor</span>
-            </div>
-            <div class="toolbar">
-              <label style="font-size:12.5px; font-weight:700;">Día a consultar:</label>
-              <select id="sel-fecha-monitoreo" class="form-select" onchange="cargarDatosPortal(true)"></select>
-              <select id="sel-filtro-monitoreo" class="form-select" onchange="renderizarTablaMonitoreo()">
-                <option value="TODOS">Todos los servicios</option>
-                <option value="DES_RESERVADO">Solo reservaron Desayuno</option>
-                <option value="DES_QR">Ya escanearon QR Desayuno</option>
-                <option value="DES_FALTA">Faltan escanear QR Desayuno</option>
-                <option value="ALM_RESERVADO">Solo reservaron Almuerzo</option>
-                <option value="ALM_QR">Ya escanearon QR Almuerzo</option>
-                <option value="ALM_FALTA">Faltan escanear QR Almuerzo</option>
-              </select>
-              <input type="text" id="txt-buscar-monitoreo" class="form-input" placeholder="Buscar DNI o nombre..." oninput="renderizarTablaMonitoreo()">
-            </div>
+        <div class="action-bar">
+          <div class="toolbar-group">
+            <label style="font-size:12.5px; font-weight:700;">Fecha:</label>
+            <select id="sel-fecha-monitoreo" class="form-select" onchange="cargarDatosPortal(true)"></select>
+            <select id="sel-filtro-monitoreo" class="form-select" onchange="renderizarTablaMonitoreo()">
+              <option value="TODOS">Todos los registros</option>
+              <option value="DES_RESERVADO">Reservaron Desayuno</option>
+              <option value="DES_QR">Asistieron a Desayuno</option>
+              <option value="DES_FALTA">Pendientes de Desayuno</option>
+              <option value="ALM_RESERVADO">Reservaron Almuerzo</option>
+              <option value="ALM_QR">Asistieron a Almuerzo</option>
+              <option value="ALM_FALTA">Pendientes de Almuerzo</option>
+            </select>
           </div>
+          <div class="toolbar-group">
+            <input type="text" id="txt-buscar-monitoreo" class="form-input" style="min-width:240px;" placeholder="Buscar por DNI o nombre..." oninput="renderizarTablaMonitoreo()">
+          </div>
+        </div>
 
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>DNI</th>
-                  <th>Colaborador</th>
-                  <th>Reserva Desayuno (Opción y Panes)</th>
-                  <th>Asistencia QR Desayuno</th>
-                  <th>Reserva Almuerzo</th>
-                  <th>Asistencia QR Almuerzo</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-monitoreo">
-                <tr><td colspan="6" style="text-align:center; color:var(--muted);">Cargando monitoreo en tiempo real...</td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="table-direct-wrap" style="max-height: calc(100vh - 340px);">
+          <table>
+            <thead>
+              <tr>
+                <th>DNI</th>
+                <th>Colaborador</th>
+                <th>Reserva Desayuno</th>
+                <th>Asistencia Desayuno</th>
+                <th>Reserva Almuerzo</th>
+                <th>Asistencia Almuerzo</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-monitoreo">
+              <tr><td colspan="6" style="text-align:center; color:var(--muted);">Cargando registros...</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <!-- =================================================================== -->
-      <!-- MÓDULO 2: BASE DE DATOS DE COLABORADORES (SIN TOCAR EXCEL)          -->
-      <!-- =================================================================== -->
+      <!-- MÓDULO: BASE DE COLABORADORES (TABLA DIRECTA CON GUARDADO GENERAL) -->
       <section id="mod-colaboradores" style="display:none;">
-        <div class="panel-card">
-          <div class="panel-header">
-            <div>
-              <h3>Base de Colaboradores (Configuración por Defecto y Estados)</h3>
-              <span style="font-size:12.5px; color:var(--muted);">
-                Selecciona las opciones en las listas desplegables y presiona <b>Guardar</b>. Si asignas <b>Vacaciones</b> o <b>DM</b> con fecha fin, volverá a <b>ACTIVO</b> automáticamente al vencer.
-              </span>
-            </div>
-            <div class="toolbar">
-              <select id="sel-filtro-estado-bd" class="form-select" onchange="renderizarTablaColaboradores()">
-                <option value="TODOS">Todos los estados</option>
-                <option value="ACTIVO">Solo ACTIVOS</option>
-                <option value="INACTIVO">Vacaciones / DM / Cesados</option>
-              </select>
-              <input type="text" id="txt-buscar-bd" class="form-input" placeholder="Buscar DNI o colaborador..." oninput="renderizarTablaColaboradores()">
-            </div>
+        <div class="action-bar">
+          <div class="toolbar-group">
+            <select id="sel-filtro-estado-bd" class="form-select" onchange="renderizarTablaColaboradores()">
+              <option value="TODOS">Todos los estados</option>
+              <option value="ACTIVO">Activos</option>
+              <option value="INACTIVO">Vacaciones / DM / Cesados</option>
+            </select>
+            <input type="text" id="txt-buscar-bd" class="form-input" style="min-width:260px;" placeholder="Buscar por DNI o colaborador..." oninput="renderizarTablaColaboradores()">
           </div>
 
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>DNI</th>
-                  <th>Nombre Completo</th>
-                  <th>Desayuno por Defecto</th>
-                  <th>Panes por Defecto</th>
-                  <th>Almuerzo por Defecto</th>
-                  <th>Estado</th>
-                  <th>Hasta Fecha (Vac/DM)</th>
-                  <th>Rol (Fijo)</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-colaboradores">
-                <tr><td colspan="9" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
-              </tbody>
-            </table>
+          <div class="toolbar-group">
+            <span id="lbl-cambios-pendientes" style="font-size:12.5px; font-weight:700; color:var(--sbs-orange); display:none;">
+              Cambios sin guardar
+            </span>
+            <button class="btn btn-primary btn-lg-save" id="btn-guardar-masivo" disabled onclick="guardarCambiosMasivosUI()">
+              Guardar cambios
+            </button>
           </div>
+        </div>
+
+        <div class="table-direct-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>DNI</th>
+                <th>Colaborador</th>
+                <th>Desayuno por Defecto</th>
+                <th>Panes por Defecto</th>
+                <th>Almuerzo por Defecto</th>
+                <th>Estado</th>
+                <th>Fin de Ausencia</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-colaboradores">
+              <tr><td colspan="7" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <!-- =================================================================== -->
-      <!-- MÓDULO 3: REPORTE MENSUAL DE PLANILLA (25 AL 24) Y DESCARGA EXCEL   -->
-      <!-- =================================================================== -->
+      <!-- MÓDULO: REPORTE DE PLANILLA -->
       <section id="mod-planilla" style="display:none;">
-        <div class="panel-card">
-          <div class="panel-header">
-            <div>
-              <h3>Reporte Mensual de Descuento por Planilla (Ciclo 25 al 24)</h3>
-              <span style="font-size:12.5px; color:var(--muted);">
-                Contabiliza únicamente consumos reales escaneados con QR en el día en curso y reservas confirmadas de días pasados cerrados (no proyecta días futuros).
-              </span>
-            </div>
-            <div class="toolbar">
-              <label style="font-size:12.5px; font-weight:700;">Desde:</label>
-              <input type="date" id="rep-ini" class="form-input">
-              <label style="font-size:12.5px; font-weight:700;">Hasta:</label>
-              <input type="date" id="rep-fin" class="form-input">
-              <button class="btn btn-primary" onclick="cargarReportePlanillaGEP()">Consultar Consolidado</button>
-              <button class="btn btn-success" onclick="descargarExcelPlanillaGEP()">📥 Descargar Excel (.xlsx)</button>
-            </div>
+        <div class="action-bar">
+          <div class="toolbar-group">
+            <label style="font-size:12.5px; font-weight:700;">Desde:</label>
+            <input type="date" id="rep-ini" class="form-input">
+            <label style="font-size:12.5px; font-weight:700;">Hasta:</label>
+            <input type="date" id="rep-fin" class="form-input">
+            <button class="btn btn-primary" onclick="cargarReportePlanillaGEP()">Consultar</button>
+            <button class="btn btn-success" onclick="descargarExcelPlanillaGEP()">Exportar Excel</button>
           </div>
+          <div id="resumen-planilla-gep" style="font-size:15px; font-weight:800; color:var(--sbs-primary);">
+            Total Planilla: S/ 0.00
+          </div>
+        </div>
 
-          <div id="resumen-planilla-gep" style="font-size:15px; font-weight:800; color:var(--sbs-primary); margin-bottom:12px;">
-            Total Descuento Planilla: S/ 0.00
-          </div>
-
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>DNI</th>
-                  <th>Nombre Completo</th>
-                  <th style="text-align:center;"># Desayunos</th>
-                  <th>Costo Desayunos</th>
-                  <th style="text-align:center;"># Almuerzos</th>
-                  <th>Costo Almuerzos</th>
-                  <th style="background:#dcfce7; color:#166534;">Costo Total a Descontar</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-planilla-gep">
-                <tr><td colspan="7" style="text-align:center; color:var(--muted);">Selecciona el rango de fechas y presiona Consultar Consolidado</td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="table-direct-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>DNI</th>
+                <th>Colaborador</th>
+                <th style="text-align:center;">Desayunos</th>
+                <th>Costo Desayunos</th>
+                <th style="text-align:center;">Almuerzos</th>
+                <th>Costo Almuerzos</th>
+                <th style="background:#dcfce7; color:#166534;">Total a Descontar</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-planilla-gep">
+              <tr><td colspan="7" style="text-align:center; color:var(--muted);">Selecciona el rango de fechas y presiona Consultar</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- MODAL EDITOR DE MENÚ SEMANAL -->
+  <!-- MODAL: MENÚ SEMANAL -->
   <div class="modal-overlay" id="modal-menu">
     <div class="modal-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <div>
-          <h3 style="margin:0; font-size:18px; color:var(--sbs-primary);">🍽️ Editar Menú Semanal (Lunes a Viernes)</h3>
-          <span style="font-size:12px; color:var(--muted);">Separa los panes con <b>/</b> y usa <b>+</b> antes de las bebidas para que la App arme las listas desplegables automáticamente.</span>
-        </div>
-        <button class="btn btn-outline btn-sm" onclick="cerrarModalMenu()">✕ Cerrar</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="margin:0; font-size:17px; color:var(--sbs-primary); font-weight:800;">Menú Semanal</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalMenu()">Cerrar</button>
       </div>
 
       <div id="contenedor-filas-menu"></div>
 
       <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
         <button class="btn btn-outline" onclick="cerrarModalMenu()">Cancelar</button>
-        <button class="btn btn-primary" id="btn-guardar-menu" onclick="guardarMenuSemanalUI()">💾 Guardar y Sincronizar en la App</button>
+        <button class="btn btn-primary" id="btn-guardar-menu" onclick="guardarMenuSemanalUI()">Guardar menú</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RESTABLECER CONTRASEÑA -->
+  <div class="modal-overlay" id="modal-reset-clave">
+    <div class="modal-box modal-sm">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="margin:0; font-size:17px; color:var(--sbs-primary); font-weight:800;">Restablecer Contraseña</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalResetClave()">Cerrar</button>
+      </div>
+
+      <p style="font-size:13px; color:var(--muted); margin:0 0 12px; line-height:1.45;">
+        Ingresa el DNI del colaborador para limpiar su contraseña actual. En su próximo acceso el sistema le solicitará crear una nueva.
+      </p>
+
+      <input type="tel" id="txt-dni-reset-modal" class="input-lg" placeholder="DNI del colaborador" maxlength="8" style="margin-bottom:14px;">
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-outline" onclick="cerrarModalResetClave()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-confirmar-reset-modal" onclick="ejecutarResetClaveModal()">Restablecer</button>
       </div>
     </div>
   </div>
@@ -442,6 +437,7 @@
       fechasSemana: [],
       panesCatalogo: PANES_CATALOGO_BASE.slice(),
       colaboradoresBD: [],
+      cambiosPendientes: {}, // dni -> { dni, desDefCodigo, almDef, estado, fechaFinEstado }
       monitoreoDia: [],
       menuSemanal: [],
       resumenReporte: [],
@@ -465,7 +461,45 @@
 
       document.getElementById('txt-dni').addEventListener('keyup', e => { if (e.key === 'Enter') verificarDniGEP(); });
       document.getElementById('txt-clave').addEventListener('keyup', e => { if (e.key === 'Enter') confirmarClaveGEP(); });
+      document.getElementById('txt-dni-reset-modal').addEventListener('keyup', e => { if (e.key === 'Enter') ejecutarResetClaveModal(); });
+
+      // Alerta nativa del navegador si intentan cerrar o recargar la pestaña con cambios sin guardar
+      window.addEventListener('beforeunload', (e) => {
+        if ( contarCambiosPendientes() > 0 ) {
+          e.preventDefault();
+          e.returnValue = '';
+        }
+      });
     });
+
+    function contarCambiosPendientes() {
+      return Object.keys(STATE.cambiosPendientes || {}).length;
+    }
+
+    function actualizarBotonGuardarGeneral() {
+      const cant = contarCambiosPendientes();
+      const btn = document.getElementById('btn-guardar-masivo');
+      const lbl = document.getElementById('lbl-cambios-pendientes');
+      if (!btn) return;
+
+      if (cant > 0) {
+        btn.disabled = false;
+        btn.textContent = `Guardar cambios (${cant})`;
+        if (lbl) {
+          lbl.style.display = 'inline-block';
+          lbl.textContent = `${cant} modificación(es) sin guardar`;
+        }
+      } else {
+        btn.disabled = true;
+        btn.textContent = 'Guardar cambios';
+        if (lbl) lbl.style.display = 'none';
+      }
+    }
+
+    function confirmarDescarteCambios() {
+      if (contarCambiosPendientes() === 0) return true;
+      return confirm('Tienes cambios sin guardar en la Base de Colaboradores. ¿Deseas descartarlos y continuar?');
+    }
 
     function tienePermisoPortal(u) {
       if (!u) return false;
@@ -508,7 +542,7 @@
     async function verificarDniGEP() {
       const dni = normalizarDni(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
-        mostrarToast('⚠️ Ingresa un DNI válido de 8 dígitos.');
+        mostrarToast('Ingresa un DNI válido de 8 dígitos.');
         return;
       }
       const btn = document.getElementById('btn-login-dni');
@@ -522,7 +556,7 @@
         if (res && res.ok && res.data && res.data.diccionarioUsuarios[dni]) {
           const reg = res.data.diccionarioUsuarios[dni];
           if (!tienePermisoPortal(reg.usuario)) {
-            mostrarToast('⛔ Acceso restringido únicamente al personal de GEP / Técnico.');
+            mostrarToast('Acceso restringido al personal autorizado.');
             return;
           }
           STATE.pendienteLogin = reg.usuario;
@@ -530,17 +564,17 @@
           document.getElementById('step-clave').style.display = 'block';
           document.getElementById('lbl-hola-gep').textContent = `Hola, ${reg.usuario.nombre.split(' ')[0]}`;
           document.getElementById('lbl-inst-gep').textContent = reg.usuario.tieneClave
-            ? 'Ingresa tu contraseña de administrador:'
-            : 'Primer ingreso: Crea tu contraseña de administrador:';
+            ? 'Ingresa tu contraseña:'
+            : 'Crea una contraseña para tu cuenta:';
           document.getElementById('txt-clave').value = '';
           document.getElementById('txt-clave').focus();
         } else {
-          mostrarToast('❌ DNI no encontrado en BD_COLABORADORES.');
+          mostrarToast('DNI no registrado.');
         }
       } catch (e) {
         btn.disabled = false;
         btn.textContent = 'Continuar';
-        mostrarToast('❌ Error de conexión con el servidor.');
+        mostrarToast('Error de conexión con el servidor.');
       }
     }
 
@@ -554,7 +588,7 @@
       if (!STATE.pendienteLogin) return;
       const clave = document.getElementById('txt-clave').value;
       if (!clave.trim()) {
-        mostrarToast('⚠️ Ingresa tu contraseña.');
+        mostrarToast('Ingresa tu contraseña.');
         return;
       }
       const btn = document.getElementById('btn-login-clave');
@@ -568,7 +602,7 @@
           !STATE.pendienteLogin.tieneClave
         ]);
         btn.disabled = false;
-        btn.textContent = 'Ingresar al Portal GEP';
+        btn.textContent = 'Ingresar';
 
         if (res && res.ok) {
           STATE.admin = STATE.pendienteLogin;
@@ -579,16 +613,19 @@
           }));
           iniciarPortalGEP();
         } else {
-          mostrarToast('❌ ' + (res ? res.msg : 'Contraseña incorrecta.'));
+          mostrarToast(res ? res.msg : 'Contraseña incorrecta.');
         }
       } catch (e) {
         btn.disabled = false;
-        btn.textContent = 'Ingresar al Portal GEP';
-        mostrarToast('❌ No se pudo conectar con el servidor.');
+        btn.textContent = 'Ingresar';
+        mostrarToast('No se pudo conectar con el servidor.');
       }
     }
 
     function cerrarSesionGEP() {
+      if (!confirmarDescarteCambios()) return;
+      STATE.cambiosPendientes = {};
+      actualizarBotonGuardarGeneral();
       if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
       localStorage.removeItem('SBS_COMEDOR_GEP_SESSION');
       STATE.admin = null;
@@ -603,7 +640,7 @@
     function iniciarPortalGEP() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-portal').style.display = 'flex';
-      document.getElementById('lbl-admin-activo').textContent = `${STATE.admin.nombre} (${STATE.admin.rol})`;
+      document.getElementById('lbl-admin-activo').textContent = STATE.admin.nombre;
       cargarDatosPortal(true);
       alternarAutoRefresh();
     }
@@ -613,16 +650,24 @@
       if (document.getElementById('chk-autorefresh').checked) {
         STATE.timerAutoRefresh = setInterval(() => {
           const modMonitoreoVisible = document.getElementById('mod-monitoreo').style.display !== 'none';
-          if (modMonitoreoVisible) cargarDatosPortal(false);
+          if (modMonitoreoVisible && contarCambiosPendientes() === 0) {
+            cargarDatosPortal(false);
+          }
         }, 20000);
       }
     }
 
     async function cargarDatosPortal(mostrarIndicador) {
+      if (mostrarIndicador && contarCambiosPendientes() > 0) {
+        if (!confirmarDescarteCambios()) return;
+        STATE.cambiosPendientes = {};
+        actualizarBotonGuardarGeneral();
+      }
+
       const btn = document.getElementById('btn-sync-ahora');
       if (mostrarIndicador && btn) {
         btn.disabled = true;
-        btn.textContent = '⏳ Sincronizando...';
+        btn.textContent = 'Actualizando...';
       }
 
       const selFecha = document.getElementById('sel-fecha-monitoreo');
@@ -632,10 +677,10 @@
         const res = await llamarAPI('obtenerDatosPortalGEP', [STATE.admin.dni, fechaPedida]);
         if (btn) {
           btn.disabled = false;
-          btn.textContent = '🔄 Actualizar ahora';
+          btn.textContent = 'Actualizar';
         }
         if (!res || !res.ok) {
-          mostrarToast('⚠️ ' + (res ? res.msg : 'Error al sincronizar.'));
+          mostrarToast(res ? res.msg : 'Error al sincronizar.');
           return;
         }
 
@@ -647,12 +692,11 @@
         STATE.monitoreoDia = res.monitoreoDia || [];
         STATE.menuSemanal = res.menuSemanal || [];
 
-        document.getElementById('lbl-ultima-sync').textContent = `Sincronizado: ${res.timestampServidor.split(' ')[1] || res.timestampServidor}`;
+        document.getElementById('lbl-ultima-sync').textContent = `Sincronizado ${res.timestampServidor.split(' ')[1] || res.timestampServidor}`;
 
-        // Poblar selector de días de la semana
         if (selFecha && selFecha.options.length === 0) {
           selFecha.innerHTML = STATE.fechasSemana.map(f =>
-            `<option value="${f.fecha}" ${f.fecha === STATE.fechaSeleccionada ? 'selected' : ''}>${f.etiqueta}${f.fecha === STATE.hoyStr ? ' (HOY)' : ''}</option>`
+            `<option value="${f.fecha}" ${f.fecha === STATE.fechaSeleccionada ? 'selected' : ''}>${f.etiqueta}</option>`
           ).join('');
         }
 
@@ -661,16 +705,25 @@
         }
 
         renderizarTablaMonitoreo();
-        renderizarTablaColaboradores();
+        if (contarCambiosPendientes() === 0) {
+          renderizarTablaColaboradores();
+        }
       } catch (e) {
         if (btn) {
           btn.disabled = false;
-          btn.textContent = '🔄 Actualizar ahora';
+          btn.textContent = 'Actualizar';
         }
       }
     }
 
     function cambiarModulo(mod) {
+      const modColabVisible = document.getElementById('mod-colaboradores').style.display !== 'none';
+      if (modColabVisible && mod !== 'COLABORADORES' && contarCambiosPendientes() > 0) {
+        if (!confirmarDescarteCambios()) return;
+        STATE.cambiosPendientes = {};
+        actualizarBotonGuardarGeneral();
+      }
+
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
       document.getElementById('mod-monitoreo').style.display = 'none';
       document.getElementById('mod-colaboradores').style.display = 'none';
@@ -679,7 +732,7 @@
       if (mod === 'MONITOREO') {
         document.getElementById('tab-monitoreo').classList.add('active');
         document.getElementById('mod-monitoreo').style.display = 'block';
-        cargarDatosPortal(true);
+        cargarDatosPortal(false);
       } else if (mod === 'COLABORADORES') {
         document.getElementById('tab-colaboradores').classList.add('active');
         document.getElementById('mod-colaboradores').style.display = 'block';
@@ -692,7 +745,7 @@
     }
 
     // ========================================================================
-    // MÓDULO 1: RENDERIZADO DE MONITOREO EN VIVO Y CONTEO DE PANES
+    // MÓDULO: MONITOREO EN VIVO
     // ========================================================================
     function renderizarTablaMonitoreo() {
       const lista = STATE.monitoreoDia || [];
@@ -733,7 +786,7 @@
       });
 
       document.getElementById('kpi-des-total').textContent = `${totDesRes} / ${totDesQR}`;
-      document.getElementById('kpi-des-sub').textContent = `${totDesRes} reservados • ${totDesQR} ya escanearon QR`;
+      document.getElementById('kpi-des-sub').textContent = `${totDesRes} reservados • ${totDesQR} asistieron`;
 
       const txtPanes = Object.keys(conteoPanes).map(k => `${k}: ${conteoPanes[k]}`).join(' | ');
       document.getElementById('kpi-des-insumos').textContent =
@@ -744,8 +797,8 @@
 
       const porcAlm = totAlmRes > 0 ? Math.round((totAlmQR / totAlmRes) * 100) : 0;
       const faltanAlm = Math.max(0, totAlmRes - totAlmQR);
-      document.getElementById('kpi-alm-qr').textContent = `${porcAlm}% (${totAlmQR})`;
-      document.getElementById('kpi-alm-pend').textContent = `${faltanAlm} pendientes por escanear QR`;
+      document.getElementById('kpi-alm-qr').textContent = `${porcAlm}%`;
+      document.getElementById('kpi-alm-pend').textContent = `${faltanAlm} pendientes por asistir`;
 
       const filtrados = lista.filter(item => {
         if (busq && !item.dni.includes(busq) && !item.nombre.toLowerCase().includes(busq)) return false;
@@ -760,26 +813,26 @@
 
       const tbody = document.getElementById('tbody-monitoreo');
       if (filtrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">No hay registros para el filtro seleccionado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">Sin registros para mostrar.</td></tr>';
         return;
       }
 
       tbody.innerHTML = filtrados.map(r => {
         const badgeDesRes = r.reservoDes
-          ? `<span class="badge bg-orange">☕ ${r.detalleDes}</span>`
+          ? `<span class="badge bg-orange">${r.detalleDes}</span>`
           : `<span class="badge bg-gray">No solicitado</span>`;
 
         const badgeDesQR = r.consumioDes
-          ? `<span class="badge bg-green">✅ Asistió (${r.horaScanDes || 'QR'})</span>`
-          : (r.reservoDes ? `<span class="badge bg-gray">⏳ Pendiente</span>` : `-`);
+          ? `<span class="badge bg-green">Asistió ${r.horaScanDes || ''}</span>`
+          : (r.reservoDes ? `<span class="badge bg-gray">Pendiente</span>` : `-`);
 
         const badgeAlmRes = r.reservoAlm
-          ? `<span class="badge ${r.detalleAlm === 'Alternativo' ? 'bg-blue' : 'bg-green'}">🍲 ${r.detalleAlm}</span>`
-          : `<span class="badge bg-gray">Cancelado / No</span>`;
+          ? `<span class="badge ${r.detalleAlm === 'Alternativo' ? 'bg-blue' : 'bg-green'}">${r.detalleAlm}</span>`
+          : `<span class="badge bg-gray">No solicitado</span>`;
 
         const badgeAlmQR = r.consumioAlm
-          ? `<span class="badge bg-green">✅ Asistió (${r.horaScanAlm || 'QR'})</span>`
-          : (r.reservoAlm ? `<span class="badge bg-gray">⏳ Pendiente</span>` : `-`);
+          ? `<span class="badge bg-green">Asistió ${r.horaScanAlm || ''}</span>`
+          : (r.reservoAlm ? `<span class="badge bg-gray">Pendiente</span>` : `-`);
 
         return `
           <tr>
@@ -795,7 +848,7 @@
     }
 
     // ========================================================================
-    // MÓDULO 2: BASE DE DATOS DE COLABORADORES CON SELECTORES VISUALES
+    // MÓDULO: BASE DE COLABORADORES (SIN COLUMNA ROL Y CON GUARDADO GENERAL)
     // ========================================================================
     function desglosarCodigoDes(cod) {
       const s = String(cod || 'NO').trim();
@@ -809,25 +862,51 @@
       };
     }
 
+    function obtenerEstadoActualColaborador(c) {
+      if (STATE.cambiosPendientes[c.dni]) {
+        const mod = STATE.cambiosPendientes[c.dni];
+        return {
+          dni: c.dni,
+          nombre: c.nombre,
+          desDef: mod.desDefCodigo,
+          almDef: mod.almDef,
+          estado: mod.estado,
+          fechaFinEstado: mod.fechaFinEstado,
+          esModificado: true
+        };
+      }
+      return {
+        dni: c.dni,
+        nombre: c.nombre,
+        desDef: c.desDef,
+        almDef: c.almDef,
+        estado: c.estado,
+        fechaFinEstado: c.fechaFinEstado || '',
+        esModificado: false
+      };
+    }
+
     function renderizarTablaColaboradores() {
       const lista = STATE.colaboradoresBD || [];
       const filtroEst = document.getElementById('sel-filtro-estado-bd').value;
       const busq = String(document.getElementById('txt-buscar-bd').value || '').toLowerCase().trim();
 
       const filtrados = lista.filter(c => {
-        if (busq && !c.dni.includes(busq) && !c.nombre.toLowerCase().includes(busq)) return false;
-        if (filtroEst === 'ACTIVO') return c.estado === 'ACTIVO';
-        if (filtroEst === 'INACTIVO') return c.estado !== 'ACTIVO';
+        const actual = obtenerEstadoActualColaborador(c);
+        if (busq && !actual.dni.includes(busq) && !actual.nombre.toLowerCase().includes(busq)) return false;
+        if (filtroEst === 'ACTIVO') return actual.estado === 'ACTIVO';
+        if (filtroEst === 'INACTIVO') return actual.estado !== 'ACTIVO';
         return true;
       });
 
       const tbody = document.getElementById('tbody-colaboradores');
       if (filtrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--muted);">Sin colaboradores que coincidan con la búsqueda.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin colaboradores para mostrar.</td></tr>';
         return;
       }
 
-      tbody.innerHTML = filtrados.map(c => {
+      tbody.innerHTML = filtrados.map(cOrig => {
+        const c = obtenerEstadoActualColaborador(cOrig);
         const d = desglosarCodigoDes(c.desDef);
         const mostrarP1 = (d.op === 'OP1' || d.op === 'OP3');
         const mostrarP2 = (d.op === 'OP1');
@@ -837,32 +916,32 @@
         const optsP2 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p2 ? 'selected' : ''}>${p}</option>`).join('');
 
         return `
-          <tr id="row-colab-${c.dni}">
+          <tr id="row-colab-${c.dni}" class="${c.esModificado ? 'row-modified' : ''}">
             <td><b>${c.dni}</b></td>
             <td><b>${c.nombre}</b></td>
             <td>
               <select class="form-select" id="opdes-${c.dni}" onchange="alCambiarOpDesFila('${c.dni}')">
                 <option value="NO" ${d.op === 'NO' ? 'selected' : ''}>NO</option>
-                <option value="OP1" ${d.op === 'OP1' ? 'selected' : ''}>Opc. 1 (2 panes)</option>
-                <option value="OP2" ${d.op === 'OP2' ? 'selected' : ''}>Opc. 2 (3 huevos)</option>
-                <option value="OP3" ${d.op === 'OP3' ? 'selected' : ''}>Opc. 3 (1 pan + 1 huevo)</option>
+                <option value="OP1" ${d.op === 'OP1' ? 'selected' : ''}>Opción 1</option>
+                <option value="OP2" ${d.op === 'OP2' ? 'selected' : ''}>Opción 2</option>
+                <option value="OP3" ${d.op === 'OP3' ? 'selected' : ''}>Opción 3</option>
               </select>
             </td>
             <td>
-              <div style="display:flex; gap:5px; align-items:center;">
-                <select class="form-select" id="pan1-${c.dni}" style="display:${mostrarP1 ? 'inline-block' : 'none'};" onchange="marcarFilaModificada('${c.dni}')">
+              <div style="display:flex; gap:6px; align-items:center;">
+                <select class="form-select" id="pan1-${c.dni}" style="display:${mostrarP1 ? 'inline-block' : 'none'};" onchange="registrarCambioFila('${c.dni}')">
                   ${optsP1}
                 </select>
-                <select class="form-select" id="pan2-${c.dni}" style="display:${mostrarP2 ? 'inline-block' : 'none'};" onchange="marcarFilaModificada('${c.dni}')">
+                <select class="form-select" id="pan2-${c.dni}" style="display:${mostrarP2 ? 'inline-block' : 'none'};" onchange="registrarCambioFila('${c.dni}')">
                   ${optsP2}
                 </select>
                 <span id="lbl-sinpan-${c.dni}" style="display:${!mostrarP1 ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">
-                  ${d.op === 'OP2' ? '3 huevos fijos' : 'Sin desayuno'}
+                  ${d.op === 'OP2' ? '3 huevos' : '-'}
                 </span>
               </div>
             </td>
             <td>
-              <select class="form-select" id="alm-${c.dni}" onchange="marcarFilaModificada('${c.dni}')">
+              <select class="form-select" id="alm-${c.dni}" onchange="registrarCambioFila('${c.dni}')">
                 <option value="NO" ${c.almDef === 'NO' ? 'selected' : ''}>NO</option>
                 <option value="REGULAR" ${c.almDef === 'REGULAR' ? 'selected' : ''}>REGULAR</option>
                 <option value="ALTERNATIVO" ${c.almDef === 'ALTERNATIVO' ? 'selected' : ''}>ALTERNATIVO</option>
@@ -878,28 +957,49 @@
             </td>
             <td>
               <input type="date" class="form-input" id="ffin-${c.dni}" value="${c.fechaFinEstado || ''}"
-                style="display:${mostrarFechaFin ? 'inline-block' : 'none'};" onchange="marcarFilaModificada('${c.dni}')">
+                style="display:${mostrarFechaFin ? 'inline-block' : 'none'};" onchange="registrarCambioFila('${c.dni}')">
               <span id="lbl-sinfecha-${c.dni}" style="display:${!mostrarFechaFin ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">-</span>
-            </td>
-            <td><span class="badge bg-gray">${c.rol}</span></td>
-            <td>
-              <div style="display:flex; gap:6px;">
-                <button class="btn btn-primary btn-sm" id="btn-save-${c.dni}" onclick="guardarFilaColaborador('${c.dni}')">
-                  Guardar
-                </button>
-                <button class="btn btn-outline btn-sm" onclick="resetearClaveDesdeTabla('${c.dni}', '${c.nombre}')" title="Resetear contraseña">
-                  🔑
-                </button>
-              </div>
             </td>
           </tr>
         `;
       }).join('');
     }
 
-    function marcarFilaModificada(dni) {
+    function registrarCambioFila(dni) {
+      const op = document.getElementById('opdes-' + dni).value;
+      const p1 = document.getElementById('pan1-' + dni).value;
+      const p2 = document.getElementById('pan2-' + dni).value;
+      const alm = document.getElementById('alm-' + dni).value;
+      const est = document.getElementById('est-' + dni).value;
+      const ffin = (est === 'VACACIONES' || est === 'DM') ? document.getElementById('ffin-' + dni).value : '';
+
+      let desDefCodigo = 'NO';
+      if (op === 'OP2') desDefCodigo = 'OP2';
+      else if (op === 'OP1') desDefCodigo = `OP1|${p1}|${p2}`;
+      else if (op === 'OP3') desDefCodigo = `OP3|${p1}`;
+
+      const orig = STATE.colaboradoresBD.find(x => x.dni === dni);
+      const igualAOriginal = orig &&
+        orig.desDef === desDefCodigo &&
+        orig.almDef === alm &&
+        orig.estado === est &&
+        (orig.fechaFinEstado || '') === ffin;
+
       const tr = document.getElementById('row-colab-' + dni);
-      if (tr) tr.classList.add('row-modified');
+      if (igualAOriginal) {
+        delete STATE.cambiosPendientes[dni];
+        if (tr) tr.classList.remove('row-modified');
+      } else {
+        STATE.cambiosPendientes[dni] = {
+          dni: dni,
+          desDefCodigo: desDefCodigo,
+          almDef: alm,
+          estado: est,
+          fechaFinEstado: ffin
+        };
+        if (tr) tr.classList.add('row-modified');
+      }
+      actualizarBotonGuardarGeneral();
     }
 
     function alCambiarOpDesFila(dni) {
@@ -920,9 +1020,9 @@
         s1.style.display = 'none';
         s2.style.display = 'none';
         lbl.style.display = 'inline-block';
-        lbl.textContent = (op === 'OP2') ? '3 huevos fijos' : 'Sin desayuno';
+        lbl.textContent = (op === 'OP2') ? '3 huevos' : '-';
       }
-      marcarFilaModificada(dni);
+      registrarCambioFila(dni);
     }
 
     function alCambiarEstadoFila(dni) {
@@ -937,71 +1037,84 @@
         inpFecha.value = '';
         lbl.style.display = 'inline-block';
       }
-      marcarFilaModificada(dni);
+      registrarCambioFila(dni);
     }
 
-    async function guardarFilaColaborador(dni) {
-      const op = document.getElementById('opdes-' + dni).value;
-      const p1 = document.getElementById('pan1-' + dni).value;
-      const p2 = document.getElementById('pan2-' + dni).value;
-      const alm = document.getElementById('alm-' + dni).value;
-      const est = document.getElementById('est-' + dni).value;
-      const ffin = document.getElementById('ffin-' + dni).value;
+    async function guardarCambiosMasivosUI() {
+      const lista = Object.values(STATE.cambiosPendientes);
+      if (lista.length === 0) return;
 
-      if ((est === 'VACACIONES' || est === 'DM') && !ffin) {
-        mostrarToast('⚠️ Indica la fecha de fin para Vacaciones o Descanso Médico.');
-        return;
+      for (let i = 0; i < lista.length; i++) {
+        const item = lista[i];
+        if ((item.estado === 'VACACIONES' || item.estado === 'DM') && !item.fechaFinEstado) {
+          mostrarToast(`Indica la fecha de fin de ausencia para el DNI ${item.dni}.`);
+          return;
+        }
       }
 
-      let desDefCodigo = 'NO';
-      if (op === 'OP2') desDefCodigo = 'OP2';
-      else if (op === 'OP1') desDefCodigo = `OP1|${p1}|${p2}`;
-      else if (op === 'OP3') desDefCodigo = `OP3|${p1}`;
-
-      const btn = document.getElementById('btn-save-' + dni);
+      const btn = document.getElementById('btn-guardar-masivo');
       btn.disabled = true;
-      btn.textContent = '⏳';
+      btn.textContent = 'Guardando...';
 
       try {
-        const res = await llamarAPI('actualizarColaboradorDesdeGEP', [{
-          dni: dni,
-          desDefCodigo: desDefCodigo,
-          almDef: alm,
-          estado: est,
-          fechaFinEstado: ffin,
-          dniAdmin: STATE.admin.dni
-        }]);
-        btn.disabled = false;
-        btn.textContent = 'Guardar';
-
+        const res = await llamarAPI('actualizarColaboradoresMasivoGEP', [STATE.admin.dni, lista]);
         if (res && res.ok) {
-          const tr = document.getElementById('row-colab-' + dni);
-          if (tr) tr.classList.remove('row-modified');
-          mostrarToast('✅ ' + res.msg);
-          cargarDatosPortal(false);
+          STATE.cambiosPendientes = {};
+          actualizarBotonGuardarGeneral();
+          mostrarToast(res.msg);
+          await cargarDatosPortal(false);
         } else {
-          mostrarToast('⚠️ ' + (res ? res.msg : 'No se pudo guardar.'));
+          actualizarBotonGuardarGeneral();
+          mostrarToast(res ? res.msg : 'No se pudieron guardar los cambios.');
         }
       } catch (e) {
-        btn.disabled = false;
-        btn.textContent = 'Guardar';
-        mostrarToast('❌ Error de red al guardar.');
-      }
-    }
-
-    async function resetearClaveDesdeTabla(dni, nombre) {
-      if (!confirm(`¿Limpiar la contraseña de ${nombre} (${dni}) para que cree una nueva en su próximo ingreso?`)) return;
-      try {
-        const res = await llamarAPI('resetearClaveColaboradorRRHH', [STATE.admin.dni, dni]);
-        if (res && res.ok) mostrarToast('✅ ' + res.msg);
-        else mostrarToast('⚠️ ' + (res ? res.msg : 'Error'));
-      } catch (e) {
-        mostrarToast('❌ Error de conexión.');
+        actualizarBotonGuardarGeneral();
+        mostrarToast('Error de red al guardar los cambios.');
       }
     }
 
     // ========================================================================
-    // MODAL DE MENÚ SEMANAL
+    // MODAL: RESTABLECER CONTRASEÑA
+    // ========================================================================
+    function abrirModalResetClave() {
+      document.getElementById('txt-dni-reset-modal').value = '';
+      document.getElementById('modal-reset-clave').style.display = 'flex';
+      setTimeout(() => document.getElementById('txt-dni-reset-modal').focus(), 80);
+    }
+
+    function cerrarModalResetClave() {
+      document.getElementById('modal-reset-clave').style.display = 'none';
+    }
+
+    async function ejecutarResetClaveModal() {
+      const dniTarget = normalizarDni(document.getElementById('txt-dni-reset-modal').value);
+      if (dniTarget.length < 7) {
+        mostrarToast('Ingresa un DNI válido de 8 dígitos.');
+        return;
+      }
+      const btn = document.getElementById('btn-confirmar-reset-modal');
+      btn.disabled = true;
+      btn.textContent = 'Procesando...';
+
+      try {
+        const res = await llamarAPI('resetearClaveColaboradorRRHH', [STATE.admin.dni, dniTarget]);
+        btn.disabled = false;
+        btn.textContent = 'Restablecer';
+        if (res && res.ok) {
+          cerrarModalResetClave();
+          mostrarToast(res.msg);
+        } else {
+          mostrarToast(res ? res.msg : 'No se pudo restablecer la contraseña.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Restablecer';
+        mostrarToast('Error de conexión.');
+      }
+    }
+
+    // ========================================================================
+    // MODAL: MENÚ SEMANAL
     // ========================================================================
     function abrirModalMenu() {
       const cont = document.getElementById('contenedor-filas-menu');
@@ -1020,11 +1133,11 @@
           <label>${d.dia}</label>
           <div class="menu-inputs">
             <div>
-              <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">☕ Desayuno (Panes con / + Bebidas con /):</span>
+              <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">Desayuno:</span>
               <input type="text" class="form-input" style="width:100%;" id="mdes-${idx}" value="${d.desayuno.replace(/"/g, '"')}">
             </div>
             <div>
-              <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">🍲 Almuerzo:</span>
+              <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">Almuerzo:</span>
               <input type="text" class="form-input" style="width:100%;" id="malm-${idx}" value="${d.almuerzo.replace(/"/g, '"')}">
             </div>
           </div>
@@ -1048,28 +1161,28 @@
       }
       const btn = document.getElementById('btn-guardar-menu');
       btn.disabled = true;
-      btn.textContent = '⏳ Guardando y sincronizando...';
+      btn.textContent = 'Guardando...';
 
       try {
         const res = await llamarAPI('guardarMenuSemanalDesdeGEP', [STATE.admin.dni, nuevaLista]);
         btn.disabled = false;
-        btn.textContent = '💾 Guardar y Sincronizar en la App';
+        btn.textContent = 'Guardar menú';
         if (res && res.ok) {
           cerrarModalMenu();
-          mostrarToast('✅ ' + res.msg);
+          mostrarToast(res.msg);
           cargarDatosPortal(false);
         } else {
-          mostrarToast('⚠️ ' + (res ? res.msg : 'Error al guardar menú.'));
+          mostrarToast(res ? res.msg : 'Error al guardar el menú.');
         }
       } catch (e) {
         btn.disabled = false;
-        btn.textContent = '💾 Guardar y Sincronizar en la App';
-        mostrarToast('❌ Error de red.');
+        btn.textContent = 'Guardar menú';
+        mostrarToast('Error de red.');
       }
     }
 
     // ========================================================================
-    // MÓDULO 3: REPORTE MENSUAL PLANILLA GEP Y EXPORTACIÓN EXCEL (.XLSX)
+    // MÓDULO: REPORTE DE PLANILLA
     // ========================================================================
     function inicializarFechasPlanilla() {
       const baseStr = STATE.hoyStr || new Date().toISOString().split('T')[0];
@@ -1091,7 +1204,7 @@
       const fIni = document.getElementById('rep-ini').value;
       const fFin = document.getElementById('rep-fin').value;
       const tbody = document.getElementById('tbody-planilla-gep');
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Calculando consolidado de planilla...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Calculando consolidado...</td></tr>';
 
       try {
         const res = await llamarAPI('obtenerReportePlanillaRRHH', [fIni, fFin]);
@@ -1137,8 +1250,8 @@
         STATE.resumenReporte = Object.values(mapaRecalculado).filter(r => r.costoTotal > 0);
 
         if (STATE.resumenReporte.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin consumos cerrados o escaneados con QR hasta el momento (S/ 0.00).</td></tr>';
-          document.getElementById('resumen-planilla-gep').textContent = 'Total Descuento Planilla: S/ 0.00';
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin consumos registrados en este periodo.</td></tr>';
+          document.getElementById('resumen-planilla-gep').textContent = 'Total Planilla: S/ 0.00';
           return;
         }
 
@@ -1157,15 +1270,15 @@
             </tr>
           `;
         }).join('');
-        document.getElementById('resumen-planilla-gep').textContent = `Total Descuento Planilla: S/ ${granTot.toFixed(2)}`;
+        document.getElementById('resumen-planilla-gep').textContent = `Total Planilla: S/ ${granTot.toFixed(2)}`;
       } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger);">Error al consultar reporte.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger);">Error al consultar el reporte.</td></tr>';
       }
     }
 
     function descargarExcelPlanillaGEP() {
       if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
-        mostrarToast('⚠️ No hay consumos registrados en este rango para exportar.');
+        mostrarToast('No hay consumos registrados en este rango para exportar.');
         return;
       }
 
@@ -1199,14 +1312,14 @@
       const textStyle = { border: cellBorder };
 
       const aoa1 = [
-        [{ v: "CONSOLIDADO DE DESCUENTO POR PLANILLA - GEP COMEDOR SBS", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [{ v: "CONSOLIDADO DE DESCUENTO POR PLANILLA - COMEDOR SBS", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
         [],
         [
           { v: "DNI", s: headerStyle },
-          { v: "Nombres", s: headerStyle },
-          { v: "# Desayunos", s: headerStyle },
+          { v: "Colaborador", s: headerStyle },
+          { v: "Desayunos", s: headerStyle },
           { v: "Costo Desayunos", s: headerStyle },
-          { v: "# Almuerzos", s: headerStyle },
+          { v: "Almuerzos", s: headerStyle },
           { v: "Costo Almuerzos", s: headerStyle },
           { v: "Costo Total", s: headerTotalStyle }
         ]
@@ -1242,7 +1355,7 @@
 
       const ws1 = XLSX.utils.aoa_to_sheet(aoa1);
       ws1['!cols'] = [{ wch: 13 }, { wch: 32 }, { wch: 14 }, { wch: 17 }, { wch: 14 }, { wch: 17 }, { wch: 17 }];
-      XLSX.utils.book_append_sheet(wb, ws1, "1_Consolidado_GEP");
+      XLSX.utils.book_append_sheet(wb, ws1, "Consolidado_Planilla");
 
       const aoa2 = [
         [{ v: "DETALLE DIARIO DE RESERVAS Y ASISTENCIA EN COMEDOR", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
@@ -1251,9 +1364,9 @@
           { v: "Fecha", s: headerStyle },
           { v: "DNI", s: headerStyle },
           { v: "Colaborador", s: headerStyle },
-          { v: "Servicio y Opción", s: headerStyle },
+          { v: "Servicio", s: headerStyle },
           { v: "Reservó", s: headerStyle },
-          { v: "Asistió_Comedor", s: headerStyle },
+          { v: "Asistió", s: headerStyle },
           { v: "Monto", s: headerStyle }
         ]
       ];
@@ -1272,10 +1385,10 @@
 
       const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
       ws2['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 32 }, { wch: 32 }, { wch: 12 }, { wch: 16 }, { wch: 14 }];
-      XLSX.utils.book_append_sheet(wb, ws2, "2_Detalle_Fechas");
+      XLSX.utils.book_append_sheet(wb, ws2, "Detalle_Diario");
 
       XLSX.writeFile(wb, `Planilla_Comedor_SBS_${STATE.hoyStr || 'GEP'}.xlsx`);
-      mostrarToast('📥 Excel (.xlsx) descargado correctamente.');
+      mostrarToast('Archivo Excel descargado.');
     }
 
     function imprimirAficheQR() {

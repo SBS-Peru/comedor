@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=11">
+  <link rel="manifest" href="manifest.json?v=12">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=11">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=11">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=11">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=12">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=12">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=12">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -165,10 +165,10 @@
     th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; }
     th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; }
 
-    .kpi-grid-tech { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .kpi-grid-tech { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
     .kpi-card-tech { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; }
-    .kpi-card-tech .num { font-size: 18px; font-weight: 800; color: var(--sbs-primary); display: block; }
-    .kpi-card-tech .lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .kpi-card-tech .num { font-size: 17px; font-weight: 800; color: var(--sbs-primary); display: block; }
+    .kpi-card-tech .lbl { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 2px; display: block; }
 
     #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 13.5px; font-weight: 600; display: none; z-index: 999; text-align: center; width: max-content; max-width: 90vw; }
   </style>
@@ -179,7 +179,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=11" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=12" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -227,7 +227,7 @@
         <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Hoy</div>
         <div class="tab" id="tab-btn-semana" onclick="cambiarTab('SEMANA')">Mi Semana</div>
         <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">⚙️ RRHH</div>
-        <div class="tab" id="tab-btn-tecnico" style="display:none;" onclick="cambiarTab('TECNICO')">🛠️ Técnico</div>
+        <div class="tab" id="tab-btn-tecnico" style="display:none;" onclick="cambiarTab('TECNICO')">Técnico</div>
       </div>
 
       <div class="scroll-area">
@@ -251,7 +251,6 @@
             </a>
           </div>
 
-          <!-- MODAL EMERGENTE CENTRADO PARA EL ESCÁNER QR -->
           <div id="modal-qr-overlay">
             <div id="modal-qr-content">
               <p style="font-size:14px; font-weight:700; margin:0 0 10px; color:var(--sbs-primary);">
@@ -286,7 +285,7 @@
         <!-- PESTAÑA 2: MI SEMANA -->
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
-        <!-- PESTAÑA 3A: PERFIL EXCLUSIVO RRHH (SOLO RESETEO CLAVE Y REPORTE PLANILLA) -->
+        <!-- PESTAÑA 3A: PERFIL EXCLUSIVO RRHH -->
         <div id="pane-rrhh" style="display:none;">
           <div class="rrhh-box">
             <h4>🔑 Resetear Contraseña de Colaborador</h4>
@@ -326,57 +325,49 @@
           </div>
         </div>
 
-        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO (SALUD DEL APP, CAÍDAS, LOGS DE ERRORES Y AUDITORÍA) -->
+        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO (SOBRIO, ROBUSTO Y SIN UNDEFINED) -->
         <div id="pane-tecnico" style="display:none;">
           <div class="rrhh-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-              <h4 style="margin:0;">🩺 Estado de Salud del Sistema en Tiempo Real</h4>
-              <span id="badge-salud-tech" style="background:#dcfce7; color:#166534; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:800;">VERIFICANDO...</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+              <h4 style="margin:0;">Estado de Salud del Sistema</h4>
+              <span id="badge-salud-tech" style="background:#dcfce7; color:#166534; padding:4px 10px; border-radius:8px; font-size:11.5px; font-weight:800;">-</span>
             </div>
 
-            <div class="kpi-grid-tech" id="grid-kpis-tech">
-              <div class="kpi-card-tech"><span class="num" id="tkpi-latencia">-- ms</span><span class="lbl">Latencia Servidor</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-usuarios">--</span><span class="lbl">Activos / Con Clave</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-qr-hoy">0 / 0</span><span class="lbl">QR Hoy (Des / Alm)</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-errores">0</span><span class="lbl">Caídas / Errores</span></div>
+            <div class="kpi-grid-tech">
+              <div class="kpi-card-tech"><span class="num" id="tkpi-latencia">-</span><span class="lbl">Latencia Servidor</span></div>
+              <div class="kpi-card-tech"><span class="num" id="tkpi-usuarios">-</span><span class="lbl">Activos / Con Clave</span></div>
+              <div class="kpi-card-tech"><span class="num" id="tkpi-qr-hoy">-</span><span class="lbl">Asistencia Hoy (Des / Alm)</span></div>
+              <div class="kpi-card-tech"><span class="num" id="tkpi-errores">-</span><span class="lbl">Errores Registrados</span></div>
             </div>
 
-            <div id="detalle-infraestructura-tech" style="font-size:12px; color:var(--muted); background:#f8fafc; padding:9px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px;">
-              Conectando con Google Apps Script...
+            <div id="detalle-infraestructura-tech" style="font-size:12px; color:var(--muted); background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px; line-height:1.5;">
+              -
             </div>
 
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn btn-primary" style="flex:1; padding:10px; font-size:13px;" onclick="cargarPanelSalud()">
-                🔄 Refrescar Diagnóstico Ahora
-              </button>
-              <button class="btn btn-outline" style="flex:1; padding:10px; font-size:13px;" onclick="limpiarLogsErroresUI()">
-                🧹 Limpiar Historial de Errores
-              </button>
-              <button class="btn btn-outline" style="flex:1; padding:10px; font-size:13px; border-color:#dc2626; color:#dc2626;" onclick="reiniciarCeroUI()">
-                ⚠️ Dejar Reservas/Asistencia en Cero
-              </button>
-            </div>
+            <button class="btn btn-primary" id="btn-refrescar-tech" style="padding:11px; font-size:13.5px;" onclick="cargarPanelSalud()">
+              Actualizar diagnóstico
+            </button>
           </div>
 
           <div class="rrhh-box">
-            <h4>🚨 Registro de Caídas, Excepciones y Motivos de Error (LOG_AUDIT_ERRORES)</h4>
+            <h4>Registro de Excepciones y Errores (LOG_AUDIT_ERRORES)</h4>
             <div class="table-wrap" style="max-height:220px;">
               <table>
-                <thead><tr><th>Fecha / Hora</th><th>Función / Contexto</th><th>Motivo Exacto del Error</th></tr></thead>
+                <thead><tr><th>Fecha / Hora</th><th>Contexto</th><th>Motivo del Error</th></tr></thead>
                 <tbody id="tbody-errores-tech">
-                  <tr><td colspan="3" style="text-align:center; color:var(--muted);">Cargando registro de errores...</td></tr>
+                  <tr><td colspan="3" style="text-align:center; color:var(--muted);">-</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
 
           <div class="rrhh-box">
-            <h4>🛡️ Últimos Eventos de Seguridad y Actividad en Vivo (LOG_SEGURIDAD_OCULTO)</h4>
+            <h4>Actividad Reciente en Servidor (LOG_SEGURIDAD_OCULTO)</h4>
             <div class="table-wrap" style="max-height:220px;">
               <table>
-                <thead><tr><th>Fecha / Hora</th><th>Evento</th><th>DNI</th><th>Servicio</th><th>Detalle</th></tr></thead>
+                <thead><tr><th>Fecha / Hora</th><th>Evento</th><th>DNI</th><th>Servicio</th><th>Valor</th></tr></thead>
                 <tbody id="tbody-eventos-tech">
-                  <tr><td colspan="5" style="text-align:center; color:var(--muted);">Cargando actividad reciente...</td></tr>
+                  <tr><td colspan="5" style="text-align:center; color:var(--muted);">-</td></tr>
                 </tbody>
               </table>
             </div>
@@ -397,7 +388,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=11').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=12').catch(() => {});
       });
     }
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -539,6 +530,10 @@
       if (!isoStr) return '';
       const p = String(isoStr).split('-');
       return p.length === 3 ? `${p[2]}/${p[1]}` : isoStr;
+    }
+
+    function valSeguro(v, fallback = '-') {
+      return (v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'undefined') ? v : fallback;
     }
 
     function cargarCacheInicial(callback) {
@@ -722,104 +717,106 @@
     }
 
     // ========================================================================
-    // FUNCIONES DEL MÓDULO EXCLUSIVO "🛠️ TÉCNICO"
+    // MÓDULO TÉCNICO (BLINDADO CONTRA UNDEFINED)
     // ========================================================================
     function cargarPanelSalud() {
       const badge = document.getElementById('badge-salud-tech');
       const infoBox = document.getElementById('detalle-infraestructura-tech');
+      const btnRef = document.getElementById('btn-refrescar-tech');
+      if (btnRef) {
+        btnRef.disabled = true;
+        btnRef.textContent = 'Actualizando...';
+      }
       if (badge) {
-        badge.textContent = 'CONSULTANDO...';
+        badge.textContent = 'CONSULTANDO';
         badge.style.background = '#e2e8f0';
         badge.style.color = '#334155';
       }
       const tPingIni = performance.now();
 
       ejecutarConReintento('obtenerEstadisticasSaludApp', [STATE.usuario ? STATE.usuario.dni : ''], res => {
+        if (btnRef) {
+          btnRef.disabled = false;
+          btnRef.textContent = 'Actualizar diagnóstico';
+        }
         const latenciaRed = Math.round(performance.now() - tPingIni);
         if (!res || !res.ok) {
           if (badge) {
-            badge.textContent = 'ERROR DE CONEXIÓN';
+            badge.textContent = 'SIN CONEXIÓN';
             badge.style.background = '#fee2e2';
             badge.style.color = '#991b1b';
           }
           return;
         }
 
+        const totErr = (res.totalErrores !== undefined) ? res.totalErrores : valSeguro(res.totalErroresHoy, 0);
         if (badge) {
-          badge.textContent = res.salud;
-          badge.style.background = res.totalErrores === 0 ? '#dcfce7' : '#fef3c7';
-          badge.style.color = res.totalErrores === 0 ? '#166534' : '#92400e';
+          badge.textContent = valSeguro(res.salud, 'OPERATIVO');
+          badge.style.background = Number(totErr) === 0 ? '#dcfce7' : '#fef3c7';
+          badge.style.color = Number(totErr) === 0 ? '#166534' : '#92400e';
         }
 
-        document.getElementById('tkpi-latencia').textContent = `${res.latenciaPingMs || latenciaRed} ms`;
-        document.getElementById('tkpi-usuarios').textContent = `${res.colaboradoresActivos} / ${res.usuariosConClave}`;
-        document.getElementById('tkpi-qr-hoy').textContent = `${res.escaneosDesHoy} / ${res.escaneosAlmHoy}`;
-        document.getElementById('tkpi-errores').textContent = String(res.totalErrores);
+        const latVal = valSeguro(res.latenciaPingMs, latenciaRed);
+        const colabAct = valSeguro(res.colaboradoresActivos, '-');
+        const colabClave = valSeguro(res.usuariosConClave, '-');
+        const qrDes = (res.escaneosDesHoy !== undefined) ? res.escaneosDesHoy : valSeguro(res.escaneosHoy, '-');
+        const qrAlm = (res.escaneosAlmHoy !== undefined) ? res.escaneosAlmHoy : '-';
+
+        document.getElementById('tkpi-latencia').textContent = `${latVal} ms`;
+        document.getElementById('tkpi-usuarios').textContent = (colabClave !== '-') ? `${colabAct} / ${colabClave}` : `${colabAct}`;
+        document.getElementById('tkpi-qr-hoy').textContent = (qrAlm !== '-') ? `${qrDes} / ${qrAlm}` : `${qrDes}`;
+        document.getElementById('tkpi-errores').textContent = String(totErr);
 
         infoBox.innerHTML = `
-          ⚡ <b>Caché RAM Servidor:</b> ${res.cacheEstado}  | 
-          ⏰ <b>Triggers Automáticos:</b> ${res.triggersActivos} activos  | 
-          📅 <b>Inicio Operaciones:</b> ${res.fechaInicioOp}<br>
-          📝 <b>Cambios en PLANIFICACION:</b> ${res.reservasRegistradas} filas  | 
-          🍽️ <b>Total Histórico ASISTENCIA_REAL:</b> ${res.totalAsistHistorico} registros
+          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
+          <b>Triggers Automáticos:</b> ${valSeguro(res.triggersActivos, '-')}  | 
+          <b>Inicio Operaciones:</b> ${valSeguro(res.fechaInicioOp, '17/11/2026')}<br>
+          <b>Registros en PLANIFICACION:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
+          <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
 
         const tbErr = document.getElementById('tbody-errores-tech');
         if (!res.ultimosLogs || res.ultimosLogs.length === 0) {
-          tbErr.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#047857; font-weight:700;">✅ 0 caídas y 0 errores registrados. Sistema operando al 100%.</td></tr>';
+          tbErr.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#047857; font-weight:700;">Sin errores registrados.</td></tr>';
         } else {
-          tbErr.innerHTML = res.ultimosLogs.map(l => `
-            <tr>
-              <td style="white-space:nowrap;">${l.fecha}</td>
-              <td><b>${l.contexto}</b></td>
-              <td style="color:#dc2626; font-weight:600;">${l.motivo}</td>
-            </tr>
-          `).join('');
+          tbErr.innerHTML = res.ultimosLogs.map(l => {
+            const f = Array.isArray(l) ? valSeguro(l[0]) : valSeguro(l.fecha);
+            const c = Array.isArray(l) ? valSeguro(l[1]) : valSeguro(l.contexto);
+            const m = Array.isArray(l) ? valSeguro(l[2]) : valSeguro(l.motivo);
+            return `
+              <tr>
+                <td style="white-space:nowrap;">${f}</td>
+                <td><b>${c}</b></td>
+                <td style="color:#dc2626; font-weight:600;">${m}</td>
+              </tr>
+            `;
+          }).join('');
         }
 
         const tbEv = document.getElementById('tbody-eventos-tech');
         if (!res.ultimosEventos || res.ultimosEventos.length === 0) {
-          tbEv.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted);">Sin eventos recientes.</td></tr>';
+          tbEv.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted);">-</td></tr>';
         } else {
           tbEv.innerHTML = res.ultimosEventos.map(ev => `
             <tr>
-              <td style="white-space:nowrap;">${ev.fecha}</td>
-              <td><b>${ev.tipo}</b></td>
-              <td>${ev.dni}</td>
-              <td>${ev.servicio}</td>
-              <td>${ev.valor}</td>
+              <td style="white-space:nowrap;">${valSeguro(ev.fecha)}</td>
+              <td><b>${valSeguro(ev.tipo)}</b></td>
+              <td>${valSeguro(ev.dni)}</td>
+              <td>${valSeguro(ev.servicio)}</td>
+              <td>${valSeguro(ev.valor)}</td>
             </tr>
           `).join('');
         }
-      });
-    }
-
-    function limpiarLogsErroresUI() {
-      ejecutarConReintento('limpiarLogsErroresTecnico', [STATE.usuario.dni], res => {
-        if (res && res.ok) {
-          mostrarToast('✅ ' + res.msg);
-          cargarPanelSalud();
-        }
-      });
-    }
-
-    function reiniciarCeroUI() {
-      if (!confirm('¿Estás seguro de dejar PLANIFICACION y ASISTENCIA_REAL 100% en blanco para iniciar desde cero?')) return;
-      ejecutarConReintento('reiniciarDatosDesdePanelTecnico', [STATE.usuario.dni], res => {
-        if (res && res.ok) {
-          mostrarToast('✅ ' + res.msg);
-          cargarCacheInicial(() => {
-            if (STATE.diccionarioUsuarios[STATE.usuario.dni]) {
-              asignarUsuarioYEntrar(STATE.diccionarioUsuarios[STATE.usuario.dni], STATE.tokenActivo);
-            }
-            cargarPanelSalud();
-          });
+      }, () => {
+        if (btnRef) {
+          btnRef.disabled = false;
+          btnRef.textContent = 'Actualizar diagnóstico';
         }
       });
     }
 
     // ========================================================================
-    // FUNCIONES DEL MÓDULO EXCLUSIVO "⚙️ RRHH"
+    // MÓDULO RRHH
     // ========================================================================
     function ejecutarReseteoClaveRRHH() {
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
@@ -889,7 +886,7 @@
       let cDes = Number(STATE.usuario.baseCicloDes || 0);
       let cAlm = Number(STATE.usuario.baseCicloAlm || 0);
       STATE.diasSemana.forEach(d => {
-        if (d.enCicloActual !== false && !d.antesDeArranque) {
+        if (d.enCicloActual !== false) {
           if (d.desayuno !== 'NO') cDes++;
           if (d.almuerzo !== 'NO') cAlm++;
         }
@@ -1041,7 +1038,6 @@
       `;
     }
 
-    // Selección silenciosa (sin Toast inferior) + Debounce de 400ms para no saturar el servidor en toques rápidos
     function seleccionarOpcionDesayuno(fecha, opElegida) {
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
       if (!dia || !dia.puedeEditarDesayuno) return;
@@ -1260,7 +1256,7 @@
       w.document.write(`
         <html><head><title>Cartel Oficial Comedor SBS</title></head>
         <body style="font-family:sans-serif; text-align:center; padding:40px;">
-          <h1 style="color:#13392a; margin-bottom:6px; font-size:32px;">🍽️ COMEDOR SBS</h1>
+          <h1 style="color:#13392a; margin-bottom:6px; font-size:32px;">COMEDOR SBS</h1>
           <p style="color:#334155; font-size:18px; margin-top:0;">
             Escanea este código QR desde la App Comedor SBS o con la cámara de tu celular
           </p>
@@ -1288,8 +1284,8 @@
         STATE.resumenReporte = res.resumen || [];
         STATE.ultimasFilasReporte = res.filas || [];
         if (STATE.resumenReporte.length === 0) {
-          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos registrados desde el inicio de operaciones (17/11/2026).</td></tr>';
-          document.getElementById('resumen-rep-rrhh').textContent = 'Total Planilla: S/ 0.00';
+          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos registrados (S/ 0.00).</td></tr>';
+          document.getElementById('resumen-rep-rrhh').textContent = 'Total Descuento Planilla: S/ 0.00';
           return;
         }
         let granTot = 0;
@@ -1303,7 +1299,7 @@
 
     function descargarExcelDosHojas() {
       if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
-        mostrarToast('⚠️ No hay consumos para exportar en este rango.');
+        mostrarToast('⚠️ No hay consumos registrados en este rango.');
         return;
       }
 

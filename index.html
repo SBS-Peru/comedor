@@ -1340,16 +1340,19 @@
       document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Calculando consolidado...</td></tr>';
       ejecutarConReintento('obtenerReportePlanillaRRHH', [fIni, fFin], res => {
         const filasCrudas = (res && res.filas) ? res.filas : [];
-        const topeSemana = (STATE.diasSemana && STATE.diasSemana.length > 0)
-          ? STATE.diasSemana[STATE.diasSemana.length - 1].fecha
-          : '2026-11-20';
+        const hoyISO = STATE.hoyStr || new Date().toISOString().split('T')[0];
 
         const filasValidas = filasCrudas.filter(f => {
           const iso = f.fechaISO || convertirFechaPeruAISO(f.fecha);
           const esDes = String(f.servicio || '').toUpperCase().startsWith('DESAYUNO');
-          if (iso > topeSemana) return false;
+          // 1. Nunca incluir días futuros (iso > hoyISO)
+          if (iso > hoyISO) return false;
+          // 2. Respetar fechas de arranque oficial (Almuerzo 17/11, Desayuno 18/11)
           if (esDes && iso < FECHA_ARRANQUE_DESAYUNO) return false;
           if (!esDes && iso < FECHA_ARRANQUE_ALMUERZO) return false;
+          // 3. Si es HOY (iso === hoyISO), solo entra si YA escaneó el QR (consumio === 'SI')
+          if (iso === hoyISO && String(f.consumio || '').toUpperCase() !== 'SI') return false;
+          // 4. Si es un día pasado (iso < hoyISO), entra si reservó o si escaneó el QR
           return true;
         });
 
@@ -1382,7 +1385,7 @@
         STATE.resumenReporte = Object.values(mapaRecalculado).filter(r => r.costoTotal > 0);
 
         if (STATE.resumenReporte.length === 0) {
-          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos registrados (S/ 0.00).</td></tr>';
+          document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin consumos cerrados o escaneados hasta el momento (S/ 0.00).</td></tr>';
           document.getElementById('resumen-rep-rrhh').textContent = 'Total Descuento Planilla: S/ 0.00';
           return;
         }

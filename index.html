@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=13">
+  <link rel="manifest" href="manifest.json?v=14">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=13">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=13">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=13">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=14">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=14">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=14">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -94,25 +94,37 @@
     .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); }
     .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
     .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; margin-bottom: 9px; }
-    .menu-box { background: #f8fafc; border-radius: 9px; padding: 9px 11px; font-size: 12.5px; letter-spacing: -0.15px; color: var(--muted); margin-bottom: 11px; line-height: 1.45; }
-    .menu-box div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .menu-box { background: #f8fafc; border-radius: 9px; padding: 9px 11px; font-size: 12.3px; letter-spacing: -0.15px; color: var(--muted); margin-bottom: 11px; line-height: 1.45; }
+    .menu-box div { white-space: normal; word-break: break-word; }
     .menu-box b { color: var(--text); }
+    .menu-box .sel-highlight { color: #c2410c; font-weight: 700; }
 
     .srv-grid { display: flex; gap: 10px; align-items: stretch; }
 
-    .srv-split-card { flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white; display: flex; flex-direction: column; overflow: hidden; transition: 0.15s; }
+    .srv-split-card { flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white; display: flex; flex-direction: column; overflow: hidden; transition: 0.15s; min-width: 0; }
     .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
     .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
     .srv-split-card.disabled-card { opacity: 0.55; background: #f1f5f9; pointer-events: none; }
 
-    .srv-split-top { padding: 10px 7px; text-align: center; cursor: pointer; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .srv-split-top { padding: 9px 6px 7px; text-align: center; cursor: pointer; flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .srv-split-top .title { font-size: 14.5px; font-weight: 700; display: block; color: var(--text); }
     .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
     .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
     
-    .srv-split-top .status { font-size: 12px; color: var(--muted); display: block; margin-top: 4px; line-height: 1.3; }
+    .srv-split-top .status { font-size: 11.5px; color: var(--muted); display: block; margin-top: 3px; line-height: 1.25; }
     .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
     .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
+
+    /* Contenedor de listas desplegables de panes justo encima de los botones de opción */
+    .pan-dropdown-wrap {
+      display: flex; gap: 4px; padding: 0 5px 6px; justify-content: center; align-items: center;
+    }
+    .pan-select {
+      flex: 1; min-width: 0; width: 100%; padding: 5px 3px; font-size: 11px; font-weight: 700;
+      color: #9a3412; background: #ffffff; border: 1.5px solid #fdba74; border-radius: 7px;
+      outline: none; text-overflow: ellipsis; cursor: pointer;
+    }
+    .pan-select:focus { border-color: var(--sbs-orange); }
     
     .srv-split-bottom { display: flex; border-top: 1.5px solid var(--border); background: #f8fafc; }
     .srv-split-card.active-des .srv-split-bottom { border-top-color: #fdba74; }
@@ -149,10 +161,11 @@
       .day-header { font-size: 14px; margin-bottom: 7px; }
       .menu-box { padding: 7px 9px; font-size: 11.4px; letter-spacing: -0.2px; margin-bottom: 9px; }
       .srv-grid { gap: 8px; }
-      .srv-split-top { padding: 8px 5px; }
+      .srv-split-top { padding: 8px 4px 6px; }
       .srv-split-top .title { font-size: 13.5px; }
-      .srv-split-top .status { font-size: 11px; margin-top: 3px; }
-      .op-sub-btn { padding: 8px 2px; font-size: 11.5px; }
+      .srv-split-top .status { font-size: 10.8px; margin-top: 2px; }
+      .pan-select { font-size: 10.5px; padding: 4px 2px; }
+      .op-sub-btn { padding: 8px 2px; font-size: 11.2px; }
       .btn { padding: 12px; font-size: 14px; }
     }
 
@@ -179,7 +192,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=13" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=14" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -202,7 +215,7 @@
         📲 Instalar App en pantalla de inicio
       </button>
       <p style="font-size:12.5px; color:var(--muted); margin-top:16px; line-height:1.45;">
-        • <b>Desayuno:</b> Solicitar hasta las 3:00 PM del día anterior (Lunes hasta Sáb 3:00 PM).<br>
+        • <b>Desayuno:</b> Solicitar hasta las 4:00 PM del día anterior (Lunes hasta Sáb 4:00 PM).<br>
         • <b>Almuerzo:</b> Cancelar hasta las 10:00 AM del mismo día.
       </p>
     </div>
@@ -382,9 +395,9 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    // Fechas exactas en las que arranca el sistema (lo previo fue en hojas físicas)
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-17";
     const FECHA_ARRANQUE_DESAYUNO = "2026-11-18";
+    const PANES_POR_DEFECTO = ["Pollo", "Queso fresco", "Aceituna", "Huevo o tortilla", "Hot dog"];
 
     let HABILITAR_MODO_CODIGO = false;
     let TIMERS_DEBOUNCE_SERVICIO = {};
@@ -392,7 +405,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=13').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=14').catch(() => {});
       });
     }
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -436,13 +449,112 @@
       idxPrincipal: 0
     };
 
-    // Candado en cliente: asegura que Lunes 16/11 (Des/Alm) y Martes 17/11 (Des) jamás se marquen ni se sumen
+    // ========================================================================
+    // PARSEO Y NORMALIZACIÓN DE PANES Y BEBIDAS DESDE MENU_SEMANAL
+    // ========================================================================
+    function normalizarPanCliente(rawPan) {
+      let p = String(rawPan || '').trim();
+      p = p.replace(/^pan\s+con\s+/i, '').replace(/^pan\s+de\s+/i, '').trim();
+      if (!p) return '';
+      const low = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (low.includes('pollo')) return 'Pollo';
+      if (low.includes('queso')) return 'Queso fresco';
+      if (low.includes('aceituna')) return 'Aceituna';
+      if (low.includes('huevo') || low.includes('tortilla')) return 'Huevo o tortilla';
+      if (low.includes('hot') || low.includes('dog')) return 'Hot dog';
+      return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
+    }
+
+    function obtenerInfoMenuDia(d) {
+      if (Array.isArray(d.panesDisponibles) && d.panesDisponibles.length > 0 && d.bebidasTexto) {
+        return { panes: d.panesDisponibles, bebidas: d.bebidasTexto };
+      }
+      const raw = String(d.menuDesayuno || '');
+      const partes = raw.split('+');
+      const izq = String(partes[0] || '').trim();
+      const der = partes.length > 1 ? partes.slice(1).join('+').trim() : 'Avena / Maca / Infusión / Café';
+
+      let panes = izq.split('/').map(x => normalizarPanCliente(x)).filter(Boolean);
+      if (panes.length === 0) panes = PANES_POR_DEFECTO.slice();
+
+      const bebidas = der.split('/').map(b => String(b || '').trim()).filter(Boolean).join(' o ');
+      return { panes: panes, bebidas: bebidas || 'Avena o Maca o Infusión o Café' };
+    }
+
+    function normalizarValorDesayunoCliente(val) {
+      let raw = String(val || 'NO').trim();
+      let upper = raw.toUpperCase();
+      if (!raw || upper === 'NO' || upper === 'SI') return 'NO';
+
+      if (raw.includes('(')) {
+        let op = '';
+        if (/^OP(C\.?|CION)?\s*1/i.test(upper)) op = 'OP1';
+        else if (/^OP(C\.?|CION)?\s*2/i.test(upper)) op = 'OP2';
+        else if (/^OP(C\.?|CION)?\s*3/i.test(upper)) op = 'OP3';
+        if (!op) return 'NO';
+        const m = raw.match(/\(([^)]+)\)/);
+        if (!m || !m[1].trim()) return 'NO';
+        if (op === 'OP2') return 'OP2';
+        const items = m[1].split(/[,\/;+]/).map(x => normalizarPanCliente(x)).filter(Boolean);
+        if (items.length === 0) return 'NO';
+        if (op === 'OP1') return `OP1|${items[0]}|${items[1] || items[0]}`;
+        if (op === 'OP3') return `OP3|${items[0]}`;
+        return 'NO';
+      }
+
+      if (raw.includes('|')) {
+        const p = raw.split('|').map(x => x.trim());
+        const op = p[0].toUpperCase();
+        if (op === 'OP2') return 'OP2';
+        if (op === 'OP1') {
+          const p1 = normalizarPanCliente(p[1] || 'Pollo') || 'Pollo';
+          const p2 = normalizarPanCliente(p[2] || p1) || p1;
+          return `OP1|${p1}|${p2}`;
+        }
+        if (op === 'OP3') {
+          const p1 = normalizarPanCliente(p[1] || 'Pollo') || 'Pollo';
+          return `OP3|${p1}`;
+        }
+        return 'NO';
+      }
+
+      if (upper === 'OP2') return 'OP2';
+      // Si en BD vino solo OP1 u OP3 sin panes, se considera NO
+      return 'NO';
+    }
+
+    function normalizarValorAlmuerzoCliente(val) {
+      let v = String(val || 'NO').toUpperCase().trim();
+      if (v === 'REGULAR' || v === 'SI') return 'REGULAR';
+      if (v === 'ALTERNATIVO' || v === 'ALTERNATIVA' || v === 'DIETA') return 'ALTERNATIVO';
+      return 'NO';
+    }
+
+    function desglosarDesayuno(val, panesDia) {
+      const listaPanes = (Array.isArray(panesDia) && panesDia.length > 0) ? panesDia : PANES_POR_DEFECTO;
+      const norm = normalizarValorDesayunoCliente(val);
+      if (norm === 'NO') {
+        return { op: 'NO', pan1: listaPanes[0], pan2: listaPanes[1] || listaPanes[0] };
+      }
+      if (norm === 'OP2') {
+        return { op: 'OP2', pan1: listaPanes[0], pan2: listaPanes[1] || listaPanes[0] };
+      }
+      const p = norm.split('|');
+      const op = p[0];
+      const p1 = p[1] || listaPanes[0];
+      const p2 = p[2] || p1;
+      return { op: op, pan1: p1, pan2: p2 };
+    }
+
     function aplicarReglaArranqueARegistro(reg) {
       if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
       reg.usuario.baseCicloDes = 0;
       reg.usuario.baseCicloAlm = 0;
 
       reg.diasSemana.forEach(d => {
+        d.desayuno = normalizarValorDesayunoCliente(d.desayuno);
+        d.almuerzo = normalizarValorAlmuerzoCliente(d.almuerzo);
+
         if (d.fecha < FECHA_ARRANQUE_DESAYUNO) {
           d.desayuno = 'NO';
           d.puedeEditarDesayuno = false;
@@ -955,7 +1067,7 @@
 
       if (STATE.modoPruebaQR) {
         btn.disabled = false;
-        btn.textContent = (STATE.horaPeru < 11.5)
+        btn.textContent = (STATE.horaPeru < 12.0)
           ? '📷 Escanear QR en Comedor (Desayuno)'
           : '📷 Escanear QR en Comedor (Almuerzo)';
         linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
@@ -978,23 +1090,34 @@
         return;
       }
 
-      if (STATE.horaPeru < 11.5) {
+      // Franja de la mañana (Antes de las 12:00 PM)
+      if (STATE.horaPeru < 12.0) {
+        if (hf.reservoDes && !hf.consumioDes) {
+          if (STATE.horaPeru < 8.5) {
+            btn.disabled = true;
+            btn.textContent = '🕒 El desayuno se servirá desde las 8:30 AM';
+            linkPin.style.display = 'none';
+            return;
+          }
+          btn.disabled = false;
+          btn.textContent = '📷 Escanear QR en Comedor (Desayuno)';
+          linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
+          return;
+        }
         if (hf.reservoDes && hf.consumioDes) {
           btn.disabled = true;
-          btn.textContent = '✅ Desayuno registrado (Almuerzo desde 11:30 AM)';
+          btn.textContent = '✅ Desayuno registrado (El almuerzo se servirá desde las 12:00 PM)';
           linkPin.style.display = 'none';
           return;
         }
         if (!hf.reservoDes && hf.reservoAlm) {
           btn.disabled = true;
-          btn.textContent = '🕒 QR Almuerzo disponible desde 11:30 AM';
+          btn.textContent = '🕒 El almuerzo se servirá desde las 12:00 PM';
           linkPin.style.display = 'none';
           return;
         }
-        btn.disabled = false;
-        btn.textContent = '📷 Escanear QR en Comedor (Desayuno)';
-        linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
       } else {
+        // Franja de la tarde (Desde las 12:00 PM en adelante)
         if (hf.reservoAlm && hf.consumioAlm) {
           btn.disabled = true;
           btn.textContent = '✅ Almuerzo ya registrado hoy';
@@ -1023,22 +1146,70 @@
       const habDes = (d.fecha >= FECHA_ARRANQUE_DESAYUNO);
       const habAlm = (d.fecha >= FECHA_ARRANQUE_ALMUERZO);
 
-      const desActivo = habDes && (d.desayuno !== 'NO');
+      const infoMenu = obtenerInfoMenuDia(d);
+      const infoDes = desglosarDesayuno(d.desayuno, infoMenu.panes);
+      const opBase = infoDes.op;
+
+      const desActivo = habDes && (opBase !== 'NO');
       const almActivo = habAlm && (d.almuerzo !== 'NO');
 
+      // 1. Texto dinámico del recuadro superior (.menu-box) según los panes seleccionados
+      let lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> ${d.menuDesayuno}`;
+      if (desActivo) {
+        if (opBase === 'OP1') {
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} / ${infoDes.pan2}</span> + ${infoMenu.bebidas}`;
+        } else if (opBase === 'OP2') {
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> + ${infoMenu.bebidas}`;
+        } else if (opBase === 'OP3') {
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} + 1 Huevo</span> + ${infoMenu.bebidas}`;
+        }
+      }
+
+      // 2. Estado compacto en la tarjeta de Desayuno y Almuerzo
       let detalleDes = '';
-      if (d.desayuno === 'SI') detalleDes = 'Desayuno General (Sin opción)';
-      else if (d.desayuno === 'OP1') detalleDes = '1 bebida + 2 panes';
-      else if (d.desayuno === 'OP2') detalleDes = '1 bebida + 3 huevos';
-      else if (d.desayuno === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
+      if (opBase === 'OP1') detalleDes = '1 bebida + 2 panes';
+      else if (opBase === 'OP2') detalleDes = '1 bebida + 3 huevos';
+      else if (opBase === 'OP3') detalleDes = '1 bebida + 1 pan + 1 huevo';
 
       const txtDes = !habDes ? 'Registro en hoja física' : (desActivo ? detalleDes : 'No solicitado');
-      const txtAlm = !habAlm ? 'Registro en hoja física' : (almActivo ? (d.almuerzo === 'SI' ? 'Almuerzo General' : `Confirmado: ${d.almuerzo.charAt(0) + d.almuerzo.slice(1).toLowerCase()}`) : 'Cancelado');
+      const txtAlm = !habAlm
+        ? 'Registro en hoja física'
+        : (almActivo
+          ? `Confirmado: ${d.almuerzo === 'ALTERNATIVO' ? 'Alternativo' : 'Regular'}`
+          : 'Cancelado');
 
       const lockDesClass = (!habDes || !d.puedeEditarDesayuno) ? 'disabled-card' : '';
       const lockAlmClass = (!habAlm || !d.puedeEditarAlmuerzo) ? 'disabled-card' : '';
-      const avisoDes = !habDes ? 'Inicia Mié 18/11' : (!d.puedeEditarDesayuno ? '🔒 Cerrado (3pm día ant.)' : (desActivo ? 'Toca la activa para cancelar' : 'Elige Opc. 1, 2 o 3 abajo'));
-      const avisoAlm = !habAlm ? 'Inicia Mar 17/11' : (!d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (almActivo ? 'Toca la activa para cancelar' : 'Elige Regular o Dieta abajo'));
+
+      // Se elimina "Toca la activa para cancelar"
+      const avisoDes = !habDes
+        ? 'Inicia Mié 18/11'
+        : (!d.puedeEditarDesayuno ? '🔒 Cerrado (4pm día ant.)' : (!desActivo ? 'Elige Opc. 1, 2 o 3 abajo' : ''));
+      const avisoAlm = !habAlm
+        ? 'Inicia Mar 17/11'
+        : (!d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (!almActivo ? 'Elige Regular o Alternativo' : ''));
+
+      // 3. Listas desplegables de panes justo encima de los botones de opción
+      let dropdownsPanesHtml = '';
+      if (desActivo && d.puedeEditarDesayuno) {
+        if (opBase === 'OP1') {
+          const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>${p}</option>`).join('');
+          const opts2 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan2 ? 'selected' : ''}>${p}</option>`).join('');
+          dropdownsPanesHtml = `
+            <div class="pan-dropdown-wrap" onclick="event.stopPropagation()">
+              <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 1, this.value)" title="Primer pan">${opts1}</select>
+              <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 2, this.value)" title="Segundo pan">${opts2}</select>
+            </div>
+          `;
+        } else if (opBase === 'OP3') {
+          const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>Pan: ${p}</option>`).join('');
+          dropdownsPanesHtml = `
+            <div class="pan-dropdown-wrap" onclick="event.stopPropagation()">
+              <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 1, this.value)" title="Tipo de pan">${opts1}</select>
+            </div>
+          `;
+        }
+      }
 
       const fechaVisual = d.fechaCorta || formatearDiaMesCorto(d.fecha);
 
@@ -1060,7 +1231,7 @@
             ${badgeHtml}
           </div>
           <div class="menu-box">
-            <div>☕ <b>Desayuno:</b> ${d.menuDesayuno}</div>
+            <div>${lineaMenuDesayunoHtml}</div>
             <div style="margin-top:4px;">🍲 <b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
           </div>
           <div class="srv-grid">
@@ -1068,12 +1239,13 @@
               <div class="srv-split-top" onclick="seleccionarOpcionDesayuno('${d.fecha}', '${desActivo ? 'NO' : 'OP1'}')">
                 <span class="title">☕ Desayuno</span>
                 <span class="status">${txtDes}</span>
-                <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoDes}</span>
+                ${avisoDes ? `<span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoDes}</span>` : ''}
               </div>
+              ${dropdownsPanesHtml}
               <div class="srv-split-bottom">
-                <button class="op-sub-btn ${desActivo && d.desayuno === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Opc. 1</button>
-                <button class="op-sub-btn ${desActivo && d.desayuno === 'OP2' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP2')">Opc. 2</button>
-                <button class="op-sub-btn ${desActivo && d.desayuno === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Opc. 3</button>
+                <button class="op-sub-btn ${desActivo && opBase === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Opc. 1</button>
+                <button class="op-sub-btn ${desActivo && opBase === 'OP2' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP2')">Opc. 2</button>
+                <button class="op-sub-btn ${desActivo && opBase === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Opc. 3</button>
               </div>
             </div>
 
@@ -1081,11 +1253,11 @@
               <div class="srv-split-top" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', '${almActivo ? 'NO' : 'REGULAR'}')">
                 <span class="title">🍲 Almuerzo</span>
                 <span class="status">${txtAlm}</span>
-                <span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoAlm}</span>
+                ${avisoAlm ? `<span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoAlm}</span>` : ''}
               </div>
               <div class="srv-split-bottom">
                 <button class="op-sub-btn ${almActivo && d.almuerzo === 'REGULAR' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')">Regular</button>
-                <button class="op-sub-btn ${almActivo && d.almuerzo === 'DIETA' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'DIETA')">Dieta</button>
+                <button class="op-sub-btn ${almActivo && d.almuerzo === 'ALTERNATIVO' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'ALTERNATIVO')">Alternativo</button>
               </div>
             </div>
           </div>
@@ -1093,22 +1265,38 @@
       `;
     }
 
-    function seleccionarOpcionDesayuno(fecha, opElegida) {
-      if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
-      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia || !dia.puedeEditarDesayuno) return;
-      const vAnt = dia.desayuno;
-      const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
-      dia.desayuno = nVal;
-      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (nVal !== 'NO');
+    function construirValorDesayunoConPanes(dia, opDestino) {
+      if (opDestino === 'NO') return 'NO';
+      if (opDestino === 'OP2') return 'OP2';
+
+      const infoMenu = obtenerInfoMenuDia(dia);
+      const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
+      const defUser = desglosarDesayuno(STATE.usuario ? STATE.usuario.desDef : 'NO', infoMenu.panes);
+
+      let pan1 = (actual.op !== 'NO') ? actual.pan1 : ((defUser.op !== 'NO') ? defUser.pan1 : infoMenu.panes[0]);
+      let pan2 = (actual.op === 'OP1') ? actual.pan2 : ((defUser.op === 'OP1') ? defUser.pan2 : (infoMenu.panes[1] || infoMenu.panes[0]));
+
+      if (opDestino === 'OP1') return `OP1|${pan1}|${pan2}`;
+      if (opDestino === 'OP3') return `OP3|${pan1}`;
+      return 'NO';
+    }
+
+    function guardarDesayunoConDebounce(dia, vAnt) {
+      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (dia.desayuno !== 'NO');
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
 
-      const keyTimer = 'DES_' + fecha;
+      const keyTimer = 'DES_' + dia.fecha;
       if (TIMERS_DEBOUNCE_SERVICIO[keyTimer]) clearTimeout(TIMERS_DEBOUNCE_SERVICIO[keyTimer]);
       TIMERS_DEBOUNCE_SERVICIO[keyTimer] = setTimeout(() => {
-        ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'DESAYUNO', nuevoValor: dia.desayuno, dniEjecutor: STATE.usuario.dni }], res => {
+        ejecutarConReintento('actualizarSeleccionServicio', [{
+          dniTarget: STATE.usuario.dni,
+          fecha: dia.fecha,
+          servicio: 'DESAYUNO',
+          nuevoValor: dia.desayuno,
+          dniEjecutor: STATE.usuario.dni
+        }], res => {
           if (res && !res.ok) {
             dia.desayuno = vAnt;
             if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (vAnt !== 'NO');
@@ -1119,6 +1307,46 @@
           }
         });
       }, 400);
+    }
+
+    function seleccionarOpcionDesayuno(fecha, opElegida) {
+      if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
+      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
+      if (!dia || !dia.puedeEditarDesayuno) return;
+
+      const infoMenu = obtenerInfoMenuDia(dia);
+      const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
+      const vAnt = dia.desayuno;
+
+      let nVal = 'NO';
+      if (opElegida !== 'NO' && actual.op !== opElegida) {
+        nVal = construirValorDesayunoConPanes(dia, opElegida);
+      }
+
+      dia.desayuno = nVal;
+      guardarDesayunoConDebounce(dia, vAnt);
+    }
+
+    function cambiarPanDesayuno(fecha, numPan, nuevoPan) {
+      if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
+      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
+      if (!dia || !dia.puedeEditarDesayuno) return;
+
+      const infoMenu = obtenerInfoMenuDia(dia);
+      const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
+      const vAnt = dia.desayuno;
+
+      if (actual.op === 'OP1') {
+        const p1 = (numPan === 1) ? nuevoPan : actual.pan1;
+        const p2 = (numPan === 2) ? nuevoPan : actual.pan2;
+        dia.desayuno = `OP1|${p1}|${p2}`;
+      } else if (actual.op === 'OP3') {
+        dia.desayuno = `OP3|${nuevoPan}`;
+      } else {
+        return;
+      }
+
+      guardarDesayunoConDebounce(dia, vAnt);
     }
 
     function seleccionarOpcionAlmuerzo(fecha, opElegida) {
@@ -1334,7 +1562,6 @@
       document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
     }
 
-    // Doble candado en Reporte RRHH: filtra cualquier fila previa al arranque (Desayuno < 18/11, Almuerzo < 17/11) y fuera de la semana activa
     function cargarReporteRRHH() {
       const fIni = document.getElementById('rep-ini').value, fFin = document.getElementById('rep-fin').value;
       document.getElementById('tbody-rep-rrhh').innerHTML = '<tr><td colspan="7" style="text-align:center;">⏳ Calculando consolidado...</td></tr>';
@@ -1345,14 +1572,10 @@
         const filasValidas = filasCrudas.filter(f => {
           const iso = f.fechaISO || convertirFechaPeruAISO(f.fecha);
           const esDes = String(f.servicio || '').toUpperCase().startsWith('DESAYUNO');
-          // 1. Nunca incluir días futuros (iso > hoyISO)
           if (iso > hoyISO) return false;
-          // 2. Respetar fechas de arranque oficial (Almuerzo 17/11, Desayuno 18/11)
           if (esDes && iso < FECHA_ARRANQUE_DESAYUNO) return false;
           if (!esDes && iso < FECHA_ARRANQUE_ALMUERZO) return false;
-          // 3. Si es HOY (iso === hoyISO), solo entra si YA escaneó el QR (consumio === 'SI')
           if (iso === hoyISO && String(f.consumio || '').toUpperCase() !== 'SI') return false;
-          // 4. Si es un día pasado (iso < hoyISO), entra si reservó o si escaneó el QR
           return true;
         });
 

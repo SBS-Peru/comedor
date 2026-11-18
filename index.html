@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=18">
+  <link rel="manifest" href="manifest.json?v=19">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=18">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=18">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=18">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=19">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=19">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=19">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -48,7 +48,7 @@
     }
     .app-shell.wide-rrhh { max-width: 900px; }
 
-    /* BANNER DE ACTUALIZACIÓN EN VIVO (ESTILO APP NATIVA) */
+    /* BANNER DE ACTUALIZACIÓN EN VIVO */
     #banner-actualizacion {
       display: none;
       background: #0f172a;
@@ -120,7 +120,6 @@
     .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
     .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; margin-bottom: 9px; }
 
-    /* Detalle de Desayuno y Almuerzo en negrita para mayor legibilidad */
     .menu-box {
       background: #f8fafc; border-radius: 9px; padding: 9px 11px; font-size: 12.3px;
       letter-spacing: -0.15px; color: var(--text); font-weight: 600; margin-bottom: 11px; line-height: 1.45;
@@ -131,7 +130,6 @@
 
     .srv-grid { display: flex; gap: 10px; align-items: stretch; }
 
-    /* Tarjetas lado a lado con altura uniforme y centrado vertical automático en Opc. 2 y Almuerzo */
     .srv-split-card {
       flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white;
       display: flex; flex-direction: column; overflow: hidden; transition: 0.15s;
@@ -153,7 +151,6 @@
     .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
     .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
 
-    /* Listas desplegables ligeras (sin negrita) y centradas al medio */
     .pan-dropdown-wrap {
       display: flex; gap: 4px; padding: 0 5px 7px; justify-content: center; align-items: center;
     }
@@ -183,10 +180,10 @@
     }
     #modal-qr-content {
       background: white; width: 100%; max-width: 380px; border-radius: 18px; padding: 20px; text-align: center;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3); animation: popModal 0.2s ease-out;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3); animation: popModal 0.15s ease-out;
     }
     @keyframes popModal {
-      from { transform: scale(0.9); opacity: 0; }
+      from { transform: scale(0.92); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
 
@@ -232,7 +229,6 @@
 <body>
 
   <div class="app-shell" id="app-shell">
-    <!-- AVISO DE NUEVA ACTUALIZACIÓN DISPONIBLE EN EL APP -->
     <div id="banner-actualizacion">
       <span>🔄 Nueva actualización disponible</span>
       <button class="btn-update-now" onclick="aplicarActualizacionApp()">Actualizar ahora</button>
@@ -241,7 +237,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=18" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=19" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -373,7 +369,7 @@
           </div>
         </div>
 
-        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO (SALUD + SIMULADOR DE ESTRÉS) -->
+        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO -->
         <div id="pane-tecnico" style="display:none;">
           <div class="rrhh-box">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -400,7 +396,7 @@
           <div class="rrhh-box">
             <h4>⚡ Prueba de Estrés en Vivo (Simulación Hora Punta)</h4>
             <p style="font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
-              Simula <b>30 usuarios abriendo la App</b> y <b>15 escaneos QR simultáneos</b> en paralelo. Para incluir los 15 escaneos QR sin afectar la asistencia real, activa primero el <b>Modo prueba</b> en el menú de Google Sheets.
+              Simula <b>30 usuarios abriendo la App</b> y <b>15 escaneos QR simultáneos</b> en paralelo.
             </p>
             <div id="resultado-estres-tech" style="display:none; font-size:12px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; line-height:1.55;"></div>
             <button class="btn btn-outline" id="btn-ejecutar-estres" style="padding:10px; font-size:13px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="ejecutarPruebaEstres()">
@@ -441,21 +437,23 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    // Identificador local de versión para detectar paquetes nuevos en Android/iOS
     const VERSION_LOCAL_APP = "18";
 
-    // Primer escaneo oficial: Miércoles 18/11 en Almuerzo (Desayuno desde Jueves 19/11)
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
     const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
     const PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
     let HABILITAR_MODO_CODIGO = false;
-    let TIMERS_DEBOUNCE_SERVICIO = {};
+
+    // Cola única de Guardado por Lote (Batch Save) para no saturar LockService al tocar varios días
+    let COLA_CAMBIOS_RESERVA = {};
+    let TIMER_LOTE_RESERVA = null;
+    let ENVIANDO_COLA_QR = false;
 
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=18', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=19', { updateViaCache: 'none' }).then(reg => {
           reg.update().catch(() => {});
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
@@ -492,7 +490,7 @@
     }
 
     function verificarVersionServidor(versionRemota) {
-      if (versionRemota && String(versionRemota) !== String(VERSION_LOCAL_APP)) {
+      if (versionRemota && Number(versionRemota) > Number(VERSION_LOCAL_APP)) {
         mostrarBannerActualizacion();
       }
     }
@@ -515,9 +513,9 @@
       window.location.replace(window.location.pathname + '?v=' + new Date().getTime());
     }
 
-    // Cada vez que el usuario vuelve a abrir la app desde segundo plano en su celular, verifica si hay nueva versión
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
+        procesarColaQRSegundoPlano();
         ejecutarConReintento('verificarVersionApp', [], res => {
           if (res && res.versionApp) verificarVersionServidor(res.versionApp);
         }, null, 1);
@@ -656,6 +654,19 @@
       return { op: op, pan1: p1, pan2: p2 };
     }
 
+    // Respeta si el celular ya tiene un escaneo QR confirmado localmente hoy
+    function sincronizarConsumosLocalesConRegistro(reg) {
+      if (!reg || !reg.usuario || !reg.hoyFisico) return reg;
+      try {
+        const marcaLocal = JSON.parse(localStorage.getItem('SBS_QR_CONFIRMADO_HOY') || '{}');
+        if (marcaLocal.dni === reg.usuario.dni && marcaLocal.fecha === reg.hoyFisico.fecha) {
+          if (marcaLocal.des) reg.hoyFisico.consumioDes = true;
+          if (marcaLocal.alm) reg.hoyFisico.consumioAlm = true;
+        }
+      } catch (e) {}
+      return reg;
+    }
+
     function aplicarReglaArranqueARegistro(reg) {
       if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
       reg.usuario.baseCicloDes = 0;
@@ -685,7 +696,7 @@
         if (reg.hoyFisico.fecha < FECHA_ARRANQUE_DESAYUNO) reg.hoyFisico.reservoDes = false;
         if (reg.hoyFisico.fecha < FECHA_ARRANQUE_ALMUERZO) reg.hoyFisico.reservoAlm = false;
       }
-      return reg;
+      return sincronizarConsumosLocalesConRegistro(reg);
     }
 
     function normalizarDiccionarioArranque(dicc) {
@@ -697,6 +708,8 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      procesarColaQRSegundoPlano();
+
       const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
       let sesionGuardada = null;
       if (sesionStr) {
@@ -715,6 +728,13 @@
         STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
         STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
         renderizarVistaPrincipal();
+
+        if (window.AUTO_CHECKIN_QR === '1') {
+          window.AUTO_CHECKIN_QR = '0';
+          if (!document.getElementById('btn-escanear-qr').disabled) {
+            procesarRegistroQRInteligente('QR_INVERSO_DIRECTO');
+          }
+        }
       }
 
       cargarCacheInicial(() => {
@@ -722,7 +742,7 @@
           const regFresco = STATE.diccionarioUsuarios[sesionGuardada.dni];
           if (regFresco && regFresco.usuario.tieneClave) {
             asignarUsuarioYEntrar(regFresco, sesionGuardada.token);
-          } else {
+          } else if (!STATE.usuario) {
             cerrarSesion();
           }
         }
@@ -781,7 +801,7 @@
           if (i === intentos - 1) {
             if (onError) onError(err);
           } else {
-            await new Promise(r => setTimeout(r, 450 * (i + 1)));
+            await new Promise(r => setTimeout(r, 400 * (i + 1)));
           }
         }
       }
@@ -833,13 +853,19 @@
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 3200);
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
+    // Login instantáneo: si el DNI ya está en la memoria local precargada, pasa directo a pedir clave en 0.0 seg
     function verificarPasoDNI() {
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
         mostrarToast('⚠️ Ingresa un DNI válido de 8 dígitos.');
+        return;
+      }
+
+      if (STATE.bootstrapCargado && STATE.diccionarioUsuarios && STATE.diccionarioUsuarios[dni]) {
+        abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
         return;
       }
 
@@ -1033,10 +1059,10 @@
         document.getElementById('tkpi-errores').textContent = String(totErr);
 
         infoBox.innerHTML = `
-          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
-          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'}  | 
+          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')} &nbsp;|&nbsp;
+          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
           <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
-          <b>Registros en PLANIFICACION:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
+          <b>Registros en PLANIFICACION:</b> ${valSeguro(res.reservasRegistradas, 0)} &nbsp;|&nbsp;
           <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
 
@@ -1086,13 +1112,13 @@
       box.style.display = 'block';
 
       if (!STATE.modoPruebaQR) {
-        box.innerHTML = `<span style="color:#b45309; font-weight:700;">⚠️ Activa primero el "Modo prueba" en el menú Comedor SBS de tu hoja de cálculo (y luego presiona Actualizar diagnóstico arriba) para que los 15 escaneos QR de prueba se marquen en amarillo y no ensucien la asistencia real.</span>`;
+        box.innerHTML = `<span style="color:#b45309; font-weight:700;">⚠️ Activa primero el "Modo prueba" en el menú Comedor SBS de tu hoja de cálculo (y luego presiona Actualizar diagnóstico arriba).</span>`;
         return;
       }
 
       btn.disabled = true;
       btn.textContent = '⏳ Ejecutando ráfaga concurrente (45 peticiones)...';
-      box.innerHTML = 'Disparando <b>30 lecturas simultáneas de login/sesión</b> + <b>15 escaneos QR en paralelo</b>...';
+      box.innerHTML = 'Disparando <b>30 lecturas simultáneas</b> + <b>15 escaneos QR en paralelo</b>...';
 
       const listaActivos = (STATE.colaboradores || []).filter(c => c.estado === 'ACTIVO');
       const dnisPrueba = [];
@@ -1123,7 +1149,7 @@
         return fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'registrarConsumoInteligente', args: [dniTest, 'STRESS_TEST'] })
+          body: JSON.stringify({ action: 'registrarConsumoInteligente', args: [dniTest, 'STRESS_TEST', 'ALMUERZO'] })
         }).then(r => r.json()).then(d => ({
           ok: !!(d && d.ok),
           ms: Math.round(performance.now() - t0)
@@ -1148,7 +1174,7 @@
       box.innerHTML = `
         <b style="color:#047857;">✅ Prueba completada en ${(tGlobalTotal / 1000).toFixed(2)} seg:</b><br>
         • <b>Accesos simultáneos (30):</b> ${okLecturas}/30 exitosos (Promedio: ${promMsLectura} ms)<br>
-        • <b>Escaneos QR en fila (15):</b> ${okQRs}/15 registrados sin pérdida (Promedio: ${promMsQR} ms | Máximo en cola: ${maxMsQR} ms)<br>
+        • <b>Escaneos QR en fila (15):</b> ${okQRs}/15 registrados sin pérdida (Promedio: ${promMsQR} ms | Máximo: ${maxMsQR} ms)<br>
         <span style="color:#64748b; font-size:11px;">Recuerda ir a Google Sheets -> Comedor SBS -> "Borrar solo registros de modo prueba" y desactivar el Modo Prueba.</span>
       `;
       cargarPanelSalud();
@@ -1325,7 +1351,6 @@
       const desActivo = habDes && (opBase !== 'NO');
       const almActivo = habAlm && (d.almuerzo !== 'NO');
 
-      // Detalle de Desayuno y Almuerzo en negrita
       let lineaMenuDesayunoHtml = `☕ <b>Desayuno: ${d.menuDesayuno}</b>`;
       if (desActivo) {
         if (opBase === 'OP1') {
@@ -1362,7 +1387,6 @@
         ? ''
         : (!d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (!almActivo ? 'Elige Regular o Alternativo' : ''));
 
-      // En Opc. 2 no se inserta el contenedor de desplegables para que el texto quede centrado al medio igual que Almuerzo
       let dropdownsPanesHtml = '';
       if (desActivo && d.puedeEditarDesayuno) {
         if (opBase === 'OP1') {
@@ -1454,32 +1478,31 @@
       return 'NO';
     }
 
-    function guardarDesayunoConDebounce(dia, vAnt) {
-      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (dia.desayuno !== 'NO');
-      guardarSnapshotLocal();
-      renderizarTarjetas();
-      actualizarEstadoBotonQR();
+    // ========================================================================
+    // GUARDADO POR LOTE (BATCH SAVE) PARA EVITAR COLISIONES EN LOCKSERVICE
+    // ========================================================================
+    function encolarCambioServicio(fecha, servicio, nuevoValor) {
+      COLA_CAMBIOS_RESERVA[`${fecha}_${servicio}`] = {
+        fecha: fecha,
+        servicio: servicio,
+        nuevoValor: nuevoValor
+      };
 
-      const keyTimer = 'DES_' + dia.fecha;
-      if (TIMERS_DEBOUNCE_SERVICIO[keyTimer]) clearTimeout(TIMERS_DEBOUNCE_SERVICIO[keyTimer]);
-      TIMERS_DEBOUNCE_SERVICIO[keyTimer] = setTimeout(() => {
-        ejecutarConReintento('actualizarSeleccionServicio', [{
+      if (TIMER_LOTE_RESERVA) clearTimeout(TIMER_LOTE_RESERVA);
+      TIMER_LOTE_RESERVA = setTimeout(() => {
+        const lote = Object.values(COLA_CAMBIOS_RESERVA);
+        COLA_CAMBIOS_RESERVA = {};
+        if (lote.length === 0 || !STATE.usuario) return;
+
+        ejecutarConReintento('actualizarSeleccionLote', [{
           dniTarget: STATE.usuario.dni,
-          fecha: dia.fecha,
-          servicio: 'DESAYUNO',
-          nuevoValor: dia.desayuno,
-          dniEjecutor: STATE.usuario.dni
+          cambios: lote
         }], res => {
           if (res && !res.ok) {
-            dia.desayuno = vAnt;
-            if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (vAnt !== 'NO');
-            guardarSnapshotLocal();
-            renderizarTarjetas();
-            actualizarEstadoBotonQR();
             mostrarToast('⚠️ ' + res.msg);
           }
-        });
-      }, 400);
+        }, null, 4);
+      }, 650);
     }
 
     function seleccionarOpcionDesayuno(fecha, opElegida) {
@@ -1489,7 +1512,6 @@
 
       const infoMenu = obtenerInfoMenuDia(dia);
       const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
-      const vAnt = dia.desayuno;
 
       let nVal = 'NO';
       if (opElegida !== 'NO' && actual.op !== opElegida) {
@@ -1497,7 +1519,12 @@
       }
 
       dia.desayuno = nVal;
-      guardarDesayunoConDebounce(dia, vAnt);
+      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (dia.desayuno !== 'NO');
+      guardarSnapshotLocal();
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+
+      encolarCambioServicio(dia.fecha, 'DESAYUNO', dia.desayuno);
     }
 
     function cambiarPanDesayuno(fecha, numPan, nuevoPan) {
@@ -1507,7 +1534,6 @@
 
       const infoMenu = obtenerInfoMenuDia(dia);
       const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
-      const vAnt = dia.desayuno;
 
       if (actual.op === 'OP1') {
         const p1 = (numPan === 1) ? nuevoPan : actual.pan1;
@@ -1519,13 +1545,19 @@
         return;
       }
 
-      guardarDesayunoConDebounce(dia, vAnt);
+      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (dia.desayuno !== 'NO');
+      guardarSnapshotLocal();
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+
+      encolarCambioServicio(dia.fecha, 'DESAYUNO', dia.desayuno);
     }
 
     function seleccionarOpcionAlmuerzo(fecha, opElegida) {
       if (fecha < FECHA_ARRANQUE_ALMUERZO) return;
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
       if (!dia || !dia.puedeEditarAlmuerzo) return;
+
       const vAnt = dia.almuerzo;
       const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
       dia.almuerzo = nVal;
@@ -1534,20 +1566,7 @@
       renderizarTarjetas();
       actualizarEstadoBotonQR();
 
-      const keyTimer = 'ALM_' + fecha;
-      if (TIMERS_DEBOUNCE_SERVICIO[keyTimer]) clearTimeout(TIMERS_DEBOUNCE_SERVICIO[keyTimer]);
-      TIMERS_DEBOUNCE_SERVICIO[keyTimer] = setTimeout(() => {
-        ejecutarConReintento('actualizarSeleccionServicio', [{ dniTarget: STATE.usuario.dni, fecha: fecha, servicio: 'ALMUERZO', nuevoValor: dia.almuerzo }], res => {
-          if (res && !res.ok) {
-            dia.almuerzo = vAnt;
-            if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (vAnt !== 'NO');
-            guardarSnapshotLocal();
-            renderizarTarjetas();
-            actualizarEstadoBotonQR();
-            mostrarToast('⚠️ ' + res.msg);
-          }
-        });
-      }, 400);
+      encolarCambioServicio(dia.fecha, 'ALMUERZO', dia.almuerzo);
     }
 
     function cambiarTab(tab) {
@@ -1578,6 +1597,9 @@
       }
     }
 
+    // ========================================================================
+    // ESCANEO QR INSTANTÁNEO EN 0.0 SEGUNDOS + COLA ASÍNCRONA EN SEGUNDO PLANO
+    // ========================================================================
     async function abrirEscanerQR() {
       if (document.getElementById('btn-escanear-qr').disabled) return;
       document.getElementById('box-pin-contingencia').style.display = 'none';
@@ -1585,7 +1607,7 @@
       const overlay = document.getElementById('modal-qr-overlay');
       overlay.style.display = 'flex';
 
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 80));
 
       try {
         if (STATE.html5QrCode) {
@@ -1601,9 +1623,9 @@
       }
 
       STATE.procesandoEscaneo = false;
-      const configQR = { fps: 20, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
+      const configQR = { fps: 24, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
 
-      const onScanExito = (decodedText) => {
+      const onScanExito = () => {
         if (STATE.procesandoEscaneo) return;
         STATE.procesandoEscaneo = true;
         cerrarEscanerQR();
@@ -1676,25 +1698,100 @@
       });
     }
 
+    /**
+     * Respuesta Instantánea en 0.0 Segundos (Optimistic UI):
+     * Muestra el ticket verde de inmediato apenas se lee el QR y encola el registro en segundo plano.
+     */
     function procesarRegistroQRInteligente(metodo = 'QR_APP') {
-      const btn = document.getElementById('btn-escanear-qr');
-      btn.disabled = true;
-      btn.textContent = '⏳ Registrando asistencia...';
+      if (!STATE.usuario || !STATE.hoyFisico) return;
 
-      ejecutarConReintento('registrarConsumoInteligente', [STATE.usuario.dni, metodo], res => {
-        if (res.ok) {
-          if (!res.modoPrueba) {
-            if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
-            if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
-            guardarSnapshotLocal();
-          }
-          mostrarTicketVerdeConfirmado(res.servicioRegistrado);
-          mostrarToast('✅ ' + res.msg);
-        } else {
-          mostrarToast('⚠️ ' + res.msg);
-        }
-        actualizarEstadoBotonQR();
+      const srvEsperado = (STATE.horaPeru < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
+      const primerNombre = STATE.usuario.nombre.split(' ')[0];
+
+      // 1. Actualizar interfaz y mostrar ticket verde EN 0.0 SEGUNDOS (sin esperar al servidor)
+      if (!STATE.modoPruebaQR) {
+        if (srvEsperado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
+        if (srvEsperado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+        try {
+          localStorage.setItem('SBS_QR_CONFIRMADO_HOY', JSON.stringify({
+            dni: STATE.usuario.dni,
+            fecha: STATE.hoyFisico.fecha,
+            des: STATE.hoyFisico.consumioDes,
+            alm: STATE.hoyFisico.consumioAlm
+          }));
+        } catch (e) {}
+        guardarSnapshotLocal();
+      }
+
+      mostrarTicketVerdeConfirmado(srvEsperado);
+      mostrarToast(`✅ ¡${srvEsperado} registrado con éxito para ${primerNombre}!`);
+      actualizarEstadoBotonQR();
+
+      // 2. Guardar en cola local persistente y sincronizar con Google Sheets en segundo plano
+      encolarRegistroQRSegundoPlano({
+        idCola: `${STATE.usuario.dni}_${STATE.hoyFisico.fecha}_${srvEsperado}_${new Date().getTime()}`,
+        dni: STATE.usuario.dni,
+        metodo: metodo,
+        servicio: srvEsperado
       });
+    }
+
+    function encolarRegistroQRSegundoPlano(itemQR) {
+      try {
+        const lista = JSON.parse(localStorage.getItem('SBS_COLA_QR_V1') || '[]');
+        lista.push(itemQR);
+        localStorage.setItem('SBS_COLA_QR_V1', JSON.stringify(lista));
+      } catch (e) {}
+      procesarColaQRSegundoPlano();
+    }
+
+    async function procesarColaQRSegundoPlano() {
+      if (ENVIANDO_COLA_QR) return;
+      let lista = [];
+      try {
+        lista = JSON.parse(localStorage.getItem('SBS_COLA_QR_V1') || '[]');
+      } catch (e) { lista = []; }
+
+      if (!Array.isArray(lista) || lista.length === 0) return;
+      ENVIANDO_COLA_QR = true;
+
+      while (lista.length > 0) {
+        const actual = lista[0];
+        let exitoEnvio = false;
+
+        try {
+          const resp = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'registrarConsumoInteligente',
+              args: [actual.dni, actual.metodo, actual.servicio]
+            })
+          });
+          const data = await resp.json();
+
+          // Si se grabó con éxito o si el servidor responde un rechazo definitivo, se retira de la cola
+          if (data && (data.ok || (data.msg && !data.msg.includes('intent') && !data.msg.includes('ocupado')))) {
+            exitoEnvio = true;
+          }
+        } catch (err) {
+          exitoEnvio = false;
+        }
+
+        if (exitoEnvio) {
+          lista.shift();
+          try { localStorage.setItem('SBS_COLA_QR_V1', JSON.stringify(lista)); } catch (e) {}
+        } else {
+          // Si falló la red o hubo saturación, reintenta automáticamente en 2.5 segundos en segundo plano
+          setTimeout(() => {
+            ENVIANDO_COLA_QR = false;
+            procesarColaQRSegundoPlano();
+          }, 2500);
+          return;
+        }
+      }
+
+      ENVIANDO_COLA_QR = false;
     }
 
     function mostrarTicketVerdeConfirmado(servicio) {

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal GEP • Comedor SBS</title>
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=16">
+  <title>Portal RRHH • Comedor SBS</title>
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=18">
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
@@ -105,9 +105,14 @@
     }
     .toolbar-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .form-input, .form-select {
-      padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 8px;
       font-size: 13px; color: var(--text); background: white; outline: none;
     }
+    .form-select {
+      text-align: center; text-align-last: center; -moz-text-align-last: center;
+      font-weight: 400; cursor: pointer;
+    }
+    .form-select option { text-align: center; font-weight: 400; }
     .form-input:focus, .form-select:focus { border-color: var(--sbs-primary); }
 
     .table-direct-wrap {
@@ -159,24 +164,24 @@
   <!-- 1. LOGIN -->
   <div id="view-login">
     <div class="login-card">
-      <img src="./Logo.jpg?v=16" alt="SBS" class="login-logo">
-      <h1>Portal GEP • Comedor SBS</h1>
+      <img src="./Logo.jpg?v=18" alt="SBS" class="login-logo">
+      <h1>Portal RRHH • Comedor SBS</h1>
 
       <div id="step-dni">
         <input type="tel" id="txt-dni" class="input-lg" placeholder="DNI" maxlength="8">
-        <button class="btn btn-primary" id="btn-login-dni" style="width:100%; padding:13px; font-size:14.5px;" onclick="verificarDniGEP()">
+        <button class="btn btn-primary" id="btn-login-dni" style="width:100%; padding:13px; font-size:14.5px;" onclick="verificarDniRRHH()">
           Continuar
         </button>
       </div>
 
       <div id="step-clave" style="display:none;">
-        <div id="lbl-hola-gep" style="font-size:15.5px; font-weight:800; color:var(--sbs-primary); margin-bottom:6px;"></div>
-        <p id="lbl-inst-gep" style="font-size:12.5px; color:var(--muted); margin:0 0 10px;"></p>
+        <div id="lbl-hola-rrhh" style="font-size:15.5px; font-weight:800; color:var(--sbs-primary); margin-bottom:6px;"></div>
+        <p id="lbl-inst-rrhh" style="font-size:12.5px; color:var(--muted); margin:0 0 10px;"></p>
         <input type="password" id="txt-clave" class="input-lg" placeholder="Contraseña">
-        <button class="btn btn-primary" id="btn-login-clave" style="width:100%; padding:13px; font-size:14.5px;" onclick="confirmarClaveGEP()">
+        <button class="btn btn-primary" id="btn-login-clave" style="width:100%; padding:13px; font-size:14.5px;" onclick="confirmarClaveRRHH()">
           Ingresar
         </button>
-        <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="volverPasoDniGEP()">
+        <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="volverPasoDniRRHH()">
           Cambiar DNI
         </button>
       </div>
@@ -187,9 +192,9 @@
   <div id="view-portal">
     <header class="top-header">
       <div class="brand-wrap">
-        <img src="./Logo.jpg?v=16" alt="SBS" class="brand-logo">
+        <img src="./Logo.jpg?v=18" alt="SBS" class="brand-logo">
         <div>
-          <h2>Portal GEP • Comedor SBS</h2>
+          <h2>Portal RRHH • Comedor SBS</h2>
           <span id="lbl-admin-activo"></span>
         </div>
       </div>
@@ -208,7 +213,7 @@
         <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="imprimirAficheQR()">
           Cartel QR
         </button>
-        <button class="btn btn-outline btn-sm" style="background:rgba(220,38,38,0.85); color:white; border:none;" onclick="cerrarSesionGEP()">
+        <button class="btn btn-outline btn-sm" style="background:rgba(220,38,38,0.85); color:white; border:none;" onclick="cerrarSesionRRHH()">
           Salir
         </button>
       </div>
@@ -352,10 +357,10 @@
             <input type="date" id="rep-ini" class="form-input">
             <label style="font-size:12.5px; font-weight:700;">Hasta:</label>
             <input type="date" id="rep-fin" class="form-input">
-            <button class="btn btn-primary" onclick="cargarReportePlanillaGEP()">Consultar</button>
-            <button class="btn btn-success" onclick="descargarExcelPlanillaGEP()">Exportar Excel</button>
+            <button class="btn btn-primary" onclick="cargarReportePlanillaRRHH()">Consultar</button>
+            <button class="btn btn-success" onclick="descargarExcelPlanillaRRHH()">Exportar Excel</button>
           </div>
-          <div id="resumen-planilla-gep" style="font-size:15px; font-weight:800; color:var(--sbs-primary);">
+          <div id="resumen-planilla-rrhh" style="font-size:15px; font-weight:800; color:var(--sbs-primary);">
             Total Planilla: S/ 0.00
           </div>
         </div>
@@ -373,7 +378,7 @@
                 <th style="background:#dcfce7; color:#166534;">Total a Descontar</th>
               </tr>
             </thead>
-            <tbody id="tbody-planilla-gep">
+            <tbody id="tbody-planilla-rrhh">
               <tr><td colspan="7" style="text-align:center; color:var(--muted);">Selecciona el rango de fechas y presiona Consultar</td></tr>
             </tbody>
           </table>
@@ -437,7 +442,7 @@
       fechasSemana: [],
       panesCatalogo: PANES_CATALOGO_BASE.slice(),
       colaboradoresBD: [],
-      cambiosPendientes: {}, // dni -> { dni, desDefCodigo, almDef, estado, fechaFinEstado }
+      cambiosPendientes: {},
       monitoreoDia: [],
       menuSemanal: [],
       resumenReporte: [],
@@ -446,7 +451,7 @@
     };
 
     window.addEventListener('DOMContentLoaded', () => {
-      const guardada = localStorage.getItem('SBS_COMEDOR_GEP_SESSION') || localStorage.getItem('SBS_COMEDOR_AUTH');
+      const guardada = localStorage.getItem('SBS_COMEDOR_RRHH_SESSION') || localStorage.getItem('SBS_COMEDOR_GEP_SESSION') || localStorage.getItem('SBS_COMEDOR_AUTH');
       if (guardada) {
         try {
           const parsed = JSON.parse(guardada);
@@ -454,18 +459,17 @@
           if (u && tienePermisoPortal(u)) {
             STATE.admin = u;
             STATE.token = parsed.token || '';
-            iniciarPortalGEP();
+            iniciarPortalRRHH();
           }
         } catch (e) {}
       }
 
-      document.getElementById('txt-dni').addEventListener('keyup', e => { if (e.key === 'Enter') verificarDniGEP(); });
-      document.getElementById('txt-clave').addEventListener('keyup', e => { if (e.key === 'Enter') confirmarClaveGEP(); });
+      document.getElementById('txt-dni').addEventListener('keyup', e => { if (e.key === 'Enter') verificarDniRRHH(); });
+      document.getElementById('txt-clave').addEventListener('keyup', e => { if (e.key === 'Enter') confirmarClaveRRHH(); });
       document.getElementById('txt-dni-reset-modal').addEventListener('keyup', e => { if (e.key === 'Enter') ejecutarResetClaveModal(); });
 
-      // Alerta nativa del navegador si intentan cerrar o recargar la pestaña con cambios sin guardar
       window.addEventListener('beforeunload', (e) => {
-        if ( contarCambiosPendientes() > 0 ) {
+        if (contarCambiosPendientes() > 0) {
           e.preventDefault();
           e.returnValue = '';
         }
@@ -513,6 +517,20 @@
       return s.length === 7 ? '0' + s : s;
     }
 
+    function normalizarPanPortal(rawPan) {
+      let p = String(rawPan || '').trim();
+      p = p.replace(/^pan\s+con\s+/i, '').replace(/^pan\s+de\s+/i, '').trim();
+      if (!p) return '';
+      const low = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (low.includes('pollo')) return 'Pollo';
+      if (low.includes('queso')) return 'Queso';
+      if (low.includes('aceituna')) return 'Aceituna';
+      if (low.includes('tortilla') && !low.includes('huevo')) return 'Tortilla';
+      if (low.includes('huevo')) return 'Huevo';
+      if (low.includes('hot') || low.includes('dog')) return 'Hot dog';
+      return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
+    }
+
     function mostrarToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -537,9 +555,9 @@
     }
 
     // ========================================================================
-    // LOGIN PORTAL GEP
+    // LOGIN PORTAL RRHH
     // ========================================================================
-    async function verificarDniGEP() {
+    async function verificarDniRRHH() {
       const dni = normalizarDni(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
         mostrarToast('Ingresa un DNI válido de 8 dígitos.');
@@ -556,14 +574,14 @@
         if (res && res.ok && res.data && res.data.diccionarioUsuarios[dni]) {
           const reg = res.data.diccionarioUsuarios[dni];
           if (!tienePermisoPortal(reg.usuario)) {
-            mostrarToast('Acceso restringido al personal autorizado.');
+            mostrarToast('Acceso restringido al personal de RRHH.');
             return;
           }
           STATE.pendienteLogin = reg.usuario;
           document.getElementById('step-dni').style.display = 'none';
           document.getElementById('step-clave').style.display = 'block';
-          document.getElementById('lbl-hola-gep').textContent = `Hola, ${reg.usuario.nombre.split(' ')[0]}`;
-          document.getElementById('lbl-inst-gep').textContent = reg.usuario.tieneClave
+          document.getElementById('lbl-hola-rrhh').textContent = `Hola, ${reg.usuario.nombre.split(' ')[0]}`;
+          document.getElementById('lbl-inst-rrhh').textContent = reg.usuario.tieneClave
             ? 'Ingresa tu contraseña:'
             : 'Crea una contraseña para tu cuenta:';
           document.getElementById('txt-clave').value = '';
@@ -578,13 +596,13 @@
       }
     }
 
-    function volverPasoDniGEP() {
+    function volverPasoDniRRHH() {
       STATE.pendienteLogin = null;
       document.getElementById('step-clave').style.display = 'none';
       document.getElementById('step-dni').style.display = 'block';
     }
 
-    async function confirmarClaveGEP() {
+    async function confirmarClaveRRHH() {
       if (!STATE.pendienteLogin) return;
       const clave = document.getElementById('txt-clave').value;
       if (!clave.trim()) {
@@ -607,11 +625,11 @@
         if (res && res.ok) {
           STATE.admin = STATE.pendienteLogin;
           STATE.token = res.tokenSesion || '';
-          localStorage.setItem('SBS_COMEDOR_GEP_SESSION', JSON.stringify({
+          localStorage.setItem('SBS_COMEDOR_RRHH_SESSION', JSON.stringify({
             admin: STATE.admin,
             token: STATE.token
           }));
-          iniciarPortalGEP();
+          iniciarPortalRRHH();
         } else {
           mostrarToast(res ? res.msg : 'Contraseña incorrecta.');
         }
@@ -622,22 +640,23 @@
       }
     }
 
-    function cerrarSesionGEP() {
+    function cerrarSesionRRHH() {
       if (!confirmarDescarteCambios()) return;
       STATE.cambiosPendientes = {};
       actualizarBotonGuardarGeneral();
       if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
+      localStorage.removeItem('SBS_COMEDOR_RRHH_SESSION');
       localStorage.removeItem('SBS_COMEDOR_GEP_SESSION');
       STATE.admin = null;
       document.getElementById('view-portal').style.display = 'none';
       document.getElementById('view-login').style.display = 'flex';
-      volverPasoDniGEP();
+      volverPasoDniRRHH();
     }
 
     // ========================================================================
     // INICIALIZACIÓN Y SINCRONIZACIÓN EN TIEMPO REAL
     // ========================================================================
-    function iniciarPortalGEP() {
+    function iniciarPortalRRHH() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-portal').style.display = 'flex';
       document.getElementById('lbl-admin-activo').textContent = STATE.admin.nombre;
@@ -674,7 +693,7 @@
       const fechaPedida = selFecha && selFecha.value ? selFecha.value : '';
 
       try {
-        const res = await llamarAPI('obtenerDatosPortalGEP', [STATE.admin.dni, fechaPedida]);
+        const res = await llamarAPI('obtenerDatosPortalRRHH', [STATE.admin.dni, fechaPedida]);
         if (btn) {
           btn.disabled = false;
           btn.textContent = 'Actualizar';
@@ -687,7 +706,7 @@
         STATE.hoyStr = res.hoyStr;
         STATE.fechaSeleccionada = res.fechaConsultada;
         STATE.fechasSemana = res.fechasSemana || [];
-        STATE.panesCatalogo = res.panesCatalogo || PANES_CATALOGO_BASE.slice();
+        STATE.panesCatalogo = PANES_CATALOGO_BASE.slice();
         STATE.colaboradoresBD = res.colaboradoresBD || [];
         STATE.monitoreoDia = res.monitoreoDia || [];
         STATE.menuSemanal = res.menuSemanal || [];
@@ -740,7 +759,7 @@
       } else if (mod === 'PLANILLA') {
         document.getElementById('tab-planilla').classList.add('active');
         document.getElementById('mod-planilla').style.display = 'block';
-        cargarReportePlanillaGEP();
+        cargarReportePlanillaRRHH();
       }
     }
 
@@ -763,14 +782,14 @@
           const raw = String(item.codigoDes || '');
           const p = raw.split('|');
           if (p[0] === 'OP1') {
-            const p1 = p[1] || 'Pollo';
-            const p2 = p[2] || p1;
+            const p1 = normalizarPanPortal(p[1] || 'Pollo') || 'Pollo';
+            const p2 = normalizarPanPortal(p[2] || p1) || p1;
             conteoPanes[p1] = (conteoPanes[p1] || 0) + 1;
             conteoPanes[p2] = (conteoPanes[p2] || 0) + 1;
           } else if (p[0] === 'OP2') {
             huevosUnidad += 3;
           } else if (p[0] === 'OP3') {
-            const p1 = p[1] || 'Pollo';
+            const p1 = normalizarPanPortal(p[1] || 'Pollo') || 'Pollo';
             conteoPanes[p1] = (conteoPanes[p1] || 0) + 1;
             huevosUnidad += 1;
           }
@@ -852,13 +871,15 @@
     // ========================================================================
     function desglosarCodigoDes(cod) {
       const s = String(cod || 'NO').trim();
-      if (!s || s === 'NO') return { op: 'NO', p1: 'Pollo', p2: 'Queso fresco' };
-      if (s === 'OP2') return { op: 'OP2', p1: 'Pollo', p2: 'Queso fresco' };
+      if (!s || s === 'NO') return { op: 'NO', p1: 'Pollo', p2: 'Queso' };
+      if (s === 'OP2') return { op: 'OP2', p1: 'Pollo', p2: 'Queso' };
       const partes = s.split('|');
+      const p1 = normalizarPanPortal(partes[1] || 'Pollo') || 'Pollo';
+      const p2 = normalizarPanPortal(partes[2] || p1) || p1;
       return {
         op: partes[0] || 'NO',
-        p1: partes[1] || 'Pollo',
-        p2: partes[2] || partes[1] || 'Queso fresco'
+        p1: p1,
+        p2: p2
       };
     }
 
@@ -936,7 +957,7 @@
                   ${optsP2}
                 </select>
                 <span id="lbl-sinpan-${c.dni}" style="display:${!mostrarP1 ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">
-                  ${d.op === 'OP2' ? '3 huevos' : '-'}
+                  ${d.op === 'OP2' ? 'bebida + 3 huevos' : '-'}
                 </span>
               </div>
             </td>
@@ -1020,7 +1041,7 @@
         s1.style.display = 'none';
         s2.style.display = 'none';
         lbl.style.display = 'inline-block';
-        lbl.textContent = (op === 'OP2') ? '3 huevos' : '-';
+        lbl.textContent = (op === 'OP2') ? 'bebida + 3 huevos' : '-';
       }
       registrarCambioFila(dni);
     }
@@ -1057,7 +1078,7 @@
       btn.textContent = 'Guardando...';
 
       try {
-        const res = await llamarAPI('actualizarColaboradoresMasivoGEP', [STATE.admin.dni, lista]);
+        const res = await llamarAPI('actualizarColaboradoresMasivoRRHH', [STATE.admin.dni, lista]);
         if (res && res.ok) {
           STATE.cambiosPendientes = {};
           actualizarBotonGuardarGeneral();
@@ -1164,7 +1185,7 @@
       btn.textContent = 'Guardando...';
 
       try {
-        const res = await llamarAPI('guardarMenuSemanalDesdeGEP', [STATE.admin.dni, nuevaLista]);
+        const res = await llamarAPI('guardarMenuSemanalDesdeRRHH', [STATE.admin.dni, nuevaLista]);
         btn.disabled = false;
         btn.textContent = 'Guardar menú';
         if (res && res.ok) {
@@ -1182,7 +1203,7 @@
     }
 
     // ========================================================================
-    // MÓDULO: REPORTE DE PLANILLA
+    // MÓDULO: REPORTE DE PLANILLA RRHH
     // ========================================================================
     function inicializarFechasPlanilla() {
       const baseStr = STATE.hoyStr || new Date().toISOString().split('T')[0];
@@ -1200,10 +1221,10 @@
       return p.length === 3 ? `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}` : s;
     }
 
-    async function cargarReportePlanillaGEP() {
+    async function cargarReportePlanillaRRHH() {
       const fIni = document.getElementById('rep-ini').value;
       const fFin = document.getElementById('rep-fin').value;
-      const tbody = document.getElementById('tbody-planilla-gep');
+      const tbody = document.getElementById('tbody-planilla-rrhh');
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Calculando consolidado...</td></tr>';
 
       try {
@@ -1251,7 +1272,7 @@
 
         if (STATE.resumenReporte.length === 0) {
           tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin consumos registrados en este periodo.</td></tr>';
-          document.getElementById('resumen-planilla-gep').textContent = 'Total Planilla: S/ 0.00';
+          document.getElementById('resumen-planilla-rrhh').textContent = 'Total Planilla: S/ 0.00';
           return;
         }
 
@@ -1270,13 +1291,13 @@
             </tr>
           `;
         }).join('');
-        document.getElementById('resumen-planilla-gep').textContent = `Total Planilla: S/ ${granTot.toFixed(2)}`;
+        document.getElementById('resumen-planilla-rrhh').textContent = `Total Planilla: S/ ${granTot.toFixed(2)}`;
       } catch (e) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger);">Error al consultar el reporte.</td></tr>';
       }
     }
 
-    function descargarExcelPlanillaGEP() {
+    function descargarExcelPlanillaRRHH() {
       if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
         mostrarToast('No hay consumos registrados en este rango para exportar.');
         return;
@@ -1355,7 +1376,7 @@
 
       const ws1 = XLSX.utils.aoa_to_sheet(aoa1);
       ws1['!cols'] = [{ wch: 13 }, { wch: 32 }, { wch: 14 }, { wch: 17 }, { wch: 14 }, { wch: 17 }, { wch: 17 }];
-      XLSX.utils.book_append_sheet(wb, ws1, "Consolidado_Planilla");
+      XLSX.utils.book_append_sheet(wb, ws1, "Consolidado_RRHH");
 
       const aoa2 = [
         [{ v: "DETALLE DIARIO DE RESERVAS Y ASISTENCIA EN COMEDOR", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
@@ -1387,7 +1408,7 @@
       ws2['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 32 }, { wch: 32 }, { wch: 12 }, { wch: 16 }, { wch: 14 }];
       XLSX.utils.book_append_sheet(wb, ws2, "Detalle_Diario");
 
-      XLSX.writeFile(wb, `Planilla_Comedor_SBS_${STATE.hoyStr || 'GEP'}.xlsx`);
+      XLSX.writeFile(wb, `Planilla_Comedor_SBS_${STATE.hoyStr || 'RRHH'}.xlsx`);
       mostrarToast('Archivo Excel descargado.');
     }
 

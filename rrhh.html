@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal RRHH • Comedor SBS</title>
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=20">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=21">
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
@@ -134,16 +134,6 @@
     .bg-blue { background: #e0f2fe; color: #075985; }
     .bg-red { background: #fee2e2; color: #991b1b; }
 
-    .ts-tag {
-      font-size: 11px; color: var(--muted); display: block; margin-top: 3px; font-weight: 500;
-    }
-    .ts-tag.modified {
-      color: #b45309; font-weight: 700;
-    }
-    .ts-tag.cancelled {
-      color: #dc2626; font-weight: 700;
-    }
-
     .row-modified td { background: #fffbeb !important; }
 
     /* MODALES */
@@ -155,7 +145,7 @@
       background: white; width: 100%; max-width: 740px; border-radius: 14px; padding: 24px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.28); max-height: 90vh; overflow-y: auto;
     }
-    .modal-box.modal-sm { max-width: 460px; }
+    .modal-box.modal-sm { max-width: 440px; }
     .menu-day-row {
       background: #f8fafc; border: 1px solid var(--border); border-radius: 9px;
       padding: 12px 14px; margin-bottom: 10px;
@@ -163,9 +153,11 @@
     .menu-day-row label { font-size: 13px; font-weight: 800; color: var(--sbs-primary); display: block; margin-bottom: 6px; }
     .menu-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    .field-group { margin-bottom: 13px; text-align: left; }
-    .field-group label { display: block; font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
-    .field-group .form-input, .field-group .form-select { width: 100%; padding: 9px 11px; font-size: 13.5px; text-align: left; text-align-last: left; }
+    .field-group { margin-bottom: 15px; text-align: left; }
+    .field-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .field-group .form-input, .field-group .form-select {
+      width: 100%; padding: 10px 12px; font-size: 13.5px; text-align: left; text-align-last: left;
+    }
 
     #toast {
       position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: white;
@@ -179,7 +171,7 @@
   <!-- 1. LOGIN -->
   <div id="view-login">
     <div class="login-card">
-      <img src="./Logo.jpg?v=20" alt="SBS" class="login-logo">
+      <img src="./Logo.jpg?v=21" alt="SBS" class="login-logo">
       <h1>Portal RRHH • Comedor SBS</h1>
 
       <div id="step-dni">
@@ -207,7 +199,7 @@
   <div id="view-portal">
     <header class="top-header">
       <div class="brand-wrap">
-        <img src="./Logo.jpg?v=20" alt="SBS" class="brand-logo">
+        <img src="./Logo.jpg?v=21" alt="SBS" class="brand-logo">
         <div>
           <h2>Portal RRHH • Comedor SBS</h2>
           <span id="lbl-admin-activo"></span>
@@ -259,7 +251,7 @@
     </nav>
 
     <main class="container">
-      <!-- MÓDULO: MONITOREO EN VIVO -->
+      <!-- MÓDULO: MONITOREO EN VIVO (ENCABEZADOS Y CELDAS LIMPIAS SIN PARÉNTESIS NI HORAS DE ORIGEN) -->
       <section id="mod-monitoreo">
         <div class="kpi-row">
           <div class="kpi-card">
@@ -309,10 +301,10 @@
               <tr>
                 <th>DNI</th>
                 <th>Apellidos y Nombres</th>
-                <th>Reserva Desayuno (Origen / Hora)</th>
-                <th>Asistencia Desayuno (QR)</th>
-                <th>Reserva Almuerzo (Origen / Hora)</th>
-                <th>Asistencia Almuerzo (QR)</th>
+                <th>Reserva Desayuno</th>
+                <th>Asistencia Desayuno</th>
+                <th>Reserva Almuerzo</th>
+                <th>Asistencia Almuerzo</th>
               </tr>
             </thead>
             <tbody id="tbody-monitoreo">
@@ -402,53 +394,32 @@
     </main>
   </div>
 
-  <!-- MODAL: ASIGNAR SERVICIO FUERA DE PLAZO -->
+  <!-- MODAL: ASIGNAR SERVICIO MANUALMENTE EN 2 SOLOS PASOS -->
   <div class="modal-overlay" id="modal-asignar-servicio">
     <div class="modal-box modal-sm">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
         <h3 style="margin:0; font-size:17px; color:var(--sbs-primary); font-weight:800;">Asignar Servicio Manualmente</h3>
         <button class="btn btn-outline btn-sm" onclick="cerrarModalAsignarServicio()">Cerrar</button>
       </div>
 
-      <p style="font-size:12.5px; color:var(--muted); margin:0 0 14px; line-height:1.45;">
-        Habilita Desayuno o Almuerzo a un colaborador aunque haya vencido la hora de corte. El colaborador podrá escanear el código QR en el comedor inmediatamente.
-      </p>
-
       <div class="field-group">
-        <label>1. Buscar o filtrar colaborador:</label>
-        <input type="text" id="txt-filtro-colab-asignar" class="form-input" placeholder="Escribe apellido, nombre o DNI para filtrar..." oninput="filtrarSelectColaboradoresAsignar()">
+        <label>1. Buscar y seleccionar colaborador:</label>
+        <input type="text" id="txt-filtro-colab-asignar" class="form-input" placeholder="Buscar por apellido, nombre o DNI..." oninput="filtrarSelectColaboradoresAsignar()">
+        <select id="sel-colab-asignar" class="form-select" style="margin-top:8px;"></select>
       </div>
 
       <div class="field-group">
-        <label>2. Seleccionar colaborador:</label>
-        <select id="sel-colab-asignar" class="form-select"></select>
-      </div>
-
-      <div class="field-group">
-        <label>3. Fecha del servicio:</label>
-        <select id="sel-fecha-asignar" class="form-select"></select>
-      </div>
-
-      <div class="field-group">
-        <label>4. Servicio a habilitar:</label>
-        <select id="sel-srv-asignar" class="form-select" onchange="alCambiarTipoServicioAsignar()">
-          <option value="ALMUERZO">Almuerzo</option>
-          <option value="DESAYUNO">Desayuno (Sin detalle de panes, solo cobro y QR)</option>
-          <option value="AMBOS">Ambos (Desayuno + Almuerzo)</option>
-        </select>
-      </div>
-
-      <div class="field-group" id="wrap-op-alm-asignar">
-        <label>5. Opción de Almuerzo:</label>
-        <select id="sel-op-alm-asignar" class="form-select">
-          <option value="REGULAR">Regular</option>
-          <option value="ALTERNATIVO">Alternativo</option>
+        <label>2. Seleccionar servicio:</label>
+        <select id="sel-srv-asignar" class="form-select">
+          <option value="DESAYUNO">Desayuno</option>
+          <option value="ALMUERZO" selected>Almuerzo</option>
+          <option value="AMBOS">Ambos</option>
         </select>
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
         <button class="btn btn-outline" onclick="cerrarModalAsignarServicio()">Cancelar</button>
-        <button class="btn btn-primary" id="btn-confirmar-asignar" onclick="ejecutarAsignacionManualRRHH()">Habilitar Servicio y QR</button>
+        <button class="btn btn-primary" id="btn-confirmar-asignar" onclick="ejecutarAsignacionManualRRHH()">Asignar</button>
       </div>
     </div>
   </div>
@@ -916,22 +887,12 @@
     }
 
     // ========================================================================
-    // MODAL: ASIGNAR SERVICIO MANUALMENTE FUERA DE PLAZO
+    // MODAL: ASIGNAR SERVICIO MANUALMENTE EN 2 SOLOS PASOS
     // ========================================================================
     function abrirModalAsignarServicio() {
       document.getElementById('txt-filtro-colab-asignar').value = '';
       filtrarSelectColaboradoresAsignar();
-
-      const selFechaAsig = document.getElementById('sel-fecha-asignar');
-      const fechaActiva = document.getElementById('sel-fecha-monitoreo').value || STATE.hoyStr;
-      selFechaAsig.innerHTML = (STATE.fechasSemana || []).map(f =>
-        `<option value="${f.fecha}" ${f.fecha === fechaActiva ? 'selected' : ''}>${f.etiqueta}</option>`
-      ).join('');
-
       document.getElementById('sel-srv-asignar').value = 'ALMUERZO';
-      document.getElementById('sel-op-alm-asignar').value = 'REGULAR';
-      alCambiarTipoServicioAsignar();
-
       document.getElementById('modal-asignar-servicio').style.display = 'flex';
       setTimeout(() => document.getElementById('txt-filtro-colab-asignar').focus(), 80);
     }
@@ -955,17 +916,10 @@
       ).join('');
     }
 
-    function alCambiarTipoServicioAsignar() {
-      const srv = document.getElementById('sel-srv-asignar').value;
-      const wrapAlm = document.getElementById('wrap-op-alm-asignar');
-      wrapAlm.style.display = (srv === 'ALMUERZO' || srv === 'AMBOS') ? 'block' : 'none';
-    }
-
     async function ejecutarAsignacionManualRRHH() {
       const dniTarget = document.getElementById('sel-colab-asignar').value;
-      const fecha = document.getElementById('sel-fecha-asignar').value;
+      const fecha = document.getElementById('sel-fecha-monitoreo').value || STATE.hoyStr;
       const servicio = document.getElementById('sel-srv-asignar').value;
-      const opcionAlmuerzo = document.getElementById('sel-op-alm-asignar').value;
 
       if (!dniTarget) {
         mostrarToast('Selecciona un colaborador de la lista.');
@@ -974,7 +928,7 @@
 
       const btn = document.getElementById('btn-confirmar-asignar');
       btn.disabled = true;
-      btn.textContent = 'Habilitando...';
+      btn.textContent = 'Asignando...';
 
       try {
         const res = await llamarAPI('asignarServicioManualRRHH', [{
@@ -982,10 +936,10 @@
           dniTarget: dniTarget,
           fecha: fecha,
           servicio: servicio,
-          opcionAlmuerzo: opcionAlmuerzo
+          opcionAlmuerzo: 'REGULAR'
         }]);
         btn.disabled = false;
-        btn.textContent = 'Habilitar Servicio y QR';
+        btn.textContent = 'Asignar';
 
         if (res && res.ok) {
           cerrarModalAsignarServicio();
@@ -996,13 +950,13 @@
         }
       } catch (e) {
         btn.disabled = false;
-        btn.textContent = 'Habilitar Servicio y QR';
+        btn.textContent = 'Asignar';
         mostrarToast('❌ Error de conexión con el servidor.');
       }
     }
 
     // ========================================================================
-    // MÓDULO: MONITOREO EN VIVO (CON ORIGEN/HORA DE RESERVA Y ASIGNACIÓN RRHH)
+    // MÓDULO: MONITOREO EN VIVO (CELDAS LIMPIAS SIN SEGUNDA LÍNEA DE HORAS)
     // ========================================================================
     function renderizarTablaMonitoreo() {
       const lista = STATE.monitoreoDia || [];
@@ -1076,26 +1030,18 @@
 
       tbody.innerHTML = filtrados.map(r => {
         const tieneModDes = r.tsModDes && r.tsModDes !== 'Por defecto';
-        const tagTsDes = tieneModDes
-          ? `<span class="ts-tag ${r.reservoDes ? 'modified' : 'cancelled'}">${r.tsModDes.includes('Asignado') ? r.tsModDes : ((r.reservoDes ? 'Modificado: ' : 'Cancelado: ') + r.tsModDes)}</span>`
-          : `<span class="ts-tag">Por defecto</span>`;
-
         const badgeDesRes = r.reservoDes
-          ? `<span class="badge bg-orange">${r.detalleDes}</span>${tagTsDes}`
-          : `<span class="badge ${tieneModDes ? 'bg-red' : 'bg-gray'}">${tieneModDes ? 'Cancelado' : 'No solicitado'}</span>${tieneModDes ? tagTsDes : ''}`;
+          ? `<span class="badge bg-orange">${r.detalleDes}</span>`
+          : `<span class="badge ${tieneModDes ? 'bg-red' : 'bg-gray'}">${tieneModDes ? 'Cancelado' : 'No solicitado'}</span>`;
 
         const badgeDesQR = r.consumioDes
           ? `<span class="badge bg-green">Asistió ${r.horaScanDes || ''}</span>`
           : (r.reservoDes ? `<span class="badge bg-gray">Pendiente</span>` : `-`);
 
         const tieneModAlm = r.tsModAlm && r.tsModAlm !== 'Por defecto';
-        const tagTsAlm = tieneModAlm
-          ? `<span class="ts-tag ${r.reservoAlm ? 'modified' : 'cancelled'}">${r.tsModAlm.includes('Asignado') ? r.tsModAlm : ((r.reservoAlm ? 'Modificado: ' : 'Cancelado: ') + r.tsModAlm)}</span>`
-          : `<span class="ts-tag">Por defecto</span>`;
-
         const badgeAlmRes = r.reservoAlm
-          ? `<span class="badge ${r.detalleAlm === 'Alternativo' ? 'bg-blue' : 'bg-green'}">${r.detalleAlm}</span>${tagTsAlm}`
-          : `<span class="badge ${tieneModAlm ? 'bg-red' : 'bg-gray'}">${tieneModAlm ? 'Cancelado' : 'No solicitado'}</span>${tieneModAlm ? tagTsAlm : ''}`;
+          ? `<span class="badge ${r.detalleAlm === 'Alternativo' ? 'bg-blue' : 'bg-green'}">${r.detalleAlm}</span>`
+          : `<span class="badge ${tieneModAlm ? 'bg-red' : 'bg-gray'}">${tieneModAlm ? 'Cancelado' : 'No solicitado'}</span>`;
 
         const badgeAlmQR = r.consumioAlm
           ? `<span class="badge bg-green">Asistió ${r.horaScanAlm || ''}</span>`
@@ -1403,11 +1349,11 @@
           <div class="menu-inputs">
             <div>
               <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">Desayuno:</span>
-              <input type="text" class="form-input" style="width:100%;" id="mdes-${idx}" value="${d.desayuno.replace(/"/g, '&quot;')}">
+              <input type="text" class="form-input" style="width:100%;" id="mdes-${idx}" value="${d.desayuno.replace(/"/g, '"')}">
             </div>
             <div>
               <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">Almuerzo:</span>
-              <input type="text" class="form-input" style="width:100%;" id="malm-${idx}" value="${d.almuerzo.replace(/"/g, '&quot;')}">
+              <input type="text" class="form-input" style="width:100%;" id="malm-${idx}" value="${d.almuerzo.replace(/"/g, '"')}">
             </div>
           </div>
         </div>

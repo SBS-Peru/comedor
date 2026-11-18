@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=18">
+  <link rel="manifest" href="manifest.json?v=21">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=18">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=18">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=18">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=21">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=21">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=21">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -53,8 +53,8 @@
       display: none;
       background: #0f172a;
       color: #ffffff;
-      padding: 10px 14px;
-      font-size: 12.5px;
+      padding: 11px 14px;
+      font-size: 13.5px;
       font-weight: 600;
       align-items: center;
       justify-content: space-between;
@@ -66,9 +66,9 @@
       background: var(--sbs-accent);
       color: #ffffff;
       border: none;
-      padding: 6px 12px;
+      padding: 7px 13px;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
       cursor: pointer;
       white-space: nowrap;
@@ -76,23 +76,23 @@
 
     #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: #ffffff; }
     .login-logo-wrap {
-      width: 165px; height: 165px; border-radius: 22px; overflow: hidden; margin-bottom: 12px; background: #ffffff;
+      width: 170px; height: 170px; border-radius: 22px; overflow: hidden; margin-bottom: 14px; background: #ffffff;
       display: flex; align-items: center; justify-content: center;
     }
     .login-logo-wrap img { width: 100%; height: 100%; object-fit: contain; background: #ffffff; display: block; }
     .dni-input {
-      width: 100%; padding: 14px; font-size: 21px; text-align: center; border: 2px solid var(--border);
-      border-radius: 12px; margin: 14px 0 12px; letter-spacing: 4px; font-weight: 700; outline: none;
+      width: 100%; padding: 15px; font-size: 22px; text-align: center; border: 2px solid var(--border);
+      border-radius: 12px; margin: 14px 0 14px; letter-spacing: 4px; font-weight: 700; outline: none;
     }
     .dni-input:focus { border-color: var(--sbs-primary); }
 
     .pass-input {
-      width: 100%; padding: 14px; font-size: 18px; text-align: center; border: 2px solid var(--border);
-      border-radius: 12px; margin: 8px 0 12px; font-weight: 700; outline: none;
+      width: 100%; padding: 15px; font-size: 19px; text-align: center; border: 2px solid var(--border);
+      border-radius: 12px; margin: 10px 0 14px; font-weight: 700; outline: none;
     }
     .pass-input:focus { border-color: var(--sbs-primary); }
 
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+    .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
     .btn-primary { background: var(--sbs-primary); color: white; }
     .btn-success { background: var(--sbs-accent); color: white; }
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
@@ -103,60 +103,61 @@
       background: var(--sbs-primary); color: white; padding: 20px 20px 16px; flex-shrink: 0; position: relative; z-index: 10;
     }
     .top-bar-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .top-bar h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.2; }
-    .top-bar p { margin: 7px 0 0; font-size: 13px; color: rgba(255,255,255,0.9); line-height: 1.35; }
-    .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 8px 15px; border-radius: 9px; font-size: 13px; cursor: pointer; font-weight: 600; flex-shrink: 0; }
+    .top-bar h2 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.2; }
+    .top-bar p { margin: 7px 0 0; font-size: 13.8px; color: rgba(255,255,255,0.92); line-height: 1.35; }
+    .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 8px 16px; border-radius: 9px; font-size: 13.8px; cursor: pointer; font-weight: 600; flex-shrink: 0; }
     .header-kpi-strip {
       margin-top: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 11px; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13.5px;
+      border-radius: 11px; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; font-weight: 600;
     }
-    .header-kpi-total { background: #10b981; color: #ffffff; font-weight: 800; padding: 4px 11px; border-radius: 8px; font-size: 13.5px; }
+    .header-kpi-total { background: #10b981; color: #ffffff; font-weight: 800; padding: 5px 12px; border-radius: 8px; font-size: 14.5px; }
 
     .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .tab { flex: 1; text-align: center; padding: 11px 6px; font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
+    .tab { flex: 1; text-align: center; padding: 12px 6px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
     .tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
 
     .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); }
-    .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
-    .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; margin-bottom: 9px; }
+    .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 12px; }
+    .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16.5px; margin-bottom: 10px; }
 
+    /* Detalle de Desayuno y Almuerzo con letra más grande y SIN negrita en la descripción */
     .menu-box {
-      background: #f8fafc; border-radius: 9px; padding: 9px 11px; font-size: 12.3px;
-      letter-spacing: -0.15px; color: var(--text); font-weight: 600; margin-bottom: 11px; line-height: 1.45;
+      background: #f8fafc; border-radius: 9px; padding: 10px 12px; font-size: 13.8px;
+      letter-spacing: -0.1px; color: #334155; font-weight: 400; margin-bottom: 12px; line-height: 1.48;
     }
     .menu-box div { white-space: normal; word-break: break-word; }
-    .menu-box b { color: #0f172a; font-weight: 800; }
-    .menu-box .sel-highlight { color: #c2410c; font-weight: 800; }
+    .menu-box b { color: #0f172a; font-weight: 700; }
+    .menu-box .sel-highlight { color: #c2410c; font-weight: 700; }
 
     .srv-grid { display: flex; gap: 10px; align-items: stretch; }
 
     .srv-split-card {
       flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white;
       display: flex; flex-direction: column; overflow: hidden; transition: 0.15s;
-      min-width: 0; min-height: 126px;
+      min-width: 0; min-height: 134px;
     }
     .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
     .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
     .srv-split-card.disabled-card { opacity: 0.55; background: #f1f5f9; pointer-events: none; }
 
     .srv-split-top {
-      padding: 8px 6px; text-align: center; cursor: pointer; flex: 1;
+      padding: 10px 6px; text-align: center; cursor: pointer; flex: 1;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
     }
-    .srv-split-top .title { font-size: 14.5px; font-weight: 700; display: block; color: var(--text); }
+    .srv-split-top .title { font-size: 16px; font-weight: 700; display: block; color: var(--text); }
     .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
     .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
     
-    .srv-split-top .status { font-size: 11.5px; color: var(--muted); display: block; margin-top: 3px; line-height: 1.25; }
+    .srv-split-top .status { font-size: 13px; color: var(--muted); display: block; margin-top: 4px; line-height: 1.25; }
     .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
     .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
 
     .pan-dropdown-wrap {
-      display: flex; gap: 4px; padding: 0 5px 7px; justify-content: center; align-items: center;
+      display: flex; gap: 5px; padding: 0 6px 8px; justify-content: center; align-items: center;
     }
     .pan-select {
-      flex: 1; min-width: 0; width: 100%; height: 26px; padding: 0 3px;
-      font-size: 11px; font-weight: 400; color: #7c2d12; background: #ffffff;
+      flex: 1; min-width: 0; width: 100%; height: 29px; padding: 0 3px;
+      font-size: 12.5px; font-weight: 400; color: #7c2d12; background: #ffffff;
       border: 1px solid #fdba74; border-radius: 6px; outline: none;
       text-align: center; text-align-last: center; -moz-text-align-last: center;
       cursor: pointer;
@@ -168,7 +169,7 @@
     .srv-split-card.active-des .srv-split-bottom { border-top-color: #fdba74; }
     .srv-split-card.active-alm .srv-split-bottom { border-top-color: #a7f3d0; }
     
-    .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 9px 2px; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.15s; }
+    .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 10px 2px; font-size: 13.5px; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.15s; }
     .op-sub-btn:last-child { border-right: none; }
     
     .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
@@ -184,34 +185,45 @@
       box-shadow: 0 15px 35px rgba(0,0,0,0.35); animation: popModal 0.15s ease-out;
     }
 
-    /* VENTANA EMERGENTE GRANDE DE CONFIRMACIÓN VERDE (CON BOTÓN X) */
+    /* VENTANA EMERGENTE A PANTALLA CASI COMPLETA PARA EL COCINERO */
     #modal-ticket-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(15, 23, 42, 0.82); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
+      background: rgba(15, 23, 42, 0.88); z-index: 9999; justify-content: center; align-items: center; padding: 14px;
     }
     #modal-ticket-card {
-      background: #ecfdf5; border: 4px solid #10b981; width: 100%; max-width: 385px; min-height: 360px;
-      border-radius: 24px; padding: 36px 22px 30px; text-align: center; position: relative;
+      background: #ecfdf5; border: 5px solid #10b981;
+      width: 94vw; max-width: 500px; min-height: 82vh;
+      border-radius: 28px; padding: 44px 20px 36px; text-align: center; position: relative;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.45); animation: popModal 0.18s ease-out;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.55); animation: popModal 0.18s ease-out;
     }
     .btn-close-ticket {
-      position: absolute; top: 14px; right: 14px; width: 42px; height: 42px; border-radius: 50%;
-      background: rgba(6, 95, 70, 0.12); color: #065f46; border: none; font-size: 22px; font-weight: 800;
+      position: absolute; top: 16px; right: 16px; width: 50px; height: 50px; border-radius: 50%;
+      background: rgba(6, 95, 70, 0.15); color: #065f46; border: none; font-size: 26px; font-weight: 900;
       cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;
     }
-    .btn-close-ticket:active { background: rgba(6, 95, 70, 0.25); }
+    .btn-close-ticket:active { background: rgba(6, 95, 70, 0.3); }
     .ticket-big-icon {
-      width: 96px; height: 96px; border-radius: 50%; background: #10b981; color: #ffffff;
-      font-size: 56px; font-weight: 900; display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
+      width: 120px; height: 120px; border-radius: 50%; background: #10b981; color: #ffffff;
+      font-size: 72px; font-weight: 900; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px; box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
     }
     #ticket-modal-titulo {
-      font-size: 26px; font-weight: 900; color: #065f46; line-height: 1.2; letter-spacing: -0.3px; margin: 0 0 12px;
+      font-size: 31px; font-weight: 900; color: #065f46; line-height: 1.15; letter-spacing: -0.4px; margin: 0 0 24px;
+      text-transform: uppercase;
     }
-    #ticket-modal-sub {
-      font-size: 19px; font-weight: 800; color: #047857; background: rgba(255,255,255,0.75);
-      border: 1.5px solid #a7f3d0; padding: 10px 18px; border-radius: 12px; letter-spacing: 0.2px;
+    .ticket-data-stack {
+      width: 100%; display: flex; flex-direction: column; gap: 14px; align-items: center;
+    }
+    #ticket-modal-fecha {
+      width: 100%; font-size: 34px; font-weight: 900; color: #065f46;
+      background: rgba(255,255,255,0.85); border: 2px solid #a7f3d0;
+      padding: 12px 16px; border-radius: 16px; letter-spacing: 0.5px;
+    }
+    #ticket-modal-hora {
+      width: 100%; font-size: 38px; font-weight: 900; color: #047857;
+      background: #ffffff; border: 2.5px solid #10b981;
+      padding: 14px 16px; border-radius: 16px; letter-spacing: 0.5px;
     }
 
     @keyframes popModal {
@@ -222,40 +234,45 @@
     @media (max-width: 480px) {
       .app-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
       .top-bar { padding: 18px 16px 14px; }
-      .top-bar h2 { font-size: 18px; }
-      .top-bar p { margin-top: 6px; font-size: 12px; }
-      .header-kpi-strip { margin-top: 13px; padding: 9px 12px; font-size: 12.5px; }
-      .tab { padding: 9px 4px; font-size: 13px; }
+      .top-bar h2 { font-size: 19.5px; }
+      .top-bar p { margin-top: 6px; font-size: 13px; }
+      .header-kpi-strip { margin-top: 13px; padding: 10px 12px; font-size: 13.8px; }
+      .header-kpi-total { font-size: 13.8px; }
+      .tab { padding: 10px 4px; font-size: 14px; }
       .scroll-area { padding: 10px 12px; }
-      .day-card { padding: 11px; margin-bottom: 10px; }
-      .day-header { font-size: 14px; margin-bottom: 7px; }
-      .menu-box { padding: 7px 9px; font-size: 11.4px; letter-spacing: -0.2px; margin-bottom: 9px; }
+      .day-card { padding: 12px; margin-bottom: 10px; }
+      .day-header { font-size: 15.5px; margin-bottom: 8px; }
+      .menu-box { padding: 8px 10px; font-size: 13px; margin-bottom: 10px; }
       .srv-grid { gap: 8px; }
-      .srv-split-card { min-height: 118px; }
-      .srv-split-top { padding: 6px 4px; }
-      .srv-split-top .title { font-size: 13.5px; }
-      .srv-split-top .status { font-size: 10.8px; margin-top: 2px; }
-      .pan-dropdown-wrap { padding: 0 4px 6px; }
-      .pan-select { font-size: 10.5px; height: 24px; padding: 0 2px; }
-      .op-sub-btn { padding: 8px 2px; font-size: 11.2px; }
-      .btn { padding: 12px; font-size: 14px; }
+      .srv-split-card { min-height: 126px; }
+      .srv-split-top { padding: 8px 4px; }
+      .srv-split-top .title { font-size: 15px; }
+      .srv-split-top .status { font-size: 12.2px; margin-top: 3px; }
+      .pan-dropdown-wrap { padding: 0 4px 7px; }
+      .pan-select { font-size: 11.8px; height: 27px; padding: 0 2px; }
+      .op-sub-btn { padding: 9px 2px; font-size: 12.5px; }
+      .btn { padding: 13px; font-size: 15px; }
+      #modal-ticket-card { width: 95vw; min-height: 84dvh; padding: 40px 16px 32px; }
+      #ticket-modal-titulo { font-size: 28px; }
+      #ticket-modal-fecha { font-size: 32px; }
+      #ticket-modal-hora { font-size: 35px; }
     }
 
     .rrhh-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
-    .rrhh-box h4 { margin: 0 0 10px; font-size: 15px; color: var(--sbs-primary); }
+    .rrhh-box h4 { margin: 0 0 10px; font-size: 15.5px; color: var(--sbs-primary); }
     .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-    .form-control { flex: 1; min-width: 130px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13.5px; }
+    .form-control { flex: 1; min-width: 130px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 14px; }
     .table-wrap { overflow-x: auto; max-height: 340px; border: 1px solid var(--border); border-radius: 9px; }
-    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; }
     th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; }
 
     .kpi-grid-tech { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
     .kpi-card-tech { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; }
     .kpi-card-tech .num { font-size: 17px; font-weight: 800; color: var(--sbs-primary); display: block; }
-    .kpi-card-tech .lbl { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 2px; display: block; }
+    .kpi-card-tech .lbl { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 2px; display: block; }
 
-    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 13.5px; font-weight: 600; display: none; z-index: 999; text-align: center; width: max-content; max-width: 90vw; }
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 14px; font-weight: 600; display: none; z-index: 999; text-align: center; width: max-content; max-width: 90vw; }
   </style>
 </head>
 <body>
@@ -266,35 +283,31 @@
       <button class="btn-update-now" onclick="aplicarActualizacionApp()">Actualizar ahora</button>
     </div>
 
-    <!-- 1. LOGIN -->
+    <!-- 1. LOGIN (SIN TEXTO INFERIOR DE HORAS DE CORTE) -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=18" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=21" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
-        <p style="color:var(--muted); font-size:14.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
+        <p style="color:var(--muted); font-size:15.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
         <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
         <button class="btn btn-primary" id="btn-ingresar" onclick="verificarPasoDNI()">Continuar</button>
       </div>
 
       <div id="step-clave" style="display:none; width:100%;">
-        <div id="lbl-saludo-login" style="font-size:16px; font-weight:800; color:var(--sbs-primary); margin-bottom:4px;"></div>
-        <p id="lbl-instruccion-clave" style="color:var(--muted); font-size:13px; margin:0 0 6px; line-height:1.4;"></p>
+        <div id="lbl-saludo-login" style="font-size:17px; font-weight:800; color:var(--sbs-primary); margin-bottom:5px;"></div>
+        <p id="lbl-instruccion-clave" style="color:var(--muted); font-size:14px; margin:0 0 6px; line-height:1.4;"></p>
         <input type="password" id="txt-clave" class="pass-input" placeholder="••••••••" autocomplete="current-password">
         <button class="btn btn-primary" id="btn-confirmar-clave" onclick="confirmarClaveLogin()">Ingresar</button>
-        <button class="btn btn-outline" style="margin-top:8px; padding:10px; font-size:13px; color:var(--muted);" onclick="volverAPasoDNI()">
+        <button class="btn btn-outline" style="margin-top:8px; padding:11px; font-size:14px; color:var(--muted);" onclick="volverAPasoDNI()">
           ← Cambiar DNI
         </button>
       </div>
 
-      <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:10px; padding:11px; font-size:13.5px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
+      <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:12px; padding:12px; font-size:14px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
         📲 Instalar App en pantalla de inicio
       </button>
-      <p style="font-size:12.5px; color:var(--muted); margin-top:16px; line-height:1.45;">
-        • <b>Desayuno:</b> Solicitar hasta las 4:00 PM del día anterior (Lunes hasta Sáb 4:00 PM).<br>
-        • <b>Almuerzo:</b> Cancelar hasta las 10:00 AM del mismo día.
-      </p>
     </div>
 
     <!-- 2. PANTALLA PRINCIPAL -->
@@ -309,7 +322,7 @@
         </div>
         <div class="header-kpi-strip">
           <span id="hdr-resumen-cant">☕ 0 Des. | 🍲 0 Alm.</span>
-          <span class="header-kpi-total" id="hdr-resumen-total">Total: S/ 0.00</span>
+          <span class="header-kpi-total" id="hdr-resumen-total">Consumido: S/ 0.00</span>
         </div>
       </div>
 
@@ -330,7 +343,7 @@
           </button>
 
           <div id="link-contingencia-camara" style="display:none; text-align:center; margin-top:7px;">
-            <a href="javascript:void(0)" onclick="mostrarBoxPinContingencia()" style="font-size:11.5px; color:var(--muted); text-decoration:underline; font-weight:600;">
+            <a href="javascript:void(0)" onclick="mostrarBoxPinContingencia()" style="font-size:12.5px; color:var(--muted); text-decoration:underline; font-weight:600;">
               ¿Problemas con la cámara? Ingresar código
             </a>
           </div>
@@ -338,40 +351,43 @@
           <!-- VENTANA EMERGENTE CÁMARA QR -->
           <div id="modal-qr-overlay">
             <div id="modal-qr-content">
-              <p style="font-size:14px; font-weight:700; margin:0 0 10px; color:var(--sbs-primary);">
+              <p style="font-size:15px; font-weight:700; margin:0 0 10px; color:var(--sbs-primary);">
                 Apunta al código QR del comedor
               </p>
               <div id="qr-reader" style="width:100%; border-radius:10px; overflow:hidden;"></div>
-              <button class="btn btn-outline" style="margin-top:12px; padding:10px; font-size:13px; color:var(--muted);" onclick="cerrarEscanerQR()">
+              <button class="btn btn-outline" style="margin-top:12px; padding:11px; font-size:14px; color:var(--muted);" onclick="cerrarEscanerQR()">
                 Cancelar / Cerrar
               </button>
             </div>
           </div>
 
-          <!-- VENTANA EMERGENTE GRANDE DE CONFIRMACIÓN VERDE CON BOTÓN X -->
+          <!-- VENTANA EMERGENTE A PANTALLA CASI COMPLETA PARA EL COCINERO -->
           <div id="modal-ticket-overlay">
             <div id="modal-ticket-card">
               <button class="btn-close-ticket" onclick="cerrarModalTicketVerde()" title="Cerrar">✕</button>
               <div class="ticket-big-icon">✓</div>
               <h3 id="ticket-modal-titulo">¡ALMUERZO REGISTRADO!</h3>
-              <div id="ticket-modal-sub">18/11/2026 • 12:00:00 PM</div>
+              <div class="ticket-data-stack">
+                <div id="ticket-modal-fecha">18/11/2026</div>
+                <div id="ticket-modal-hora">12:00:00 PM</div>
+              </div>
             </div>
           </div>
 
           <div id="box-pin-contingencia" style="display:none; background:white; border:2px solid #f59e0b; border-radius:14px; padding:12px; margin-top:10px; text-align:center;">
-            <p style="font-size:12.5px; font-weight:700; margin:0 0 5px; color:#b45309;">
+            <p style="font-size:13.5px; font-weight:700; margin:0 0 5px; color:#b45309;">
               🔓 Registro con Código del Comedor
             </p>
-            <p style="font-size:11px; color:var(--muted); margin:0 0 8px;">
+            <p style="font-size:12px; color:var(--muted); margin:0 0 8px;">
               Ingresa el código de 3 dígitos que figura en el cartel del comedor:
             </p>
             <div style="display:flex; gap:8px;">
-              <input type="tel" id="txt-pin-comedor" maxlength="4" placeholder="Código" style="flex:1; padding:9px; font-size:15px; text-align:center; font-weight:700; border:1.5px solid var(--border); border-radius:10px; letter-spacing:3px;">
-              <button class="btn btn-primary" style="flex:1; padding:9px; font-size:13px;" onclick="confirmarPinCamaraMalograda()">
+              <input type="tel" id="txt-pin-comedor" maxlength="4" placeholder="Código" style="flex:1; padding:9px; font-size:16px; text-align:center; font-weight:700; border:1.5px solid var(--border); border-radius:10px; letter-spacing:3px;">
+              <button class="btn btn-primary" style="flex:1; padding:9px; font-size:14px;" onclick="confirmarPinCamaraMalograda()">
                 Validar
               </button>
             </div>
-            <button class="btn btn-outline" style="margin-top:7px; padding:6px; font-size:11.5px; color:var(--muted);" onclick="document.getElementById('box-pin-contingencia').style.display='none'">
+            <button class="btn btn-outline" style="margin-top:7px; padding:7px; font-size:12.5px; color:var(--muted);" onclick="document.getElementById('box-pin-contingencia').style.display='none'">
               Cancelar
             </button>
           </div>
@@ -380,11 +396,11 @@
         <!-- PESTAÑA 2: MI SEMANA -->
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
-        <!-- PESTAÑA 3A: PERFIL RRHH EN MÓVIL -->
+        <!-- PESTAÑA 3A: PERFIL RRHH EN MÓVIL (CON PENDIENTES DEL DÍA EN VIVO) -->
         <div id="pane-rrhh" style="display:none;">
           <div class="rrhh-box">
             <h4>🔑 Restablecer Contraseña de Colaborador</h4>
-            <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">
+            <p style="font-size:13px; color:var(--muted); margin:0 0 10px;">
               Si un colaborador olvidó su contraseña, ingresa su DNI aquí para limpiarla. En su próximo acceso la App le pedirá crear una nueva.
             </p>
             <div class="form-row" style="margin-bottom:0;">
@@ -395,12 +411,37 @@
             </div>
           </div>
 
+          <!-- STATUS DE PENDIENTES DEL DÍA (DESAYUNOS ANTES DE LAS 12 PM / ALMUERZOS DESDE LAS 12 PM) -->
+          <div class="rrhh-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+              <h4 id="rrhh-titulo-pendientes" style="margin:0;">⏳ Pendientes de hoy</h4>
+              <span id="rrhh-badge-pendientes" style="background:#ffedd5; color:#c2410c; padding:4px 11px; border-radius:8px; font-size:13px; font-weight:800;">
+                0
+              </span>
+            </div>
+            <div class="table-wrap" style="max-height:260px; margin-bottom:10px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Apellidos y Nombres</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-pendientes-rrhh">
+                  <tr><td style="text-align:center; color:var(--muted);">Cargando lista...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <button class="btn btn-outline" id="btn-refrescar-pendientes" style="padding:10px; font-size:13.5px;" onclick="cargarPendientesHoyRRHH()">
+              Actualizar pendientes
+            </button>
+          </div>
+
           <div class="rrhh-box">
             <h4>💻 Portal RRHH • Comedor (Escritorio)</h4>
-            <p style="font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
-              El monitoreo en tiempo real, la asignación manual de servicios, la base de colaboradores y el reporte de planilla están disponibles en el Portal Web de Escritorio.
+            <p style="font-size:13px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
+              El monitoreo completo, la asignación manual de servicios, la base de colaboradores y el reporte de planilla están disponibles en el Portal Web de Escritorio.
             </p>
-            <a href="./rrhh.html" target="_blank" class="btn btn-outline" style="font-size:13px; padding:11px; border-color:var(--sbs-primary); color:var(--sbs-primary);">
+            <a href="./rrhh.html" target="_blank" class="btn btn-outline" style="font-size:14px; padding:11px; border-color:var(--sbs-primary); color:var(--sbs-primary);">
               Abrir Portal RRHH
             </a>
           </div>
@@ -421,22 +462,22 @@
               <div class="kpi-card-tech"><span class="num" id="tkpi-errores">-</span><span class="lbl">Errores Registrados</span></div>
             </div>
 
-            <div id="detalle-infraestructura-tech" style="font-size:12px; color:var(--muted); background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px; line-height:1.5;">
+            <div id="detalle-infraestructura-tech" style="font-size:12.5px; color:var(--muted); background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px; line-height:1.5;">
               -
             </div>
 
-            <button class="btn btn-primary" id="btn-refrescar-tech" style="padding:11px; font-size:13.5px;" onclick="cargarPanelSalud()">
+            <button class="btn btn-primary" id="btn-refrescar-tech" style="padding:11px; font-size:14px;" onclick="cargarPanelSalud()">
               Actualizar diagnóstico
             </button>
           </div>
 
           <div class="rrhh-box">
             <h4>⚡ Prueba de Estrés en Vivo (Simulación Hora Punta)</h4>
-            <p style="font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
+            <p style="font-size:12.5px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
               Simula <b>30 usuarios abriendo la App</b> y <b>15 escaneos QR simultáneos</b> en paralelo.
             </p>
-            <div id="resultado-estres-tech" style="display:none; font-size:12px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; line-height:1.55;"></div>
-            <button class="btn btn-outline" id="btn-ejecutar-estres" style="padding:10px; font-size:13px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="ejecutarPruebaEstres()">
+            <div id="resultado-estres-tech" style="display:none; font-size:12.5px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; line-height:1.55;"></div>
+            <button class="btn btn-outline" id="btn-ejecutar-estres" style="padding:10px; font-size:13.5px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="ejecutarPruebaEstres()">
               Simular Ráfaga Concurrente Ahora
             </button>
           </div>
@@ -474,8 +515,7 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    // Sincronizado en "18" con Código.gs + bloqueo antibucle en sessionStorage
-    const VERSION_LOCAL_APP = "20";
+    const VERSION_LOCAL_APP = "21";
 
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
     const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
@@ -489,7 +529,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=18', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=21', { updateViaCache: 'none' }).then(reg => {
           reg.update().catch(() => {});
         }).catch(() => {});
       });
@@ -759,14 +799,12 @@
 
     function aplicarReglaArranqueARegistro(reg) {
       if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
-      reg.usuario.baseCicloDes = 0;
-      reg.usuario.baseCicloAlm = 0;
 
       reg.diasSemana.forEach(d => {
         d.desayuno = normalizarValorDesayunoCliente(d.desayuno);
         d.almuerzo = normalizarValorAlmuerzoCliente(d.almuerzo);
 
-        if (d.fecha < FECHA_ARRANQUE_DESAYUNO) {
+        if (d.fecha < FECHA_ARRANQUE_DESAYUNO && d.desayuno !== 'MANUAL') {
           d.desayuno = 'NO';
           d.puedeEditarDesayuno = false;
           d.habDes = false;
@@ -783,8 +821,13 @@
       });
 
       if (reg.hoyFisico) {
-        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_DESAYUNO) reg.hoyFisico.reservoDes = false;
-        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_ALMUERZO) reg.hoyFisico.reservoAlm = false;
+        const dHoy = reg.diasSemana.find(x => x.fecha === reg.hoyFisico.fecha);
+        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_DESAYUNO && (!dHoy || dHoy.desayuno !== 'MANUAL')) {
+          reg.hoyFisico.reservoDes = false;
+        }
+        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_ALMUERZO) {
+          reg.hoyFisico.reservoAlm = false;
+        }
       }
       return sincronizarConsumosLocalesConRegistro(reg);
     }
@@ -1183,10 +1226,10 @@
         document.getElementById('tkpi-errores').textContent = String(totErr);
 
         infoBox.innerHTML = `
-          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
-          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'}  | 
+          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')} &nbsp;|&nbsp;
+          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
           <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
-          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
+          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)} &nbsp;|&nbsp;
           <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
 
@@ -1305,7 +1348,7 @@
     }
 
     // ========================================================================
-    // MÓDULO RRHH EN APP MÓVIL
+    // MÓDULO RRHH EN APP MÓVIL (RESETEO DE CLAVE + LISTA DE PENDIENTES HOY)
     // ========================================================================
     function ejecutarReseteoClaveRRHH() {
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
@@ -1337,6 +1380,56 @@
       });
     }
 
+    function cargarPendientesHoyRRHH() {
+      const btn = document.getElementById('btn-refrescar-pendientes');
+      const titulo = document.getElementById('rrhh-titulo-pendientes');
+      const badge = document.getElementById('rrhh-badge-pendientes');
+      const tbody = document.getElementById('tbody-pendientes-rrhh');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Actualizando...';
+      }
+
+      const esDesayuno = (STATE.horaPeru < 12.0);
+      if (titulo) {
+        titulo.textContent = esDesayuno ? '☕ Desayunos pendientes hoy' : '🍲 Almuerzos pendientes hoy';
+      }
+
+      ejecutarConReintento('obtenerPendientesHoyRRHH', [STATE.usuario ? STATE.usuario.dni : ''], res => {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Actualizar pendientes';
+        }
+        if (!res || !res.ok) {
+          tbody.innerHTML = '<tr><td style="text-align:center; color:var(--muted);">No se pudo cargar la lista.</td></tr>';
+          return;
+        }
+
+        const esSrvDes = (res.servicio === 'DESAYUNO');
+        titulo.textContent = esSrvDes ? '☕ Desayunos pendientes hoy' : '🍲 Almuerzos pendientes hoy';
+        badge.textContent = `Total: ${res.totalPendientes}`;
+        badge.style.background = res.totalPendientes === 0 ? '#dcfce7' : '#ffedd5';
+        badge.style.color = res.totalPendientes === 0 ? '#166534' : '#c2410c';
+
+        if (!res.pendientes || res.pendientes.length === 0) {
+          tbody.innerHTML = '<tr><td style="text-align:center; color:#047857; font-weight:700;">Todos los colaboradores con reserva ya asistieron.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = res.pendientes.map((p, idx) => `
+          <tr>
+            <td><b>${idx + 1}. ${p.nombre}</b></td>
+          </tr>
+        `).join('');
+      }, () => {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Actualizar pendientes';
+        }
+      });
+    }
+
     function renderizarVistaPrincipal() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-main').style.display = 'flex';
@@ -1351,12 +1444,13 @@
       document.getElementById('tab-btn-rrhh').style.display = mostrarRRHH ? 'block' : 'none';
       document.getElementById('tab-btn-tecnico').style.display = mostrarTech ? 'block' : 'none';
 
+      // Cambia al día siguiente recién a las 6:01 PM (18.016 h), luego de cerrar el escaneo de almuerzo
       let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
       if (idxHoyFisico === -1) {
         STATE.idxPrincipal = 0;
       } else {
         const horaActualDecimal = STATE.horaPeru;
-        if (horaActualDecimal >= 14.0 && idxHoyFisico < STATE.diasSemana.length - 1) {
+        if (horaActualDecimal >= 18.016 && idxHoyFisico < STATE.diasSemana.length - 1) {
           STATE.idxPrincipal = idxHoyFisico + 1;
         } else {
           STATE.idxPrincipal = idxHoyFisico;
@@ -1370,20 +1464,34 @@
       cambiarTab('PRINCIPAL');
     }
 
+    /**
+     * Contador Superior "Consumido":
+     * Suma los días previos del ciclo (baseCicloDes / baseCicloAlm) y, para el día de HOY,
+     * suma únicamente si el colaborador ya escaneó su QR o si tenía reserva y ya venció la hora de escaneo
+     * (12:00 PM para Desayuno / 6:00 PM para Almuerzo).
+     */
     function actualizarResumenHeader() {
       let cDes = Number(STATE.usuario.baseCicloDes || 0);
       let cAlm = Number(STATE.usuario.baseCicloAlm || 0);
-      STATE.diasSemana.forEach(d => {
-        if (d.enCicloActual !== false) {
-          if (d.fecha >= FECHA_ARRANQUE_DESAYUNO && d.desayuno !== 'NO') cDes++;
-          if (d.fecha >= FECHA_ARRANQUE_ALMUERZO && d.almuerzo !== 'NO') cAlm++;
-        }
-      });
+
+      const hf = STATE.hoyFisico;
+      if (hf && hf.enCicloActual !== false) {
+        const cuentaDesHoy = hf.consumioDes || (hf.reservoDes && STATE.horaPeru >= 12.0);
+        const cuentaAlmHoy = hf.consumioAlm || (hf.reservoAlm && STATE.horaPeru > 18.0);
+        if (cuentaDesHoy) cDes++;
+        if (cuentaAlmHoy) cAlm++;
+      }
+
       const totSoles = (cDes * STATE.usuario.costoDesayuno) + (cAlm * STATE.usuario.costoAlmuerzo);
       document.getElementById('hdr-resumen-cant').textContent = `☕ ${cDes} Des. | 🍲 ${cAlm} Alm.`;
-      document.getElementById('hdr-resumen-total').textContent = `Total: S/ ${totSoles.toFixed(2)}`;
+      document.getElementById('hdr-resumen-total').textContent = `Consumido: S/ ${totSoles.toFixed(2)}`;
     }
 
+    /**
+     * Ventanas horarias de escaneo QR:
+     * - Desayuno: 8:30 AM (8.5) a 11:59 AM (< 12.0)
+     * - Almuerzo: 12:00 PM (12.0) a 6:00 PM (<= 18.0)
+     */
     function actualizarEstadoBotonQR() {
       const btn = document.getElementById('btn-escanear-qr');
       const linkPin = document.getElementById('link-contingencia-camara');
@@ -1406,17 +1514,16 @@
         return;
       }
 
-      const desListo = (!hf.reservoDes || hf.consumioDes);
-      const almListo = (!hf.reservoAlm || hf.consumioAlm);
-      if (desListo && almListo) {
-        btn.disabled = true;
-        btn.textContent = '✅ Servicios de hoy ya registrados';
-        linkPin.style.display = 'none';
-        return;
-      }
-
       if (STATE.horaPeru < 12.0) {
-        if (hf.reservoDes && !hf.consumioDes) {
+        if (hf.reservoDes) {
+          if (hf.consumioDes) {
+            btn.disabled = true;
+            btn.textContent = hf.reservoAlm
+              ? '✅ Desayuno registrado (Almuerzo desde 12:00 PM)'
+              : '✅ Ya escaneaste tu Desayuno de hoy';
+            linkPin.style.display = 'none';
+            return;
+          }
           if (STATE.horaPeru < 8.5) {
             btn.disabled = true;
             btn.textContent = '🕒 El desayuno se servirá desde las 8:30 AM';
@@ -1427,35 +1534,38 @@
           btn.textContent = '📷 Escanear QR en Comedor (Desayuno)';
           linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
           return;
-        }
-        if (hf.reservoDes && hf.consumioDes) {
-          btn.disabled = true;
-          btn.textContent = '✅ Desayuno registrado (El almuerzo se servirá desde las 12:00 PM)';
-          linkPin.style.display = 'none';
-          return;
-        }
-        if (!hf.reservoDes && hf.reservoAlm) {
+        } else {
           btn.disabled = true;
           btn.textContent = '🕒 El almuerzo se servirá desde las 12:00 PM';
           linkPin.style.display = 'none';
           return;
         }
+      } else if (STATE.horaPeru <= 18.0) {
+        if (hf.reservoAlm) {
+          if (hf.consumioAlm) {
+            btn.disabled = true;
+            btn.textContent = '✅ Almuerzo ya registrado hoy';
+            linkPin.style.display = 'none';
+            return;
+          }
+          btn.disabled = false;
+          btn.textContent = '📷 Escanear QR en Comedor (Almuerzo)';
+          linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
+          return;
+        } else {
+          btn.disabled = true;
+          btn.textContent = hf.consumioDes
+            ? '✅ Ya escaneaste tu Desayuno de hoy'
+            : '🚫 Sin servicios reservados hoy';
+          linkPin.style.display = 'none';
+          return;
+        }
       } else {
-        if (hf.reservoAlm && hf.consumioAlm) {
-          btn.disabled = true;
-          btn.textContent = '✅ Almuerzo ya registrado hoy';
-          linkPin.style.display = 'none';
-          return;
-        }
-        if (!hf.reservoAlm) {
-          btn.disabled = true;
-          btn.textContent = '🚫 Sin servicios reservados hoy';
-          linkPin.style.display = 'none';
-          return;
-        }
-        btn.disabled = false;
-        btn.textContent = '📷 Escanear QR en Comedor (Almuerzo)';
-        linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
+        btn.disabled = true;
+        btn.textContent = (hf.consumioDes || hf.consumioAlm)
+          ? '✅ Servicios de hoy ya registrados'
+          : '🕒 Horario de comedor finalizado (6:00 PM)';
+        linkPin.style.display = 'none';
       }
     }
 
@@ -1476,17 +1586,18 @@
       const desActivo = habDes && (opBase !== 'NO');
       const almActivo = habAlm && (d.almuerzo !== 'NO');
 
-      let lineaMenuDesayunoHtml = `☕ <b>Desayuno: ${d.menuDesayuno}</b>`;
+      // Detalle de Desayuno y Almuerzo SIN negrita en la descripción
+      let lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> ${d.menuDesayuno}`;
       if (desActivo) {
         if (opBase === 'OP1') {
           const textoPanes = (infoDes.pan1.toLowerCase() === infoDes.pan2.toLowerCase())
             ? `2 panes con ${infoDes.pan1}`
             : `Pan con ${infoDes.pan1} / ${infoDes.pan2}`;
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">${textoPanes}</span> <b>+ ${infoMenu.bebidas}</b>`;
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">${textoPanes}</span> + ${infoMenu.bebidas}`;
         } else if (opBase === 'OP2') {
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> <b>+ ${infoMenu.bebidas}</b>`;
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> + ${infoMenu.bebidas}`;
         } else if (opBase === 'OP3') {
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} + 1 Huevo</span> <b>+ ${infoMenu.bebidas}</b>`;
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} + 1 Huevo</span> + ${infoMenu.bebidas}`;
         } else if (opBase === 'MANUAL') {
           lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Habilitado por RRHH</span>`;
         }
@@ -1540,12 +1651,12 @@
 
       let badgeHtml = '';
       if (d.esHoyFisico) {
-        badgeHtml = '<span style="background:#dcfce7; color:#166534; padding:3px 9px; border-radius:7px; font-size:11.5px;">HOY</span>';
+        badgeHtml = '<span style="background:#dcfce7; color:#166534; padding:3px 9px; border-radius:7px; font-size:12px;">HOY</span>';
       } else {
         const idxHoy = STATE.diasSemana.findIndex(x => x.esHoyFisico);
         const thisIdx = STATE.diasSemana.findIndex(x => x.fecha === d.fecha);
-        if (idxHoy !== -1 && thisIdx === idxHoy + 1 && STATE.horaPeru >= 14.0) {
-          badgeHtml = '<span style="background:#ffedd5; color:#ea580c; padding:3px 9px; border-radius:7px; font-size:11.5px; font-weight:bold;">MAÑANA</span>';
+        if (idxHoy !== -1 && thisIdx === idxHoy + 1 && STATE.horaPeru >= 18.016) {
+          badgeHtml = '<span style="background:#ffedd5; color:#ea580c; padding:3px 9px; border-radius:7px; font-size:12px; font-weight:bold;">MAÑANA</span>';
         }
       }
 
@@ -1557,14 +1668,14 @@
           </div>
           <div class="menu-box">
             <div>${lineaMenuDesayunoHtml}</div>
-            <div style="margin-top:4px;">🍲 <b>Almuerzo: ${d.menuAlmuerzo}</b></div>
+            <div style="margin-top:4px;">🍲 <b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
           </div>
           <div class="srv-grid">
             <div class="srv-split-card ${desActivo ? 'active-des' : ''} ${lockDesClass}">
               <div class="srv-split-top" onclick="seleccionarOpcionDesayuno('${d.fecha}', '${desActivo ? 'NO' : 'OP1'}')">
                 <span class="title">☕ Desayuno</span>
                 <span class="status">${txtDes}</span>
-                ${avisoDes ? `<span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoDes}</span>` : ''}
+                ${avisoDes ? `<span style="font-size:11.5px; opacity:0.78; display:block; margin-top:4px;">${avisoDes}</span>` : ''}
               </div>
               ${dropdownsPanesHtml}
               <div class="srv-split-bottom">
@@ -1578,7 +1689,7 @@
               <div class="srv-split-top" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', '${almActivo ? 'NO' : 'REGULAR'}')">
                 <span class="title">🍲 Almuerzo</span>
                 <span class="status">${txtAlm}</span>
-                ${avisoAlm ? `<span style="font-size:10.5px; opacity:0.75; display:block; margin-top:4px;">${avisoAlm}</span>` : ''}
+                ${avisoAlm ? `<span style="font-size:11.5px; opacity:0.78; display:block; margin-top:4px;">${avisoAlm}</span>` : ''}
               </div>
               <div class="srv-split-bottom">
                 <button class="op-sub-btn ${almActivo && d.almuerzo === 'REGULAR' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')">Regular</button>
@@ -1713,6 +1824,7 @@
         cerrarEscanerQR();
         document.getElementById('tab-btn-rrhh').classList.add('active');
         document.getElementById('pane-rrhh').style.display = 'block';
+        cargarPendientesHoyRRHH();
       } else if (tab === 'TECNICO') {
         cerrarEscanerQR();
         document.getElementById('tab-btn-tecnico').classList.add('active');
@@ -1723,7 +1835,7 @@
     }
 
     // ========================================================================
-    // ESCANEO QR INSTANTÁNEO EN 0.0 SEG + VENTANA EMERGENTE GRANDE CON BOTÓN X
+    // ESCANEO QR INSTANTÁNEO EN 0.0 SEG + VENTANA A PANTALLA CASI COMPLETA
     // ========================================================================
     async function abrirEscanerQR() {
       if (document.getElementById('btn-escanear-qr').disabled) return;
@@ -1814,6 +1926,7 @@
             if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
             guardarSnapshotLocal();
           }
+          actualizarResumenHeader();
           mostrarTicketVerdeConfirmado(res.servicioRegistrado);
         } else {
           mostrarToast('❌ ' + res.msg);
@@ -1841,6 +1954,7 @@
         guardarSnapshotLocal();
       }
 
+      actualizarResumenHeader();
       mostrarTicketVerdeConfirmado(srvEsperado);
       actualizarEstadoBotonQR();
 
@@ -1913,7 +2027,8 @@
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
       const horaExacta = obtenerHoraExactaActual();
       document.getElementById('ticket-modal-titulo').textContent = `¡${servicio} REGISTRADO!`;
-      document.getElementById('ticket-modal-sub').textContent = `${fechaHoy} • ${horaExacta}`;
+      document.getElementById('ticket-modal-fecha').textContent = fechaHoy;
+      document.getElementById('ticket-modal-hora').textContent = horaExacta;
       overlay.style.display = 'flex';
     }
 

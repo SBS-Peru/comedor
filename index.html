@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=16">
+  <link rel="manifest" href="manifest.json?v=18">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=16">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=16">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=16">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=18">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=18">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=18">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -47,6 +47,32 @@
       display: flex; flex-direction: column; overflow: hidden; position: relative;
     }
     .app-shell.wide-rrhh { max-width: 900px; }
+
+    /* BANNER DE ACTUALIZACIÓN EN VIVO (ESTILO APP NATIVA) */
+    #banner-actualizacion {
+      display: none;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 2000;
+      flex-shrink: 0;
+    }
+    .btn-update-now {
+      background: var(--sbs-accent);
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
 
     #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: #ffffff; }
     .login-logo-wrap {
@@ -93,24 +119,32 @@
     .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); }
     .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
     .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 15px; margin-bottom: 9px; }
-    .menu-box { background: #f8fafc; border-radius: 9px; padding: 9px 11px; font-size: 12.3px; letter-spacing: -0.15px; color: var(--muted); margin-bottom: 11px; line-height: 1.45; }
+
+    /* Detalle de Desayuno y Almuerzo en negrita para mayor legibilidad */
+    .menu-box {
+      background: #f8fafc; border-radius: 9px; padding: 9px 11px; font-size: 12.3px;
+      letter-spacing: -0.15px; color: var(--text); font-weight: 600; margin-bottom: 11px; line-height: 1.45;
+    }
     .menu-box div { white-space: normal; word-break: break-word; }
-    .menu-box b { color: var(--text); }
-    .menu-box .sel-highlight { color: #c2410c; font-weight: 700; }
+    .menu-box b { color: #0f172a; font-weight: 800; }
+    .menu-box .sel-highlight { color: #c2410c; font-weight: 800; }
 
     .srv-grid { display: flex; gap: 10px; align-items: stretch; }
 
-    /* Altura normalizada en las tarjetas de servicio para que OP1, OP2 y OP3 midan exactamente igual */
+    /* Tarjetas lado a lado con altura uniforme y centrado vertical automático en Opc. 2 y Almuerzo */
     .srv-split-card {
       flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white;
       display: flex; flex-direction: column; overflow: hidden; transition: 0.15s;
-      min-width: 0; min-height: 128px;
+      min-width: 0; min-height: 126px;
     }
     .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
     .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
     .srv-split-card.disabled-card { opacity: 0.55; background: #f1f5f9; pointer-events: none; }
 
-    .srv-split-top { padding: 8px 6px 6px; text-align: center; cursor: pointer; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .srv-split-top {
+      padding: 8px 6px; text-align: center; cursor: pointer; flex: 1;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+    }
     .srv-split-top .title { font-size: 14.5px; font-weight: 700; display: block; color: var(--text); }
     .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
     .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
@@ -119,18 +153,18 @@
     .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
     .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
 
+    /* Listas desplegables ligeras (sin negrita) y centradas al medio */
     .pan-dropdown-wrap {
-      display: flex; gap: 4px; padding: 0 5px 6px; justify-content: center; align-items: center;
-      min-height: 33px;
+      display: flex; gap: 4px; padding: 0 5px 7px; justify-content: center; align-items: center;
     }
     .pan-select {
-      flex: 1; min-width: 0; width: 100%; height: 27px; padding: 0 4px;
-      font-size: 11px; font-weight: 700; color: #9a3412; background: #ffffff;
-      border: 1.5px solid #fdba74; border-radius: 7px; outline: none;
+      flex: 1; min-width: 0; width: 100%; height: 26px; padding: 0 3px;
+      font-size: 11px; font-weight: 400; color: #7c2d12; background: #ffffff;
+      border: 1px solid #fdba74; border-radius: 6px; outline: none;
       text-align: center; text-align-last: center; -moz-text-align-last: center;
       cursor: pointer;
     }
-    .pan-select option { text-align: center; }
+    .pan-select option { text-align: center; font-weight: 400; }
     .pan-select:focus { border-color: var(--sbs-orange); }
     
     .srv-split-bottom { display: flex; border-top: 1.5px solid var(--border); background: #f8fafc; flex-shrink: 0; }
@@ -168,12 +202,12 @@
       .day-header { font-size: 14px; margin-bottom: 7px; }
       .menu-box { padding: 7px 9px; font-size: 11.4px; letter-spacing: -0.2px; margin-bottom: 9px; }
       .srv-grid { gap: 8px; }
-      .srv-split-card { min-height: 120px; }
-      .srv-split-top { padding: 7px 4px 5px; }
+      .srv-split-card { min-height: 118px; }
+      .srv-split-top { padding: 6px 4px; }
       .srv-split-top .title { font-size: 13.5px; }
       .srv-split-top .status { font-size: 10.8px; margin-top: 2px; }
-      .pan-dropdown-wrap { min-height: 31px; padding: 0 4px 5px; }
-      .pan-select { font-size: 10.5px; height: 25px; padding: 0 2px; }
+      .pan-dropdown-wrap { padding: 0 4px 6px; }
+      .pan-select { font-size: 10.5px; height: 24px; padding: 0 2px; }
       .op-sub-btn { padding: 8px 2px; font-size: 11.2px; }
       .btn { padding: 12px; font-size: 14px; }
     }
@@ -198,10 +232,16 @@
 <body>
 
   <div class="app-shell" id="app-shell">
+    <!-- AVISO DE NUEVA ACTUALIZACIÓN DISPONIBLE EN EL APP -->
+    <div id="banner-actualizacion">
+      <span>🔄 Nueva actualización disponible</span>
+      <button class="btn-update-now" onclick="aplicarActualizacionApp()">Actualizar ahora</button>
+    </div>
+
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=16" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=18" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -248,7 +288,7 @@
       <div class="tabs">
         <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Hoy</div>
         <div class="tab" id="tab-btn-semana" onclick="cambiarTab('SEMANA')">Mi Semana</div>
-        <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">⚙️ GEP</div>
+        <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">⚙️ RRHH</div>
         <div class="tab" id="tab-btn-tecnico" style="display:none;" onclick="cambiarTab('TECNICO')">Técnico</div>
       </div>
 
@@ -307,7 +347,7 @@
         <!-- PESTAÑA 2: MI SEMANA -->
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
-        <!-- PESTAÑA 3A: PERFIL GEP EN MÓVIL -->
+        <!-- PESTAÑA 3A: PERFIL RRHH EN MÓVIL -->
         <div id="pane-rrhh" style="display:none;">
           <div class="rrhh-box">
             <h4>🔑 Restablecer Contraseña de Colaborador</h4>
@@ -323,17 +363,17 @@
           </div>
 
           <div class="rrhh-box">
-            <h4>💻 Portal GEP • Comedor (Escritorio)</h4>
+            <h4>💻 Portal RRHH • Comedor (Escritorio)</h4>
             <p style="font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
               El monitoreo en tiempo real, la base de colaboradores, el menú semanal y el reporte de planilla en Excel están disponibles en el Portal Web de Escritorio.
             </p>
-            <a href="./gep.html" target="_blank" class="btn btn-outline" style="font-size:13px; padding:11px; border-color:var(--sbs-primary); color:var(--sbs-primary);">
-              Abrir Portal GEP
+            <a href="./rrhh.html" target="_blank" class="btn btn-outline" style="font-size:13px; padding:11px; border-color:var(--sbs-primary); color:var(--sbs-primary);">
+              Abrir Portal RRHH
             </a>
           </div>
         </div>
 
-        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO -->
+        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO (SALUD + SIMULADOR DE ESTRÉS) -->
         <div id="pane-tecnico" style="display:none;">
           <div class="rrhh-box">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -354,6 +394,17 @@
 
             <button class="btn btn-primary" id="btn-refrescar-tech" style="padding:11px; font-size:13.5px;" onclick="cargarPanelSalud()">
               Actualizar diagnóstico
+            </button>
+          </div>
+
+          <div class="rrhh-box">
+            <h4>⚡ Prueba de Estrés en Vivo (Simulación Hora Punta)</h4>
+            <p style="font-size:12px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
+              Simula <b>30 usuarios abriendo la App</b> y <b>15 escaneos QR simultáneos</b> en paralelo. Para incluir los 15 escaneos QR sin afectar la asistencia real, activa primero el <b>Modo prueba</b> en el menú de Google Sheets.
+            </p>
+            <div id="resultado-estres-tech" style="display:none; font-size:12px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; line-height:1.55;"></div>
+            <button class="btn btn-outline" id="btn-ejecutar-estres" style="padding:10px; font-size:13px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="ejecutarPruebaEstres()">
+              Simular Ráfaga Concurrente Ahora
             </button>
           </div>
 
@@ -390,6 +441,9 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
+    // Identificador local de versión para detectar paquetes nuevos en Android/iOS
+    const VERSION_LOCAL_APP = "18";
+
     // Primer escaneo oficial: Miércoles 18/11 en Almuerzo (Desayuno desde Jueves 19/11)
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
     const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
@@ -401,9 +455,22 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=16').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=18', { updateViaCache: 'none' }).then(reg => {
+          reg.update().catch(() => {});
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  mostrarBannerActualizacion();
+                }
+              });
+            }
+          });
+        }).catch(() => {});
       });
     }
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPromptPWA = e;
@@ -418,6 +485,44 @@
       deferredPromptPWA = null;
       document.getElementById('btn-instalar-pwa').style.display = 'none';
     }
+
+    function mostrarBannerActualizacion() {
+      const b = document.getElementById('banner-actualizacion');
+      if (b) b.style.display = 'flex';
+    }
+
+    function verificarVersionServidor(versionRemota) {
+      if (versionRemota && String(versionRemota) !== String(VERSION_LOCAL_APP)) {
+        mostrarBannerActualizacion();
+      }
+    }
+
+    async function aplicarActualizacionApp() {
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          for (let r of regs) {
+            await r.unregister();
+          }
+        }
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          for (let k of keys) {
+            await caches.delete(k);
+          }
+        }
+      } catch (e) {}
+      window.location.replace(window.location.pathname + '?v=' + new Date().getTime());
+    }
+
+    // Cada vez que el usuario vuelve a abrir la app desde segundo plano en su celular, verifica si hay nueva versión
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        ejecutarConReintento('verificarVersionApp', [], res => {
+          if (res && res.versionApp) verificarVersionServidor(res.versionApp);
+        }, null, 1);
+      }
+    });
 
     const urlParams = new URLSearchParams(window.location.search);
     window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
@@ -669,6 +774,7 @@
             body: JSON.stringify({ action: nombreFuncion, args: argsArray })
           });
           const data = await resp.json();
+          if (data && data.versionApp) verificarVersionServidor(data.versionApp);
           if (onSuccess) onSuccess(data);
           return;
         } catch (err) {
@@ -872,7 +978,7 @@
     }
 
     // ========================================================================
-    // MÓDULO TÉCNICO
+    // MÓDULO TÉCNICO + SIMULADOR DE ESTRÉS CONCURRENTE
     // ========================================================================
     function cargarPanelSalud() {
       const badge = document.getElementById('badge-salud-tech');
@@ -904,6 +1010,10 @@
           return;
         }
 
+        if (typeof res.modoPruebaActivo === 'boolean') {
+          STATE.modoPruebaQR = res.modoPruebaActivo;
+        }
+
         const totErr = (res.totalErrores !== undefined) ? res.totalErrores : valSeguro(res.totalErroresHoy, 0);
         if (badge) {
           badge.textContent = valSeguro(res.salud, 'OPERATIVO');
@@ -924,8 +1034,8 @@
 
         infoBox.innerHTML = `
           <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
-          <b>Triggers Automáticos:</b> ${valSeguro(res.triggersActivos, '-')}  | 
-          <b>Inicio App:</b> Alm 18/11 • Des 19/11<br>
+          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'}  | 
+          <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
           <b>Registros en PLANIFICACION:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
           <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
@@ -970,8 +1080,82 @@
       });
     }
 
+    async function ejecutarPruebaEstres() {
+      const box = document.getElementById('resultado-estres-tech');
+      const btn = document.getElementById('btn-ejecutar-estres');
+      box.style.display = 'block';
+
+      if (!STATE.modoPruebaQR) {
+        box.innerHTML = `<span style="color:#b45309; font-weight:700;">⚠️ Activa primero el "Modo prueba" en el menú Comedor SBS de tu hoja de cálculo (y luego presiona Actualizar diagnóstico arriba) para que los 15 escaneos QR de prueba se marquen en amarillo y no ensucien la asistencia real.</span>`;
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Ejecutando ráfaga concurrente (45 peticiones)...';
+      box.innerHTML = 'Disparando <b>30 lecturas simultáneas de login/sesión</b> + <b>15 escaneos QR en paralelo</b>...';
+
+      const listaActivos = (STATE.colaboradores || []).filter(c => c.estado === 'ACTIVO');
+      const dnisPrueba = [];
+      for (let i = 0; i < 15; i++) {
+        if (listaActivos.length > 0) {
+          dnisPrueba.push(listaActivos[i % listaActivos.length].dni);
+        } else {
+          dnisPrueba.push(STATE.usuario.dni);
+        }
+      }
+
+      const tGlobalIni = performance.now();
+
+      const promesasLectura = Array.from({ length: 30 }, () => {
+        const t0 = performance.now();
+        return fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'obtenerBootstrapInicial', args: [] })
+        }).then(r => r.json()).then(d => ({
+          ok: !!(d && d.ok),
+          ms: Math.round(performance.now() - t0)
+        })).catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
+      });
+
+      const promesasQR = dnisPrueba.map(dniTest => {
+        const t0 = performance.now();
+        return fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'registrarConsumoInteligente', args: [dniTest, 'STRESS_TEST'] })
+        }).then(r => r.json()).then(d => ({
+          ok: !!(d && d.ok),
+          ms: Math.round(performance.now() - t0)
+        })).catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
+      });
+
+      const [resLecturas, resQR] = await Promise.all([
+        Promise.all(promesasLectura),
+        Promise.all(promesasQR)
+      ]);
+
+      const tGlobalTotal = Math.round(performance.now() - tGlobalIni);
+      const okLecturas = resLecturas.filter(x => x.ok).length;
+      const okQRs = resQR.filter(x => x.ok).length;
+      const promMsLectura = Math.round(resLecturas.reduce((a, b) => a + b.ms, 0) / resLecturas.length);
+      const promMsQR = Math.round(resQR.reduce((a, b) => a + b.ms, 0) / resQR.length);
+      const maxMsQR = Math.max(...resQR.map(x => x.ms));
+
+      btn.disabled = false;
+      btn.textContent = 'Simular Ráfaga Concurrente Ahora';
+
+      box.innerHTML = `
+        <b style="color:#047857;">✅ Prueba completada en ${(tGlobalTotal / 1000).toFixed(2)} seg:</b><br>
+        • <b>Accesos simultáneos (30):</b> ${okLecturas}/30 exitosos (Promedio: ${promMsLectura} ms)<br>
+        • <b>Escaneos QR en fila (15):</b> ${okQRs}/15 registrados sin pérdida (Promedio: ${promMsQR} ms | Máximo en cola: ${maxMsQR} ms)<br>
+        <span style="color:#64748b; font-size:11px;">Recuerda ir a Google Sheets -> Comedor SBS -> "Borrar solo registros de modo prueba" y desactivar el Modo Prueba.</span>
+      `;
+      cargarPanelSalud();
+    }
+
     // ========================================================================
-    // MÓDULO GEP EN APP MÓVIL
+    // MÓDULO RRHH EN APP MÓVIL
     // ========================================================================
     function ejecutarReseteoClaveRRHH() {
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
@@ -1066,7 +1250,7 @@
 
       if (!hf.reservoDes && !hf.reservoAlm) {
         btn.disabled = true;
-        btn.textContent = '🚫 Sin servicios reservados en App para hoy';
+        btn.textContent = '🚫 Sin servicios reservados hoy';
         linkPin.style.display = 'none';
         return;
       }
@@ -1114,7 +1298,7 @@
         }
         if (!hf.reservoAlm) {
           btn.disabled = true;
-          btn.textContent = '🚫 Sin almuerzo reservado para hoy';
+          btn.textContent = '🚫 Sin servicios reservados hoy';
           linkPin.style.display = 'none';
           return;
         }
@@ -1141,30 +1325,29 @@
       const desActivo = habDes && (opBase !== 'NO');
       const almActivo = habAlm && (d.almuerzo !== 'NO');
 
-      // Texto interactivo en el recuadro superior: si los 2 panes son iguales dice "2 panes con ..."
-      let lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> ${d.menuDesayuno}`;
+      // Detalle de Desayuno y Almuerzo en negrita
+      let lineaMenuDesayunoHtml = `☕ <b>Desayuno: ${d.menuDesayuno}</b>`;
       if (desActivo) {
         if (opBase === 'OP1') {
           const textoPanes = (infoDes.pan1.toLowerCase() === infoDes.pan2.toLowerCase())
             ? `2 panes con ${infoDes.pan1}`
             : `Pan con ${infoDes.pan1} / ${infoDes.pan2}`;
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">${textoPanes}</span> + ${infoMenu.bebidas}`;
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">${textoPanes}</span> <b>+ ${infoMenu.bebidas}</b>`;
         } else if (opBase === 'OP2') {
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> + ${infoMenu.bebidas}`;
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> <b>+ ${infoMenu.bebidas}</b>`;
         } else if (opBase === 'OP3') {
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} + 1 Huevo</span> + ${infoMenu.bebidas}`;
+          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} + 1 Huevo</span> <b>+ ${infoMenu.bebidas}</b>`;
         }
       }
 
-      // Textos normalizados de detalle de cada opción
       let detalleDes = '';
       if (opBase === 'OP1') detalleDes = 'bebida + 2 panes';
       else if (opBase === 'OP2') detalleDes = 'bebida + 3 huevos';
       else if (opBase === 'OP3') detalleDes = 'bebida + pan + huevo';
 
-      const txtDes = !habDes ? 'Registro en hoja GEP' : (desActivo ? detalleDes : 'No solicitado');
+      const txtDes = !habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado');
       const txtAlm = !habAlm
-        ? 'Registro en hoja GEP'
+        ? 'Registro en hoja RRHH'
         : (almActivo
           ? `Confirmado: ${d.almuerzo === 'ALTERNATIVO' ? 'Alternativo' : 'Regular'}`
           : 'Cancelado');
@@ -1179,6 +1362,7 @@
         ? ''
         : (!d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (!almActivo ? 'Elige Regular o Alternativo' : ''));
 
+      // En Opc. 2 no se inserta el contenedor de desplegables para que el texto quede centrado al medio igual que Almuerzo
       let dropdownsPanesHtml = '';
       if (desActivo && d.puedeEditarDesayuno) {
         if (opBase === 'OP1') {
@@ -1197,8 +1381,6 @@
               <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 1, this.value)" title="Tipo de pan">${opts1}</select>
             </div>
           `;
-        } else if (opBase === 'OP2') {
-          dropdownsPanesHtml = `<div class="pan-dropdown-wrap"></div>`;
         }
       }
 
@@ -1223,7 +1405,7 @@
           </div>
           <div class="menu-box">
             <div>${lineaMenuDesayunoHtml}</div>
-            <div style="margin-top:4px;">🍲 <b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
+            <div style="margin-top:4px;">🍲 <b>Almuerzo: ${d.menuAlmuerzo}</b></div>
           </div>
           <div class="srv-grid">
             <div class="srv-split-card ${desActivo ? 'active-des' : ''} ${lockDesClass}">

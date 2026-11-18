@@ -291,10 +291,11 @@
       <div class="scroll-area">
         <!-- PESTAÑA 1: HOY / MAÑANA -->
         <div id="pane-principal">
-          <div id="ticket-confirmado" style="display:none; background:#ecfdf5; border:2px solid #10b981; border-radius:14px; padding:12px; margin-bottom:10px; text-align:center;">
-            <div style="font-size:24px;">✅</div>
-            <div id="ticket-titulo" style="font-size:15px; font-weight:800; color:#065f46; margin-top:2px;">CONSUMO REGISTRADO</div>
-            <div id="ticket-sub" style="font-size:12.5px; color:#047857; font-weight:600; margin-top:2px;"></div>
+          <!-- BANNER VERDE DE CONFIRMACIÓN MÁS ALTO Y CON FECHA/HORA EXACTA -->
+          <div id="ticket-confirmado" style="display:none; background:#ecfdf5; border:2px solid #10b981; border-radius:15px; padding:20px 16px; margin-bottom:12px; text-align:center; box-shadow:0 6px 16px rgba(16,185,129,0.14);">
+            <div style="font-size:28px; line-height:1;">✅</div>
+            <div id="ticket-titulo" style="font-size:17px; font-weight:800; color:#065f46; margin-top:7px; letter-spacing:0.2px;">CONSUMO REGISTRADO</div>
+            <div id="ticket-sub" style="font-size:13.5px; color:#047857; font-weight:700; margin-top:5px;"></div>
           </div>
 
           <div id="contenedor-principal"></div>
@@ -417,10 +418,10 @@
           </div>
 
           <div class="rrhh-box">
-            <h4>Actividad Reciente en Servidor (LOG_SEGURIDAD_OCULTO)</h4>
+            <h4>Actividad Reciente en Servidor (ASISTENCIA_REAL)</h4>
             <div class="table-wrap" style="max-height:220px;">
               <table>
-                <thead><tr><th>Fecha / Hora</th><th>Evento</th><th>DNI</th><th>Servicio</th><th>Valor</th></tr></thead>
+                <thead><tr><th>Fecha / Hora</th><th>Evento</th><th>DNI</th><th>Servicio</th><th>Detalle</th></tr></thead>
                 <tbody id="tbody-eventos-tech">
                   <tr><td colspan="5" style="text-align:center; color:var(--muted);">-</td></tr>
                 </tbody>
@@ -444,8 +445,6 @@
     const PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
     let HABILITAR_MODO_CODIGO = false;
-
-    // Cola única de Guardado por Lote (Batch Save) para no saturar LockService al tocar varios días
     let COLA_CAMBIOS_RESERVA = {};
     let TIMER_LOTE_RESERVA = null;
     let ENVIANDO_COLA_QR = false;
@@ -545,6 +544,55 @@
       procesandoEscaneo: false,
       idxPrincipal: 0
     };
+
+    // Extractor inteligente del Primer Nombre aunque la BD esté como "Apellidos Nombres" o "Apellidos, Nombres"
+    function extraerPrimerNombreCliente(usuarioObj) {
+      if (!usuarioObj) return 'Colaborador';
+      if (usuarioObj.primerNombre) return usuarioObj.primerNombre;
+      const limpio = String(usuarioObj.nombre || '').trim();
+      if (!limpio) return 'Colaborador';
+      if (limpio.includes(',')) {
+        const desp = limpio.split(',')[1].trim();
+        if (desp) return desp.split(/\s+/)[0];
+      }
+      const palabras = limpio.split(/\s+/);
+      if (palabras.length <= 2) return palabras[0];
+      const conectores = ['de', 'del', 'la', 'las', 'los', 'san', 'santa', 'vda', 'vda.', 'y'];
+      const bloques = [];
+      let acum = [];
+      for (let i = 0; i < palabras.length; i++) {
+        const w = palabras[i];
+        const low = w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        acum.push(w);
+        if (!conectores.includes(low)) {
+          bloques.push(acum.join(' '));
+          acum = [];
+        }
+      }
+      if (acum.length > 0) bloques.push(acum.join(' '));
+      if (bloques.length >= 3) return bloques[2].split(/\s+/)[0];
+      return palabras[0];
+    }
+
+    // Cálculo SHA-256 nativo en el navegador (idéntico al de Google Apps Script) para validar en 1.0 segundo
+    async function calcularHashSHA256Cliente(dni, textoClave) {
+      try {
+        const dniNorm = normalizarDniCliente(dni);
+        const semilla = "SBS_SALT_2026_" + dniNorm + "_" + String(textoClave);
+        if (window.crypto && window.crypto.subtle) {
+          const msgBuffer = new TextEncoder().encode(semilla);
+          const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          return hashArray.map(b => ('0' + b.toString(16)).slice(-2)).join('');
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function obtenerHoraExactaActual() {
+      const ahora = new Date();
+      return ahora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    }
 
     function normalizarPanCliente(rawPan) {
       let p = String(rawPan || '').trim();
@@ -654,7 +702,6 @@
       return { op: op, pan1: p1, pan2: p2 };
     }
 
-    // Respeta si el celular ya tiene un escaneo QR confirmado localmente hoy
     function sincronizarConsumosLocalesConRegistro(reg) {
       if (!reg || !reg.usuario || !reg.hoyFisico) return reg;
       try {
@@ -856,7 +903,6 @@
       setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
-    // Login instantáneo: si el DNI ya está en la memoria local precargada, pasa directo a pedir clave en 0.0 seg
     function verificarPasoDNI() {
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
@@ -897,7 +943,7 @@
 
     function abrirFormularioClave(registro) {
       STATE.registroPendienteLogin = aplicarReglaArranqueARegistro(registro);
-      const primerNombre = registro.usuario.nombre.split(' ')[0];
+      const primerNombre = extraerPrimerNombreCliente(registro.usuario);
       document.getElementById('step-dni').style.display = 'none';
       document.getElementById('step-clave').style.display = 'block';
       document.getElementById('lbl-saludo-login').textContent = `Hola, ${primerNombre}`;
@@ -920,7 +966,11 @@
       document.getElementById('txt-clave').value = '';
     }
 
-    function confirmarClaveLogin() {
+    /**
+     * Validación y Creación de Contraseña en exactamente 1.0 Segundo (1000 ms):
+     * Calcula SHA-256 en el celular, espera 1.0s exacto con "Verificando..." y guarda en segundo plano.
+     */
+    async function confirmarClaveLogin() {
       if (!STATE.registroPendienteLogin) return;
       const clave = document.getElementById('txt-clave').value;
       if (!clave || clave.trim().length === 0) {
@@ -933,14 +983,52 @@
       btn.disabled = true;
       btn.textContent = 'Verificando...';
 
+      const tInicio = performance.now();
       const dni = STATE.registroPendienteLogin.usuario.dni;
       const esCreacion = !STATE.registroPendienteLogin.usuario.tieneClave;
+      const hashGuardadoRAM = STATE.registroPendienteLogin.usuario.hashClave || '';
 
-      ejecutarConReintento('autenticarOConfigurarClave', [dni, clave, esCreacion], res => {
+      const hashCliente = await calcularHashSHA256Cliente(dni, clave);
+
+      // Si el navegador calculó el hash SHA-256 localmente, resolvemos en exactamente 1.0 segundo (1000 ms)
+      if (hashCliente && (esCreacion || hashGuardadoRAM)) {
+        const transcurrido = performance.now() - tInicio;
+        const esperaRestante = Math.max(0, 1000 - transcurrido);
+        await new Promise(r => setTimeout(r, esperaRestante));
+
+        btn.disabled = false;
+        btn.textContent = txtOriginal;
+
+        if (!esCreacion) {
+          if (hashCliente === hashGuardadoRAM) {
+            document.getElementById('txt-clave').value = '';
+            asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
+          } else {
+            mostrarToast('❌ Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
+          }
+          return;
+        } else {
+          // Creación de clave nueva: entra al segundo 1.0 y persiste el hash en segundo plano
+          STATE.registroPendienteLogin.usuario.tieneClave = true;
+          STATE.registroPendienteLogin.usuario.hashClave = hashCliente;
+          document.getElementById('txt-clave').value = '';
+          asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
+          ejecutarConReintento('guardarHashClaveDirecto', [dni, hashCliente], null, null, 4);
+          return;
+        }
+      }
+
+      // Respaldo por servidor garantizando también mínimo 1.0 segundo de transición
+      ejecutarConReintento('autenticarOConfigurarClave', [dni, clave, esCreacion], async res => {
+        const transcurrido = performance.now() - tInicio;
+        const esperaRestante = Math.max(0, 1000 - transcurrido);
+        await new Promise(r => setTimeout(r, esperaRestante));
+
         btn.disabled = false;
         btn.textContent = txtOriginal;
         if (res && res.ok) {
           STATE.registroPendienteLogin.usuario.tieneClave = true;
+          STATE.registroPendienteLogin.usuario.hashClave = res.tokenSesion;
           document.getElementById('txt-clave').value = '';
           asignarUsuarioYEntrar(STATE.registroPendienteLogin, res.tokenSesion);
         } else {
@@ -1059,10 +1147,10 @@
         document.getElementById('tkpi-errores').textContent = String(totErr);
 
         infoBox.innerHTML = `
-          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')} &nbsp;|&nbsp;
-          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
+          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
+          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'}  | 
           <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
-          <b>Registros en PLANIFICACION:</b> ${valSeguro(res.reservasRegistradas, 0)} &nbsp;|&nbsp;
+          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
           <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
 
@@ -1199,6 +1287,7 @@
         if (res && res.ok) {
           if (STATE.diccionarioUsuarios[res.dniReseteado]) {
             STATE.diccionarioUsuarios[res.dniReseteado].usuario.tieneClave = false;
+            STATE.diccionarioUsuarios[res.dniReseteado].usuario.hashClave = '';
           }
           document.getElementById('rrhh-dni-reset').value = '';
           mostrarToast('✅ ' + res.msg);
@@ -1215,7 +1304,7 @@
     function renderizarVistaPrincipal() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-main').style.display = 'flex';
-      document.getElementById('lbl-nombre').textContent = 'Hola, ' + STATE.usuario.nombre.split(' ')[0];
+      document.getElementById('lbl-nombre').textContent = 'Hola, ' + extraerPrimerNombreCliente(STATE.usuario);
       document.getElementById('lbl-estado-rol').textContent = (STATE.usuario.estado !== 'ACTIVO')
         ? `Estado: ${STATE.usuario.estado}${STATE.usuario.fechaFinEstado ? ' (hasta ' + formatearDiaMesCorto(STATE.usuario.fechaFinEstado) + ')' : ''}`
         : `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}`;
@@ -1478,9 +1567,6 @@
       return 'NO';
     }
 
-    // ========================================================================
-    // GUARDADO POR LOTE (BATCH SAVE) PARA EVITAR COLISIONES EN LOCKSERVICE
-    // ========================================================================
     function encolarCambioServicio(fecha, servicio, nuevoValor) {
       COLA_CAMBIOS_RESERVA[`${fecha}_${servicio}`] = {
         fecha: fecha,
@@ -1598,7 +1684,7 @@
     }
 
     // ========================================================================
-    // ESCANEO QR INSTANTÁNEO EN 0.0 SEGUNDOS + COLA ASÍNCRONA EN SEGUNDO PLANO
+    // ESCANEO QR INSTANTÁNEO EN 0.0 SEGUNDOS + BANNER VERDE CON HORA EXACTA
     // ========================================================================
     async function abrirEscanerQR() {
       if (document.getElementById('btn-escanear-qr').disabled) return;
@@ -1690,7 +1776,6 @@
             guardarSnapshotLocal();
           }
           mostrarTicketVerdeConfirmado(res.servicioRegistrado);
-          mostrarToast('✅ ' + res.msg);
         } else {
           mostrarToast('❌ ' + res.msg);
         }
@@ -1698,17 +1783,11 @@
       });
     }
 
-    /**
-     * Respuesta Instantánea en 0.0 Segundos (Optimistic UI):
-     * Muestra el ticket verde de inmediato apenas se lee el QR y encola el registro en segundo plano.
-     */
     function procesarRegistroQRInteligente(metodo = 'QR_APP') {
       if (!STATE.usuario || !STATE.hoyFisico) return;
 
       const srvEsperado = (STATE.horaPeru < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
-      const primerNombre = STATE.usuario.nombre.split(' ')[0];
 
-      // 1. Actualizar interfaz y mostrar ticket verde EN 0.0 SEGUNDOS (sin esperar al servidor)
       if (!STATE.modoPruebaQR) {
         if (srvEsperado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
         if (srvEsperado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
@@ -1723,11 +1802,10 @@
         guardarSnapshotLocal();
       }
 
+      // Mostrar únicamente el banner verde superior con fecha y hora exacta (sin aviso inferior duplicado)
       mostrarTicketVerdeConfirmado(srvEsperado);
-      mostrarToast(`✅ ¡${srvEsperado} registrado con éxito para ${primerNombre}!`);
       actualizarEstadoBotonQR();
 
-      // 2. Guardar en cola local persistente y sincronizar con Google Sheets en segundo plano
       encolarRegistroQRSegundoPlano({
         idCola: `${STATE.usuario.dni}_${STATE.hoyFisico.fecha}_${srvEsperado}_${new Date().getTime()}`,
         dni: STATE.usuario.dni,
@@ -1770,7 +1848,6 @@
           });
           const data = await resp.json();
 
-          // Si se grabó con éxito o si el servidor responde un rechazo definitivo, se retira de la cola
           if (data && (data.ok || (data.msg && !data.msg.includes('intent') && !data.msg.includes('ocupado')))) {
             exitoEnvio = true;
           }
@@ -1782,7 +1859,6 @@
           lista.shift();
           try { localStorage.setItem('SBS_COLA_QR_V1', JSON.stringify(lista)); } catch (e) {}
         } else {
-          // Si falló la red o hubo saturación, reintenta automáticamente en 2.5 segundos en segundo plano
           setTimeout(() => {
             ENVIANDO_COLA_QR = false;
             procesarColaQRSegundoPlano();
@@ -1796,8 +1872,10 @@
 
     function mostrarTicketVerdeConfirmado(servicio) {
       const box = document.getElementById('ticket-confirmado');
+      const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
+      const horaExacta = obtenerHoraExactaActual();
       document.getElementById('ticket-titulo').textContent = `¡${servicio} REGISTRADO!`;
-      document.getElementById('ticket-sub').textContent = `${STATE.usuario.nombre} • ${STATE.hoyPeruCompleto}`;
+      document.getElementById('ticket-sub').textContent = `${fechaHoy} • ${horaExacta}`;
       box.style.display = 'block';
     }
   </script>

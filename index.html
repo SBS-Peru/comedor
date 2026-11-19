@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=24">
+  <link rel="manifest" href="manifest.json?v=25">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=24">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=24">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=24">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=25">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=25">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=25">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -94,30 +94,72 @@
       max-width: 240px;
     }
 
-    /* BANNER DE ACTUALIZACIÓN EN VIVO */
-    #banner-actualizacion {
+    /* PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA */
+    #modal-update-obligatorio {
       display: none;
-      background: #0f172a;
-      color: #ffffff;
-      padding: 11px 14px;
-      font-size: 13.5px;
-      font-weight: 600;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10000;
+      justify-content: center;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      z-index: 2000;
+      padding: 22px;
+    }
+    .update-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 370px;
+      border-radius: 22px;
+      padding: 30px 24px 26px;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      animation: popModal 0.18s ease-out;
+    }
+    .update-logo {
+      width: 108px;
+      height: 108px;
+      object-fit: contain;
+      margin: 0 auto 14px;
+      display: block;
+    }
+    .update-card h3 {
+      margin: 0 0 18px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--sbs-primary);
+      letter-spacing: -0.2px;
+    }
+    #update-notas-texto {
+      margin: 16px 0 0;
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* ETIQUETA DISCRETA DE VERSIÓN */
+    .top-bar-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
       flex-shrink: 0;
     }
-    .btn-update-now {
-      background: var(--sbs-accent);
-      color: #ffffff;
-      border: none;
-      padding: 7px 13px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
+    .topbar-ver-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.65);
+      letter-spacing: 0.3px;
+      padding-right: 4px;
+    }
+    .login-ver-tag {
+      margin-top: 22px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #94a3b8;
+      letter-spacing: 0.3px;
     }
 
     /* BANNER INFORMATIVO DINÁMICO (DESDE MENU_SEMANAL) */
@@ -323,33 +365,6 @@
       color: #047857; font-size: 15px; font-weight: 800;
     }
 
-    /* ESTILOS MODAL DE NOVEDADES */
-    .novedad-img {
-      width: 100%; max-height: 220px; object-fit: contain; border-radius: 12px;
-      border: 1px solid var(--border); margin-bottom: 12px; background: #f8fafc;
-    }
-    .novedad-body {
-      text-align: center; padding: 6px 4px 12px;
-    }
-    .novedad-badge {
-      display: inline-block; background: #dcfce7; color: #065f46; font-size: 11.5px;
-      font-weight: 800; padding: 4px 10px; border-radius: 999px; margin-bottom: 10px;
-      text-transform: uppercase; letter-spacing: 0.4px;
-    }
-    .novedad-titulo {
-      margin: 0 0 8px; font-size: 19px; font-weight: 800; color: var(--sbs-primary);
-    }
-    .novedad-desc {
-      margin: 0; font-size: 14.5px; color: #475569; line-height: 1.5;
-    }
-    .novedad-dots {
-      display: flex; justify-content: center; gap: 7px; margin: 14px 0;
-    }
-    .novedad-dot {
-      width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1;
-    }
-    .novedad-dot.active { background: var(--sbs-primary); width: 20px; border-radius: 999px; }
-
     /* VENTANA EMERGENTE DEL ESCÁNER QR */
     #modal-qr-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -473,7 +488,7 @@
   <div class="app-shell" id="app-shell">
     <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
     <div id="view-splash">
-      <img src="./Logo.jpg?v=24" alt="Comedor SBS" class="splash-logo">
+      <img src="./Logo.jpg?v=25" alt="Comedor SBS" class="splash-logo">
       <div class="splash-spinner" id="splash-spinner"></div>
       <p id="splash-texto">Actualizando...</p>
       <div id="splash-retry-wrap">
@@ -483,15 +498,10 @@
       </div>
     </div>
 
-    <div id="banner-actualizacion">
-      <span>Nueva actualización disponible</span>
-      <button class="btn-update-now" onclick="aplicarActualizacionApp()">Actualizar ahora</button>
-    </div>
-
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=24" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=25" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -513,6 +523,7 @@
       <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:12px; padding:12px; font-size:14px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
         Instalar App en pantalla de inicio
       </button>
+      <div class="login-ver-tag" id="lbl-ver-login">v25</div>
     </div>
 
     <!-- 2. PANTALLA PRINCIPAL -->
@@ -529,7 +540,10 @@
             <h2 id="lbl-nombre">Hola</h2>
             <p id="lbl-estado-rol">Tarifas aplicadas según planilla</p>
           </div>
-          <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
+          <div class="top-bar-right">
+            <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
+            <span class="topbar-ver-tag" id="lbl-ver-main">v25</span>
+          </div>
         </div>
         <div class="header-kpi-strip">
           <span id="hdr-resumen-cant">0 Des. | 0 Alm.</span>
@@ -739,19 +753,15 @@
     </div>
   </div>
 
-  <!-- MODAL: NOVEDADES Y GUÍA DE ACTUALIZACIÓN (SE MUESTRA 1 SOLA VEZ POR VERSIÓN) -->
-  <div class="modal-backdrop" id="modal-novedades-overlay">
-    <div class="modal-panel" style="max-width:400px;">
-      <div class="novedad-body">
-        <span class="novedad-badge" id="nov-etiqueta">Novedad</span>
-        <img id="nov-imagen" class="novedad-img" style="display:none;" alt="Guía Comedor SBS">
-        <h3 class="novedad-titulo" id="nov-titulo"></h3>
-        <p class="novedad-desc" id="nov-desc"></p>
-        <div class="novedad-dots" id="nov-dots"></div>
-      </div>
-      <button class="btn btn-primary" id="btn-nov-accion" style="padding:13px; font-size:15px;" onclick="avanzarSlideNovedades()">
-        Entendido
+  <!-- PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA -->
+  <div id="modal-update-obligatorio">
+    <div class="update-card">
+      <img src="./Logo.jpg?v=25" alt="Comedor SBS" class="update-logo">
+      <h3>Actualiza Comedor SBS</h3>
+      <button class="btn btn-primary" id="btn-actualizar-sbs" onclick="aplicarActualizacionApp()">
+        Actualizar Comedor SBS
       </button>
+      <p id="update-notas-texto"></p>
     </div>
   </div>
 
@@ -760,43 +770,21 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    const VERSION_LOCAL_APP = "24";
+    const VERSION_LOCAL_APP = "25";
+
+    // Texto de mejora por defecto (puedes editarlo aquí o desde Código.gs -> CONFIG.NOTAS_VERSION)
+    const TEXTO_MEJORA_DEFECTO = "Ahora puedes ver tus panes elegidos al escanear tu desayuno y la App carga más rápido.";
 
     // Variables de arranque operativo (evitan sumar consumos anteriores al inicio del servicio)
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
     const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
     const PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
-    /**
-     * CONFIGURACIÓN DE GUÍA / NOVEDADES DE ACTUALIZACIÓN:
-     * - Cambia `version` (ej. "24") cuando quieras que todos los colaboradores vuelvan a ver la guía una vez.
-     * - Para mostrar una imagen, súbela a GitHub junto a Logo.jpg y pon su nombre en `imagen` (ej. "./guia.png").
-     * - Si no deseas mostrar la ventana, cambia `activo: false`.
-     */
-    const CONFIG_NOVEDADES = {
-      activo: true,
-      version: "23",
-      slides: [
-        {
-          etiqueta: "Nueva función",
-          titulo: "Consulta el detalle de tu consumo",
-          descripcion: "Ahora puedes tocar el botón verde «Consumido: S/» en la parte superior para ver el listado día por día de tus desayunos y almuerzos del ciclo vigente.",
-          imagen: ""
-        },
-        {
-          etiqueta: "Actualización en vivo",
-          titulo: "Cobro al corte y pantalla para cocina",
-          descripcion: "Tus reservas cerradas (4:00 PM desayuno y 10:00 AM almuerzo) se reflejan automáticamente en tu acumulado. Al escanear el QR verás una confirmación grande para mostrar en cocina.",
-          imagen: ""
-        }
-      ]
-    };
-
     let COLA_CAMBIOS_RESERVA = {};
     let TIMER_LOTE_RESERVA = null;
     let ENVIANDO_COLA_QR = false;
     let SINCRONIZANDO_AHORA = false;
-    let IDX_SLIDE_NOVEDAD = 0;
+    let ACTUALIZACION_OBLIGATORIA = false;
 
     // Limpiar parámetro ?v=... de la URL al cargar (ayuda a que iOS conserve el permiso de cámara)
     (function limpiarParametroVersionURL() {
@@ -822,7 +810,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=24', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=25', { updateViaCache: 'none' }).then(reg => {
           reg.update().catch(() => {});
         }).catch(() => {});
       });
@@ -844,32 +832,35 @@
       document.getElementById('btn-instalar-pwa').style.display = 'none';
     }
 
-    function mostrarBannerActualizacion(verRemota) {
-      const yaActualizoEstaVersion = sessionStorage.getItem('SBS_UPDATED_VER');
-      if (verRemota && yaActualizoEstaVersion === String(verRemota)) return;
-      const b = document.getElementById('banner-actualizacion');
-      if (b) {
-        b.dataset.targetVer = String(verRemota || '');
-        b.style.display = 'flex';
+    function mostrarPantallaActualizacion(notasVersion) {
+      ACTUALIZACION_OBLIGATORIA = true;
+      ocultarSplash();
+      cerrarEscanerQR();
+      const modal = document.getElementById('modal-update-obligatorio');
+      const txtNotas = document.getElementById('update-notas-texto');
+      const textoFinal = (notasVersion && String(notasVersion).trim()) ? String(notasVersion).trim() : TEXTO_MEJORA_DEFECTO;
+      if (txtNotas) {
+        txtNotas.textContent = textoFinal;
+        txtNotas.style.display = textoFinal ? 'block' : 'none';
       }
+      if (modal) modal.style.display = 'flex';
     }
 
-    function verificarVersionServidor(versionRemota) {
+    function verificarVersionServidor(versionRemota, notasVersion) {
       if (versionRemota && Number(versionRemota) > Number(VERSION_LOCAL_APP)) {
-        mostrarBannerActualizacion(versionRemota);
-      } else {
-        const b = document.getElementById('banner-actualizacion');
-        if (b) b.style.display = 'none';
+        mostrarPantallaActualizacion(notasVersion);
+        return true;
       }
+      return false;
     }
 
     async function aplicarActualizacionApp() {
       vibrarHaptico(20);
-      const b = document.getElementById('banner-actualizacion');
-      if (b && b.dataset.targetVer) {
-        sessionStorage.setItem('SBS_UPDATED_VER', b.dataset.targetVer);
+      const btn = document.getElementById('btn-actualizar-sbs');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Actualizando...';
       }
-      if (b) b.style.display = 'none';
       try {
         if ('serviceWorker' in navigator) {
           const regs = await navigator.serviceWorker.getRegistrations();
@@ -1046,6 +1037,11 @@
       return ahora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     }
 
+    function obtenerHoraLima24hActual() {
+      const p = obtenerPartesLimaActual();
+      return `${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
+    }
+
     function obtenerInfoMenuDia(d) {
       const panes = (Array.isArray(d.panesDisponibles) && d.panesDisponibles.length > 0)
         ? d.panesDisponibles
@@ -1156,7 +1152,7 @@
         });
         clearTimeout(idTimer);
         const data = await resp.json();
-        if (data && data.versionApp) verificarVersionServidor(data.versionApp);
+        if (data && data.versionApp) verificarVersionServidor(data.versionApp, data.notasVersion);
         return data;
       } catch (err) {
         clearTimeout(idTimer);
@@ -1176,13 +1172,20 @@
     }
 
     async function sincronizarSesionConSplash(sesionGuardada, duracionMinMs = 850) {
-      if (SINCRONIZANDO_AHORA) return;
+      if (SINCRONIZANDO_AHORA || ACTUALIZACION_OBLIGATORIA) return;
       SINCRONIZANDO_AHORA = true;
-      mostrarSplash('Actualizando tu menú...', false);
+      mostrarSplash('Cargando tu menú...', false);
 
       const tIni = performance.now();
       try {
-        const resFast = await fetchConTimeout('sincronizarMiEstado', [sesionGuardada.dni], 4500);
+        const resFast = await fetchConTimeout('sincronizarMiEstado', [sesionGuardada.dni, VERSION_LOCAL_APP], 4500);
+
+        // Si el servidor indica versión nueva, bloqueamos de inmediato con la pantalla de actualización
+        if (resFast && verificarVersionServidor(resFast.versionApp, resFast.notasVersion)) {
+          SINCRONIZANDO_AHORA = false;
+          return;
+        }
+
         const transcurrido = performance.now() - tIni;
         if (transcurrido < duracionMinMs) {
           await new Promise(r => setTimeout(r, duracionMinMs - transcurrido));
@@ -1208,7 +1211,6 @@
         asignarUsuarioYEntrar(reg, sesionGuardada.token || reg.usuario.hashClave);
         ocultarSplash();
         SINCRONIZANDO_AHORA = false;
-        verificarYMostrarGuiaNovedades();
       } catch (err) {
         SINCRONIZANDO_AHORA = false;
         const hoyLima = obtenerFechaHoyLimaISO();
@@ -1229,7 +1231,7 @@
           renderizarVistaPrincipal();
           mostrarToast('Conexión lenta. Mostrando datos de hoy.');
         } else {
-          mostrarSplash('No se pudo conectar para actualizar el día de hoy.', true);
+          mostrarSplash('Sin conexión. Toca para intentar de nuevo.', true);
         }
       }
     }
@@ -1250,6 +1252,11 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      const lblVerLogin = document.getElementById('lbl-ver-login');
+      const lblVerMain = document.getElementById('lbl-ver-main');
+      if (lblVerLogin) lblVerLogin.textContent = 'v' + VERSION_LOCAL_APP;
+      if (lblVerMain) lblVerMain.textContent = 'v' + VERSION_LOCAL_APP;
+
       procesarColaQRSegundoPlano();
 
       const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
@@ -1260,6 +1267,9 @@
 
       if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
         sincronizarSesionConSplash(sesionGuardada, 900);
+      } else {
+        // Verifica versión incluso antes de iniciar sesión
+        ejecutarConReintento('verificarVersionApp', [], null, null, 1);
       }
 
       document.getElementById('txt-dni').addEventListener('keyup', (e) => {
@@ -1351,7 +1361,7 @@
             body: JSON.stringify({ action: nombreFuncion, args: argsArray })
           });
           const data = await resp.json();
-          if (data && data.versionApp) verificarVersionServidor(data.versionApp);
+          if (data && data.versionApp) verificarVersionServidor(data.versionApp, data.notasVersion);
           if (onSuccess) onSuccess(data);
           return;
         } catch (err) {
@@ -1393,14 +1403,15 @@
       btn.disabled = true;
       btn.textContent = 'Verificando...';
 
-      ejecutarConReintento('sincronizarMiEstado', [dni], res => {
+      ejecutarConReintento('sincronizarMiEstado', [dni, VERSION_LOCAL_APP], res => {
         btn.disabled = false;
         btn.textContent = 'Continuar';
+        if (ACTUALIZACION_OBLIGATORIA) return;
         if (res && res.ok && res.registro) {
           aplicarMetadatosSync(res);
           abrirFormularioClave(res.registro);
         } else {
-          mostrarToast(res && res.msg ? res.msg : 'DNI no registrado en BD_COLABORADORES.');
+          mostrarToast(res && res.msg ? res.msg : 'DNI no registrado.');
         }
       }, () => {
         btn.disabled = false;
@@ -1468,7 +1479,6 @@
           if (hashCliente === hashGuardadoRAM) {
             document.getElementById('txt-clave').value = '';
             asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
-            verificarYMostrarGuiaNovedades();
           } else {
             mostrarToast('Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
           }
@@ -1478,7 +1488,6 @@
           STATE.registroPendienteLogin.usuario.hashClave = hashCliente;
           document.getElementById('txt-clave').value = '';
           asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
-          verificarYMostrarGuiaNovedades();
           ejecutarConReintento('guardarHashClaveDirecto', [dni, hashCliente], null, null, 4);
           return;
         }
@@ -1496,7 +1505,6 @@
           STATE.registroPendienteLogin.usuario.hashClave = res.tokenSesion;
           document.getElementById('txt-clave').value = '';
           asignarUsuarioYEntrar(STATE.registroPendienteLogin, res.tokenSesion);
-          verificarYMostrarGuiaNovedades();
         } else {
           mostrarToast(res ? res.msg : 'Error al validar contraseña.');
         }
@@ -1560,7 +1568,7 @@
     }
 
     // ========================================================================
-    // BANNER INFORMATIVO DINÁMICO Y MODAL DE NOVEDADES
+    // BANNER INFORMATIVO DINÁMICO (DESDE MENU_SEMANAL!E2)
     // ========================================================================
     function renderizarBannerInformativo() {
       const box = document.getElementById('banner-informativo-sbs');
@@ -1584,55 +1592,6 @@
       const aviso = String(STATE.avisoBanner || '').trim();
       if (aviso) localStorage.setItem('SBS_BANNER_DISMISSED', aviso);
       document.getElementById('banner-informativo-sbs').style.display = 'none';
-    }
-
-    function verificarYMostrarGuiaNovedades() {
-      if (!CONFIG_NOVEDADES || !CONFIG_NOVEDADES.activo || !Array.isArray(CONFIG_NOVEDADES.slides) || CONFIG_NOVEDADES.slides.length === 0) return;
-      const visto = localStorage.getItem('SBS_NOVEDADES_VISTO');
-      if (visto === String(CONFIG_NOVEDADES.version)) return;
-
-      IDX_SLIDE_NOVEDAD = 0;
-      pintarSlideNovedad();
-      document.getElementById('modal-novedades-overlay').style.display = 'flex';
-    }
-
-    function pintarSlideNovedad() {
-      const slides = CONFIG_NOVEDADES.slides;
-      const s = slides[IDX_SLIDE_NOVEDAD];
-      document.getElementById('nov-etiqueta').textContent = s.etiqueta || 'Novedad';
-      document.getElementById('nov-titulo').textContent = s.titulo || '';
-      document.getElementById('nov-desc').textContent = s.descripcion || '';
-
-      const imgEl = document.getElementById('nov-imagen');
-      if (s.imagen && String(s.imagen).trim() !== '') {
-        imgEl.src = s.imagen;
-        imgEl.style.display = 'block';
-      } else {
-        imgEl.style.display = 'none';
-      }
-
-      const dotsEl = document.getElementById('nov-dots');
-      if (slides.length > 1) {
-        dotsEl.innerHTML = slides.map((_, idx) =>
-          `<span class="novedad-dot ${idx === IDX_SLIDE_NOVEDAD ? 'active' : ''}"></span>`
-        ).join('');
-      } else {
-        dotsEl.innerHTML = '';
-      }
-
-      const btn = document.getElementById('btn-nov-accion');
-      btn.textContent = (IDX_SLIDE_NOVEDAD < slides.length - 1) ? 'Siguiente' : 'Entendido';
-    }
-
-    function avanzarSlideNovedades() {
-      vibrarHaptico(15);
-      if (IDX_SLIDE_NOVEDAD < CONFIG_NOVEDADES.slides.length - 1) {
-        IDX_SLIDE_NOVEDAD++;
-        pintarSlideNovedad();
-      } else {
-        localStorage.setItem('SBS_NOVEDADES_VISTO', String(CONFIG_NOVEDADES.version));
-        document.getElementById('modal-novedades-overlay').style.display = 'none';
-      }
     }
 
     // ========================================================================
@@ -1866,7 +1825,7 @@
         return fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'sincronizarMiEstado', args: [dniTest] })
+          body: JSON.stringify({ action: 'sincronizarMiEstado', args: [dniTest, VERSION_LOCAL_APP] })
         }).then(r => r.json()).then(d => ({
           ok: !!(d && d.ok),
           ms: Math.round(performance.now() - t0)
@@ -2432,6 +2391,8 @@
       if (!STATE.usuario || !STATE.hoyFisico) return;
 
       vibrarHaptico([35, 45, 35]);
+      const horaEscaneoExacta = obtenerHoraLima24hActual();
+      const tsEscaneoMs = Date.now();
       const srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
 
       if (!STATE.modoPruebaQR) {
@@ -2453,10 +2414,12 @@
       actualizarEstadoBotonQR();
 
       encolarRegistroQRSegundoPlano({
-        idCola: `${STATE.usuario.dni}_${STATE.hoyFisico.fecha}_${srvEsperado}_${new Date().getTime()}`,
+        idCola: `${STATE.usuario.dni}_${STATE.hoyFisico.fecha}_${srvEsperado}_${tsEscaneoMs}`,
         dni: STATE.usuario.dni,
         metodo: metodo,
-        servicio: srvEsperado
+        servicio: srvEsperado,
+        horaEscaneo: horaEscaneoExacta,
+        tsEscaneoMs: tsEscaneoMs
       });
     }
 
@@ -2489,7 +2452,13 @@
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
               action: 'registrarConsumoInteligente',
-              args: [actual.dni, actual.metodo, actual.servicio]
+              args: [
+                actual.dni,
+                actual.metodo,
+                actual.servicio,
+                actual.horaEscaneo || '',
+                actual.tsEscaneoMs || 0
+              ]
             })
           });
           const data = await resp.json();

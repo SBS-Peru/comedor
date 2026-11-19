@@ -1,63 +1,64 @@
 /**
- * ============================================================================
- * SERVICE WORKER - COMEDOR SBS (Estrategia Network-First para Actualización Instantánea)
- * ============================================================================
+ * Service Worker - Comedor SBS (v25)
+ * Estrategia Network-First para evitar que los celulares se queden en versiones antiguas.
  */
-
-const CACHE_NAME = 'sbs-comedor-v18';
-const ASSETS = [
+const CACHE_NAME = 'comedor-sbs-v25';
+const ASSETS_BASE = [
   './',
   './index.html',
-  './Logo.jpg',
-  './manifest.json'
+  './manifest.json',
+  './Logo.jpg'
 ];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS).catch(() => {});
-    })
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(ASSETS_BASE).catch(() => {}))
+      .catch(() => {})
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
+    caches.keys().then((keys) =>
+      Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
         })
-      );
-    }).then(() => self.clients.claim())
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
 
-  // Las peticiones POST hacia Google Apps Script siempre van directo a la red
-  if (req.method !== 'GET' || req.url.includes('script.google.com') || req.url.includes('googleusercontent.com')) {
-    return;
-  }
+  // Nunca cachear peticiones POST ni llamadas externas (Google Apps Script / CDNs)
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
 
-  // Estrategia Network-First: siempre intenta traer el archivo más reciente de GitHub
+  // Network-First: siempre intenta descargar la versión más reciente desde GitHub Pages
   event.respondWith(
     fetch(req, { cache: 'no-store' })
       .then((networkResp) => {
-        if (networkResp && networkResp.status === 200 && networkResp.type === 'basic') {
+        if (networkResp && networkResp.status === 200) {
           const respClone = networkResp.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(req, respClone);
+            cache.put(req, respClone).catch(() => {});
           });
         }
         return networkResp;
       })
       .catch(() => {
-        return caches.match(req).then((cachedResp) => {
-          return cachedResp || caches.match('./index.html');
+        return caches.match(req).then((cached) => {
+          if (cached) return cached;
+          if (req.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
         });
       })
   );

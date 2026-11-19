@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal RRHH • Comedor SBS</title>
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=21">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=22">
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
@@ -171,7 +171,7 @@
   <!-- 1. LOGIN -->
   <div id="view-login">
     <div class="login-card">
-      <img src="./Logo.jpg?v=21" alt="SBS" class="login-logo">
+      <img src="./Logo.jpg?v=22" alt="SBS" class="login-logo">
       <h1>Portal RRHH • Comedor SBS</h1>
 
       <div id="step-dni">
@@ -199,7 +199,7 @@
   <div id="view-portal">
     <header class="top-header">
       <div class="brand-wrap">
-        <img src="./Logo.jpg?v=21" alt="SBS" class="brand-logo">
+        <img src="./Logo.jpg?v=22" alt="SBS" class="brand-logo">
         <div>
           <h2>Portal RRHH • Comedor SBS</h2>
           <span id="lbl-admin-activo"></span>
@@ -212,7 +212,7 @@
           <span id="lbl-ultima-sync">En línea</span>
         </div>
         <button class="btn btn-success btn-sm" style="background:#10b981; color:white; border:none;" onclick="abrirModalAsignarServicio()">
-          ➕ Asignar Servicio
+          Asignar Servicio
         </button>
         <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalMenu()">
           Menú Semanal
@@ -251,7 +251,7 @@
     </nav>
 
     <main class="container">
-      <!-- MÓDULO: MONITOREO EN VIVO (ENCABEZADOS Y CELDAS LIMPIAS SIN PARÉNTESIS NI HORAS DE ORIGEN) -->
+      <!-- MÓDULO: MONITOREO EN VIVO -->
       <section id="mod-monitoreo">
         <div class="kpi-row">
           <div class="kpi-card">
@@ -314,7 +314,7 @@
         </div>
       </section>
 
-      <!-- MÓDULO: BASE DE COLABORADORES (TABLA DIRECTA CON GUARDADO GENERAL) -->
+      <!-- MÓDULO: BASE DE COLABORADORES (CON RANGO DE AUSENCIA PARA VACACIONES / DM) -->
       <section id="mod-colaboradores" style="display:none;">
         <div class="action-bar">
           <div class="toolbar-group">
@@ -346,7 +346,7 @@
                 <th>Panes por Defecto</th>
                 <th>Almuerzo por Defecto</th>
                 <th>Estado</th>
-                <th>Fin de Ausencia</th>
+                <th>Rango de Ausencia</th>
               </tr>
             </thead>
             <tbody id="tbody-colaboradores">
@@ -475,6 +475,7 @@
       token: '',
       pendienteLogin: null,
       hoyStr: '',
+      horaPeru: 0,
       fechaSeleccionada: '',
       fechasSemana: [],
       panesCatalogo: PANES_CATALOGO_BASE.slice(),
@@ -826,6 +827,7 @@
         }
 
         STATE.hoyStr = res.hoyStr;
+        if (typeof res.horaPeru === 'number') STATE.horaPeru = res.horaPeru;
         STATE.fechaSeleccionada = res.fechaConsultada;
         STATE.fechasSemana = res.fechasSemana || [];
         STATE.panesCatalogo = PANES_CATALOGO_BASE.slice();
@@ -943,20 +945,20 @@
 
         if (res && res.ok) {
           cerrarModalAsignarServicio();
-          mostrarToast('✅ ' + res.msg);
+          mostrarToast(res.msg);
           await cargarDatosPortal(false);
         } else {
-          mostrarToast('⚠️ ' + (res ? res.msg : 'No se pudo asignar el servicio.'));
+          mostrarToast(res ? res.msg : 'No se pudo asignar el servicio.');
         }
       } catch (e) {
         btn.disabled = false;
         btn.textContent = 'Asignar';
-        mostrarToast('❌ Error de conexión con el servidor.');
+        mostrarToast('Error de conexión con el servidor.');
       }
     }
 
     // ========================================================================
-    // MÓDULO: MONITOREO EN VIVO (CELDAS LIMPIAS SIN SEGUNDA LÍNEA DE HORAS)
+    // MÓDULO: MONITOREO EN VIVO (ENCABEZADOS Y CELDAS LIMPIAS)
     // ========================================================================
     function renderizarTablaMonitoreo() {
       const lista = STATE.monitoreoDia || [];
@@ -997,7 +999,7 @@
       });
 
       document.getElementById('kpi-des-total').textContent = `${totDesRes} / ${totDesQR}`;
-      document.getElementById('kpi-des-sub').textContent = `${totDesRes} reservados • ${totDesQR} asistieron`;
+      document.getElementById('kpi-des-sub').textContent = `${totDesRes} reservados - ${totDesQR} asistieron`;
 
       const txtPanes = Object.keys(conteoPanes).map(k => `${k}: ${conteoPanes[k]}`).join(' | ');
       document.getElementById('kpi-des-insumos').textContent =
@@ -1061,7 +1063,7 @@
     }
 
     // ========================================================================
-    // MÓDULO: BASE DE COLABORADORES (ORDENADO A-Z Y CON GUARDADO GENERAL)
+    // MÓDULO: BASE DE COLABORADORES (CON RANGO DE AUSENCIA DESDE / HASTA)
     // ========================================================================
     function desglosarCodigoDes(cod) {
       const s = String(cod || 'NO').trim();
@@ -1086,7 +1088,8 @@
           desDef: mod.desDefCodigo,
           almDef: mod.almDef,
           estado: mod.estado,
-          fechaFinEstado: mod.fechaFinEstado,
+          fechaInicioEstado: mod.fechaInicioEstado || '',
+          fechaFinEstado: mod.fechaFinEstado || '',
           esModificado: true
         };
       }
@@ -1096,6 +1099,7 @@
         desDef: c.desDef,
         almDef: c.almDef,
         estado: c.estado,
+        fechaInicioEstado: c.fechaInicioEstado || '',
         fechaFinEstado: c.fechaFinEstado || '',
         esModificado: false
       };
@@ -1125,7 +1129,7 @@
         const d = desglosarCodigoDes(c.desDef);
         const mostrarP1 = (d.op === 'OP1' || d.op === 'OP3');
         const mostrarP2 = (d.op === 'OP1');
-        const mostrarFechaFin = (c.estado === 'VACACIONES' || c.estado === 'DM');
+        const mostrarRango = (c.estado === 'VACACIONES' || c.estado === 'DM');
 
         const optsP1 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p1 ? 'selected' : ''}>${p}</option>`).join('');
         const optsP2 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p2 ? 'selected' : ''}>${p}</option>`).join('');
@@ -1171,9 +1175,12 @@
               </select>
             </td>
             <td>
-              <input type="date" class="form-input" id="ffin-${c.dni}" value="${c.fechaFinEstado || ''}"
-                style="display:${mostrarFechaFin ? 'inline-block' : 'none'};" onchange="registrarCambioFila('${c.dni}')">
-              <span id="lbl-sinfecha-${c.dni}" style="display:${!mostrarFechaFin ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">-</span>
+              <div id="rango-wrap-${c.dni}" style="display:${mostrarRango ? 'flex' : 'none'}; align-items:center; gap:5px;">
+                <input type="date" class="form-input" style="padding:5px 7px; font-size:12px;" id="fini-${c.dni}" value="${c.fechaInicioEstado || ''}" title="Fecha de inicio" onchange="registrarCambioFila('${c.dni}')">
+                <span style="font-size:11.5px; color:var(--muted); font-weight:700;">a</span>
+                <input type="date" class="form-input" style="padding:5px 7px; font-size:12px;" id="ffin-${c.dni}" value="${c.fechaFinEstado || ''}" title="Fecha de fin" onchange="registrarCambioFila('${c.dni}')">
+              </div>
+              <span id="lbl-sinfecha-${c.dni}" style="display:${!mostrarRango ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">-</span>
             </td>
           </tr>
         `;
@@ -1186,6 +1193,7 @@
       const p2 = document.getElementById('pan2-' + dni).value;
       const alm = document.getElementById('alm-' + dni).value;
       const est = document.getElementById('est-' + dni).value;
+      const fini = (est === 'VACACIONES' || est === 'DM') ? document.getElementById('fini-' + dni).value : '';
       const ffin = (est === 'VACACIONES' || est === 'DM') ? document.getElementById('ffin-' + dni).value : '';
 
       let desDefCodigo = 'NO';
@@ -1198,6 +1206,7 @@
         orig.desDef === desDefCodigo &&
         orig.almDef === alm &&
         orig.estado === est &&
+        (orig.fechaInicioEstado || '') === fini &&
         (orig.fechaFinEstado || '') === ffin;
 
       const tr = document.getElementById('row-colab-' + dni);
@@ -1210,6 +1219,7 @@
           desDefCodigo: desDefCodigo,
           almDef: alm,
           estado: est,
+          fechaInicioEstado: fini,
           fechaFinEstado: ffin
         };
         if (tr) tr.classList.add('row-modified');
@@ -1242,14 +1252,18 @@
 
     function alCambiarEstadoFila(dni) {
       const est = document.getElementById('est-' + dni).value;
-      const inpFecha = document.getElementById('ffin-' + dni);
+      const wrapRango = document.getElementById('rango-wrap-' + dni);
+      const inpIni = document.getElementById('fini-' + dni);
+      const inpFin = document.getElementById('ffin-' + dni);
       const lbl = document.getElementById('lbl-sinfecha-' + dni);
+
       if (est === 'VACACIONES' || est === 'DM') {
-        inpFecha.style.display = 'inline-block';
+        wrapRango.style.display = 'flex';
         lbl.style.display = 'none';
       } else {
-        inpFecha.style.display = 'none';
-        inpFecha.value = '';
+        wrapRango.style.display = 'none';
+        inpIni.value = '';
+        inpFin.value = '';
         lbl.style.display = 'inline-block';
       }
       registrarCambioFila(dni);
@@ -1261,9 +1275,15 @@
 
       for (let i = 0; i < lista.length; i++) {
         const item = lista[i];
-        if ((item.estado === 'VACACIONES' || item.estado === 'DM') && !item.fechaFinEstado) {
-          mostrarToast(`Indica la fecha de fin de ausencia para el DNI ${item.dni}.`);
-          return;
+        if (item.estado === 'VACACIONES' || item.estado === 'DM') {
+          if (!item.fechaInicioEstado || !item.fechaFinEstado) {
+            mostrarToast(`Indica el rango completo de fechas (inicio y fin) para el DNI ${item.dni}.`);
+            return;
+          }
+          if (item.fechaInicioEstado > item.fechaFinEstado) {
+            mostrarToast(`La fecha de inicio no puede ser mayor a la fecha fin para el DNI ${item.dni}.`);
+            return;
+          }
         }
       }
 
@@ -1397,7 +1417,7 @@
     }
 
     // ========================================================================
-    // MÓDULO: REPORTE DE PLANILLA RRHH (ORDENADO A-Z POR APELLIDOS)
+    // MÓDULO: REPORTE DE PLANILLA (COBRO AUTOMÁTICO AL CIERRE QR: 12 PM / 6 PM)
     // ========================================================================
     function inicializarFechasPlanilla() {
       const baseStr = STATE.hoyStr || new Date().toISOString().split('T')[0];
@@ -1424,7 +1444,8 @@
       try {
         const res = await llamarAPI('obtenerReportePlanillaRRHH', [fIni, fFin]);
         const filasCrudas = (res && res.filas) ? res.filas : [];
-        const hoyISO = STATE.hoyStr || new Date().toISOString().split('T')[0];
+        const hoyISO = (res && res.hoyStr) ? res.hoyStr : (STATE.hoyStr || new Date().toISOString().split('T')[0]);
+        const horaActual = (res && typeof res.horaPeru === 'number') ? res.horaPeru : (STATE.horaPeru || 0);
 
         const filasValidas = filasCrudas.filter(f => {
           const iso = f.fechaISO || convertirFechaPeruAISO(f.fecha);
@@ -1432,7 +1453,13 @@
           if (iso > hoyISO) return false;
           if (esDes && iso < FECHA_ARRANQUE_DESAYUNO && !String(f.opcion || '').includes('Asignado')) return false;
           if (!esDes && iso < FECHA_ARRANQUE_ALMUERZO) return false;
-          if (iso === hoyISO && String(f.consumio || '').toUpperCase() !== 'SI') return false;
+
+          // Para el día de hoy: cuenta si escaneó QR, o si reservó y ya cerró la ventana QR (12 PM Desayuno / 6 PM Almuerzo)
+          if (iso === hoyISO) {
+            const asistio = String(f.consumio || '').toUpperCase() === 'SI';
+            const pasoCierre = esDes ? (horaActual >= 12.0) : (horaActual >= 18.0);
+            if (!asistio && !pasoCierre) return false;
+          }
           return true;
         });
 

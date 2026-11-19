@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal RRHH • Comedor SBS</title>
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=25">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=26">
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
@@ -23,7 +23,7 @@
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { margin: 0; padding: 0; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    /* AVISO DE ACTUALIZACIÓN DEL PORTAL (CUANDO HAY CAMBIOS SIN GUARDAR) */
+    /* AVISO SUAVE SI HAY NUEVA VERSIÓN CON CAMBIOS PENDIENTES */
     #banner-update-rrhh {
       display: none;
       background: #0f172a;
@@ -59,260 +59,407 @@
 
     /* BOTONES */
     .btn {
-      padding: 10px 18px; border: none; border-radius: 9px; font-size: 13.5px; font-weight: 700;
-      cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 9px 16px; border: none; border-radius: 9px; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
     .btn-primary { background: var(--sbs-primary); color: white; }
     .btn-primary:hover { background: var(--sbs-primary-dark); }
     .btn-success { background: var(--sbs-accent); color: white; }
-    .btn-orange { background: var(--sbs-orange); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #b91c1c; }
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
     .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
-    .btn-sm { padding: 8px 13px; font-size: 12.5px; border-radius: 8px; }
-    .btn-lg-save { padding: 10px 24px; font-size: 14px; font-weight: 800; border-radius: 9px; }
+    .btn-sm { padding: 7px 12px; font-size: 12.5px; border-radius: 8px; }
+    .btn-lg-save { padding: 9px 22px; font-size: 13.5px; font-weight: 800; border-radius: 9px; }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
     /* CABECERA Y NAVEGACIÓN */
     #view-portal { display: none; flex-direction: column; min-height: 100vh; }
     .top-header {
-      background: var(--sbs-primary); color: white; padding: 13px 28px;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+      background: var(--sbs-primary); color: white; padding: 12px 26px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
       position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    .brand-wrap { display: flex; align-items: center; gap: 13px; }
-    .brand-logo { width: 38px; height: 38px; border-radius: 9px; background: white; object-fit: contain; padding: 3px; }
-    .brand-wrap h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.2px; display: flex; align-items: center; gap: 8px; }
+    .brand-wrap { display: flex; align-items: center; gap: 12px; }
+    .brand-logo { width: 36px; height: 36px; border-radius: 9px; background: white; object-fit: contain; padding: 3px; }
+    .brand-wrap h2 { margin: 0; font-size: 17.5px; font-weight: 800; letter-spacing: -0.2px; display: flex; align-items: center; gap: 8px; }
     .portal-ver-pill {
       font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.75);
       background: rgba(255,255,255,0.12); padding: 2px 7px; border-radius: 6px;
     }
     .brand-wrap span.admin-sub { font-size: 12px; color: rgba(255,255,255,0.8); display: block; margin-top: 1px; }
 
-    .header-actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .sync-pill {
       background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
-      padding: 6px 12px; border-radius: 999px; font-size: 12px; display: flex; align-items: center; gap: 6px;
+      padding: 6px 11px; border-radius: 999px; font-size: 11.5px; display: flex; align-items: center; gap: 6px;
+      font-weight: 600;
     }
     .dot-live { width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block; }
+    .dot-live.pico { animation: pulseLive 1.4s infinite; }
+    @keyframes pulseLive {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
 
     .nav-bar {
-      background: white; border-bottom: 1px solid var(--border); padding: 0 28px;
+      background: white; border-bottom: 1px solid var(--border); padding: 0 26px;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
     }
     .nav-tabs { display: flex; gap: 8px; }
     .nav-tab {
-      padding: 14px 18px; font-size: 13.5px; font-weight: 700; color: var(--muted);
+      padding: 13px 18px; font-size: 13.5px; font-weight: 700; color: var(--muted);
       cursor: pointer; border-bottom: 3px solid transparent; transition: 0.15s;
     }
     .nav-tab:hover { color: var(--sbs-primary); }
     .nav-tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
 
-    .container { max-width: 1440px; width: 100%; margin: 0 auto; padding: 20px 28px; flex: 1; }
+    .container { max-width: 1440px; width: 100%; margin: 0 auto; padding: 18px 26px; flex: 1; }
 
-    /* 4 TARJETAS INTERACTIVAS DE MONITOREO (BOTONES DE FILTRO) */
-    .kpi-row {
+    /* ======================================================================
+       MONITOREO EN VIVO: 2 BLOQUES AGRUPADOS (3 TARJETAS DESAYUNO + 3 ALMUERZO)
+       ====================================================================== */
+    .mon-groups-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(220px, 1fr));
-      gap: 14px;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
       margin-bottom: 16px;
     }
     @media (max-width: 1080px) {
-      .kpi-row { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+      .mon-groups-grid { grid-template-columns: 1fr; }
     }
-    @media (max-width: 580px) {
-      .kpi-row { grid-template-columns: 1fr; }
-    }
-    .kpi-card {
+    .service-group {
       background: white;
-      border: 2px solid var(--border);
-      border-radius: 13px;
-      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .service-group-head {
+      padding: 7px 14px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-bottom: 1px solid var(--border);
+    }
+    .service-group.grp-des .service-group-head {
+      background: #fffaf5;
+      color: #c2410c;
+    }
+    .service-group.grp-alm .service-group-head {
+      background: #f4fcf8;
+      color: #047857;
+    }
+    .svc-dot {
+      width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+    }
+    .grp-des .svc-dot { background: var(--sbs-orange); }
+    .grp-alm .svc-dot { background: var(--sbs-accent); }
+
+    .service-group-cards {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr 1fr;
+    }
+    @media (max-width: 560px) {
+      .service-group-cards { grid-template-columns: 1fr; }
+    }
+    .mon-card {
+      padding: 13px 15px;
       cursor: pointer;
-      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s, background-color 0.15s;
+      transition: background-color 0.14s, box-shadow 0.14s;
+      border-right: 1px solid var(--border);
+      position: relative;
+      user-select: none;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      text-align: left;
-      user-select: none;
+      justify-content: center;
+      min-height: 82px;
     }
-    .kpi-card:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
-      transform: translateY(-1px);
-    }
-    .kpi-card.active-des {
-      border-color: var(--sbs-orange);
-      background: #fff7ed;
-      box-shadow: 0 6px 18px rgba(234, 88, 12, 0.14);
-    }
-    .kpi-card.active-alm {
-      border-color: var(--sbs-accent);
-      background: #ecfdf5;
-      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.14);
-    }
-    .kpi-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      gap: 6px;
-    }
-    .kpi-card .k-title {
-      font-size: 11.5px;
-      font-weight: 800;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-    .kpi-card.active-des .k-title { color: #c2410c; }
-    .kpi-card.active-alm .k-title { color: #047857; }
-    .kpi-chip {
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: #f1f5f9;
-      color: #64748b;
-    }
-    .kpi-card.active-des .kpi-chip { background: var(--sbs-orange); color: #ffffff; }
-    .kpi-card.active-alm .kpi-chip { background: var(--sbs-accent); color: #ffffff; }
+    .mon-card:last-child { border-right: none; }
+    .mon-card:hover { background: #f8fafc; }
 
-    .kpi-split {
+    .grp-des .mon-card.is-active {
+      background: #fff7ed;
+      box-shadow: inset 0 -3px 0 var(--sbs-orange);
+    }
+    .grp-alm .mon-card.is-active {
+      background: #ecfdf5;
+      box-shadow: inset 0 -3px 0 var(--sbs-accent);
+    }
+
+    .mon-card-split {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      min-height: 54px;
     }
-    .kpi-main {
+    .mon-card-center {
       display: flex;
       flex-direction: column;
+      align-items: center;
       justify-content: center;
+      text-align: center;
     }
-    .kpi-main .k-val {
-      font-size: 32px;
-      font-weight: 900;
+    .mon-big-num {
+      font-size: 30px;
+      font-weight: 800;
       color: var(--sbs-primary);
       line-height: 1;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.6px;
+      font-variant-numeric: tabular-nums;
     }
-    .kpi-card.active-des .kpi-main .k-val { color: #c2410c; }
-    .kpi-card.active-alm .kpi-main .k-val { color: #047857; }
-    .kpi-main .k-sub {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-top: 4px;
-    }
+    .grp-des .mon-card.is-active .mon-big-num { color: #c2410c; }
+    .grp-alm .mon-card.is-active .mon-big-num { color: #047857; }
 
-    .kpi-breakdown {
-      border-left: 1.5px solid var(--border);
-      padding-left: 12px;
+    .mon-sub-lbl {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+    .grp-des .mon-card.is-active .mon-sub-lbl { color: #9a3412; }
+    .grp-alm .mon-card.is-active .mon-sub-lbl { color: #065f46; }
+
+    .mon-breakdown {
+      border-left: 1px solid var(--border);
+      padding-left: 11px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      font-size: 12px;
-      color: #334155;
-      min-width: 112px;
+      gap: 2px;
+      min-width: 96px;
+      font-size: 11.5px;
     }
-    .kpi-card.active-des .kpi-breakdown { border-left-color: #fed7aa; }
-    .kpi-card.active-alm .kpi-breakdown { border-left-color: #a7f3d0; }
-    .kpi-breakdown-row {
+    .grp-des .mon-card.is-active .mon-breakdown { border-left-color: #fed7aa; }
+    .grp-alm .mon-card.is-active .mon-breakdown { border-left-color: #a7f3d0; }
+    .mon-bk-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      line-height: 1.3;
+      gap: 8px;
+      line-height: 1.35;
     }
-    .kpi-breakdown-row span { color: var(--muted); font-weight: 600; }
-    .kpi-breakdown-row b { color: var(--text); font-weight: 800; }
-
-    .kpi-ratio-num {
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--sbs-primary);
-      line-height: 1.15;
-    }
-    .kpi-ratio-sub {
-      font-size: 11.5px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-top: 2px;
-    }
+    .mon-bk-row span { color: var(--muted); font-weight: 500; }
+    .mon-bk-row b { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
 
     /* BARRA DE ACCIONES Y TABLA DIRECTA */
     .action-bar {
       background: white; border: 1px solid var(--border); border-bottom: none;
-      border-radius: 12px 12px 0 0; padding: 13px 16px;
+      border-radius: 12px 12px 0 0; padding: 12px 16px;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
     }
     .toolbar-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .form-input, .form-select {
-      padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 7px 11px; border: 1.5px solid var(--border); border-radius: 8px;
       font-size: 13px; color: var(--text); background: white; outline: none;
     }
-    .form-select {
-      text-align: center; text-align-last: center; -moz-text-align-last: center;
-      font-weight: 400; cursor: pointer;
-    }
-    .form-select option { text-align: center; font-weight: 400; }
+    .form-select { cursor: pointer; font-weight: 500; }
     .form-input:focus, .form-select:focus { border-color: var(--sbs-primary); }
 
-    .active-filter-pill {
+    .active-filter-bar {
       display: none;
       align-items: center;
-      gap: 8px;
-      background: #f8fafc;
-      border: 1.5px solid var(--border);
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #334155;
+      gap: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
     }
     .btn-clear-filter {
-      background: #e2e8f0;
+      background: #f1f5f9;
       color: #334155;
-      border: none;
-      border-radius: 999px;
-      padding: 2px 8px;
-      font-size: 11px;
-      font-weight: 800;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
     }
-    .btn-clear-filter:hover { background: #cbd5e1; }
+    .btn-clear-filter:hover { background: #e2e8f0; }
 
     .table-direct-wrap {
-      overflow-x: auto; max-height: calc(100vh - 220px); background: white;
+      overflow-x: auto; max-height: calc(100vh - 235px); background: white;
       border: 1px solid var(--border); border-radius: 0 0 12px 12px;
     }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
-    th { background: #f8fafc; font-weight: 700; color: #334155; position: sticky; top: 0; z-index: 10; }
+    th, td { padding: 9px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    th { background: #f8fafc; font-weight: 700; color: #334155; position: sticky; top: 0; z-index: 10; font-size: 12.2px; }
     tr:hover td { background: #f8fafc; }
 
-    .badge {
-      display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px;
-      border-radius: 6px; font-size: 11.5px; font-weight: 700; white-space: nowrap;
+    /* CABECERA AGRUPADA DE 2 FILAS Y DIVISORES EN VISTA GENERAL DE MONITOREO */
+    #thead-monitoreo tr.th-group-row th {
+      position: sticky; top: 0; z-index: 12;
+      padding: 7px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
     }
-    .bg-green { background: #dcfce7; color: #166534; }
-    .bg-orange { background: #ffedd5; color: #c2410c; }
-    .bg-gray { background: #f1f5f9; color: #64748b; }
-    .bg-blue { background: #e0f2fe; color: #075985; }
-    .bg-red { background: #fee2e2; color: #991b1b; }
+    #thead-monitoreo tr.th-sub-row th {
+      position: sticky; top: 30px; z-index: 11;
+      padding: 7px 12px; font-size: 12px;
+    }
+    th.grp-head-des { background: #fffaf5; color: #c2410c; text-align: center; }
+    th.grp-head-alm { background: #f4fcf8; color: #047857; text-align: center; }
+    .col-div-left { border-left: 2px solid #cbd5e1 !important; }
+
+    /* TEXTO LIMPIO EN MONITOREO (SOLO SE COLOREA ASISTIÓ, CANCELÓ O NO SOLICITÓ) */
+    .txt-res-ok { color: #1e293b; font-weight: 600; }
+    .txt-asistio { color: #047857; font-weight: 700; white-space: nowrap; }
+    .txt-pendiente { color: #64748b; font-weight: 500; }
+    .txt-cancelado { color: #dc2626; font-weight: 600; }
+    .txt-nosolicito { color: #94a3b8; font-weight: 500; }
+    .txt-cambio { color: #334155; font-weight: 600; font-size: 12.2px; white-space: nowrap; }
+    .txt-cambio-rojo { color: #dc2626; font-weight: 600; font-size: 12.2px; white-space: nowrap; }
+    .txt-guion { color: #cbd5e1; font-weight: 600; }
+
+    .dni-cell { font-variant-numeric: tabular-nums; font-weight: 700; color: #334155; white-space: nowrap; }
+    .name-cell { font-weight: 600; color: #0f172a; }
+
+    /* ======================================================================
+       BASE DE COLABORADORES: BARRAS SEGMENTADAS TRANSFORMABLES (34PX FIJOS)
+       ====================================================================== */
+    .ver-pill {
+      display: inline-block; padding: 3px 8px; border-radius: 6px;
+      font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .ver-ok { background: #dcfce7; color: #166534; }
+    .ver-old { background: #ffedd5; color: #c2410c; }
+    .ver-none { background: #f1f5f9; color: #94a3b8; }
 
     .row-modified td { background: #fffbeb !important; }
+
+    .seg-bar {
+      display: inline-flex;
+      align-items: stretch;
+      height: 34px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 9px;
+      overflow: hidden;
+      background: #ffffff;
+      font-size: 12.5px;
+      font-weight: 600;
+      vertical-align: middle;
+    }
+    .seg-bar.seg-des { width: 274px; }
+    .seg-bar.seg-alm { width: 204px; }
+    .seg-bar.seg-est { width: 168px; }
+
+    .seg-btn {
+      flex: 1;
+      border: none;
+      border-right: 1px solid #e2e8f0;
+      background: transparent;
+      color: #64748b;
+      font-size: 12.2px;
+      font-weight: 600;
+      padding: 0 6px;
+      cursor: pointer;
+      transition: background-color 0.12s, color 0.12s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .seg-btn:last-child { border-right: none; }
+    .seg-btn:hover { background: #f8fafc; color: #1e293b; }
+
+    .seg-btn.sel-no { background: #fef2f2; color: #b91c1c; font-weight: 700; }
+    .seg-btn.sel-des { background: #fff7ed; color: #c2410c; font-weight: 700; }
+    .seg-btn.sel-reg { background: #ecfdf5; color: #047857; font-weight: 700; }
+    .seg-btn.sel-alt { background: #eff6ff; color: #0369a1; font-weight: 700; }
+    .seg-btn.sel-act { background: #ecfdf5; color: #047857; font-weight: 700; }
+    .seg-btn.sel-aus { background: #fef3c7; color: #b45309; font-weight: 700; }
+
+    .seg-back-btn {
+      width: 28px;
+      flex: 0 0 28px;
+      border: none;
+      border-right: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+    }
+    .seg-back-btn:hover { background: #e2e8f0; color: #0f172a; }
+
+    .seg-op-label {
+      flex: 0 0 54px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #c2410c;
+      background: #fff7ed;
+      border-right: 1px solid #fed7aa;
+      user-select: none;
+    }
+    .seg-static-info {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12.2px;
+      font-weight: 600;
+      color: #475569;
+      background: #ffffff;
+      padding: 0 8px;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .seg-select {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      border-right: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #1e293b;
+      font-size: 12.2px;
+      font-weight: 600;
+      padding: 0 4px;
+      text-align: center;
+      text-align-last: center;
+      cursor: pointer;
+      outline: none;
+    }
+    .seg-select:last-child { border-right: none; }
+    .seg-select:hover { background: #f8fafc; }
+
+    .seg-date-btn {
+      flex: 1;
+      border: none;
+      background: #fffbeb;
+      color: #b45309;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .seg-date-btn:hover { background: #fef3c7; }
 
     /* MODALES */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(15, 23, 42, 0.6); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
+      background: rgba(15, 23, 42, 0.58); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
     }
     .modal-box {
       background: white; width: 100%; max-width: 740px; border-radius: 14px; padding: 24px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.28); max-height: 90vh; overflow-y: auto;
     }
     .modal-box.modal-sm { max-width: 440px; }
+    .modal-box.modal-xs { max-width: 390px; }
+
     .menu-day-row {
       background: #f8fafc; border: 1px solid var(--border); border-radius: 9px;
       padding: 12px 14px; margin-bottom: 10px;
@@ -324,18 +471,36 @@
       background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 10px;
       padding: 12px 14px; margin-bottom: 14px;
     }
-    .banner-edit-box label {
-      font-size: 13px; font-weight: 800; color: #92400e; display: block; margin-bottom: 4px;
-    }
-    .banner-edit-box small {
-      display: block; font-size: 11.5px; color: #b45309; margin-bottom: 7px;
-    }
+    .banner-edit-box label { font-size: 13px; font-weight: 800; color: #92400e; display: block; margin-bottom: 4px; }
+    .banner-edit-box small { display: block; font-size: 11.5px; color: #b45309; margin-bottom: 7px; }
 
-    .field-group { margin-bottom: 15px; text-align: left; }
+    .field-group { margin-bottom: 14px; text-align: left; }
     .field-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-    .field-group .form-input, .field-group .form-select {
-      width: 100%; padding: 10px 12px; font-size: 13.5px; text-align: left; text-align-last: left;
+    .field-group .form-input, .field-group .form-select, .field-group textarea {
+      width: 100%; padding: 9px 12px; font-size: 13.5px; text-align: left; text-align-last: left;
+      border: 1.5px solid var(--border); border-radius: 8px; outline: none; font-family: inherit;
     }
+    .field-group textarea:focus { border-color: var(--sbs-primary); }
+
+    /* OPCIONES DE RETIRO DE RESERVA */
+    .retiro-item {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: 0.14s;
+      background: #ffffff;
+    }
+    .retiro-item:hover:not(.disabled) { border-color: #94a3b8; background: #f8fafc; }
+    .retiro-item.selected { border-color: var(--danger); background: #fef2f2; }
+    .retiro-item.disabled { opacity: 0.58; cursor: not-allowed; background: #f8fafc; }
+    .retiro-item-info { flex: 1; font-size: 13px; line-height: 1.35; }
+    .retiro-item-sub { font-size: 11.5px; color: var(--muted); display: block; margin-top: 2px; }
+    .retiro-item-lock { font-size: 11.5px; color: #dc2626; font-weight: 700; display: block; margin-top: 2px; }
 
     #toast {
       position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: white;
@@ -355,7 +520,7 @@
   <!-- 1. LOGIN -->
   <div id="view-login">
     <div class="login-card">
-      <img src="./Logo.jpg?v=25" alt="SBS" class="login-logo">
+      <img src="./Logo.jpg?v=26" alt="SBS" class="login-logo">
       <h1>Portal RRHH • Comedor SBS</h1>
 
       <div id="step-dni">
@@ -376,7 +541,7 @@
           Cambiar DNI
         </button>
       </div>
-      <div class="login-ver" id="lbl-ver-login-rrhh">v25</div>
+      <div class="login-ver" id="lbl-ver-login-rrhh">v26</div>
     </div>
   </div>
 
@@ -384,20 +549,23 @@
   <div id="view-portal">
     <header class="top-header">
       <div class="brand-wrap">
-        <img src="./Logo.jpg?v=25" alt="SBS" class="brand-logo">
+        <img src="./Logo.jpg?v=26" alt="SBS" class="brand-logo">
         <div>
-          <h2>Portal RRHH • Comedor SBS <span class="portal-ver-pill" id="lbl-ver-header-rrhh">v25</span></h2>
+          <h2>Portal RRHH • Comedor SBS <span class="portal-ver-pill" id="lbl-ver-header-rrhh">v26</span></h2>
           <span class="admin-sub" id="lbl-admin-activo"></span>
         </div>
       </div>
 
       <div class="header-actions">
         <div class="sync-pill">
-          <span class="dot-live"></span>
+          <span class="dot-live" id="dot-sync-live"></span>
           <span id="lbl-ultima-sync">En línea</span>
         </div>
         <button class="btn btn-success btn-sm" style="background:#10b981; color:white; border:none;" onclick="abrirModalAsignarServicio()">
           Asignar Servicio
+        </button>
+        <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.32);" onclick="abrirModalRetirarReserva()">
+          Retirar Reserva
         </button>
         <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalMenu()">
           Menú y Aviso
@@ -426,7 +594,7 @@
 
       <div class="toolbar-group" style="padding: 8px 0;">
         <label style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; cursor:pointer;">
-          <input type="checkbox" id="chk-autorefresh" checked onchange="alternarAutoRefresh()">
+          <input type="checkbox" id="chk-autorefresh" checked onchange="programarSiguienteRefresh(true)">
           Actualización automática
         </label>
         <button class="btn btn-outline btn-sm" id="btn-sync-ahora" onclick="cargarDatosPortal(true)">
@@ -436,78 +604,78 @@
     </nav>
 
     <main class="container">
-      <!-- MÓDULO: MONITOREO EN VIVO (4 TARJETAS INTERACTIVAS DE FILTRO) -->
+      <!-- MÓDULO: MONITOREO EN VIVO (6 TARJETAS AGRUPADAS POR SERVICIO) -->
       <section id="mod-monitoreo">
-        <div class="kpi-row">
-          <!-- TARJETA 1: RESERVA DESAYUNO -->
-          <div class="kpi-card" id="card-flt-DES_RESERVADO" onclick="alternarFiltroTarjeta('DES_RESERVADO')" title="Clic para filtrar reservas de desayuno">
-            <div class="kpi-head">
-              <span class="k-title">Reserva Desayuno</span>
-              <span class="kpi-chip" id="chip-DES_RESERVADO">Ver</span>
+        <div class="mon-groups-grid">
+          <!-- BLOQUE DESAYUNO -->
+          <div class="service-group grp-des">
+            <div class="service-group-head">
+              <span class="svc-dot"></span>
+              <span>Desayuno</span>
             </div>
-            <div class="kpi-split">
-              <div class="kpi-main">
-                <div class="k-val" id="kpi-des-res">0</div>
-                <div class="k-sub">reservados</div>
+            <div class="service-group-cards">
+              <div class="mon-card" id="card-flt-DES_RESERVADO" onclick="alternarFiltroTarjeta('DES_RESERVADO')">
+                <div class="mon-card-split">
+                  <div>
+                    <div class="mon-big-num" id="kpi-des-res">0</div>
+                    <div class="mon-sub-lbl">reservas</div>
+                  </div>
+                  <div class="mon-breakdown" id="kpi-des-opciones">
+                    <div class="mon-bk-row"><span>Opc. 1</span><b>0</b></div>
+                    <div class="mon-bk-row"><span>Opc. 2</span><b>0</b></div>
+                    <div class="mon-bk-row"><span>Opc. 3</span><b>0</b></div>
+                  </div>
+                </div>
               </div>
-              <div class="kpi-breakdown" id="kpi-des-opciones">
-                <div class="kpi-breakdown-row"><span>Opc. 1</span><b>0</b></div>
-                <div class="kpi-breakdown-row"><span>Opc. 2</span><b>0</b></div>
-                <div class="kpi-breakdown-row"><span>Opc. 3</span><b>0</b></div>
+
+              <div class="mon-card" id="card-flt-DES_QR" onclick="alternarFiltroTarjeta('DES_QR')">
+                <div class="mon-card-center">
+                  <div class="mon-big-num" id="kpi-des-asist">0</div>
+                  <div class="mon-sub-lbl">asistentes</div>
+                </div>
+              </div>
+
+              <div class="mon-card" id="card-flt-DES_FALTA" onclick="alternarFiltroTarjeta('DES_FALTA')">
+                <div class="mon-card-center">
+                  <div class="mon-big-num" id="kpi-des-pend">0</div>
+                  <div class="mon-sub-lbl">pendientes</div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- TARJETA 2: ASISTENCIA DESAYUNO (PENDIENTES) -->
-          <div class="kpi-card" id="card-flt-DES_FALTA" onclick="alternarFiltroTarjeta('DES_FALTA')" title="Clic para filtrar pendientes de desayuno">
-            <div class="kpi-head">
-              <span class="k-title">Asistencia Desayuno</span>
-              <span class="kpi-chip" id="chip-DES_FALTA">Pendientes</span>
+          <!-- BLOQUE ALMUERZO -->
+          <div class="service-group grp-alm">
+            <div class="service-group-head">
+              <span class="svc-dot"></span>
+              <span>Almuerzo</span>
             </div>
-            <div class="kpi-split">
-              <div class="kpi-main">
-                <div class="k-val" id="kpi-des-pend">0</div>
-                <div class="k-sub">pendientes</div>
+            <div class="service-group-cards">
+              <div class="mon-card" id="card-flt-ALM_RESERVADO" onclick="alternarFiltroTarjeta('ALM_RESERVADO')">
+                <div class="mon-card-split">
+                  <div>
+                    <div class="mon-big-num" id="kpi-alm-res">0</div>
+                    <div class="mon-sub-lbl">reservas</div>
+                  </div>
+                  <div class="mon-breakdown" id="kpi-alm-opciones">
+                    <div class="mon-bk-row"><span>Regular</span><b>0</b></div>
+                    <div class="mon-bk-row"><span>Alternativo</span><b>0</b></div>
+                  </div>
+                </div>
               </div>
-              <div class="kpi-breakdown">
-                <div class="kpi-ratio-num" id="kpi-des-ratio">0 / 0</div>
-                <div class="kpi-ratio-sub" id="kpi-des-porc">0% asistieron</div>
-              </div>
-            </div>
-          </div>
 
-          <!-- TARJETA 3: RESERVA ALMUERZO -->
-          <div class="kpi-card" id="card-flt-ALM_RESERVADO" onclick="alternarFiltroTarjeta('ALM_RESERVADO')" title="Clic para filtrar reservas de almuerzo">
-            <div class="kpi-head">
-              <span class="k-title">Reserva Almuerzo</span>
-              <span class="kpi-chip" id="chip-ALM_RESERVADO">Ver</span>
-            </div>
-            <div class="kpi-split">
-              <div class="kpi-main">
-                <div class="k-val" id="kpi-alm-res">0</div>
-                <div class="k-sub">reservados</div>
+              <div class="mon-card" id="card-flt-ALM_QR" onclick="alternarFiltroTarjeta('ALM_QR')">
+                <div class="mon-card-center">
+                  <div class="mon-big-num" id="kpi-alm-asist">0</div>
+                  <div class="mon-sub-lbl">asistentes</div>
+                </div>
               </div>
-              <div class="kpi-breakdown" id="kpi-alm-opciones">
-                <div class="kpi-breakdown-row"><span>Regular</span><b>0</b></div>
-                <div class="kpi-breakdown-row"><span>Alternativo</span><b>0</b></div>
-              </div>
-            </div>
-          </div>
 
-          <!-- TARJETA 4: ASISTENCIA ALMUERZO (PENDIENTES) -->
-          <div class="kpi-card" id="card-flt-ALM_FALTA" onclick="alternarFiltroTarjeta('ALM_FALTA')" title="Clic para filtrar pendientes de almuerzo">
-            <div class="kpi-head">
-              <span class="k-title">Asistencia Almuerzo</span>
-              <span class="kpi-chip" id="chip-ALM_FALTA">Pendientes</span>
-            </div>
-            <div class="kpi-split">
-              <div class="kpi-main">
-                <div class="k-val" id="kpi-alm-pend">0</div>
-                <div class="k-sub">pendientes</div>
-              </div>
-              <div class="kpi-breakdown">
-                <div class="kpi-ratio-num" id="kpi-alm-ratio">0 / 0</div>
-                <div class="kpi-ratio-sub" id="kpi-alm-porc">0% asistieron</div>
+              <div class="mon-card" id="card-flt-ALM_FALTA" onclick="alternarFiltroTarjeta('ALM_FALTA')">
+                <div class="mon-card-center">
+                  <div class="mon-big-num" id="kpi-alm-pend">0</div>
+                  <div class="mon-sub-lbl">pendientes</div>
+                </div>
               </div>
             </div>
           </div>
@@ -519,7 +687,7 @@
             <select id="sel-fecha-monitoreo" class="form-select" onchange="cargarDatosPortal(true)"></select>
             <input type="text" id="txt-buscar-monitoreo" class="form-input" style="min-width:260px;" placeholder="Buscar por DNI o apellidos..." oninput="renderizarTablaMonitoreo()">
           </div>
-          <div class="active-filter-pill" id="pill-filtro-activo">
+          <div class="active-filter-bar" id="bar-filtro-activo">
             <span id="lbl-filtro-activo-texto"></span>
             <button class="btn-clear-filter" onclick="limpiarFiltroMonitoreo()">Ver todos</button>
           </div>
@@ -527,31 +695,22 @@
 
         <div class="table-direct-wrap" style="max-height: calc(100vh - 340px);">
           <table>
-            <thead id="thead-monitoreo">
-              <tr>
-                <th>DNI</th>
-                <th>Apellidos y Nombres</th>
-                <th>Reserva Desayuno</th>
-                <th>Asistencia Desayuno</th>
-                <th>Reserva Almuerzo</th>
-                <th>Asistencia Almuerzo</th>
-              </tr>
-            </thead>
+            <thead id="thead-monitoreo"></thead>
             <tbody id="tbody-monitoreo">
-              <tr><td colspan="6" style="text-align:center; color:var(--muted);">Cargando registros...</td></tr>
+              <tr><td colspan="8" style="text-align:center; color:var(--muted);">Cargando registros...</td></tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- MÓDULO: BASE DE COLABORADORES (CON RANGO DE AUSENCIA Y VERSIÓN DE APP) -->
+      <!-- MÓDULO: BASE DE COLABORADORES (APP PRIMERO + BARRAS TRANSFORMABLES) -->
       <section id="mod-colaboradores" style="display:none;">
         <div class="action-bar">
           <div class="toolbar-group">
             <select id="sel-filtro-estado-bd" class="form-select" onchange="renderizarTablaColaboradores()">
               <option value="TODOS">Todos los estados</option>
               <option value="ACTIVO">Activos</option>
-              <option value="INACTIVO">Vacaciones / DM / Cesados</option>
+              <option value="AUSENTE">Ausentes</option>
               <option value="VERSION_ANTIGUA">Con versión antigua</option>
             </select>
             <input type="text" id="txt-buscar-bd" class="form-input" style="min-width:260px;" placeholder="Buscar por DNI o apellidos..." oninput="renderizarTablaColaboradores()">
@@ -571,18 +730,16 @@
           <table>
             <thead>
               <tr>
-                <th>DNI</th>
+                <th style="width:68px; text-align:center;">App</th>
+                <th style="width:98px;">DNI</th>
                 <th>Apellidos y Nombres</th>
-                <th>Desayuno por Defecto</th>
-                <th>Panes por Defecto</th>
-                <th>Almuerzo por Defecto</th>
-                <th>Estado</th>
-                <th>Rango de Ausencia</th>
-                <th style="text-align:center;">App</th>
+                <th style="width:296px;">Desayuno</th>
+                <th style="width:226px;">Almuerzo</th>
+                <th style="width:190px;">Estado</th>
               </tr>
             </thead>
             <tbody id="tbody-colaboradores">
-              <tr><td colspan="8" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
+              <tr><td colspan="6" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
             </tbody>
           </table>
         </div>
@@ -626,7 +783,39 @@
     </main>
   </div>
 
-  <!-- MODAL: ASIGNAR SERVICIO MANUALMENTE EN 2 SOLOS PASOS -->
+  <!-- MODAL: RANGO DE FECHAS PARA ESTADO AUSENTE -->
+  <div class="modal-overlay" id="modal-rango-ausencia" onclick="if(event.target===this) cerrarModalRangoAusencia()">
+    <div class="modal-box modal-xs">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; font-size:16.5px; color:var(--sbs-primary); font-weight:800;">Definir Ausencia</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalRangoAusencia()">Cerrar</button>
+      </div>
+      <p id="lbl-aus-colaborador" style="margin:0 0 14px; font-size:13px; color:var(--muted); font-weight:600;"></p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+        <div class="field-group" style="margin-bottom:0;">
+          <label for="inp-aus-ini">Desde</label>
+          <input type="date" id="inp-aus-ini" class="form-input">
+        </div>
+        <div class="field-group" style="margin-bottom:0;">
+          <label for="inp-aus-fin">Hasta</label>
+          <input type="date" id="inp-aus-fin" class="form-input">
+        </div>
+      </div>
+
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:#475569; margin-bottom:18px; cursor:pointer;">
+        <input type="checkbox" id="chk-aus-indefinido" onchange="alternarAusenciaIndefinida()">
+        Ausencia indefinida (sin fecha de retorno)
+      </label>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-outline" onclick="cerrarModalRangoAusencia()">Cancelar</button>
+        <button class="btn btn-primary" onclick="aplicarRangoAusenciaModal()">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ASIGNAR SERVICIO MANUALMENTE -->
   <div class="modal-overlay" id="modal-asignar-servicio">
     <div class="modal-box modal-sm">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -652,6 +841,43 @@
       <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
         <button class="btn btn-outline" onclick="cerrarModalAsignarServicio()">Cancelar</button>
         <button class="btn btn-primary" id="btn-confirmar-asignar" onclick="ejecutarAsignacionManualRRHH()">Asignar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RETIRAR RESERVA CERRADA (MÁX. AYER Y HOY + MOTIVO + CORREO CONSTANCIA) -->
+  <div class="modal-overlay" id="modal-retirar-reserva">
+    <div class="modal-box modal-sm">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; font-size:17px; color:#b91c1c; font-weight:800;">Retirar Reserva Cerrada</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalRetirarReserva()">Cerrar</button>
+      </div>
+
+      <p style="font-size:12.5px; color:var(--muted); margin:0 0 14px; line-height:1.45;">
+        Permite retirar un servicio bloqueado de ayer o de hoy para que no se cobre. No aplica si ya escaneó QR. Se enviará constancia automática por correo.
+      </p>
+
+      <div class="field-group">
+        <label>1. Buscar colaborador:</label>
+        <input type="text" id="txt-filtro-colab-retirar" class="form-input" placeholder="Buscar por apellido, nombre o DNI..." oninput="filtrarSelectColaboradoresRetirar()">
+        <select id="sel-colab-retirar" class="form-select" style="margin-top:8px;" onchange="cargarServiciosRetirablesColab()"></select>
+      </div>
+
+      <div class="field-group">
+        <label>2. Seleccionar reserva bloqueada (ayer / hoy):</label>
+        <div id="lista-servicios-retirables" style="min-height:46px; font-size:13px; color:var(--muted);">
+          Selecciona un colaborador para consultar sus reservas.
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="txt-motivo-retiro">3. Detalle del motivo:</label>
+        <textarea id="txt-motivo-retiro" rows="2" placeholder="Ej: Descanso médico informado después de la hora de corte"></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+        <button class="btn btn-outline" onclick="cerrarModalRetirarReserva()">Cancelar</button>
+        <button class="btn btn-danger" id="btn-confirmar-retiro" disabled onclick="ejecutarRetiroReservaRRHH()">Retirar reserva</button>
       </div>
     </div>
   </div>
@@ -704,7 +930,7 @@
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
-    const VERSION_LOCAL_RRHH = "25";
+    const VERSION_LOCAL_RRHH = "26";
     const PANES_CATALOGO_BASE = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
     // Limpiar parámetro ?v=... tras recarga automática por nueva versión
@@ -725,6 +951,7 @@
       pendienteLogin: null,
       hoyStr: '',
       horaPeru: 0,
+      enHoraPico: false,
       versionServidor: VERSION_LOCAL_RRHH,
       avisoBanner: '',
       fechaSeleccionada: '',
@@ -732,12 +959,18 @@
       panesCatalogo: PANES_CATALOGO_BASE.slice(),
       colaboradoresBD: [],
       cambiosPendientes: {},
+      desSelectorAbierto: {},
+      estSelectorAbierto: {},
+      dniEditandoAusencia: '',
       monitoreoDia: [],
       filtroMonitoreo: 'TODOS',
       menuSemanal: [],
       resumenReporte: [],
       ultimasFilasReporte: [],
+      itemsRetirables: [],
+      retiroSeleccionadoIdx: -1,
       timerAutoRefresh: null,
+      cargandoFeed: false,
       recargandoVersion: false
     };
 
@@ -764,6 +997,12 @@
       document.getElementById('txt-clave').addEventListener('keyup', e => { if (e.key === 'Enter') confirmarClaveRRHH(); });
       document.getElementById('txt-dni-reset-modal').addEventListener('keyup', e => { if (e.key === 'Enter') ejecutarResetClaveModal(); });
 
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && STATE.admin) {
+          programarSiguienteRefresh(true);
+        }
+      });
+
       window.addEventListener('beforeunload', (e) => {
         if (contarCambiosPendientes() > 0) {
           e.preventDefault();
@@ -773,10 +1012,72 @@
     });
 
     // ========================================================================
+    // NORMALIZADOR INSENSIBLE A TILDES Y UTILIDADES DE FECHA / HORA
+    // ========================================================================
+    function normalizarTextoBusqueda(str) {
+      return String(str || '')
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    }
+
+    function obtenerHoraLimaActualDecimal() {
+      try {
+        const partes = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'America/Lima',
+          hour: '2-digit', minute: '2-digit', hour12: false
+        }).formatToParts(new Date());
+        const h = Number(partes.find(p => p.type === 'hour').value);
+        const m = Number(partes.find(p => p.type === 'minute').value);
+        return (h === 24 ? 0 : h) + (m / 60);
+      } catch (e) {
+        const d = new Date();
+        return d.getHours() + (d.getMinutes() / 60);
+      }
+    }
+
+    // Horas pico de validación en comedor: 8:30-10:00 AM y 12:00-1:30 PM
+    function esHoraPicoLocal() {
+      const h = obtenerHoraLimaActualDecimal();
+      return (h >= 8.5 && h <= 10.0) || (h >= 12.0 && h <= 13.5);
+    }
+
+    function formatearHora12hConSeg(horaRaw) {
+      const s = String(horaRaw || '').trim();
+      if (!s) return '';
+      if (/am|pm/i.test(s)) return s.toUpperCase();
+      const m = s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+      if (!m) return s;
+      let h = Number(m[1]);
+      const min = m[2];
+      const seg = m[3] || '00';
+      const suf = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      return `${String(h).padStart(2, '0')}:${min}:${seg} ${suf}`;
+    }
+
+    function formatearFechaCortaDDMM(isoStr) {
+      const p = String(isoStr || '').split('-');
+      return p.length === 3 ? `${p[2]}/${p[1]}` : isoStr;
+    }
+
+    function formatearEtiquetaRangoAusencia(fIni, fFin) {
+      if (fIni && fFin) {
+        if (fIni === fFin) return formatearFechaCortaDDMM(fIni);
+        return `${formatearFechaCortaDDMM(fIni)} al ${formatearFechaCortaDDMM(fFin)}`;
+      }
+      if (fFin) return `Hasta ${formatearFechaCortaDDMM(fFin)}`;
+      if (fIni) return `Desde ${formatearFechaCortaDDMM(fIni)}`;
+      return 'Indefinido';
+    }
+
+    // ========================================================================
     // DETECCIÓN Y AUTO-RECARGA ANTE NUEVA VERSIÓN DEL PORTAL RRHH
     // ========================================================================
     function hayModalAbiertoRRHH() {
-      const ids = ['modal-asignar-servicio', 'modal-menu', 'modal-reset-clave'];
+      const ids = ['modal-asignar-servicio', 'modal-retirar-reserva', 'modal-menu', 'modal-reset-clave', 'modal-rango-ausencia'];
       return ids.some(id => {
         const el = document.getElementById(id);
         return el && el.style.display === 'flex';
@@ -795,7 +1096,6 @@
       STATE.versionServidor = String(verRemota);
       if (Number(verRemota) <= Number(VERSION_LOCAL_RRHH)) return;
 
-      // Evita recarga en bucle si GitHub Pages aún está propagando el archivo
       const yaIntento = sessionStorage.getItem('SBS_RRHH_RELOADED_VER');
       if (yaIntento === String(verRemota)) return;
 
@@ -828,7 +1128,7 @@
       let acum = [];
       for (let i = 0; i < palabras.length; i++) {
         const w = palabras[i];
-        const low = w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const low = normalizarTextoBusqueda(w);
         acum.push(w);
         if (!conectores.includes(low)) {
           bloques.push(acum.join(' '));
@@ -886,7 +1186,7 @@
     function tienePermisoPortal(u) {
       if (!u) return false;
       if (u.esRRHH || u.esTecnico) return true;
-      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      const r = normalizarTextoBusqueda(u.rol).toUpperCase();
       return ['ADMIN_RRHH', 'RRHH', 'ADMIN_GEP', 'GEP', 'TECNICO', 'ADMIN_TECNICO', 'DEV'].includes(r);
     }
 
@@ -899,7 +1199,7 @@
       let p = String(rawPan || '').trim();
       p = p.replace(/^pan\s+con\s+/i, '').replace(/^pan\s+de\s+/i, '').trim();
       if (!p) return '';
-      const low = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const low = normalizarTextoBusqueda(p);
       if (low.includes('pollo')) return 'Pollo';
       if (low.includes('queso')) return 'Queso';
       if (low.includes('aceituna')) return 'Aceituna';
@@ -935,7 +1235,7 @@
     }
 
     // ========================================================================
-    // LOGIN PORTAL RRHH (MOTOR LIGERO 1-A-1 SIN SOBRESCRIBIR VERSIÓN MÓVIL)
+    // LOGIN PORTAL RRHH (MOTOR 1-A-1 SIN SOBRESCRIBIR VERSIÓN MÓVIL)
     // ========================================================================
     async function verificarDniRRHH() {
       const dni = normalizarDni(document.getElementById('txt-dni').value);
@@ -1067,7 +1367,7 @@
       if (!confirmarDescarteCambios()) return;
       STATE.cambiosPendientes = {};
       actualizarBotonGuardarGeneral();
-      if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
+      if (STATE.timerAutoRefresh) clearTimeout(STATE.timerAutoRefresh);
       localStorage.removeItem('SBS_COMEDOR_RRHH_SESSION');
       STATE.admin = null;
       document.getElementById('view-portal').style.display = 'none';
@@ -1076,25 +1376,67 @@
     }
 
     // ========================================================================
-    // INICIALIZACIÓN Y SINCRONIZACIÓN EN TIEMPO REAL
+    // INICIALIZACIÓN + AUTO-REFRESH INTELIGENTE (5s EN HORAS PICO / 30s FUERA)
     // ========================================================================
     function iniciarPortalRRHH() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-portal').style.display = 'flex';
       document.getElementById('lbl-admin-activo').textContent = STATE.admin.nombre;
       cargarDatosPortal(true);
-      alternarAutoRefresh();
     }
 
-    function alternarAutoRefresh() {
-      if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
-      if (document.getElementById('chk-autorefresh').checked) {
-        STATE.timerAutoRefresh = setInterval(() => {
-          const modMonitoreoVisible = document.getElementById('mod-monitoreo').style.display !== 'none';
-          if (modMonitoreoVisible && contarCambiosPendientes() === 0) {
-            cargarDatosPortal(false);
+    function actualizarEtiquetaSync(tsServidor, enPico) {
+      const lbl = document.getElementById('lbl-ultima-sync');
+      const dot = document.getElementById('dot-sync-live');
+      const hora = (tsServidor && tsServidor.includes(' ')) ? tsServidor.split(' ')[1] : tsServidor;
+      if (enPico) {
+        if (lbl) lbl.textContent = `En vivo (5s) • ${hora || ''}`;
+        if (dot) dot.classList.add('pico');
+      } else {
+        if (lbl) lbl.textContent = `Sincronizado ${hora || ''}`;
+        if (dot) dot.classList.remove('pico');
+      }
+    }
+
+    function programarSiguienteRefresh(ejecutarPronto = false) {
+      if (STATE.timerAutoRefresh) clearTimeout(STATE.timerAutoRefresh);
+      const chk = document.getElementById('chk-autorefresh');
+      if (!chk || !chk.checked || !STATE.admin) return;
+
+      const enPico = esHoraPicoLocal();
+      STATE.enHoraPico = enPico;
+      const delayMs = ejecutarPronto ? 1200 : (enPico ? 5000 : 30000);
+
+      STATE.timerAutoRefresh = setTimeout(async () => {
+        const modMonitoreoVisible = document.getElementById('mod-monitoreo').style.display !== 'none';
+        if (document.visibilityState === 'visible' && modMonitoreoVisible && contarCambiosPendientes() === 0 && !hayModalAbiertoRRHH()) {
+          const selFecha = document.getElementById('sel-fecha-monitoreo');
+          const fechaActualSel = selFecha && selFecha.value ? selFecha.value : STATE.hoyStr;
+          if (fechaActualSel === STATE.hoyStr) {
+            await cargarFeedRapidoHoy();
+          } else {
+            await cargarDatosPortal(false);
           }
-        }, 20000);
+        }
+        programarSiguienteRefresh(false);
+      }, delayMs);
+    }
+
+    async function cargarFeedRapidoHoy() {
+      if (STATE.cargandoFeed || !STATE.admin) return;
+      STATE.cargandoFeed = true;
+      try {
+        const res = await llamarAPI('obtenerFeedHoyRRHH', [STATE.admin.dni], 2);
+        if (res && res.ok && Array.isArray(res.monitoreoDia)) {
+          STATE.hoyStr = res.hoyStr || STATE.hoyStr;
+          STATE.enHoraPico = !!res.enHoraPico;
+          STATE.monitoreoDia = res.monitoreoDia.sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
+          actualizarEtiquetaSync(res.timestampServidor, STATE.enHoraPico);
+          renderizarTablaMonitoreo();
+        }
+      } catch (e) {
+      } finally {
+        STATE.cargandoFeed = false;
       }
     }
 
@@ -1102,6 +1444,8 @@
       if (mostrarIndicador && contarCambiosPendientes() > 0) {
         if (!confirmarDescarteCambios()) return;
         STATE.cambiosPendientes = {};
+        STATE.desSelectorAbierto = {};
+        STATE.estSelectorAbierto = {};
         actualizarBotonGuardarGeneral();
       }
 
@@ -1127,6 +1471,7 @@
 
         STATE.hoyStr = res.hoyStr;
         if (typeof res.horaPeru === 'number') STATE.horaPeru = res.horaPeru;
+        STATE.enHoraPico = !!res.enHoraPico;
         STATE.avisoBanner = res.avisoBanner || '';
         STATE.fechaSeleccionada = res.fechaConsultada;
         STATE.fechasSemana = res.fechasSemana || [];
@@ -1138,7 +1483,7 @@
         STATE.monitoreoDia = (res.monitoreoDia || []).sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
         STATE.menuSemanal = res.menuSemanal || [];
 
-        document.getElementById('lbl-ultima-sync').textContent = `Sincronizado ${res.timestampServidor.split(' ')[1] || res.timestampServidor}`;
+        actualizarEtiquetaSync(res.timestampServidor, STATE.enHoraPico && STATE.fechaSeleccionada === STATE.hoyStr);
 
         if (selFecha && selFecha.options.length === 0) {
           selFecha.innerHTML = STATE.fechasSemana.map(f =>
@@ -1154,6 +1499,7 @@
         if (contarCambiosPendientes() === 0) {
           renderizarTablaColaboradores();
         }
+        programarSiguienteRefresh(false);
       } catch (e) {
         if (btn) {
           btn.disabled = false;
@@ -1167,6 +1513,8 @@
       if (modColabVisible && mod !== 'COLABORADORES' && contarCambiosPendientes() > 0) {
         if (!confirmarDescarteCambios()) return;
         STATE.cambiosPendientes = {};
+        STATE.desSelectorAbierto = {};
+        STATE.estSelectorAbierto = {};
         actualizarBotonGuardarGeneral();
       }
 
@@ -1178,7 +1526,13 @@
       if (mod === 'MONITOREO') {
         document.getElementById('tab-monitoreo').classList.add('active');
         document.getElementById('mod-monitoreo').style.display = 'block';
-        cargarDatosPortal(false);
+        const selFecha = document.getElementById('sel-fecha-monitoreo');
+        if (selFecha && selFecha.value === STATE.hoyStr) {
+          cargarFeedRapidoHoy();
+        } else {
+          cargarDatosPortal(false);
+        }
+        programarSiguienteRefresh(false);
       } else if (mod === 'COLABORADORES') {
         document.getElementById('tab-colaboradores').classList.add('active');
         document.getElementById('mod-colaboradores').style.display = 'block';
@@ -1191,7 +1545,7 @@
     }
 
     // ========================================================================
-    // MODAL: ASIGNAR SERVICIO MANUALMENTE EN 2 SOLOS PASOS
+    // MODAL: ASIGNAR SERVICIO MANUALMENTE
     // ========================================================================
     function abrirModalAsignarServicio() {
       document.getElementById('txt-filtro-colab-asignar').value = '';
@@ -1206,10 +1560,10 @@
     }
 
     function filtrarSelectColaboradoresAsignar() {
-      const busq = String(document.getElementById('txt-filtro-colab-asignar').value || '').toLowerCase().trim();
+      const busq = normalizarTextoBusqueda(document.getElementById('txt-filtro-colab-asignar').value);
       const sel = document.getElementById('sel-colab-asignar');
-      const activos = (STATE.colaboradoresBD || []).filter(c => c.estado !== 'CESADO');
-      const filtrados = activos.filter(c => !busq || c.dni.includes(busq) || c.nombre.toLowerCase().includes(busq));
+      const activos = (STATE.colaboradoresBD || []).filter(c => c.estadoOriginal !== 'CESADO');
+      const filtrados = activos.filter(c => !busq || c.dni.includes(busq) || normalizarTextoBusqueda(c.nombre).includes(busq));
 
       if (filtrados.length === 0) {
         sel.innerHTML = `<option value="">Sin coincidencias</option>`;
@@ -1260,7 +1614,156 @@
     }
 
     // ========================================================================
-    // MÓDULO: MONITOREO EN VIVO (4 TARJETAS FILTRO + COLUMNAS DINÁMICAS)
+    // MODAL: RETIRAR RESERVA CERRADA (AYER / HOY + CONSTANCIA POR CORREO)
+    // ========================================================================
+    function abrirModalRetirarReserva() {
+      document.getElementById('txt-filtro-colab-retirar').value = '';
+      document.getElementById('txt-motivo-retiro').value = '';
+      STATE.itemsRetirables = [];
+      STATE.retiroSeleccionadoIdx = -1;
+      document.getElementById('btn-confirmar-retiro').disabled = true;
+
+      filtrarSelectColaboradoresRetirar();
+      document.getElementById('modal-retirar-reserva').style.display = 'flex';
+      setTimeout(() => document.getElementById('txt-filtro-colab-retirar').focus(), 80);
+    }
+
+    function cerrarModalRetirarReserva() {
+      document.getElementById('modal-retirar-reserva').style.display = 'none';
+    }
+
+    function filtrarSelectColaboradoresRetirar() {
+      const busq = normalizarTextoBusqueda(document.getElementById('txt-filtro-colab-retirar').value);
+      const sel = document.getElementById('sel-colab-retirar');
+      const activos = (STATE.colaboradoresBD || []).filter(c => c.estadoOriginal !== 'CESADO');
+      const filtrados = activos.filter(c => !busq || c.dni.includes(busq) || normalizarTextoBusqueda(c.nombre).includes(busq));
+
+      if (filtrados.length === 0) {
+        sel.innerHTML = `<option value="">Sin coincidencias</option>`;
+        document.getElementById('lista-servicios-retirables').innerHTML = '<span style="color:var(--muted);">Sin coincidencias.</span>';
+        document.getElementById('btn-confirmar-retiro').disabled = true;
+        return;
+      }
+
+      sel.innerHTML = `<option value="">— Selecciona un colaborador —</option>` +
+        filtrados.map(c => `<option value="${c.dni}">${c.nombre} (${c.dni})</option>`).join('');
+
+      if (filtrados.length === 1) {
+        sel.value = filtrados[0].dni;
+        cargarServiciosRetirablesColab();
+      } else {
+        document.getElementById('lista-servicios-retirables').innerHTML = '<span style="color:var(--muted);">Selecciona un colaborador para ver sus reservas bloqueadas.</span>';
+        document.getElementById('btn-confirmar-retiro').disabled = true;
+      }
+    }
+
+    async function cargarServiciosRetirablesColab() {
+      const dniTarget = document.getElementById('sel-colab-retirar').value;
+      const cont = document.getElementById('lista-servicios-retirables');
+      const btn = document.getElementById('btn-confirmar-retiro');
+
+      STATE.itemsRetirables = [];
+      STATE.retiroSeleccionadoIdx = -1;
+      btn.disabled = true;
+
+      if (!dniTarget) {
+        cont.innerHTML = '<span style="color:var(--muted);">Selecciona un colaborador para ver sus reservas bloqueadas.</span>';
+        return;
+      }
+
+      cont.innerHTML = '<span style="color:var(--muted);">Consultando reservas cerradas...</span>';
+
+      try {
+        const res = await llamarAPI('obtenerReservasRetirablesRRHH', [STATE.admin.dni, dniTarget]);
+        if (!res || !res.ok) {
+          cont.innerHTML = `<span style="color:var(--danger);">${res && res.msg ? res.msg : 'No se pudieron consultar las reservas.'}</span>`;
+          return;
+        }
+
+        STATE.itemsRetirables = res.items || [];
+        if (STATE.itemsRetirables.length === 0) {
+          cont.innerHTML = '<span style="color:var(--muted);">No tiene reservas cerradas entre ayer y hoy.</span>';
+          return;
+        }
+
+        renderizarListaRetirables();
+      } catch (e) {
+        cont.innerHTML = '<span style="color:var(--danger);">Error al consultar reservas.</span>';
+      }
+    }
+
+    function renderizarListaRetirables() {
+      const cont = document.getElementById('lista-servicios-retirables');
+      cont.innerHTML = STATE.itemsRetirables.map((it, idx) => {
+        const dis = it.yaEscaneo ? 'disabled' : '';
+        const sel = (STATE.retiroSeleccionadoIdx === idx) ? 'selected' : '';
+        const tituloSrv = it.servicio === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo';
+        return `
+          <div class="retiro-item ${dis} ${sel}" onclick="${it.yaEscaneo ? '' : `seleccionarItemRetiro(${idx})`}">
+            <input type="radio" name="rad-retiro" ${STATE.retiroSeleccionadoIdx === idx ? 'checked' : ''} ${it.yaEscaneo ? 'disabled' : ''}>
+            <div class="retiro-item-info">
+              <b>${it.fechaVisual} — ${tituloSrv}</b>
+              <span class="retiro-item-sub">${it.detalle}</span>
+              ${it.yaEscaneo ? `<span class="retiro-item-lock">Ya registró asistencia QR (${it.horaEscaneo || 'hoy'}) — No se puede retirar</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('btn-confirmar-retiro').disabled = (STATE.retiroSeleccionadoIdx === -1);
+    }
+
+    function seleccionarItemRetiro(idx) {
+      if (!STATE.itemsRetirables[idx] || STATE.itemsRetirables[idx].yaEscaneo) return;
+      STATE.retiroSeleccionadoIdx = idx;
+      renderizarListaRetirables();
+    }
+
+    async function ejecutarRetiroReservaRRHH() {
+      const dniTarget = document.getElementById('sel-colab-retirar').value;
+      const motivo = document.getElementById('txt-motivo-retiro').value.trim();
+      const item = STATE.itemsRetirables[STATE.retiroSeleccionadoIdx];
+
+      if (!dniTarget || !item) {
+        mostrarToast('Selecciona el servicio que deseas retirar.');
+        return;
+      }
+      if (motivo.length < 3) {
+        mostrarToast('Ingresa el motivo del retiro de reserva.');
+        document.getElementById('txt-motivo-retiro').focus();
+        return;
+      }
+
+      const btn = document.getElementById('btn-confirmar-retiro');
+      btn.disabled = true;
+      btn.textContent = 'Retirando...';
+
+      try {
+        const res = await llamarAPI('retirarReservaRRHH', [{
+          dniAdmin: STATE.admin.dni,
+          dniTarget: dniTarget,
+          fecha: item.fecha,
+          servicio: item.servicio,
+          motivo: motivo
+        }]);
+        btn.disabled = false;
+        btn.textContent = 'Retirar reserva';
+
+        if (res && res.ok) {
+          cerrarModalRetirarReserva();
+          mostrarToast(res.msg);
+          await cargarDatosPortal(false);
+        } else {
+          mostrarToast(res ? res.msg : 'No se pudo retirar la reserva.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Retirar reserva';
+        mostrarToast('Error de conexión con el servidor.');
+      }
+    }
+
+    // ========================================================================
+    // MÓDULO: MONITOREO EN VIVO (6 TARJETAS + COLUMNAS AGRUPADAS + TEXTO LIMPIO)
     // ========================================================================
     function alternarFiltroTarjeta(filtroNuevo) {
       STATE.filtroMonitoreo = (STATE.filtroMonitoreo === filtroNuevo) ? 'TODOS' : filtroNuevo;
@@ -1274,48 +1777,50 @@
 
     function actualizarEstadoVisualTarjetasMonitoreo() {
       const f = STATE.filtroMonitoreo;
-      const tarjetas = [
-        { id: 'DES_RESERVADO', cls: 'active-des', chipIdle: 'Ver', label: 'Reservas de Desayuno' },
-        { id: 'DES_FALTA', cls: 'active-des', chipIdle: 'Pendientes', label: 'Pendientes de Desayuno' },
-        { id: 'ALM_RESERVADO', cls: 'active-alm', chipIdle: 'Ver', label: 'Reservas de Almuerzo' },
-        { id: 'ALM_FALTA', cls: 'active-alm', chipIdle: 'Pendientes', label: 'Pendientes de Almuerzo' }
-      ];
+      const etiquetas = {
+        DES_RESERVADO: 'Reservas de Desayuno',
+        DES_QR: 'Asistentes de Desayuno (más recientes arriba)',
+        DES_FALTA: 'Pendientes de Desayuno',
+        ALM_RESERVADO: 'Reservas de Almuerzo',
+        ALM_QR: 'Asistentes de Almuerzo (más recientes arriba)',
+        ALM_FALTA: 'Pendientes de Almuerzo'
+      };
 
-      let etiquetaActiva = '';
-      tarjetas.forEach(t => {
-        const card = document.getElementById('card-flt-' + t.id);
-        const chip = document.getElementById('chip-' + t.id);
+      Object.keys(etiquetas).forEach(id => {
+        const card = document.getElementById('card-flt-' + id);
         if (!card) return;
-        card.classList.remove('active-des', 'active-alm');
-        if (f === t.id) {
-          card.classList.add(t.cls);
-          if (chip) chip.textContent = 'Activo';
-          etiquetaActiva = t.label;
-        } else {
-          if (chip) chip.textContent = t.chipIdle;
-        }
+        card.classList.toggle('is-active', f === id);
       });
 
-      const pill = document.getElementById('pill-filtro-activo');
-      const lblPill = document.getElementById('lbl-filtro-activo-texto');
-      if (pill && lblPill) {
-        if (etiquetaActiva) {
-          lblPill.textContent = `Mostrando: ${etiquetaActiva}`;
-          pill.style.display = 'inline-flex';
+      const bar = document.getElementById('bar-filtro-activo');
+      const lbl = document.getElementById('lbl-filtro-activo-texto');
+      if (bar && lbl) {
+        if (etiquetas[f]) {
+          lbl.textContent = `Mostrando: ${etiquetas[f]}`;
+          bar.style.display = 'inline-flex';
         } else {
-          pill.style.display = 'none';
+          bar.style.display = 'none';
         }
       }
+    }
+
+    function formatearCeldaCambio(etiqueta, tipo, horaAMPM) {
+      if (!etiqueta) return '<span class="txt-guion">-</span>';
+      const txt = horaAMPM ? `${etiqueta} ${horaAMPM}` : etiqueta;
+      if (tipo === 'CANCELO' || tipo === 'RETIRADO') {
+        return `<span class="txt-cambio-rojo">${txt}</span>`;
+      }
+      return `<span class="txt-cambio">${txt}</span>`;
     }
 
     function renderizarTablaMonitoreo() {
       const lista = STATE.monitoreoDia || [];
       const filtro = STATE.filtroMonitoreo || 'TODOS';
-      const busq = String(document.getElementById('txt-buscar-monitoreo').value || '').toLowerCase().trim();
+      const busq = normalizarTextoBusqueda(document.getElementById('txt-buscar-monitoreo').value);
 
       actualizarEstadoVisualTarjetasMonitoreo();
 
-      // Conteos para las 4 tarjetas
+      // Conteos para las 6 tarjetas
       let totDesRes = 0, totDesQR = 0, totDesPend = 0;
       let desOp1 = 0, desOp2 = 0, desOp3 = 0, desManual = 0;
       let totAlmRes = 0, totAlmQR = 0, totAlmPend = 0;
@@ -1348,41 +1853,32 @@
         }
       });
 
-      // Tarjeta 1: Reserva Desayuno + lista por opción
+      // Bloque Desayuno: Reserva (total + opciones) | Asistencia (solo total) | Pendientes (solo total)
       document.getElementById('kpi-des-res').textContent = String(totDesRes);
       let htmlDesOps = `
-        <div class="kpi-breakdown-row"><span>Opc. 1</span><b>${desOp1}</b></div>
-        <div class="kpi-breakdown-row"><span>Opc. 2</span><b>${desOp2}</b></div>
-        <div class="kpi-breakdown-row"><span>Opc. 3</span><b>${desOp3}</b></div>
+        <div class="mon-bk-row"><span>Opc. 1</span><b>${desOp1}</b></div>
+        <div class="mon-bk-row"><span>Opc. 2</span><b>${desOp2}</b></div>
+        <div class="mon-bk-row"><span>Opc. 3</span><b>${desOp3}</b></div>
       `;
       if (desManual > 0) {
-        htmlDesOps += `<div class="kpi-breakdown-row"><span>RRHH</span><b>${desManual}</b></div>`;
+        htmlDesOps += `<div class="mon-bk-row"><span>RRHH</span><b>${desManual}</b></div>`;
       }
       document.getElementById('kpi-des-opciones').innerHTML = htmlDesOps;
-
-      // Tarjeta 2: Asistencia Desayuno (pendientes + asistieron / total)
-      const porcDes = totDesRes > 0 ? Math.round((totDesQR / totDesRes) * 100) : 0;
+      document.getElementById('kpi-des-asist').textContent = String(totDesQR);
       document.getElementById('kpi-des-pend').textContent = String(totDesPend);
-      document.getElementById('kpi-des-ratio').textContent = `${totDesQR} / ${totDesRes}`;
-      document.getElementById('kpi-des-porc').textContent = `${porcDes}% asistieron`;
 
-      // Tarjeta 3: Reserva Almuerzo + lista por tipo
+      // Bloque Almuerzo: Reserva (total + tipos) | Asistencia (solo total) | Pendientes (solo total)
       document.getElementById('kpi-alm-res').textContent = String(totAlmRes);
       document.getElementById('kpi-alm-opciones').innerHTML = `
-        <div class="kpi-breakdown-row"><span>Regular</span><b>${almReg}</b></div>
-        <div class="kpi-breakdown-row"><span>Alternativo</span><b>${almAlt}</b></div>
+        <div class="mon-bk-row"><span>Regular</span><b>${almReg}</b></div>
+        <div class="mon-bk-row"><span>Alternativo</span><b>${almAlt}</b></div>
       `;
-
-      // Tarjeta 4: Asistencia Almuerzo (pendientes + asistieron / total)
-      const porcAlm = totAlmRes > 0 ? Math.round((totAlmQR / totAlmRes) * 100) : 0;
+      document.getElementById('kpi-alm-asist').textContent = String(totAlmQR);
       document.getElementById('kpi-alm-pend').textContent = String(totAlmPend);
-      document.getElementById('kpi-alm-ratio').textContent = `${totAlmQR} / ${totAlmRes}`;
-      document.getElementById('kpi-alm-porc').textContent = `${porcAlm}% asistieron`;
 
-      // Definir columnas visibles según la tarjeta seleccionada
-      const soloDesayuno = (filtro === 'DES_RESERVADO' || filtro === 'DES_FALTA');
-      const soloAlmuerzo = (filtro === 'ALM_RESERVADO' || filtro === 'ALM_FALTA');
-      const totalCols = (soloDesayuno || soloAlmuerzo) ? 4 : 6;
+      const soloDesayuno = (filtro === 'DES_RESERVADO' || filtro === 'DES_QR' || filtro === 'DES_FALTA');
+      const soloAlmuerzo = (filtro === 'ALM_RESERVADO' || filtro === 'ALM_QR' || filtro === 'ALM_FALTA');
+      const totalCols = (soloDesayuno || soloAlmuerzo) ? 5 : 8;
 
       const thead = document.getElementById('thead-monitoreo');
       if (soloDesayuno) {
@@ -1391,6 +1887,7 @@
             <th>DNI</th>
             <th>Apellidos y Nombres</th>
             <th>Reserva Desayuno</th>
+            <th>Cambio</th>
             <th>Asistencia Desayuno</th>
           </tr>
         `;
@@ -1400,30 +1897,54 @@
             <th>DNI</th>
             <th>Apellidos y Nombres</th>
             <th>Reserva Almuerzo</th>
+            <th>Cambio</th>
             <th>Asistencia Almuerzo</th>
           </tr>
         `;
       } else {
         thead.innerHTML = `
-          <tr>
-            <th>DNI</th>
-            <th>Apellidos y Nombres</th>
-            <th>Reserva Desayuno</th>
-            <th>Asistencia Desayuno</th>
-            <th>Reserva Almuerzo</th>
-            <th>Asistencia Almuerzo</th>
+          <tr class="th-group-row">
+            <th rowspan="2">DNI</th>
+            <th rowspan="2">Apellidos y Nombres</th>
+            <th colspan="3" class="grp-head-des col-div-left">Desayuno</th>
+            <th colspan="3" class="grp-head-alm col-div-left">Almuerzo</th>
+          </tr>
+          <tr class="th-sub-row">
+            <th class="col-div-left">Reserva</th>
+            <th>Cambio</th>
+            <th>Asistencia</th>
+            <th class="col-div-left">Reserva</th>
+            <th>Cambio</th>
+            <th>Asistencia</th>
           </tr>
         `;
       }
 
-      const filtrados = lista.filter(item => {
-        if (busq && !item.dni.includes(busq) && !item.nombre.toLowerCase().includes(busq)) return false;
+      let filtrados = lista.filter(item => {
+        if (busq && !item.dni.includes(busq) && !normalizarTextoBusqueda(item.nombre).includes(busq)) return false;
         if (filtro === 'DES_RESERVADO') return item.reservoDes;
+        if (filtro === 'DES_QR') return item.consumioDes;
         if (filtro === 'DES_FALTA') return item.reservoDes && !item.consumioDes;
         if (filtro === 'ALM_RESERVADO') return item.reservoAlm;
+        if (filtro === 'ALM_QR') return item.consumioAlm;
         if (filtro === 'ALM_FALTA') return item.reservoAlm && !item.consumioAlm;
         return true;
       });
+
+      // En filtros de Asistencia, siempre el escaneo QR más reciente arriba
+      if (filtro === 'DES_QR') {
+        filtrados = filtrados.slice().sort((a, b) => {
+          const diffOrd = (b.ordScanDes || 0) - (a.ordScanDes || 0);
+          if (diffOrd !== 0) return diffOrd;
+          return String(b.horaScanDes || '').localeCompare(String(a.horaScanDes || ''));
+        });
+      } else if (filtro === 'ALM_QR') {
+        filtrados = filtrados.slice().sort((a, b) => {
+          const diffOrd = (b.ordScanAlm || 0) - (a.ordScanAlm || 0);
+          if (diffOrd !== 0) return diffOrd;
+          return String(b.horaScanAlm || '').localeCompare(String(a.horaScanAlm || ''));
+        });
+      }
 
       const tbody = document.getElementById('tbody-monitoreo');
       if (filtrados.length === 0) {
@@ -1432,59 +1953,72 @@
       }
 
       tbody.innerHTML = filtrados.map(r => {
-        const tieneModDes = r.tsModDes && r.tsModDes !== 'Por defecto';
-        const badgeDesRes = r.reservoDes
-          ? `<span class="badge bg-orange">${r.detalleDes}</span>`
-          : `<span class="badge ${tieneModDes ? 'bg-red' : 'bg-gray'}">${tieneModDes ? 'Cancelado' : 'No solicitado'}</span>`;
+        // Solo se colorea el texto cuando es Asistió (verde), Canceló/Retiró (rojo) o No solicitó (gris tenue)
+        const fueCanceladoDes = (r.cambioDesTipo === 'CANCELO' || r.cambioDesTipo === 'RETIRADO');
+        const htmlDesRes = r.reservoDes
+          ? `<span class="txt-res-ok">${r.detalleDes}</span>`
+          : (fueCanceladoDes
+            ? `<span class="txt-cancelado">${r.cambioDesTipo === 'RETIRADO' ? 'Retirado' : 'Cancelado'}</span>`
+            : `<span class="txt-nosolicito">No solicitó</span>`);
 
-        const badgeDesQR = r.consumioDes
-          ? `<span class="badge bg-green">Asistió ${r.horaScanDes || ''}</span>`
-          : (r.reservoDes ? `<span class="badge bg-gray">Pendiente</span>` : `-`);
+        const htmlDesCambio = formatearCeldaCambio(r.cambioDes, r.cambioDesTipo, r.cambioDesHora);
 
-        const tieneModAlm = r.tsModAlm && r.tsModAlm !== 'Por defecto';
-        const badgeAlmRes = r.reservoAlm
-          ? `<span class="badge ${r.detalleAlm === 'Alternativo' ? 'bg-blue' : 'bg-green'}">${r.detalleAlm}</span>`
-          : `<span class="badge ${tieneModAlm ? 'bg-red' : 'bg-gray'}">${tieneModAlm ? 'Cancelado' : 'No solicitado'}</span>`;
+        const htmlDesQR = r.consumioDes
+          ? `<span class="txt-asistio">Asistió ${formatearHora12hConSeg(r.horaScanDes)}</span>`
+          : (r.reservoDes ? `<span class="txt-pendiente">Pendiente</span>` : `<span class="txt-guion">-</span>`);
 
-        const badgeAlmQR = r.consumioAlm
-          ? `<span class="badge bg-green">Asistió ${r.horaScanAlm || ''}</span>`
-          : (r.reservoAlm ? `<span class="badge bg-gray">Pendiente</span>` : `-`);
+        const fueCanceladoAlm = (r.cambioAlmTipo === 'CANCELO' || r.cambioAlmTipo === 'RETIRADO');
+        const htmlAlmRes = r.reservoAlm
+          ? `<span class="txt-res-ok">${r.detalleAlm}</span>`
+          : (fueCanceladoAlm
+            ? `<span class="txt-cancelado">${r.cambioAlmTipo === 'RETIRADO' ? 'Retirado' : 'Cancelado'}</span>`
+            : `<span class="txt-nosolicito">No solicitó</span>`);
+
+        const htmlAlmCambio = formatearCeldaCambio(r.cambioAlm, r.cambioAlmTipo, r.cambioAlmHora);
+
+        const htmlAlmQR = r.consumioAlm
+          ? `<span class="txt-asistio">Asistió ${formatearHora12hConSeg(r.horaScanAlm)}</span>`
+          : (r.reservoAlm ? `<span class="txt-pendiente">Pendiente</span>` : `<span class="txt-guion">-</span>`);
 
         if (soloDesayuno) {
           return `
             <tr>
-              <td><b>${r.dni}</b></td>
-              <td><b>${r.nombre}</b></td>
-              <td>${badgeDesRes}</td>
-              <td>${badgeDesQR}</td>
+              <td class="dni-cell">${r.dni}</td>
+              <td class="name-cell">${r.nombre}</td>
+              <td>${htmlDesRes}</td>
+              <td>${htmlDesCambio}</td>
+              <td>${htmlDesQR}</td>
             </tr>
           `;
         }
         if (soloAlmuerzo) {
           return `
             <tr>
-              <td><b>${r.dni}</b></td>
-              <td><b>${r.nombre}</b></td>
-              <td>${badgeAlmRes}</td>
-              <td>${badgeAlmQR}</td>
+              <td class="dni-cell">${r.dni}</td>
+              <td class="name-cell">${r.nombre}</td>
+              <td>${htmlAlmRes}</td>
+              <td>${htmlAlmCambio}</td>
+              <td>${htmlAlmQR}</td>
             </tr>
           `;
         }
         return `
           <tr>
-            <td><b>${r.dni}</b></td>
-            <td><b>${r.nombre}</b></td>
-            <td>${badgeDesRes}</td>
-            <td>${badgeDesQR}</td>
-            <td>${badgeAlmRes}</td>
-            <td>${badgeAlmQR}</td>
+            <td class="dni-cell">${r.dni}</td>
+            <td class="name-cell">${r.nombre}</td>
+            <td class="col-div-left">${htmlDesRes}</td>
+            <td>${htmlDesCambio}</td>
+            <td>${htmlDesQR}</td>
+            <td class="col-div-left">${htmlAlmRes}</td>
+            <td>${htmlAlmCambio}</td>
+            <td>${htmlAlmQR}</td>
           </tr>
         `;
       }).join('');
     }
 
     // ========================================================================
-    // MÓDULO: BASE DE COLABORADORES (CON RANGO DE AUSENCIA Y COLUMNA APP)
+    // MÓDULO: BASE DE COLABORADORES (BARRAS SEGMENTADAS TRANSFORMABLES)
     // ========================================================================
     function esVersionAlDia(verStr) {
       const s = String(verStr || '').trim();
@@ -1496,12 +2030,10 @@
 
     function crearBadgeVersionApp(verStr) {
       const s = String(verStr || '').trim();
-      if (!s) return `<span class="badge bg-gray">-</span>`;
-      if (esVersionAlDia(s)) {
-        return `<span class="badge bg-green">v${s}</span>`;
-      }
+      if (!s) return `<span class="ver-pill ver-none">-</span>`;
+      if (esVersionAlDia(s)) return `<span class="ver-pill ver-ok">v${s}</span>`;
       const etiqueta = /^\d/.test(s) ? `v${s}` : s;
-      return `<span class="badge bg-orange">${etiqueta}</span>`;
+      return `<span class="ver-pill ver-old">${etiqueta}</span>`;
     }
 
     function desglosarCodigoDes(cod) {
@@ -1534,7 +2066,7 @@
         nombre: c.nombre,
         desDef: c.desDef,
         almDef: c.almDef,
-        estado: c.estado,
+        estado: (c.estado === 'ACTIVO') ? 'ACTIVO' : 'AUSENTE',
         fechaInicioEstado: c.fechaInicioEstado || '',
         fechaFinEstado: c.fechaFinEstado || '',
         versionApp: c.versionApp || '',
@@ -1542,23 +2074,104 @@
       };
     }
 
+    function construirHtmlBarraDesayuno(c) {
+      const d = desglosarCodigoDes(c.desDef);
+      const selectorAbierto = !!STATE.desSelectorAbierto[c.dni];
+
+      if (d.op === 'NO' || selectorAbierto) {
+        return `
+          <div class="seg-bar seg-des">
+            <button type="button" class="seg-btn ${d.op === 'NO' ? 'sel-no' : ''}" onclick="seleccionarDesayunoBar('${c.dni}', 'NO')">No</button>
+            <button type="button" class="seg-btn ${d.op === 'OP1' ? 'sel-des' : ''}" onclick="seleccionarDesayunoBar('${c.dni}', 'OP1')">Opc. 1</button>
+            <button type="button" class="seg-btn ${d.op === 'OP2' ? 'sel-des' : ''}" onclick="seleccionarDesayunoBar('${c.dni}', 'OP2')">Opc. 2</button>
+            <button type="button" class="seg-btn ${d.op === 'OP3' ? 'sel-des' : ''}" onclick="seleccionarDesayunoBar('${c.dni}', 'OP3')">Opc. 3</button>
+          </div>
+        `;
+      }
+
+      if (d.op === 'OP1') {
+        const opts1 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p1 ? 'selected' : ''}>${p}</option>`).join('');
+        const opts2 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p2 ? 'selected' : ''}>${p}</option>`).join('');
+        return `
+          <div class="seg-bar seg-des">
+            <button type="button" class="seg-back-btn" onclick="abrirSelectorDesayunoBar('${c.dni}')" title="Cambiar opción">‹</button>
+            <span class="seg-op-label">Opc. 1</span>
+            <select class="seg-select" onchange="cambiarPanBar('${c.dni}', 1, this.value)" title="Primer pan">${opts1}</select>
+            <select class="seg-select" onchange="cambiarPanBar('${c.dni}', 2, this.value)" title="Segundo pan">${opts2}</select>
+          </div>
+        `;
+      }
+
+      if (d.op === 'OP2') {
+        return `
+          <div class="seg-bar seg-des">
+            <button type="button" class="seg-back-btn" onclick="abrirSelectorDesayunoBar('${c.dni}')" title="Cambiar opción">‹</button>
+            <span class="seg-op-label">Opc. 2</span>
+            <span class="seg-static-info">3 huevos</span>
+          </div>
+        `;
+      }
+
+      if (d.op === 'OP3') {
+        const opts1 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p1 ? 'selected' : ''}>${p}</option>`).join('');
+        return `
+          <div class="seg-bar seg-des">
+            <button type="button" class="seg-back-btn" onclick="abrirSelectorDesayunoBar('${c.dni}')" title="Cambiar opción">‹</button>
+            <span class="seg-op-label">Opc. 3</span>
+            <select class="seg-select" onchange="cambiarPanBar('${c.dni}', 1, this.value)" title="Tipo de pan">${opts1}</select>
+            <span class="seg-static-info" style="flex:0 0 74px;">+ 1 huevo</span>
+          </div>
+        `;
+      }
+      return '';
+    }
+
+    function construirHtmlBarraAlmuerzo(c) {
+      return `
+        <div class="seg-bar seg-alm">
+          <button type="button" class="seg-btn ${c.almDef === 'NO' ? 'sel-no' : ''}" onclick="seleccionarAlmuerzoBar('${c.dni}', 'NO')">No</button>
+          <button type="button" class="seg-btn ${c.almDef === 'REGULAR' ? 'sel-reg' : ''}" onclick="seleccionarAlmuerzoBar('${c.dni}', 'REGULAR')">Regular</button>
+          <button type="button" class="seg-btn ${c.almDef === 'ALTERNATIVO' ? 'sel-alt' : ''}" onclick="seleccionarAlmuerzoBar('${c.dni}', 'ALTERNATIVO')">Alternativo</button>
+        </div>
+      `;
+    }
+
+    function construirHtmlBarraEstado(c) {
+      const selectorAbierto = !!STATE.estSelectorAbierto[c.dni];
+      if (c.estado === 'ACTIVO' || selectorAbierto) {
+        return `
+          <div class="seg-bar seg-est">
+            <button type="button" class="seg-btn ${c.estado === 'ACTIVO' ? 'sel-act' : ''}" onclick="seleccionarEstadoActivoBar('${c.dni}')">Activo</button>
+            <button type="button" class="seg-btn ${c.estado !== 'ACTIVO' ? 'sel-aus' : ''}" onclick="abrirModalRangoAusencia('${c.dni}')">Ausente</button>
+          </div>
+        `;
+      }
+
+      const etiquetaRango = formatearEtiquetaRangoAusencia(c.fechaInicioEstado, c.fechaFinEstado);
+      return `
+        <div class="seg-bar seg-est">
+          <button type="button" class="seg-back-btn" onclick="abrirSelectorEstadoBar('${c.dni}')" title="Cambiar estado">‹</button>
+          <button type="button" class="seg-date-btn" onclick="abrirModalRangoAusencia('${c.dni}')" title="Editar fechas de ausencia">${etiquetaRango}</button>
+        </div>
+      `;
+    }
+
     function renderizarTablaColaboradores() {
       const lista = STATE.colaboradoresBD || [];
       const filtroEst = document.getElementById('sel-filtro-estado-bd').value;
-      const busq = String(document.getElementById('txt-buscar-bd').value || '').toLowerCase().trim();
+      const busq = normalizarTextoBusqueda(document.getElementById('txt-buscar-bd').value);
 
       let filtrados = lista.filter(c => {
         const actual = obtenerEstadoActualColaborador(c);
-        if (busq && !actual.dni.includes(busq) && !actual.nombre.toLowerCase().includes(busq)) return false;
+        if (busq && !actual.dni.includes(busq) && !normalizarTextoBusqueda(actual.nombre).includes(busq)) return false;
         if (filtroEst === 'ACTIVO') return actual.estado === 'ACTIVO';
-        if (filtroEst === 'INACTIVO') return actual.estado !== 'ACTIVO';
+        if (filtroEst === 'AUSENTE') return actual.estado !== 'ACTIVO';
         if (filtroEst === 'VERSION_ANTIGUA') {
-          return actual.estado !== 'CESADO' && !esVersionAlDia(actual.versionApp);
+          return c.estadoOriginal !== 'CESADO' && !esVersionAlDia(actual.versionApp);
         }
         return true;
       });
 
-      // Al filtrar por versión antigua, muestra primero a los que tienen versión desactualizada detectada
       if (filtroEst === 'VERSION_ANTIGUA') {
         filtrados = filtrados.slice().sort((a, b) => {
           const aTiene = a.versionApp ? 0 : 1;
@@ -1570,173 +2183,197 @@
 
       const tbody = document.getElementById('tbody-colaboradores');
       if (filtrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--muted);">Sin colaboradores para mostrar.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">Sin colaboradores para mostrar.</td></tr>';
         return;
       }
 
       tbody.innerHTML = filtrados.map(cOrig => {
         const c = obtenerEstadoActualColaborador(cOrig);
-        const d = desglosarCodigoDes(c.desDef);
-        const mostrarP1 = (d.op === 'OP1' || d.op === 'OP3');
-        const mostrarP2 = (d.op === 'OP1');
-        const mostrarRango = (c.estado === 'VACACIONES' || c.estado === 'DM');
-
-        const optsP1 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p1 ? 'selected' : ''}>${p}</option>`).join('');
-        const optsP2 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p2 ? 'selected' : ''}>${p}</option>`).join('');
-
         return `
           <tr id="row-colab-${c.dni}" class="${c.esModificado ? 'row-modified' : ''}">
-            <td><b>${c.dni}</b></td>
-            <td><b>${c.nombre}</b></td>
-            <td>
-              <select class="form-select" id="opdes-${c.dni}" onchange="alCambiarOpDesFila('${c.dni}')">
-                <option value="NO" ${d.op === 'NO' ? 'selected' : ''}>NO</option>
-                <option value="OP1" ${d.op === 'OP1' ? 'selected' : ''}>Opción 1</option>
-                <option value="OP2" ${d.op === 'OP2' ? 'selected' : ''}>Opción 2</option>
-                <option value="OP3" ${d.op === 'OP3' ? 'selected' : ''}>Opción 3</option>
-              </select>
-            </td>
-            <td>
-              <div style="display:flex; gap:6px; align-items:center;">
-                <select class="form-select" id="pan1-${c.dni}" style="display:${mostrarP1 ? 'inline-block' : 'none'};" onchange="registrarCambioFila('${c.dni}')">
-                  ${optsP1}
-                </select>
-                <select class="form-select" id="pan2-${c.dni}" style="display:${mostrarP2 ? 'inline-block' : 'none'};" onchange="registrarCambioFila('${c.dni}')">
-                  ${optsP2}
-                </select>
-                <span id="lbl-sinpan-${c.dni}" style="display:${!mostrarP1 ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">
-                  ${d.op === 'OP2' ? 'bebida + 3 huevos' : '-'}
-                </span>
-              </div>
-            </td>
-            <td>
-              <select class="form-select" id="alm-${c.dni}" onchange="registrarCambioFila('${c.dni}')">
-                <option value="NO" ${c.almDef === 'NO' ? 'selected' : ''}>NO</option>
-                <option value="REGULAR" ${c.almDef === 'REGULAR' ? 'selected' : ''}>REGULAR</option>
-                <option value="ALTERNATIVO" ${c.almDef === 'ALTERNATIVO' ? 'selected' : ''}>ALTERNATIVO</option>
-              </select>
-            </td>
-            <td>
-              <select class="form-select" id="est-${c.dni}" onchange="alCambiarEstadoFila('${c.dni}')">
-                <option value="ACTIVO" ${c.estado === 'ACTIVO' ? 'selected' : ''}>ACTIVO</option>
-                <option value="VACACIONES" ${c.estado === 'VACACIONES' ? 'selected' : ''}>VACACIONES</option>
-                <option value="DM" ${c.estado === 'DM' ? 'selected' : ''}>DM</option>
-                <option value="CESADO" ${c.estado === 'CESADO' ? 'selected' : ''}>CESADO</option>
-              </select>
-            </td>
-            <td>
-              <div id="rango-wrap-${c.dni}" style="display:${mostrarRango ? 'flex' : 'none'}; align-items:center; gap:5px;">
-                <input type="date" class="form-input" style="padding:5px 7px; font-size:12px;" id="fini-${c.dni}" value="${c.fechaInicioEstado || ''}" title="Fecha de inicio" onchange="registrarCambioFila('${c.dni}')">
-                <span style="font-size:11.5px; color:var(--muted); font-weight:700;">a</span>
-                <input type="date" class="form-input" style="padding:5px 7px; font-size:12px;" id="ffin-${c.dni}" value="${c.fechaFinEstado || ''}" title="Fecha de fin" onchange="registrarCambioFila('${c.dni}')">
-              </div>
-              <span id="lbl-sinfecha-${c.dni}" style="display:${!mostrarRango ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">-</span>
-            </td>
             <td style="text-align:center;">${crearBadgeVersionApp(c.versionApp)}</td>
+            <td class="dni-cell">${c.dni}</td>
+            <td class="name-cell">${c.nombre}</td>
+            <td id="cell-des-${c.dni}">${construirHtmlBarraDesayuno(c)}</td>
+            <td id="cell-alm-${c.dni}">${construirHtmlBarraAlmuerzo(c)}</td>
+            <td id="cell-est-${c.dni}">${construirHtmlBarraEstado(c)}</td>
           </tr>
         `;
       }).join('');
     }
 
-    function registrarCambioFila(dni) {
-      const op = document.getElementById('opdes-' + dni).value;
-      const p1 = document.getElementById('pan1-' + dni).value;
-      const p2 = document.getElementById('pan2-' + dni).value;
-      const alm = document.getElementById('alm-' + dni).value;
-      const est = document.getElementById('est-' + dni).value;
-      const fini = (est === 'VACACIONES' || est === 'DM') ? document.getElementById('fini-' + dni).value : '';
-      const ffin = (est === 'VACACIONES' || est === 'DM') ? document.getElementById('ffin-' + dni).value : '';
-
-      let desDefCodigo = 'NO';
-      if (op === 'OP2') desDefCodigo = 'OP2';
-      else if (op === 'OP1') desDefCodigo = `OP1|${p1}|${p2}`;
-      else if (op === 'OP3') desDefCodigo = `OP3|${p1}`;
-
+    function aplicarCambioColaborador(dni, nuevoParcial) {
       const orig = STATE.colaboradoresBD.find(x => x.dni === dni);
-      const igualAOriginal = orig &&
-        orig.desDef === desDefCodigo &&
-        orig.almDef === alm &&
-        orig.estado === est &&
-        (orig.fechaInicioEstado || '') === fini &&
-        (orig.fechaFinEstado || '') === ffin;
+      if (!orig) return;
 
-      const tr = document.getElementById('row-colab-' + dni);
+      const actual = obtenerEstadoActualColaborador(orig);
+      const next = {
+        dni: dni,
+        desDefCodigo: (nuevoParcial.desDefCodigo !== undefined) ? nuevoParcial.desDefCodigo : actual.desDef,
+        almDef: (nuevoParcial.almDef !== undefined) ? nuevoParcial.almDef : actual.almDef,
+        estado: (nuevoParcial.estado !== undefined) ? nuevoParcial.estado : actual.estado,
+        fechaInicioEstado: (nuevoParcial.fechaInicioEstado !== undefined) ? nuevoParcial.fechaInicioEstado : actual.fechaInicioEstado,
+        fechaFinEstado: (nuevoParcial.fechaFinEstado !== undefined) ? nuevoParcial.fechaFinEstado : actual.fechaFinEstado
+      };
+
+      const estOrigNorm = (orig.estado === 'ACTIVO') ? 'ACTIVO' : 'AUSENTE';
+      const igualAOriginal =
+        orig.desDef === next.desDefCodigo &&
+        orig.almDef === next.almDef &&
+        estOrigNorm === next.estado &&
+        (orig.fechaInicioEstado || '') === (next.fechaInicioEstado || '') &&
+        (orig.fechaFinEstado || '') === (next.fechaFinEstado || '');
+
       if (igualAOriginal) {
         delete STATE.cambiosPendientes[dni];
-        if (tr) tr.classList.remove('row-modified');
       } else {
-        STATE.cambiosPendientes[dni] = {
-          dni: dni,
-          desDefCodigo: desDefCodigo,
-          almDef: alm,
-          estado: est,
-          fechaInicioEstado: fini,
-          fechaFinEstado: ffin
-        };
-        if (tr) tr.classList.add('row-modified');
+        STATE.cambiosPendientes[dni] = next;
       }
+
+      // Actualiza solo la fila modificada (instantáneo, sin re-renderizar toda la tabla)
+      const cNuevo = obtenerEstadoActualColaborador(orig);
+      const tr = document.getElementById('row-colab-' + dni);
+      if (tr) tr.classList.toggle('row-modified', cNuevo.esModificado);
+      const cDes = document.getElementById('cell-des-' + dni);
+      const cAlm = document.getElementById('cell-alm-' + dni);
+      const cEst = document.getElementById('cell-est-' + dni);
+      if (cDes) cDes.innerHTML = construirHtmlBarraDesayuno(cNuevo);
+      if (cAlm) cAlm.innerHTML = construirHtmlBarraAlmuerzo(cNuevo);
+      if (cEst) cEst.innerHTML = construirHtmlBarraEstado(cNuevo);
+
       actualizarBotonGuardarGeneral();
     }
 
-    function alCambiarOpDesFila(dni) {
-      const op = document.getElementById('opdes-' + dni).value;
-      const s1 = document.getElementById('pan1-' + dni);
-      const s2 = document.getElementById('pan2-' + dni);
-      const lbl = document.getElementById('lbl-sinpan-' + dni);
-
-      if (op === 'OP1') {
-        s1.style.display = 'inline-block';
-        s2.style.display = 'inline-block';
-        lbl.style.display = 'none';
-      } else if (op === 'OP3') {
-        s1.style.display = 'inline-block';
-        s2.style.display = 'none';
-        lbl.style.display = 'none';
-      } else {
-        s1.style.display = 'none';
-        s2.style.display = 'none';
-        lbl.style.display = 'inline-block';
-        lbl.textContent = (op === 'OP2') ? 'bebida + 3 huevos' : '-';
-      }
-      registrarCambioFila(dni);
+    function abrirSelectorDesayunoBar(dni) {
+      STATE.desSelectorAbierto[dni] = true;
+      const orig = STATE.colaboradoresBD.find(x => x.dni === dni);
+      if (!orig) return;
+      const c = obtenerEstadoActualColaborador(orig);
+      const cell = document.getElementById('cell-des-' + dni);
+      if (cell) cell.innerHTML = construirHtmlBarraDesayuno(c);
     }
 
-    function alCambiarEstadoFila(dni) {
-      const est = document.getElementById('est-' + dni).value;
-      const wrapRango = document.getElementById('rango-wrap-' + dni);
-      const inpIni = document.getElementById('fini-' + dni);
-      const inpFin = document.getElementById('ffin-' + dni);
-      const lbl = document.getElementById('lbl-sinfecha-' + dni);
+    function seleccionarDesayunoBar(dni, op) {
+      STATE.desSelectorAbierto[dni] = false;
+      const orig = STATE.colaboradoresBD.find(x => x.dni === dni);
+      if (!orig) return;
+      const actual = obtenerEstadoActualColaborador(orig);
+      const d = desglosarCodigoDes(actual.desDef);
 
-      if (est === 'VACACIONES' || est === 'DM') {
-        wrapRango.style.display = 'flex';
-        lbl.style.display = 'none';
-      } else {
-        wrapRango.style.display = 'none';
+      let nuevoCod = 'NO';
+      if (op === 'OP1') nuevoCod = `OP1|${d.p1 || 'Pollo'}|${d.p2 || 'Queso'}`;
+      else if (op === 'OP2') nuevoCod = 'OP2';
+      else if (op === 'OP3') nuevoCod = `OP3|${d.p1 || 'Pollo'}`;
+
+      aplicarCambioColaborador(dni, { desDefCodigo: nuevoCod });
+    }
+
+    function cambiarPanBar(dni, numPan, nuevoPan) {
+      const orig = STATE.colaboradoresBD.find(x => x.dni === dni);
+      if (!orig) return;
+      const actual = obtenerEstadoActualColaborador(orig);
+      const d = desglosarCodigoDes(actual.desDef);
+
+      if (d.op === 'OP1') {
+        const p1 = (numPan === 1) ? nuevoPan : d.p1;
+        const p2 = (numPan === 2) ? nuevoPan : d.p2;
+        aplicarCambioColaborador(dni, { desDefCodigo: `OP1|${p1}|${p2}` });
+      } else if (d.op === 'OP3') {
+        aplicarCambioColaborador(dni, { desDefCodigo: `OP3|${nuevoPan}` });
+      }
+    }
+
+    function seleccionarAlmuerzoBar(dni, opAlm) {
+      aplicarCambioColaborador(dni, { almDef: opAlm });
+    }
+
+    function abrirSelectorEstadoBar(dni) {
+      STATE.estSelectorAbierto[dni] = true;
+      const orig = STATE.colaboradoresBD.find(x => x.dni === dni);
+      if (!orig) return;
+      const c = obtenerEstadoActualColaborador(orig);
+      const cell = document.getElementById('cell-est-' + dni);
+      if (cell) cell.innerHTML = construirHtmlBarraEstado(c);
+    }
+
+    function seleccionarEstadoActivoBar(dni) {
+      STATE.estSelectorAbierto[dni] = false;
+      aplicarCambioColaborador(dni, { estado: 'ACTIVO', fechaInicioEstado: '', fechaFinEstado: '' });
+    }
+
+    // MODAL FLOTANTE PARA FECHAS DE AUSENCIA
+    function abrirModalRangoAusencia(dni) {
+      const orig = STATE.colaboradoresBD.find(x => x.dni === dni);
+      if (!orig) return;
+      const c = obtenerEstadoActualColaborador(orig);
+
+      STATE.dniEditandoAusencia = dni;
+      document.getElementById('lbl-aus-colaborador').textContent = `${c.nombre} (${c.dni})`;
+
+      const esIndef = (c.estado !== 'ACTIVO' && !c.fechaInicioEstado && !c.fechaFinEstado);
+      const inpIni = document.getElementById('inp-aus-ini');
+      const inpFin = document.getElementById('inp-aus-fin');
+      const chkIndef = document.getElementById('chk-aus-indefinido');
+
+      chkIndef.checked = esIndef;
+      inpIni.value = esIndef ? '' : (c.fechaInicioEstado || STATE.hoyStr || '');
+      inpFin.value = esIndef ? '' : (c.fechaFinEstado || '');
+      inpIni.disabled = esIndef;
+      inpFin.disabled = esIndef;
+
+      document.getElementById('modal-rango-ausencia').style.display = 'flex';
+    }
+
+    function alternarAusenciaIndefinida() {
+      const indef = document.getElementById('chk-aus-indefinido').checked;
+      const inpIni = document.getElementById('inp-aus-ini');
+      const inpFin = document.getElementById('inp-aus-fin');
+      inpIni.disabled = indef;
+      inpFin.disabled = indef;
+      if (indef) {
         inpIni.value = '';
         inpFin.value = '';
-        lbl.style.display = 'inline-block';
+      } else if (!inpIni.value) {
+        inpIni.value = STATE.hoyStr || '';
       }
-      registrarCambioFila(dni);
+    }
+
+    function cerrarModalRangoAusencia() {
+      STATE.dniEditandoAusencia = '';
+      document.getElementById('modal-rango-ausencia').style.display = 'none';
+    }
+
+    function aplicarRangoAusenciaModal() {
+      const dni = STATE.dniEditandoAusencia;
+      if (!dni) return;
+
+      const indef = document.getElementById('chk-aus-indefinido').checked;
+      let fIni = indef ? '' : document.getElementById('inp-aus-ini').value;
+      let fFin = indef ? '' : document.getElementById('inp-aus-fin').value;
+
+      if (!indef) {
+        if (!fIni || !fFin) {
+          mostrarToast('Indica la fecha Desde y Hasta, o marca Ausencia indefinida.');
+          return;
+        }
+        if (fIni > fFin) {
+          mostrarToast('La fecha Desde no puede ser mayor que Hasta.');
+          return;
+        }
+      }
+
+      STATE.estSelectorAbierto[dni] = false;
+      aplicarCambioColaborador(dni, {
+        estado: 'AUSENTE',
+        fechaInicioEstado: fIni,
+        fechaFinEstado: fFin
+      });
+      cerrarModalRangoAusencia();
     }
 
     async function guardarCambiosMasivosUI() {
       const lista = Object.values(STATE.cambiosPendientes);
       if (lista.length === 0) return;
-
-      for (let i = 0; i < lista.length; i++) {
-        const item = lista[i];
-        if (item.estado === 'VACACIONES' || item.estado === 'DM') {
-          if (!item.fechaInicioEstado || !item.fechaFinEstado) {
-            mostrarToast(`Indica el rango completo de fechas (inicio y fin) para el DNI ${item.dni}.`);
-            return;
-          }
-          if (item.fechaInicioEstado > item.fechaFinEstado) {
-            mostrarToast(`La fecha de inicio no puede ser mayor a la fecha fin para el DNI ${item.dni}.`);
-            return;
-          }
-        }
-      }
 
       const btn = document.getElementById('btn-guardar-masivo');
       btn.disabled = true;
@@ -1746,6 +2383,8 @@
         const res = await llamarAPI('actualizarColaboradoresMasivoRRHH', [STATE.admin.dni, lista]);
         if (res && res.ok) {
           STATE.cambiosPendientes = {};
+          STATE.desSelectorAbierto = {};
+          STATE.estSelectorAbierto = {};
           actualizarBotonGuardarGeneral();
           mostrarToast(res.msg);
           await cargarDatosPortal(false);
@@ -1872,7 +2511,7 @@
     }
 
     // ========================================================================
-    // MÓDULO: REPORTE DE PLANILLA (FUENTE ÚNICA DESDE SERVIDOR SIN REPROCESO)
+    // MÓDULO: REPORTE DE PLANILLA (CACHEADO EN SERVIDOR + EXPORTACIÓN EXCEL)
     // ========================================================================
     function inicializarFechasPlanilla() {
       const baseStr = STATE.hoyStr || new Date().toISOString().split('T')[0];
@@ -1911,8 +2550,8 @@
           granTot += tot;
           return `
             <tr>
-              <td><b>${r.dni}</b></td>
-              <td><b>${r.nombre}</b></td>
+              <td class="dni-cell">${r.dni}</td>
+              <td class="name-cell">${r.nombre}</td>
               <td style="text-align:center;">${Number(r.cantDesayunos || 0)}</td>
               <td>S/ ${Number(r.costoDesayunos || 0).toFixed(2)}</td>
               <td style="text-align:center;">${Number(r.cantAlmuerzos || 0)}</td>

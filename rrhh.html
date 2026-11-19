@@ -2,21 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=26">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=26">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=26">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=26">
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal RRHH • Comedor SBS</title>
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=25">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
       --sbs-primary: #13392a;
+      --sbs-primary-dark: #0c261b;
       --sbs-accent: #10b981;
       --sbs-orange: #ea580c;
       --bg: #f1f5f9;
@@ -24,859 +17,686 @@
       --text: #1e293b;
       --muted: #64748b;
       --border: #e2e8f0;
-      /* CAMBIAR ENTRE 'uppercase' (MAYÚSCULAS) Y 'none' (Normal) PARA DESAYUNO / ALMUERZO */
-      --titulo-servicio-case: uppercase;
+      --danger: #dc2626;
     }
 
-    * {
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-text-size-adjust: 100%;
-      text-size-adjust: 100%;
-    }
-    html, body {
-      margin: 0; padding: 0;
-      background-color: #ffffff;
-      color: var(--text);
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; width: 100%; overflow: hidden;
-    }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { margin: 0; padding: 0; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    .app-shell {
-      width: 95vw; height: 94vh; max-width: 580px; background: var(--card);
-      border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      display: flex; flex-direction: column; overflow: hidden; position: relative;
-    }
-    .app-shell.wide-rrhh { max-width: 900px; }
-
-    /* PANTALLA DE CARGA RÁPIDA (SPLASH) CON LOGO */
-    #view-splash {
+    /* AVISO DE ACTUALIZACIÓN DEL PORTAL (CUANDO HAY CAMBIOS SIN GUARDAR) */
+    #banner-update-rrhh {
       display: none;
-      position: absolute;
-      inset: 0;
-      background: #ffffff;
-      z-index: 3000;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 32px;
-      text-align: center;
-    }
-    .splash-logo {
-      width: 148px;
-      height: 148px;
-      object-fit: contain;
-      margin-bottom: 18px;
-    }
-    .splash-spinner {
-      width: 34px;
-      height: 34px;
-      border: 3.5px solid #e2e8f0;
-      border-top-color: var(--sbs-primary);
-      border-radius: 50%;
-      animation: spinSplash 0.75s linear infinite;
-      margin-bottom: 12px;
-    }
-    @keyframes spinSplash {
-      to { transform: rotate(360deg); }
-    }
-    #splash-texto {
-      font-size: 14.5px;
-      font-weight: 700;
-      color: var(--sbs-primary);
-      margin: 0;
-    }
-    #splash-retry-wrap {
-      display: none;
-      margin-top: 16px;
-      width: 100%;
-      max-width: 240px;
-    }
-
-    /* PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA */
-    #modal-update-obligatorio {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 10000;
-      justify-content: center;
-      align-items: center;
-      padding: 22px;
-    }
-    .update-card {
-      background: #ffffff;
-      width: 100%;
-      max-width: 370px;
-      border-radius: 22px;
-      padding: 30px 24px 26px;
-      text-align: center;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
-      animation: popModal 0.18s ease-out;
-    }
-    .update-logo {
-      width: 108px;
-      height: 108px;
-      object-fit: contain;
-      margin: 0 auto 14px;
-      display: block;
-    }
-    .update-card h3 {
-      margin: 0 0 18px;
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--sbs-primary);
-      letter-spacing: -0.2px;
-    }
-    #update-notas-texto {
-      margin: 16px 0 0;
-      font-size: 13.5px;
-      color: var(--muted);
-      line-height: 1.5;
-      font-weight: 500;
-    }
-
-    /* ETIQUETA DISCRETA DE VERSIÓN */
-    .top-bar-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-    .topbar-ver-tag {
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.65);
-      letter-spacing: 0.3px;
-      padding-right: 4px;
-    }
-    .login-ver-tag {
-      margin-top: 22px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #94a3b8;
-      letter-spacing: 0.3px;
-    }
-
-    /* BANNER INFORMATIVO DINÁMICO (DESDE MENU_SEMANAL) */
-    #banner-informativo-sbs {
-      display: none;
-      background: #fffbeb;
-      border-bottom: 1.5px solid #fde68a;
-      color: #92400e;
-      padding: 10px 14px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 28px;
       font-size: 13px;
       font-weight: 600;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      flex-shrink: 0;
-      line-height: 1.35;
-    }
-    .btn-cerrar-banner-info {
-      background: rgba(146, 64, 14, 0.12);
-      color: #92400e;
-      border: none;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 250;
     }
 
-    #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: #ffffff; }
-    .login-logo-wrap {
-      width: 170px; height: 170px; border-radius: 22px; overflow: hidden; margin-bottom: 14px; background: #ffffff;
-      display: flex; align-items: center; justify-content: center;
+    /* LOGIN */
+    #view-login {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+      background: linear-gradient(135deg, #13392a 0%, #0a1f17 100%);
     }
-    .login-logo-wrap img { width: 100%; height: 100%; object-fit: contain; background: #ffffff; display: block; }
-    .dni-input {
-      width: 100%; padding: 15px; font-size: 22px; text-align: center; border: 2px solid var(--border);
-      border-radius: 12px; margin: 14px 0 14px; letter-spacing: 4px; font-weight: 700; outline: none;
+    .login-card {
+      background: white; width: 100%; max-width: 400px; border-radius: 16px; padding: 36px 32px 26px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.28); text-align: center;
     }
-    .dni-input:focus { border-color: var(--sbs-primary); }
+    .login-logo { width: 115px; height: 115px; object-fit: contain; margin: 0 auto 14px; display: block; }
+    .login-card h1 { margin: 0 0 18px; font-size: 20px; color: var(--sbs-primary); font-weight: 800; }
+    .login-ver { margin-top: 18px; font-size: 11.5px; color: #94a3b8; font-weight: 600; }
+    .input-lg {
+      width: 100%; padding: 13px 14px; font-size: 17px; text-align: center; font-weight: 700;
+      border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 12px; outline: none;
+    }
+    .input-lg:focus { border-color: var(--sbs-primary); }
 
-    .pass-input {
-      width: 100%; padding: 15px; font-size: 19px; text-align: center; border: 2px solid var(--border);
-      border-radius: 12px; margin: 10px 0 14px; font-weight: 700; outline: none;
+    /* BOTONES */
+    .btn {
+      padding: 10px 18px; border: none; border-radius: 9px; font-size: 13.5px; font-weight: 700;
+      cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
     }
-    .pass-input:focus { border-color: var(--sbs-primary); }
-
-    .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
     .btn-primary { background: var(--sbs-primary); color: white; }
+    .btn-primary:hover { background: var(--sbs-primary-dark); }
     .btn-success { background: var(--sbs-accent); color: white; }
+    .btn-orange { background: var(--sbs-orange); color: white; }
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
-    .btn:disabled { opacity: 0.55; cursor: not-allowed; background: #94a3b8 !important; color: #ffffff !important; }
+    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-sm { padding: 8px 13px; font-size: 12.5px; border-radius: 8px; }
+    .btn-lg-save { padding: 10px 24px; font-size: 14px; font-weight: 800; border-radius: 9px; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    #view-main { display: none; flex-direction: column; height: 100%; background: var(--bg); }
-    .top-bar {
-      background: var(--sbs-primary); color: white; padding: 20px 20px 16px; flex-shrink: 0; position: relative; z-index: 10;
+    /* CABECERA Y NAVEGACIÓN */
+    #view-portal { display: none; flex-direction: column; min-height: 100vh; }
+    .top-header {
+      background: var(--sbs-primary); color: white; padding: 13px 28px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+      position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    .top-bar-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .top-bar h2 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.2; }
-    .top-bar p { margin: 7px 0 0; font-size: 13.8px; color: rgba(255,255,255,0.92); line-height: 1.35; }
-    .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 8px 16px; border-radius: 9px; font-size: 13.8px; cursor: pointer; font-weight: 600; flex-shrink: 0; }
-    .header-kpi-strip {
-      margin-top: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 11px; padding: 10px 13px; display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; font-weight: 600;
+    .brand-wrap { display: flex; align-items: center; gap: 13px; }
+    .brand-logo { width: 38px; height: 38px; border-radius: 9px; background: white; object-fit: contain; padding: 3px; }
+    .brand-wrap h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.2px; display: flex; align-items: center; gap: 8px; }
+    .portal-ver-pill {
+      font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.12); padding: 2px 7px; border-radius: 6px;
     }
-    .header-kpi-total {
-      background: #10b981; color: #ffffff; font-weight: 800; padding: 6px 12px; border-radius: 8px;
-      font-size: 14.5px; border: none; cursor: pointer; transition: 0.15s;
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-    .header-kpi-total:active { transform: scale(0.97); opacity: 0.9; }
+    .brand-wrap span.admin-sub { font-size: 12px; color: rgba(255,255,255,0.8); display: block; margin-top: 1px; }
 
-    .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .tab { flex: 1; text-align: center; padding: 12px 6px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
-    .tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
-
-    .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); }
-    .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 12px; }
-    .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16.5px; margin-bottom: 10px; }
-
-    .menu-box {
-      background: #f8fafc; border-radius: 9px; padding: 10px 12px; font-size: 13.8px;
-      letter-spacing: -0.1px; color: #334155; font-weight: 400; margin-bottom: 12px; line-height: 1.48;
+    .header-actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .sync-pill {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 12px; border-radius: 999px; font-size: 12px; display: flex; align-items: center; gap: 6px;
     }
-    .menu-box div { white-space: normal; word-break: break-word; }
-    .menu-box b { color: #0f172a; font-weight: 700; }
-    .menu-box .sel-highlight { color: #c2410c; font-weight: 700; }
+    .dot-live { width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block; }
 
-    /* Tarjetas compactas sin altura mínima forzada: al cerrarse el corte o no haber desplegables quedan de 2 líneas */
-    .srv-grid { display: flex; gap: 10px; align-items: stretch; }
+    .nav-bar {
+      background: white; border-bottom: 1px solid var(--border); padding: 0 28px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .nav-tabs { display: flex; gap: 8px; }
+    .nav-tab {
+      padding: 14px 18px; font-size: 13.5px; font-weight: 700; color: var(--muted);
+      cursor: pointer; border-bottom: 3px solid transparent; transition: 0.15s;
+    }
+    .nav-tab:hover { color: var(--sbs-primary); }
+    .nav-tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
 
-    .srv-split-card {
-      flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white;
-      display: flex; flex-direction: column; overflow: hidden; transition: 0.15s;
-      min-width: 0;
-    }
-    .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
-    .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
-    .srv-split-card.disabled-card {
-      opacity: 0.58; background: #f1f5f9; pointer-events: none;
-    }
+    .container { max-width: 1440px; width: 100%; margin: 0 auto; padding: 20px 28px; flex: 1; }
 
-    .srv-split-top {
-      padding: 10px 6px; text-align: center; cursor: pointer; flex: 1;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
+    /* 4 TARJETAS INTERACTIVAS DE MONITOREO (BOTONES DE FILTRO) */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
     }
-    .srv-split-card.disabled-card .srv-split-top {
-      padding: 9px 6px;
+    @media (max-width: 1080px) {
+      .kpi-row { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
     }
-    .srv-split-top .title {
-      font-size: 15.5px; font-weight: 800; display: block; color: var(--text);
-      text-transform: var(--titulo-servicio-case); letter-spacing: 0.3px;
+    @media (max-width: 580px) {
+      .kpi-row { grid-template-columns: 1fr; }
     }
-    .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
-    .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
-
-    .srv-split-top .status { font-size: 13px; color: var(--muted); display: block; margin-top: 3px; line-height: 1.25; }
-    .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
-    .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
-
-    .pan-dropdown-wrap {
-      display: flex; gap: 5px; padding: 0 6px 8px; justify-content: center; align-items: center;
-    }
-    .pan-select {
-      flex: 1; min-width: 0; width: 100%; height: 29px; padding: 0 3px;
-      font-size: 12.5px; font-weight: 400; color: #7c2d12; background: #ffffff;
-      border: 1px solid #fdba74; border-radius: 6px; outline: none;
-      text-align: center; text-align-last: center; -moz-text-align-last: center;
+    .kpi-card {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 13px;
+      padding: 14px 16px;
       cursor: pointer;
-    }
-    .pan-select option { text-align: center; font-weight: 400; }
-    .pan-select:focus { border-color: var(--sbs-orange); }
-
-    .srv-split-bottom { display: flex; border-top: 1.5px solid var(--border); background: #f8fafc; flex-shrink: 0; }
-    .srv-split-card.active-des .srv-split-bottom { border-top-color: #fdba74; }
-    .srv-split-card.active-alm .srv-split-bottom { border-top-color: #a7f3d0; }
-
-    .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 10px 2px; font-size: 13.5px; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.15s; }
-    .op-sub-btn:last-child { border-right: none; }
-
-    .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
-    .srv-split-card.active-alm .op-sub-btn.selected-op { background: var(--sbs-accent); color: white; }
-
-    /* MODALES GENERALES */
-    .modal-backdrop {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(15, 23, 42, 0.72); z-index: 9997; justify-content: center; align-items: center; padding: 16px;
-    }
-    .modal-panel {
-      background: white; width: 100%; max-width: 440px; max-height: 86vh;
-      border-radius: 20px; padding: 20px; display: flex; flex-direction: column;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.35); animation: popModal 0.16s ease-out;
-    }
-    .modal-header-row {
-      display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;
-    }
-    .modal-header-row h3 {
-      margin: 0; font-size: 18px; font-weight: 800; color: var(--sbs-primary);
-    }
-    .modal-header-row p {
-      margin: 3px 0 0; font-size: 12.5px; color: var(--muted); font-weight: 600;
-    }
-    .btn-x-sm {
-      width: 34px; height: 34px; border-radius: 50%; border: none; background: #f1f5f9;
-      color: #475569; font-size: 18px; font-weight: 800; cursor: pointer; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    /* ESTILOS DETALLE DE CONSUMIDOS */
-    .consumo-table-wrap {
-      flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px;
-    }
-    .consumo-table {
-      width: 100%; border-collapse: collapse; font-size: 14px;
-    }
-    .consumo-table th {
-      background: #f8fafc; color: #334155; font-weight: 800; padding: 10px 8px;
-      border-bottom: 1px solid var(--border); position: sticky; top: 0; text-align: center;
-    }
-    .consumo-table th:first-child { text-align: left; padding-left: 14px; }
-    .consumo-table td {
-      padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: center; vertical-align: middle;
-    }
-    .consumo-table td:first-child { text-align: left; padding-left: 14px; font-weight: 700; color: #1e293b; }
-    .chk-ok {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: #dcfce7; color: #047857; font-size: 15px; font-weight: 900;
-    }
-    .chk-no {
-      color: #cbd5e1; font-size: 18px; font-weight: 800;
-    }
-    .consumo-summary-foot {
-      background: #f8fafc; border: 1px solid var(--border); border-radius: 11px;
-      padding: 11px 14px; display: flex; justify-content: space-between; align-items: center;
-      font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 12px;
-    }
-    .consumo-summary-foot .tot-pill {
-      color: #047857; font-size: 15px; font-weight: 800;
-    }
-
-    /* TARJETA VERDE COMPACTA PERSISTENTE (REEMPLAZA AL BOTÓN QR TRAS ESCANEAR) */
-    #card-ticket-compacto {
-      display: none;
-      width: 100%;
-      background: #ecfdf5;
-      border: 2.5px solid #10b981;
-      border-radius: 14px;
-      padding: 14px 15px;
-      margin-top: 2px;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s, background-color 0.15s;
+      display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.12s;
+      justify-content: space-between;
+      text-align: left;
+      user-select: none;
     }
-    #card-ticket-compacto:active { transform: scale(0.99); }
-    .compact-ticket-head {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+    .kpi-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
+      transform: translateY(-1px);
     }
-    .compact-ticket-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: #10b981;
-      color: #ffffff;
-      font-size: 20px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .compact-ticket-title {
-      font-size: 18px;
-      font-weight: 900;
-      color: #065f46;
-      letter-spacing: -0.2px;
-      text-transform: uppercase;
-      line-height: 1.15;
-    }
-    #compact-ticket-detalle {
-      width: 100%;
-      font-size: 17px;
-      font-weight: 800;
-      color: #c2410c;
+    .kpi-card.active-des {
+      border-color: var(--sbs-orange);
       background: #fff7ed;
-      border: 2px solid #ea580c;
-      border-radius: 11px;
-      padding: 8px 10px;
-      line-height: 1.25;
-      word-break: break-word;
+      box-shadow: 0 6px 18px rgba(234, 88, 12, 0.14);
     }
-    .compact-ticket-datetime {
-      width: 100%;
-      background: #ffffff;
-      border: 2px solid #10b981;
-      border-radius: 12px;
-      padding: 10px 12px;
+    .kpi-card.active-alm {
+      border-color: var(--sbs-accent);
+      background: #ecfdf5;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.14);
+    }
+    .kpi-head {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
+      margin-bottom: 8px;
       gap: 6px;
     }
-    #compact-ticket-fecha {
-      font-size: 21px;
-      font-weight: 900;
-      color: #065f46;
-      letter-spacing: 0.4px;
-      line-height: 1.15;
-    }
-    .compact-ticket-sep {
-      width: 68%;
-      height: 1.5px;
-      background: #d1fae5;
-      border-radius: 2px;
-    }
-    #compact-ticket-hora {
-      font-size: 24px;
-      font-weight: 900;
-      color: #047857;
-      letter-spacing: 0.4px;
-      line-height: 1.15;
-    }
-    .compact-ticket-hint {
-      font-size: 12px;
-      font-weight: 600;
-      color: #047857;
-      opacity: 0.85;
-      margin-top: -2px;
-    }
-
-    /* VENTANA EMERGENTE DEL ESCÁNER QR */
-    #modal-qr-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.78); z-index: 9998; justify-content: center; align-items: center; padding: 20px;
-    }
-    #modal-qr-content {
-      background: white; width: 100%; max-width: 380px; border-radius: 20px; padding: 20px; text-align: center;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.35); animation: popModal 0.15s ease-out;
-    }
-
-    /* VENTANA EMERGENTE A PANTALLA CASI COMPLETA PARA EL COCINERO */
-    #modal-ticket-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(15, 23, 42, 0.88); z-index: 9999; justify-content: center; align-items: center; padding: 14px;
-    }
-    #modal-ticket-card {
-      background: #ecfdf5; border: 5px solid #10b981;
-      width: 94vw; max-width: 500px; min-height: 82vh; max-height: 94vh; overflow-y: auto;
-      border-radius: 28px; padding: 44px 20px 32px; text-align: center; position: relative;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.55); animation: popModal 0.18s ease-out;
-    }
-    .btn-close-ticket {
-      position: absolute; top: 16px; right: 16px; width: 50px; height: 50px; border-radius: 50%;
-      background: rgba(6, 95, 70, 0.15); color: #065f46; border: none; font-size: 26px; font-weight: 900;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;
-    }
-    .btn-close-ticket:active { background: rgba(6, 95, 70, 0.3); }
-    .ticket-big-icon {
-      width: 112px; height: 112px; border-radius: 50%; background: #10b981; color: #ffffff;
-      font-size: 68px; font-weight: 900; display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px; box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4); flex-shrink: 0;
-    }
-    #ticket-modal-titulo {
-      font-size: 29px; font-weight: 900; color: #065f46; line-height: 1.15; letter-spacing: -0.4px; margin: 0 0 18px;
+    .kpi-card .k-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--muted);
       text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
-    .ticket-data-stack {
-      width: 100%; display: flex; flex-direction: column; gap: 14px; align-items: center;
+    .kpi-card.active-des .k-title { color: #c2410c; }
+    .kpi-card.active-alm .k-title { color: #047857; }
+    .kpi-chip {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #64748b;
     }
-    /* Detalle de panes/huevos: se muestra ÚNICAMENTE en Desayuno */
-    #ticket-modal-detalle {
-      width: 100%; font-size: 25px; font-weight: 900; color: #c2410c;
-      background: #fff7ed; border: 3px solid #ea580c;
-      padding: 13px 14px; border-radius: 16px; line-height: 1.25;
-      word-break: break-word;
+    .kpi-card.active-des .kpi-chip { background: var(--sbs-orange); color: #ffffff; }
+    .kpi-card.active-alm .kpi-chip { background: var(--sbs-accent); color: #ffffff; }
+
+    .kpi-split {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 54px;
     }
-    /* Cuadro único de Fecha y Hora en filas separadas */
-    .ticket-datetime-box {
-      width: 100%;
-      background: #ffffff;
-      border: 3px solid #10b981;
-      border-radius: 18px;
-      padding: 16px 14px;
+    .kpi-main {
       display: flex;
       flex-direction: column;
+      justify-content: center;
+    }
+    .kpi-main .k-val {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--sbs-primary);
+      line-height: 1;
+      letter-spacing: -0.5px;
+    }
+    .kpi-card.active-des .kpi-main .k-val { color: #c2410c; }
+    .kpi-card.active-alm .kpi-main .k-val { color: #047857; }
+    .kpi-main .k-sub {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .kpi-breakdown {
+      border-left: 1.5px solid var(--border);
+      padding-left: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 12px;
+      color: #334155;
+      min-width: 112px;
+    }
+    .kpi-card.active-des .kpi-breakdown { border-left-color: #fed7aa; }
+    .kpi-card.active-alm .kpi-breakdown { border-left-color: #a7f3d0; }
+    .kpi-breakdown-row {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
       gap: 10px;
+      line-height: 1.3;
     }
-    #ticket-modal-fecha {
-      font-size: 33px; font-weight: 900; color: #065f46; letter-spacing: 0.5px; line-height: 1.15;
+    .kpi-breakdown-row span { color: var(--muted); font-weight: 600; }
+    .kpi-breakdown-row b { color: var(--text); font-weight: 800; }
+
+    .kpi-ratio-num {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--sbs-primary);
+      line-height: 1.15;
     }
-    .ticket-datetime-sep {
-      width: 72%; height: 2px; background: #d1fae5; border-radius: 2px;
-    }
-    #ticket-modal-hora {
-      font-size: 38px; font-weight: 900; color: #047857; letter-spacing: 0.5px; line-height: 1.15;
+    .kpi-ratio-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 2px;
     }
 
-    @keyframes popModal {
-      from { transform: scale(0.92); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    /* BARRA DE ACCIONES Y TABLA DIRECTA */
+    .action-bar {
+      background: white; border: 1px solid var(--border); border-bottom: none;
+      border-radius: 12px 12px 0 0; padding: 13px 16px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
     }
-
-    @media (max-width: 480px) {
-      .app-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
-      .top-bar { padding: 18px 16px 14px; }
-      .top-bar h2 { font-size: 19.5px; }
-      .top-bar p { margin-top: 6px; font-size: 13px; }
-      .header-kpi-strip { margin-top: 13px; padding: 9px 11px; font-size: 13.8px; }
-      .header-kpi-total { font-size: 13.8px; padding: 5px 10px; }
-      .tab { padding: 10px 4px; font-size: 14px; }
-      .scroll-area { padding: 10px 12px; }
-      .day-card { padding: 12px; margin-bottom: 10px; }
-      .day-header { font-size: 15.5px; margin-bottom: 8px; }
-      .menu-box { padding: 8px 10px; font-size: 13px; margin-bottom: 10px; }
-      .srv-grid { gap: 8px; }
-      .srv-split-top { padding: 8px 4px; }
-      .srv-split-top .title { font-size: 14.5px; }
-      .srv-split-top .status { font-size: 12.2px; margin-top: 3px; }
-      .pan-dropdown-wrap { padding: 0 4px 7px; }
-      .pan-select { font-size: 11.8px; height: 27px; padding: 0 2px; }
-      .op-sub-btn { padding: 9px 2px; font-size: 12.5px; }
-      .btn { padding: 13px; font-size: 15px; }
-      #modal-ticket-card { width: 95vw; min-height: 84dvh; max-height: 94dvh; padding: 38px 16px 28px; }
-      #ticket-modal-titulo { font-size: 26px; }
-      #ticket-modal-detalle { font-size: 23px; padding: 12px 10px; }
-      #ticket-modal-fecha { font-size: 31px; }
-      #ticket-modal-hora { font-size: 36px; }
-      #card-ticket-compacto { padding: 12px; gap: 8px; }
-      .compact-ticket-title { font-size: 16.5px; }
-      #compact-ticket-detalle { font-size: 16px; padding: 7px 8px; }
-      #compact-ticket-fecha { font-size: 19.5px; }
-      #compact-ticket-hora { font-size: 22.5px; }
+    .toolbar-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .form-input, .form-select {
+      padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 13px; color: var(--text); background: white; outline: none;
     }
+    .form-select {
+      text-align: center; text-align-last: center; -moz-text-align-last: center;
+      font-weight: 400; cursor: pointer;
+    }
+    .form-select option { text-align: center; font-weight: 400; }
+    .form-input:focus, .form-select:focus { border-color: var(--sbs-primary); }
 
-    .rrhh-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
-    .rrhh-box h4 { margin: 0 0 10px; font-size: 15.5px; color: var(--sbs-primary); }
-    .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-    .form-control { flex: 1; min-width: 130px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 14px; }
-    .table-wrap { overflow-x: auto; max-height: 340px; border: 1px solid var(--border); border-radius: 9px; }
+    .active-filter-pill {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .btn-clear-filter {
+      background: #e2e8f0;
+      color: #334155;
+      border: none;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-clear-filter:hover { background: #cbd5e1; }
+
+    .table-direct-wrap {
+      overflow-x: auto; max-height: calc(100vh - 220px); background: white;
+      border: 1px solid var(--border); border-radius: 0 0 12px 12px;
+    }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; }
-    th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; }
+    th, td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    th { background: #f8fafc; font-weight: 700; color: #334155; position: sticky; top: 0; z-index: 10; }
+    tr:hover td { background: #f8fafc; }
 
-    .kpi-grid-tech { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-    .kpi-card-tech { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; }
-    .kpi-card-tech .num { font-size: 17px; font-weight: 800; color: var(--sbs-primary); display: block; }
-    .kpi-card-tech .lbl { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 2px; display: block; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px;
+      border-radius: 6px; font-size: 11.5px; font-weight: 700; white-space: nowrap;
+    }
+    .bg-green { background: #dcfce7; color: #166534; }
+    .bg-orange { background: #ffedd5; color: #c2410c; }
+    .bg-gray { background: #f1f5f9; color: #64748b; }
+    .bg-blue { background: #e0f2fe; color: #075985; }
+    .bg-red { background: #fee2e2; color: #991b1b; }
 
-    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 14px; font-weight: 600; display: none; z-index: 9999; text-align: center; width: max-content; max-width: 90vw; }
+    .row-modified td { background: #fffbeb !important; }
+
+    /* MODALES */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.6); z-index: 9999; justify-content: center; align-items: center; padding: 20px;
+    }
+    .modal-box {
+      background: white; width: 100%; max-width: 740px; border-radius: 14px; padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.28); max-height: 90vh; overflow-y: auto;
+    }
+    .modal-box.modal-sm { max-width: 440px; }
+    .menu-day-row {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 9px;
+      padding: 12px 14px; margin-bottom: 10px;
+    }
+    .menu-day-row label { font-size: 13px; font-weight: 800; color: var(--sbs-primary); display: block; margin-bottom: 6px; }
+    .menu-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .banner-edit-box {
+      background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 14px;
+    }
+    .banner-edit-box label {
+      font-size: 13px; font-weight: 800; color: #92400e; display: block; margin-bottom: 4px;
+    }
+    .banner-edit-box small {
+      display: block; font-size: 11.5px; color: #b45309; margin-bottom: 7px;
+    }
+
+    .field-group { margin-bottom: 15px; text-align: left; }
+    .field-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .field-group .form-input, .field-group .form-select {
+      width: 100%; padding: 10px 12px; font-size: 13.5px; text-align: left; text-align-last: left;
+    }
+
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: white;
+      padding: 13px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
+      display: none; z-index: 10000; box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
   </style>
 </head>
 <body>
 
-  <div class="app-shell" id="app-shell">
-    <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
-    <div id="view-splash">
-      <img src="./Logo.jpg?v=26" alt="Comedor SBS" class="splash-logo">
-      <div class="splash-spinner" id="splash-spinner"></div>
-      <p id="splash-texto">Actualizando...</p>
-      <div id="splash-retry-wrap">
-        <button class="btn btn-primary" style="padding:12px; font-size:14.5px;" onclick="reintentarCargaInicial()">
-          Reintentar conexión
+  <!-- AVISO SUAVE SI HAY NUEVA VERSIÓN MIENTRAS RRHH TIENE CAMBIOS SIN GUARDAR -->
+  <div id="banner-update-rrhh">
+    <span>Hay una mejora disponible. Guarda tus cambios y haz clic en Actualizar.</span>
+    <button class="btn btn-success btn-sm" onclick="recargarPortalNuevaVersion()">Actualizar</button>
+  </div>
+
+  <!-- 1. LOGIN -->
+  <div id="view-login">
+    <div class="login-card">
+      <img src="./Logo.jpg?v=25" alt="SBS" class="login-logo">
+      <h1>Portal RRHH • Comedor SBS</h1>
+
+      <div id="step-dni">
+        <input type="tel" id="txt-dni" class="input-lg" placeholder="DNI" maxlength="8">
+        <button class="btn btn-primary" id="btn-login-dni" style="width:100%; padding:13px; font-size:14.5px;" onclick="verificarDniRRHH()">
+          Continuar
         </button>
       </div>
-    </div>
 
-    <!-- 1. LOGIN -->
-    <div id="view-login">
-      <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=26" alt="SBS">
-      </div>
-
-      <div id="step-dni" style="width:100%;">
-        <p style="color:var(--muted); font-size:15.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
-        <input type="tel" id="txt-dni" class="dni-input" placeholder="DNI (8 dígitos)" maxlength="8">
-        <button class="btn btn-primary" id="btn-ingresar" onclick="verificarPasoDNI()">Continuar</button>
-      </div>
-
-      <div id="step-clave" style="display:none; width:100%;">
-        <div id="lbl-saludo-login" style="font-size:17px; font-weight:800; color:var(--sbs-primary); margin-bottom:5px;"></div>
-        <p id="lbl-instruccion-clave" style="color:var(--muted); font-size:14px; margin:0 0 6px; line-height:1.4;"></p>
-        <input type="password" id="txt-clave" class="pass-input" placeholder="••••••••" autocomplete="current-password">
-        <button class="btn btn-primary" id="btn-confirmar-clave" onclick="confirmarClaveLogin()">Ingresar</button>
-        <button class="btn btn-outline" style="margin-top:8px; padding:11px; font-size:14px; color:var(--muted);" onclick="volverAPasoDNI()">
+      <div id="step-clave" style="display:none;">
+        <div id="lbl-hola-rrhh" style="font-size:15.5px; font-weight:800; color:var(--sbs-primary); margin-bottom:6px;"></div>
+        <p id="lbl-inst-rrhh" style="font-size:12.5px; color:var(--muted); margin:0 0 10px;"></p>
+        <input type="password" id="txt-clave" class="input-lg" placeholder="Contraseña">
+        <button class="btn btn-primary" id="btn-login-clave" style="width:100%; padding:13px; font-size:14.5px;" onclick="confirmarClaveRRHH()">
+          Ingresar
+        </button>
+        <button class="btn btn-outline" style="width:100%; margin-top:8px;" onclick="volverPasoDniRRHH()">
           Cambiar DNI
         </button>
       </div>
-
-      <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:12px; padding:12px; font-size:14px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
-        Instalar App en pantalla de inicio
-      </button>
-      <div class="login-ver-tag" id="lbl-ver-login">v26</div>
+      <div class="login-ver" id="lbl-ver-login-rrhh">v25</div>
     </div>
+  </div>
 
-    <!-- 2. PANTALLA PRINCIPAL -->
-    <div id="view-main">
-      <!-- BANNER INFORMATIVO DINÁMICO (EDITABLE DESDE MENU_SEMANAL!E2 O PORTAL RRHH) -->
-      <div id="banner-informativo-sbs">
-        <span id="texto-banner-informativo"></span>
-        <button class="btn-cerrar-banner-info" onclick="cerrarBannerInformativo()" title="Cerrar">✕</button>
-      </div>
-
-      <div class="top-bar">
-        <div class="top-bar-row">
-          <div>
-            <h2 id="lbl-nombre">Hola</h2>
-            <p id="lbl-estado-rol">Tarifas aplicadas según planilla</p>
-          </div>
-          <div class="top-bar-right">
-            <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
-            <span class="topbar-ver-tag" id="lbl-ver-main">v26</span>
-          </div>
-        </div>
-        <div class="header-kpi-strip">
-          <span id="hdr-resumen-cant">0 Des. | 0 Alm.</span>
-          <button class="header-kpi-total" id="hdr-resumen-total" onclick="abrirModalDetalleConsumido()" title="Ver detalle de consumos del ciclo">
-            Consumido: S/ 0.00
-          </button>
+  <!-- 2. PORTAL PRINCIPAL -->
+  <div id="view-portal">
+    <header class="top-header">
+      <div class="brand-wrap">
+        <img src="./Logo.jpg?v=25" alt="SBS" class="brand-logo">
+        <div>
+          <h2>Portal RRHH • Comedor SBS <span class="portal-ver-pill" id="lbl-ver-header-rrhh">v25</span></h2>
+          <span class="admin-sub" id="lbl-admin-activo"></span>
         </div>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Hoy</div>
-        <div class="tab" id="tab-btn-semana" onclick="cambiarTab('SEMANA')">Mi Semana</div>
-        <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">RRHH</div>
-        <div class="tab" id="tab-btn-tecnico" style="display:none;" onclick="cambiarTab('TECNICO')">Técnico</div>
+      <div class="header-actions">
+        <div class="sync-pill">
+          <span class="dot-live"></span>
+          <span id="lbl-ultima-sync">En línea</span>
+        </div>
+        <button class="btn btn-success btn-sm" style="background:#10b981; color:white; border:none;" onclick="abrirModalAsignarServicio()">
+          Asignar Servicio
+        </button>
+        <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalMenu()">
+          Menú y Aviso
+        </button>
+        <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalResetClave()">
+          Restablecer Contraseña
+        </button>
+        <button class="btn btn-outline btn-sm" style="background:rgba(220,38,38,0.85); color:white; border:none;" onclick="cerrarSesionRRHH()">
+          Salir
+        </button>
+      </div>
+    </header>
+
+    <nav class="nav-bar">
+      <div class="nav-tabs">
+        <div class="nav-tab active" id="tab-monitoreo" onclick="cambiarModulo('MONITOREO')">
+          Monitoreo en Vivo
+        </div>
+        <div class="nav-tab" id="tab-colaboradores" onclick="cambiarModulo('COLABORADORES')">
+          Base de Colaboradores
+        </div>
+        <div class="nav-tab" id="tab-planilla" onclick="cambiarModulo('PLANILLA')">
+          Reporte de Planilla
+        </div>
       </div>
 
-      <div class="scroll-area">
-        <!-- PESTAÑA 1: HOY / MAÑANA -->
-        <div id="pane-principal">
-          <div id="contenedor-principal"></div>
+      <div class="toolbar-group" style="padding: 8px 0;">
+        <label style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; cursor:pointer;">
+          <input type="checkbox" id="chk-autorefresh" checked onchange="alternarAutoRefresh()">
+          Actualización automática
+        </label>
+        <button class="btn btn-outline btn-sm" id="btn-sync-ahora" onclick="cargarDatosPortal(true)">
+          Actualizar
+        </button>
+      </div>
+    </nav>
 
-          <button class="btn btn-success" id="btn-escanear-qr" style="margin-top:2px;" onclick="abrirEscanerQR()">
-            Escanear QR en Comedor
-          </button>
-
-          <!-- TARJETA VERDE COMPACTA PERSISTENTE (REEMPLAZA EL BOTÓN QR TRAS ESCANEAR) -->
-          <div id="card-ticket-compacto" onclick="reabrirTicketVerdeDesdeTarjeta()" title="Toca para ampliar">
-            <div class="compact-ticket-head">
-              <div class="compact-ticket-icon">✓</div>
-              <div class="compact-ticket-title" id="compact-ticket-titulo">ALMUERZO REGISTRADO</div>
+    <main class="container">
+      <!-- MÓDULO: MONITOREO EN VIVO (4 TARJETAS INTERACTIVAS DE FILTRO) -->
+      <section id="mod-monitoreo">
+        <div class="kpi-row">
+          <!-- TARJETA 1: RESERVA DESAYUNO -->
+          <div class="kpi-card" id="card-flt-DES_RESERVADO" onclick="alternarFiltroTarjeta('DES_RESERVADO')" title="Clic para filtrar reservas de desayuno">
+            <div class="kpi-head">
+              <span class="k-title">Reserva Desayuno</span>
+              <span class="kpi-chip" id="chip-DES_RESERVADO">Ver</span>
             </div>
-            <div id="compact-ticket-detalle" style="display:none;"></div>
-            <div class="compact-ticket-datetime">
-              <div id="compact-ticket-fecha">19/11/2026</div>
-              <div class="compact-ticket-sep"></div>
-              <div id="compact-ticket-hora">12:00:00 PM</div>
-            </div>
-            <div class="compact-ticket-hint" id="compact-ticket-nota">Toca para ampliar</div>
-          </div>
-
-          <!-- VENTANA EMERGENTE CÁMARA QR -->
-          <div id="modal-qr-overlay">
-            <div id="modal-qr-content">
-              <p style="font-size:15px; font-weight:700; margin:0 0 10px; color:var(--sbs-primary);">
-                Apunta al código QR del comedor
-              </p>
-              <div id="qr-reader" style="width:100%; border-radius:10px; overflow:hidden;"></div>
-              <button class="btn btn-outline" style="margin-top:12px; padding:11px; font-size:14px; color:var(--muted);" onclick="cerrarEscanerQR()">
-                Cancelar / Cerrar
-              </button>
+            <div class="kpi-split">
+              <div class="kpi-main">
+                <div class="k-val" id="kpi-des-res">0</div>
+                <div class="k-sub">reservados</div>
+              </div>
+              <div class="kpi-breakdown" id="kpi-des-opciones">
+                <div class="kpi-breakdown-row"><span>Opc. 1</span><b>0</b></div>
+                <div class="kpi-breakdown-row"><span>Opc. 2</span><b>0</b></div>
+                <div class="kpi-breakdown-row"><span>Opc. 3</span><b>0</b></div>
+              </div>
             </div>
           </div>
 
-          <!-- VENTANA EMERGENTE A PANTALLA CASI COMPLETA PARA EL COCINERO -->
-          <div id="modal-ticket-overlay">
-            <div id="modal-ticket-card">
-              <button class="btn-close-ticket" onclick="cerrarModalTicketVerde()" title="Cerrar">✕</button>
-              <div class="ticket-big-icon">✓</div>
-              <h3 id="ticket-modal-titulo">¡ALMUERZO REGISTRADO!</h3>
-              <div class="ticket-data-stack">
-                <div id="ticket-modal-detalle" style="display:none;"></div>
-                <div class="ticket-datetime-box">
-                  <div id="ticket-modal-fecha">19/11/2026</div>
-                  <div class="ticket-datetime-sep"></div>
-                  <div id="ticket-modal-hora">12:00:00 PM</div>
-                </div>
+          <!-- TARJETA 2: ASISTENCIA DESAYUNO (PENDIENTES) -->
+          <div class="kpi-card" id="card-flt-DES_FALTA" onclick="alternarFiltroTarjeta('DES_FALTA')" title="Clic para filtrar pendientes de desayuno">
+            <div class="kpi-head">
+              <span class="k-title">Asistencia Desayuno</span>
+              <span class="kpi-chip" id="chip-DES_FALTA">Pendientes</span>
+            </div>
+            <div class="kpi-split">
+              <div class="kpi-main">
+                <div class="k-val" id="kpi-des-pend">0</div>
+                <div class="k-sub">pendientes</div>
+              </div>
+              <div class="kpi-breakdown">
+                <div class="kpi-ratio-num" id="kpi-des-ratio">0 / 0</div>
+                <div class="kpi-ratio-sub" id="kpi-des-porc">0% asistieron</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TARJETA 3: RESERVA ALMUERZO -->
+          <div class="kpi-card" id="card-flt-ALM_RESERVADO" onclick="alternarFiltroTarjeta('ALM_RESERVADO')" title="Clic para filtrar reservas de almuerzo">
+            <div class="kpi-head">
+              <span class="k-title">Reserva Almuerzo</span>
+              <span class="kpi-chip" id="chip-ALM_RESERVADO">Ver</span>
+            </div>
+            <div class="kpi-split">
+              <div class="kpi-main">
+                <div class="k-val" id="kpi-alm-res">0</div>
+                <div class="k-sub">reservados</div>
+              </div>
+              <div class="kpi-breakdown" id="kpi-alm-opciones">
+                <div class="kpi-breakdown-row"><span>Regular</span><b>0</b></div>
+                <div class="kpi-breakdown-row"><span>Alternativo</span><b>0</b></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TARJETA 4: ASISTENCIA ALMUERZO (PENDIENTES) -->
+          <div class="kpi-card" id="card-flt-ALM_FALTA" onclick="alternarFiltroTarjeta('ALM_FALTA')" title="Clic para filtrar pendientes de almuerzo">
+            <div class="kpi-head">
+              <span class="k-title">Asistencia Almuerzo</span>
+              <span class="kpi-chip" id="chip-ALM_FALTA">Pendientes</span>
+            </div>
+            <div class="kpi-split">
+              <div class="kpi-main">
+                <div class="k-val" id="kpi-alm-pend">0</div>
+                <div class="k-sub">pendientes</div>
+              </div>
+              <div class="kpi-breakdown">
+                <div class="kpi-ratio-num" id="kpi-alm-ratio">0 / 0</div>
+                <div class="kpi-ratio-sub" id="kpi-alm-porc">0% asistieron</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- PESTAÑA 2: MI SEMANA -->
-        <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
-
-        <!-- PESTAÑA 3A: PERFIL RRHH EN MÓVIL -->
-        <div id="pane-rrhh" style="display:none;">
-          <div class="rrhh-box">
-            <h4>Restablecer Contraseña de Colaborador</h4>
-            <p style="font-size:13px; color:var(--muted); margin:0 0 10px;">
-              Si un colaborador olvidó su contraseña, ingresa su DNI aquí para limpiarla. En su próximo acceso la App le pedirá crear una nueva.
-            </p>
-            <div class="form-row" style="margin-bottom:0;">
-              <input type="tel" id="rrhh-dni-reset" class="form-control" placeholder="DNI del colaborador (8 dígitos)" maxlength="8">
-              <button class="btn btn-primary" id="btn-reset-clave" style="flex:0.6; padding:10px;" onclick="ejecutarReseteoClaveRRHH()">
-                Restablecer
-              </button>
-            </div>
+        <div class="action-bar">
+          <div class="toolbar-group">
+            <label style="font-size:12.5px; font-weight:700;">Fecha:</label>
+            <select id="sel-fecha-monitoreo" class="form-select" onchange="cargarDatosPortal(true)"></select>
+            <input type="text" id="txt-buscar-monitoreo" class="form-input" style="min-width:260px;" placeholder="Buscar por DNI o apellidos..." oninput="renderizarTablaMonitoreo()">
           </div>
-
-          <div class="rrhh-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
-              <h4 id="rrhh-titulo-pendientes" style="margin:0;">Pendientes de hoy</h4>
-              <span id="rrhh-badge-pendientes" style="background:#ffedd5; color:#c2410c; padding:4px 11px; border-radius:8px; font-size:13px; font-weight:800;">
-                0
-              </span>
-            </div>
-            <div class="table-wrap" style="max-height:260px; margin-bottom:10px;">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Apellidos y Nombres</th>
-                  </tr>
-                </thead>
-                <tbody id="tbody-pendientes-rrhh">
-                  <tr><td style="text-align:center; color:var(--muted);">Cargando lista...</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <button class="btn btn-outline" id="btn-refrescar-pendientes" style="padding:10px; font-size:13.5px;" onclick="cargarPendientesHoyRRHH()">
-              Actualizar pendientes
-            </button>
-          </div>
-
-          <div class="rrhh-box">
-            <h4>Portal RRHH - Comedor (Escritorio)</h4>
-            <p style="font-size:13px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
-              El monitoreo completo, la asignación manual de servicios, la base de colaboradores y el reporte de planilla están disponibles en el Portal Web de Escritorio.
-            </p>
-            <a href="./rrhh.html" target="_blank" class="btn btn-outline" style="font-size:14px; padding:11px; border-color:var(--sbs-primary); color:var(--sbs-primary);">
-              Abrir Portal RRHH
-            </a>
+          <div class="active-filter-pill" id="pill-filtro-activo">
+            <span id="lbl-filtro-activo-texto"></span>
+            <button class="btn-clear-filter" onclick="limpiarFiltroMonitoreo()">Ver todos</button>
           </div>
         </div>
 
-        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO -->
-        <div id="pane-tecnico" style="display:none;">
-          <div class="rrhh-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-              <h4 style="margin:0;">Estado de Salud del Sistema</h4>
-              <span id="badge-salud-tech" style="background:#dcfce7; color:#166534; padding:4px 10px; border-radius:8px; font-size:11.5px; font-weight:800;">-</span>
-            </div>
+        <div class="table-direct-wrap" style="max-height: calc(100vh - 340px);">
+          <table>
+            <thead id="thead-monitoreo">
+              <tr>
+                <th>DNI</th>
+                <th>Apellidos y Nombres</th>
+                <th>Reserva Desayuno</th>
+                <th>Asistencia Desayuno</th>
+                <th>Reserva Almuerzo</th>
+                <th>Asistencia Almuerzo</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-monitoreo">
+              <tr><td colspan="6" style="text-align:center; color:var(--muted);">Cargando registros...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-            <div class="kpi-grid-tech">
-              <div class="kpi-card-tech"><span class="num" id="tkpi-latencia">-</span><span class="lbl">Latencia Servidor</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-usuarios">-</span><span class="lbl">Activos / Con Clave</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-qr-hoy">-</span><span class="lbl">Asistencia Hoy (Des / Alm)</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-errores">-</span><span class="lbl">Errores Registrados</span></div>
-            </div>
+      <!-- MÓDULO: BASE DE COLABORADORES (CON RANGO DE AUSENCIA Y VERSIÓN DE APP) -->
+      <section id="mod-colaboradores" style="display:none;">
+        <div class="action-bar">
+          <div class="toolbar-group">
+            <select id="sel-filtro-estado-bd" class="form-select" onchange="renderizarTablaColaboradores()">
+              <option value="TODOS">Todos los estados</option>
+              <option value="ACTIVO">Activos</option>
+              <option value="INACTIVO">Vacaciones / DM / Cesados</option>
+              <option value="VERSION_ANTIGUA">Con versión antigua</option>
+            </select>
+            <input type="text" id="txt-buscar-bd" class="form-input" style="min-width:260px;" placeholder="Buscar por DNI o apellidos..." oninput="renderizarTablaColaboradores()">
+          </div>
 
-            <div id="detalle-infraestructura-tech" style="font-size:12.5px; color:var(--muted); background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px; line-height:1.5;">
-              -
-            </div>
-
-            <button class="btn btn-primary" id="btn-refrescar-tech" style="padding:11px; font-size:14px;" onclick="cargarPanelSalud()">
-              Actualizar diagnóstico
+          <div class="toolbar-group">
+            <span id="lbl-cambios-pendientes" style="font-size:12.5px; font-weight:700; color:var(--sbs-orange); display:none;">
+              Cambios sin guardar
+            </span>
+            <button class="btn btn-primary btn-lg-save" id="btn-guardar-masivo" disabled onclick="guardarCambiosMasivosUI()">
+              Guardar cambios
             </button>
-          </div>
-
-          <div class="rrhh-box">
-            <h4>Prueba de Estrés en Vivo (Simulación Hora Punta)</h4>
-            <p style="font-size:12.5px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
-              Simula <b>30 usuarios abriendo la App</b> y <b>15 escaneos QR simultáneos</b> en paralelo.
-            </p>
-            <div id="resultado-estres-tech" style="display:none; font-size:12.5px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; line-height:1.55;"></div>
-            <button class="btn btn-outline" id="btn-ejecutar-estres" style="padding:10px; font-size:13.5px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="ejecutarPruebaEstres()">
-              Simular Ráfaga Concurrente Ahora
-            </button>
-          </div>
-
-          <div class="rrhh-box">
-            <h4>Registro de Excepciones y Errores (LOG_AUDIT_ERRORES)</h4>
-            <div class="table-wrap" style="max-height:220px;">
-              <table>
-                <thead><tr><th>Fecha / Hora</th><th>Contexto</th><th>Motivo del Error</th></tr></thead>
-                <tbody id="tbody-errores-tech">
-                  <tr><td colspan="3" style="text-align:center; color:var(--muted);">-</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="rrhh-box">
-            <h4>Actividad Reciente en Servidor (ASISTENCIA_REAL)</h4>
-            <div class="table-wrap" style="max-height:220px;">
-              <table>
-                <thead><tr><th>Fecha / Hora</th><th>Evento</th><th>DNI</th><th>Servicio</th><th>Detalle</th></tr></thead>
-                <tbody id="tbody-eventos-tech">
-                  <tr><td colspan="5" style="text-align:center; color:var(--muted);">-</td></tr>
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
+
+        <div class="table-direct-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>DNI</th>
+                <th>Apellidos y Nombres</th>
+                <th>Desayuno por Defecto</th>
+                <th>Panes por Defecto</th>
+                <th>Almuerzo por Defecto</th>
+                <th>Estado</th>
+                <th>Rango de Ausencia</th>
+                <th style="text-align:center;">App</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-colaboradores">
+              <tr><td colspan="8" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MÓDULO: REPORTE DE PLANILLA -->
+      <section id="mod-planilla" style="display:none;">
+        <div class="action-bar">
+          <div class="toolbar-group">
+            <label style="font-size:12.5px; font-weight:700;">Desde:</label>
+            <input type="date" id="rep-ini" class="form-input">
+            <label style="font-size:12.5px; font-weight:700;">Hasta:</label>
+            <input type="date" id="rep-fin" class="form-input">
+            <button class="btn btn-primary" onclick="cargarReportePlanillaRRHH()">Consultar</button>
+            <button class="btn btn-success" onclick="descargarExcelPlanillaRRHH()">Exportar Excel</button>
+          </div>
+          <div id="resumen-planilla-rrhh" style="font-size:15px; font-weight:800; color:var(--sbs-primary);">
+            Total Planilla: S/ 0.00
+          </div>
+        </div>
+
+        <div class="table-direct-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>DNI</th>
+                <th>Apellidos y Nombres</th>
+                <th style="text-align:center;">Desayunos</th>
+                <th>Costo Desayunos</th>
+                <th style="text-align:center;">Almuerzos</th>
+                <th>Costo Almuerzos</th>
+                <th style="background:#dcfce7; color:#166534;">Total a Descontar</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-planilla-rrhh">
+              <tr><td colspan="7" style="text-align:center; color:var(--muted);">Selecciona el rango de fechas y presiona Consultar</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: ASIGNAR SERVICIO MANUALMENTE EN 2 SOLOS PASOS -->
+  <div class="modal-overlay" id="modal-asignar-servicio">
+    <div class="modal-box modal-sm">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="margin:0; font-size:17px; color:var(--sbs-primary); font-weight:800;">Asignar Servicio Manualmente</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalAsignarServicio()">Cerrar</button>
+      </div>
+
+      <div class="field-group">
+        <label>1. Buscar y seleccionar colaborador:</label>
+        <input type="text" id="txt-filtro-colab-asignar" class="form-input" placeholder="Buscar por apellido, nombre o DNI..." oninput="filtrarSelectColaboradoresAsignar()">
+        <select id="sel-colab-asignar" class="form-select" style="margin-top:8px;"></select>
+      </div>
+
+      <div class="field-group">
+        <label>2. Seleccionar servicio:</label>
+        <select id="sel-srv-asignar" class="form-select">
+          <option value="DESAYUNO">Desayuno</option>
+          <option value="ALMUERZO" selected>Almuerzo</option>
+          <option value="AMBOS">Ambos</option>
+        </select>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+        <button class="btn btn-outline" onclick="cerrarModalAsignarServicio()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-confirmar-asignar" onclick="ejecutarAsignacionManualRRHH()">Asignar</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: DETALLE DE CONSUMOS DEL CICLO (AL TOCAR "CONSUMIDO: S/ X.XX") -->
-  <div class="modal-backdrop" id="modal-detalle-consumido" onclick="if(event.target===this) cerrarModalDetalleConsumido()">
-    <div class="modal-panel">
-      <div class="modal-header-row">
-        <div>
-          <h3>Detalle de Consumos</h3>
-          <p id="lbl-subtitulo-ciclo">Ciclo de planilla vigente</p>
-        </div>
-        <button class="btn-x-sm" onclick="cerrarModalDetalleConsumido()" title="Cerrar">✕</button>
+  <!-- MODAL: MENÚ SEMANAL Y AVISO INFORMATIVO EN BANNER -->
+  <div class="modal-overlay" id="modal-menu">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="margin:0; font-size:17px; color:var(--sbs-primary); font-weight:800;">Menú Semanal y Aviso en App</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalMenu()">Cerrar</button>
       </div>
 
-      <div class="consumo-table-wrap">
-        <table class="consumo-table">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Desayuno</th>
-              <th>Almuerzo</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-detalle-consumo">
-            <tr><td colspan="3" style="text-align:center; color:var(--muted);">Sin consumos registrados en este ciclo.</td></tr>
-          </tbody>
-        </table>
+      <div class="banner-edit-box">
+        <label for="txt-aviso-banner-menu">Banner informativo en la App (opcional)</label>
+        <small>Si escribes un comunicado aquí, aparecerá en la parte superior de la App de todos los colaboradores. Déjalo vacío para ocultarlo.</small>
+        <input type="text" id="txt-aviso-banner-menu" class="form-input" style="width:100%;" placeholder="Ej: Este viernes el almuerzo se servirá desde las 12:30 PM">
       </div>
 
-      <div class="consumo-summary-foot">
-        <span id="foot-cant-consumo">0 Des. | 0 Alm.</span>
-        <span class="tot-pill" id="foot-tot-consumo">S/ 0.00</span>
-      </div>
+      <div id="contenedor-filas-menu"></div>
 
-      <button class="btn btn-primary" style="padding:12px; font-size:15px;" onclick="cerrarModalDetalleConsumido()">
-        Cerrar
-      </button>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+        <button class="btn btn-outline" onclick="cerrarModalMenu()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-guardar-menu" onclick="guardarMenuSemanalUI()">Guardar cambios</button>
+      </div>
     </div>
   </div>
 
-  <!-- PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA -->
-  <div id="modal-update-obligatorio">
-    <div class="update-card">
-      <img src="./Logo.jpg?v=26" alt="Comedor SBS" class="update-logo">
-      <h3>Actualiza Comedor SBS</h3>
-      <button class="btn btn-primary" id="btn-actualizar-sbs" onclick="aplicarActualizacionApp()">
-        Actualizar Comedor SBS
-      </button>
-      <p id="update-notas-texto"></p>
+  <!-- MODAL: RESTABLECER CONTRASEÑA -->
+  <div class="modal-overlay" id="modal-reset-clave">
+    <div class="modal-box modal-sm">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="margin:0; font-size:17px; color:var(--sbs-primary); font-weight:800;">Restablecer Contraseña</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalResetClave()">Cerrar</button>
+      </div>
+
+      <p style="font-size:13px; color:var(--muted); margin:0 0 12px; line-height:1.45;">
+        Ingresa el DNI del colaborador para limpiar su contraseña actual. En su próximo acceso el sistema le solicitará crear una nueva.
+      </p>
+
+      <input type="tel" id="txt-dni-reset-modal" class="input-lg" placeholder="DNI del colaborador" maxlength="8" style="margin-bottom:14px;">
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-outline" onclick="cerrarModalResetClave()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-confirmar-reset-modal" onclick="ejecutarResetClaveModal()">Restablecer</button>
+      </div>
     </div>
   </div>
 
@@ -884,24 +704,10 @@
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
+    const VERSION_LOCAL_RRHH = "25";
+    const PANES_CATALOGO_BASE = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
-    const VERSION_LOCAL_APP = "26";
-
-    // Texto de mejora por defecto (puedes editarlo aquí o desde Código.gs -> CONFIG.NOTAS_VERSION)
-    const TEXTO_MEJORA_DEFECTO = "Ahora tu pase verde de comida queda guardado en pantalla aunque cierres la App.";
-
-    // Variables de arranque operativo (evitan sumar consumos anteriores al inicio del servicio)
-    const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
-    const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
-    const PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
-
-    let COLA_CAMBIOS_RESERVA = {};
-    let TIMER_LOTE_RESERVA = null;
-    let ENVIANDO_COLA_QR = false;
-    let SINCRONIZANDO_AHORA = false;
-    let ACTUALIZACION_OBLIGATORIA = false;
-
-    // Limpiar parámetro ?v=... de la URL al cargar (ayuda a que iOS conserve el permiso de cámara)
+    // Limpiar parámetro ?v=... tras recarga automática por nueva versión
     (function limpiarParametroVersionURL() {
       try {
         const u = new URL(window.location.href);
@@ -913,205 +719,104 @@
       } catch (e) {}
     })();
 
-    // Vibración háptica corta (funciona en Android; en iOS se ignora de forma segura)
-    function vibrarHaptico(patron = 15) {
-      try {
-        if (navigator && typeof navigator.vibrate === 'function') {
-          navigator.vibrate(patron);
-        }
-      } catch (e) {}
-    }
+    let STATE = {
+      admin: null,
+      token: '',
+      pendienteLogin: null,
+      hoyStr: '',
+      horaPeru: 0,
+      versionServidor: VERSION_LOCAL_RRHH,
+      avisoBanner: '',
+      fechaSeleccionada: '',
+      fechasSemana: [],
+      panesCatalogo: PANES_CATALOGO_BASE.slice(),
+      colaboradoresBD: [],
+      cambiosPendientes: {},
+      monitoreoDia: [],
+      filtroMonitoreo: 'TODOS',
+      menuSemanal: [],
+      resumenReporte: [],
+      ultimasFilasReporte: [],
+      timerAutoRefresh: null,
+      recargandoVersion: false
+    };
 
-    let deferredPromptPWA = null;
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=26', { updateViaCache: 'none' }).then(reg => {
-          reg.update().catch(() => {});
-        }).catch(() => {});
+    window.addEventListener('DOMContentLoaded', () => {
+      const lblLogin = document.getElementById('lbl-ver-login-rrhh');
+      const lblHead = document.getElementById('lbl-ver-header-rrhh');
+      if (lblLogin) lblLogin.textContent = 'v' + VERSION_LOCAL_RRHH;
+      if (lblHead) lblHead.textContent = 'v' + VERSION_LOCAL_RRHH;
+
+      const guardada = localStorage.getItem('SBS_COMEDOR_RRHH_SESSION') || localStorage.getItem('SBS_COMEDOR_AUTH');
+      if (guardada) {
+        try {
+          const parsed = JSON.parse(guardada);
+          const u = parsed.admin || (parsed.snapshot && parsed.snapshot.usuario);
+          if (u && tienePermisoPortal(u)) {
+            STATE.admin = u;
+            STATE.token = parsed.token || '';
+            iniciarPortalRRHH();
+          }
+        } catch (e) {}
+      }
+
+      document.getElementById('txt-dni').addEventListener('keyup', e => { if (e.key === 'Enter') verificarDniRRHH(); });
+      document.getElementById('txt-clave').addEventListener('keyup', e => { if (e.key === 'Enter') confirmarClaveRRHH(); });
+      document.getElementById('txt-dni-reset-modal').addEventListener('keyup', e => { if (e.key === 'Enter') ejecutarResetClaveModal(); });
+
+      window.addEventListener('beforeunload', (e) => {
+        if (contarCambiosPendientes() > 0) {
+          e.preventDefault();
+          e.returnValue = '';
+        }
+      });
+    });
+
+    // ========================================================================
+    // DETECCIÓN Y AUTO-RECARGA ANTE NUEVA VERSIÓN DEL PORTAL RRHH
+    // ========================================================================
+    function hayModalAbiertoRRHH() {
+      const ids = ['modal-asignar-servicio', 'modal-menu', 'modal-reset-clave'];
+      return ids.some(id => {
+        const el = document.getElementById(id);
+        return el && el.style.display === 'flex';
       });
     }
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPromptPWA = e;
-      const btnInst = document.getElementById('btn-instalar-pwa');
-      if (btnInst) btnInst.style.display = 'inline-flex';
-    });
-
-    async function instalarPWAAndroid() {
-      if (!deferredPromptPWA) return;
-      vibrarHaptico(15);
-      deferredPromptPWA.prompt();
-      await deferredPromptPWA.userChoice;
-      deferredPromptPWA = null;
-      document.getElementById('btn-instalar-pwa').style.display = 'none';
-    }
-
-    function mostrarPantallaActualizacion(notasVersion) {
-      ACTUALIZACION_OBLIGATORIA = true;
-      ocultarSplash();
-      cerrarEscanerQR();
-      const modal = document.getElementById('modal-update-obligatorio');
-      const txtNotas = document.getElementById('update-notas-texto');
-      const textoFinal = (notasVersion && String(notasVersion).trim()) ? String(notasVersion).trim() : TEXTO_MEJORA_DEFECTO;
-      if (txtNotas) {
-        txtNotas.textContent = textoFinal;
-        txtNotas.style.display = textoFinal ? 'block' : 'none';
+    function recargarPortalNuevaVersion(verObjetivo) {
+      if (verObjetivo) {
+        sessionStorage.setItem('SBS_RRHH_RELOADED_VER', String(verObjetivo));
       }
-      if (modal) modal.style.display = 'flex';
+      window.location.replace(window.location.pathname + '?v=' + Date.now());
     }
 
-    function verificarVersionServidor(versionRemota, notasVersion) {
-      if (versionRemota && Number(versionRemota) > Number(VERSION_LOCAL_APP)) {
-        mostrarPantallaActualizacion(notasVersion);
-        return true;
+    function verificarVersionPortalRRHH(verRemota) {
+      if (!verRemota) return;
+      STATE.versionServidor = String(verRemota);
+      if (Number(verRemota) <= Number(VERSION_LOCAL_RRHH)) return;
+
+      // Evita recarga en bucle si GitHub Pages aún está propagando el archivo
+      const yaIntento = sessionStorage.getItem('SBS_RRHH_RELOADED_VER');
+      if (yaIntento === String(verRemota)) return;
+
+      if (contarCambiosPendientes() > 0 || hayModalAbiertoRRHH()) {
+        const b = document.getElementById('banner-update-rrhh');
+        if (b) b.style.display = 'flex';
+        return;
       }
-      return false;
-    }
 
-    async function aplicarActualizacionApp() {
-      vibrarHaptico(20);
-      const btn = document.getElementById('btn-actualizar-sbs');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Actualizando...';
-      }
-      try {
-        if ('serviceWorker' in navigator) {
-          const regs = await navigator.serviceWorker.getRegistrations();
-          for (let r of regs) {
-            await r.unregister();
-          }
-        }
-        if ('caches' in window) {
-          const keys = await caches.keys();
-          for (let k of keys) {
-            await caches.delete(k);
-          }
-        }
-      } catch (e) {}
-      window.location.replace(window.location.pathname + '?v=' + new Date().getTime());
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
-
-    let STATE = {
-      hoyStr: '',
-      hoyPeruCompleto: '',
-      etiquetaCiclo: '',
-      avisoBanner: '',
-      horaPeru: 0,
-      tsSyncHora: 0,
-      ultimoSyncMs: 0,
-      modoPruebaQR: false,
-      registroPendienteLogin: null,
-      tokenActivo: '',
-      usuario: null,
-      diasSemana: [],
-      hoyFisico: null,
-      dnisActivosMuestra: [],
-      html5QrCode: null,
-      procesandoEscaneo: false,
-      idxPrincipal: 0,
-      ticketCompactoActivo: null,
-      ultimoTicketPrueba: null
-    };
-
-    // ========================================================================
-    // RELOJ REAL DE LIMA (AMERICA/LIMA) Y CANDADO LOCAL DE CORTES
-    // ========================================================================
-    function obtenerPartesLimaActual() {
-      try {
-        const partes = new Intl.DateTimeFormat('en-GB', {
-          timeZone: 'America/Lima',
-          year: 'numeric', month: '2-digit', day: '2-digit',
-          hour: '2-digit', minute: '2-digit', second: '2-digit',
-          hour12: false
-        }).formatToParts(new Date());
-        const get = (t) => Number(partes.find(p => p.type === t).value);
-        const h = get('hour');
-        return {
-          year: get('year'),
-          month: get('month'),
-          day: get('day'),
-          hour: h === 24 ? 0 : h,
-          minute: get('minute'),
-          second: get('second')
-        };
-      } catch (e) {
-        const d = new Date();
-        return {
-          year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(),
-          hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds()
-        };
+      if (!STATE.recargandoVersion) {
+        STATE.recargandoVersion = true;
+        mostrarToast('Actualizando portal...');
+        setTimeout(() => recargarPortalNuevaVersion(verRemota), 750);
       }
     }
 
-    function obtenerFechaHoyLimaISO() {
-      const p = obtenerPartesLimaActual();
-      return `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')}`;
-    }
-
-    function obtenerDateLimaActual() {
-      const p = obtenerPartesLimaActual();
-      return new Date(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
-    }
-
-    function obtenerHoraLimaNavegador() {
-      const p = obtenerPartesLimaActual();
-      return p.hour + (p.minute / 60);
-    }
-
-    function obtenerHoraPeruActual() {
-      if (STATE.tsSyncHora) {
-        return STATE.horaPeru + ((Date.now() - STATE.tsSyncHora) / 3600000);
-      }
-      return obtenerHoraLimaNavegador();
-    }
-
-    function esEditableEnTiempoReal(fechaStr, tipoServicio) {
-      if (!fechaStr) return false;
-      if (tipoServicio === 'DESAYUNO' && fechaStr < FECHA_ARRANQUE_DESAYUNO) return false;
-      if (tipoServicio === 'ALMUERZO' && fechaStr < FECHA_ARRANQUE_ALMUERZO) return false;
-
-      const ahora = obtenerDateLimaActual();
-      const partes = String(fechaStr).split('-');
-      if (partes.length !== 3) return false;
-      const fechaServ = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]), 0, 0, 0);
-
-      if (tipoServicio === 'DESAYUNO') {
-        const limiteDes = new Date(fechaServ);
-        limiteDes.setDate(fechaServ.getDate() - 1);
-        limiteDes.setHours(16, 0, 0, 0);
-        if (fechaServ.getDay() === 1) {
-          limiteDes.setDate(limiteDes.getDate() - 1);
-        }
-        return ahora.getTime() <= limiteDes.getTime();
-      } else {
-        const limiteAlm = new Date(fechaServ);
-        limiteAlm.setHours(10, 0, 0, 0);
-        return ahora.getTime() <= limiteAlm.getTime();
-      }
-    }
-
-    function extraerDiaNumeroCliente(isoStr) {
-      if (!isoStr) return '';
-      const p = String(isoStr).split('-');
-      return p.length === 3 ? String(Number(p[2])) : isoStr;
-    }
-
-    function formatearDiaMesCorto(isoStr) {
-      if (!isoStr) return '';
-      const p = String(isoStr).split('-');
-      return p.length === 3 ? `${p[2]}/${p[1]}` : isoStr;
-    }
-
-    function extraerPrimerNombreCliente(usuarioObj) {
-      if (!usuarioObj) return 'Colaborador';
+    function extraerPrimerNombrePortal(usuarioObj) {
+      if (!usuarioObj) return 'Administrador';
       if (usuarioObj.primerNombre) return usuarioObj.primerNombre;
       const limpio = String(usuarioObj.nombre || '').trim();
-      if (!limpio) return 'Colaborador';
+      if (!limpio) return 'Administrador';
       if (limpio.includes(',')) {
         const desp = limpio.split(',')[1].trim();
         if (desp) return desp.split(/\s+/)[0];
@@ -1135,9 +840,9 @@
       return palabras[0];
     }
 
-    async function calcularHashSHA256Cliente(dni, textoClave) {
+    async function calcularHashSHA256Portal(dni, textoClave) {
       try {
-        const dniNorm = normalizarDniCliente(dni);
+        const dniNorm = normalizarDni(dni);
         const semilla = "SBS_SALT_2026_" + dniNorm + "_" + String(textoClave);
         if (window.crypto && window.crypto.subtle) {
           const msgBuffer = new TextEncoder().encode(semilla);
@@ -1149,464 +854,151 @@
       return null;
     }
 
-    function formatearHoraTicket12h(horaRaw) {
-      const s = String(horaRaw || '').trim();
-      if (!s) return '';
-      if (/am|pm/i.test(s)) return s;
-      const m = s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
-      if (!m) return s;
-      let h = Number(m[1]);
-      const min = m[2];
-      const seg = m[3] || '00';
-      const suf = h >= 12 ? 'PM' : 'AM';
-      h = h % 12;
-      if (h === 0) h = 12;
-      return `${String(h).padStart(2, '0')}:${min}:${seg} ${suf}`;
+    function contarCambiosPendientes() {
+      return Object.keys(STATE.cambiosPendientes || {}).length;
     }
 
-    function obtenerHoraLima24hActual() {
-      const p = obtenerPartesLimaActual();
-      return `${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
-    }
+    function actualizarBotonGuardarGeneral() {
+      const cant = contarCambiosPendientes();
+      const btn = document.getElementById('btn-guardar-masivo');
+      const lbl = document.getElementById('lbl-cambios-pendientes');
+      if (!btn) return;
 
-    function obtenerHoraExactaActual() {
-      return formatearHoraTicket12h(obtenerHoraLima24hActual());
-    }
-
-    function obtenerInfoMenuDia(d) {
-      const panes = (Array.isArray(d.panesDisponibles) && d.panesDisponibles.length > 0)
-        ? d.panesDisponibles
-        : PANES_POR_DEFECTO;
-      const bebidas = d.bebidasTexto || 'Avena o Maca o Infusión o Café';
-      return { panes: panes, bebidas: bebidas };
-    }
-
-    function desglosarDesayuno(val, panesDia) {
-      const listaPanes = (Array.isArray(panesDia) && panesDia.length > 0) ? panesDia : PANES_POR_DEFECTO;
-      const raw = String(val || 'NO').trim();
-      const up = raw.toUpperCase();
-      if (!raw || up === 'NO' || up === 'SI') {
-        return { op: 'NO', pan1: listaPanes[0], pan2: listaPanes[1] || listaPanes[0] };
-      }
-      if (up === 'OP2') {
-        return { op: 'OP2', pan1: listaPanes[0], pan2: listaPanes[1] || listaPanes[0] };
-      }
-      if (up === 'MANUAL' || up === 'ASIGNADO_RRHH' || up === 'ASIGNADO RRHH') {
-        return { op: 'MANUAL', pan1: listaPanes[0], pan2: listaPanes[1] || listaPanes[0] };
-      }
-      const p = raw.split('|').map(x => x.trim());
-      return {
-        op: p[0].toUpperCase(),
-        pan1: p[1] || listaPanes[0],
-        pan2: p[2] || p[1] || listaPanes[0]
-      };
-    }
-
-    function sincronizarConsumosLocalesConRegistro(reg) {
-      if (!reg || !reg.usuario || !reg.hoyFisico) return reg;
-      try {
-        const marcaLocal = JSON.parse(localStorage.getItem('SBS_QR_CONFIRMADO_HOY') || '{}');
-        if (marcaLocal.dni === reg.usuario.dni && marcaLocal.fecha === reg.hoyFisico.fecha) {
-          if (marcaLocal.des) {
-            reg.hoyFisico.consumioDes = true;
-            if (!reg.hoyFisico.horaScanDes && marcaLocal.horaDes) {
-              reg.hoyFisico.horaScanDes = marcaLocal.horaDes;
-            }
-          }
-          if (marcaLocal.alm) {
-            reg.hoyFisico.consumioAlm = true;
-            if (!reg.hoyFisico.horaScanAlm && marcaLocal.horaAlm) {
-              reg.hoyFisico.horaScanAlm = marcaLocal.horaAlm;
-            }
-          }
+      if (cant > 0) {
+        btn.disabled = false;
+        btn.textContent = `Guardar cambios (${cant})`;
+        if (lbl) {
+          lbl.style.display = 'inline-block';
+          lbl.textContent = `${cant} modificación(es) sin guardar`;
         }
-      } catch (e) {}
-      return reg;
-    }
-
-    function aplicarCandadosRegistro(reg) {
-      if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
-      const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
-
-      reg.diasSemana.forEach(d => {
-        d.esHoyFisico = (d.fecha === hoyRef);
-
-        if (d.fecha < FECHA_ARRANQUE_DESAYUNO && d.desayuno !== 'MANUAL') {
-          d.desayuno = 'NO';
-          d.puedeEditarDesayuno = false;
-          d.habDes = false;
-        } else {
-          d.habDes = true;
-          if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
-            d.puedeEditarDesayuno = false;
-          }
-        }
-
-        if (d.fecha < FECHA_ARRANQUE_ALMUERZO) {
-          d.almuerzo = 'NO';
-          d.puedeEditarAlmuerzo = false;
-          d.habAlm = false;
-        } else {
-          d.habAlm = true;
-          if (d.puedeEditarAlmuerzo && !esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
-            d.puedeEditarAlmuerzo = false;
-          }
-        }
-      });
-
-      if (reg.hoyFisico) {
-        const dHoy = reg.diasSemana.find(x => x.fecha === reg.hoyFisico.fecha);
-        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_DESAYUNO && (!dHoy || dHoy.desayuno !== 'MANUAL')) {
-          reg.hoyFisico.reservoDes = false;
-        }
-        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_ALMUERZO) {
-          reg.hoyFisico.reservoAlm = false;
-        }
-      }
-      return sincronizarConsumosLocalesConRegistro(reg);
-    }
-
-    // ========================================================================
-    // PANTALLA DE CARGA (SPLASH) + SINCRONIZACIÓN RÁPIDA 1-A-1 EN VIVO
-    // ========================================================================
-    function mostrarSplash(texto = 'Actualizando...', conBotonReintentar = false) {
-      const sp = document.getElementById('view-splash');
-      document.getElementById('splash-texto').textContent = texto;
-      document.getElementById('splash-spinner').style.display = conBotonReintentar ? 'none' : 'block';
-      document.getElementById('splash-retry-wrap').style.display = conBotonReintentar ? 'block' : 'none';
-      sp.style.display = 'flex';
-    }
-
-    function ocultarSplash() {
-      document.getElementById('view-splash').style.display = 'none';
-    }
-
-    async function fetchConTimeout(action, argsArray, timeoutMs = 4500) {
-      const controller = new AbortController();
-      const idTimer = setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        const resp = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: action, args: argsArray }),
-          signal: controller.signal
-        });
-        clearTimeout(idTimer);
-        const data = await resp.json();
-        if (data && data.versionApp) verificarVersionServidor(data.versionApp, data.notasVersion);
-        return data;
-      } catch (err) {
-        clearTimeout(idTimer);
-        throw err;
-      }
-    }
-
-    function aplicarMetadatosSync(p) {
-      STATE.hoyStr = p.hoyStr;
-      STATE.hoyPeruCompleto = p.hoyPeruCompleto || p.hoyStr;
-      STATE.etiquetaCiclo = p.etiquetaCiclo || STATE.etiquetaCiclo;
-      STATE.avisoBanner = p.avisoBanner || '';
-      STATE.horaPeru = p.horaPeru;
-      STATE.tsSyncHora = Date.now();
-      STATE.ultimoSyncMs = Date.now();
-      STATE.modoPruebaQR = !!p.modoPruebaQR;
-    }
-
-    async function sincronizarSesionConSplash(sesionGuardada, duracionMinMs = 850) {
-      if (SINCRONIZANDO_AHORA || ACTUALIZACION_OBLIGATORIA) return;
-      SINCRONIZANDO_AHORA = true;
-      mostrarSplash('Cargando tu menú...', false);
-
-      const tIni = performance.now();
-      try {
-        const resFast = await fetchConTimeout('sincronizarMiEstado', [sesionGuardada.dni, VERSION_LOCAL_APP], 4500);
-
-        // Si el servidor indica versión nueva, bloqueamos de inmediato con la pantalla de actualización
-        if (resFast && verificarVersionServidor(resFast.versionApp, resFast.notasVersion)) {
-          SINCRONIZANDO_AHORA = false;
-          return;
-        }
-
-        const transcurrido = performance.now() - tIni;
-        if (transcurrido < duracionMinMs) {
-          await new Promise(r => setTimeout(r, duracionMinMs - transcurrido));
-        }
-
-        if (!resFast || !resFast.ok || !resFast.registro) {
-          ocultarSplash();
-          SINCRONIZANDO_AHORA = false;
-          cerrarSesion();
-          return;
-        }
-
-        aplicarMetadatosSync(resFast);
-        const reg = resFast.registro;
-
-        if (!reg.usuario.tieneClave || (sesionGuardada.token && reg.usuario.hashClave && reg.usuario.hashClave !== sesionGuardada.token)) {
-          ocultarSplash();
-          SINCRONIZANDO_AHORA = false;
-          cerrarSesion();
-          return;
-        }
-
-        asignarUsuarioYEntrar(reg, sesionGuardada.token || reg.usuario.hashClave);
-        ocultarSplash();
-        SINCRONIZANDO_AHORA = false;
-      } catch (err) {
-        SINCRONIZANDO_AHORA = false;
-        const hoyLima = obtenerFechaHoyLimaISO();
-        // Solo usa respaldo local si es EXACTAMENTE del día de hoy (nunca muestra data de ayer)
-        if (sesionGuardada.snapshot && sesionGuardada.snapshot.hoyStr === hoyLima) {
-          aplicarCandadosRegistro(sesionGuardada.snapshot);
-          STATE.tokenActivo = sesionGuardada.token || '';
-          STATE.hoyStr = sesionGuardada.snapshot.hoyStr;
-          STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
-          STATE.etiquetaCiclo = sesionGuardada.snapshot.etiquetaCiclo || '';
-          STATE.horaPeru = obtenerHoraLimaNavegador();
-          STATE.tsSyncHora = 0;
-          STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
-          STATE.usuario = sesionGuardada.snapshot.usuario;
-          STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
-          STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
-          ocultarSplash();
-          renderizarVistaPrincipal();
-          mostrarToast('Conexión lenta. Mostrando datos de hoy.');
-        } else {
-          mostrarSplash('Sin conexión. Toca para intentar de nuevo.', true);
-        }
-      }
-    }
-
-    function reintentarCargaInicial() {
-      vibrarHaptico(15);
-      const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
-      if (sesionStr) {
-        try {
-          const sesionGuardada = JSON.parse(sesionStr);
-          if (sesionGuardada && sesionGuardada.dni) {
-            sincronizarSesionConSplash(sesionGuardada, 700);
-            return;
-          }
-        } catch (e) {}
-      }
-      ocultarSplash();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const lblVerLogin = document.getElementById('lbl-ver-login');
-      const lblVerMain = document.getElementById('lbl-ver-main');
-      if (lblVerLogin) lblVerLogin.textContent = 'v' + VERSION_LOCAL_APP;
-      if (lblVerMain) lblVerMain.textContent = 'v' + VERSION_LOCAL_APP;
-
-      procesarColaQRSegundoPlano();
-
-      const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
-      let sesionGuardada = null;
-      if (sesionStr) {
-        try { sesionGuardada = JSON.parse(sesionStr); } catch (e) {}
-      }
-
-      if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
-        sincronizarSesionConSplash(sesionGuardada, 900);
       } else {
-        // Verifica versión incluso antes de iniciar sesión
-        ejecutarConReintento('verificarVersionApp', [], null, null, 1);
-      }
-
-      document.getElementById('txt-dni').addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') verificarPasoDNI();
-      });
-      document.getElementById('txt-clave').addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') confirmarClaveLogin();
-      });
-    });
-
-    // Al volver a la app desde segundo plano: si pasaron >20s o cambió la fecha, sincroniza 1-a-1 con splash corto
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        procesarColaQRSegundoPlano();
-        if (STATE.usuario && STATE.tokenActivo) {
-          const hoyLima = obtenerFechaHoyLimaISO();
-          const pasaronMasDe20Seg = (Date.now() - (STATE.ultimoSyncMs || 0)) > 20000;
-          if (STATE.hoyStr !== hoyLima || pasaronMasDe20Seg) {
-            sincronizarSesionConSplash({
-              dni: STATE.usuario.dni,
-              token: STATE.tokenActivo,
-              snapshot: {
-                hoyStr: STATE.hoyStr,
-                hoyPeruCompleto: STATE.hoyPeruCompleto,
-                etiquetaCiclo: STATE.etiquetaCiclo,
-                modoPruebaQR: STATE.modoPruebaQR,
-                usuario: STATE.usuario,
-                diasSemana: STATE.diasSemana,
-                hoyFisico: STATE.hoyFisico
-              }
-            }, 650);
-          } else {
-            actualizarResumenHeader();
-            actualizarEstadoBotonQR();
-          }
-        }
-      }
-    });
-
-    // Revisa cada 20 segundos si se cruzó un horario de corte (10:00 AM / 4:00 PM / 12:00 PM / 6:00 PM)
-    setInterval(() => {
-      if (STATE.usuario && document.visibilityState === 'visible') {
-        let huboCambioCorte = false;
-        STATE.diasSemana.forEach(d => {
-          if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
-            d.puedeEditarDesayuno = false;
-            huboCambioCorte = true;
-          }
-          if (d.puedeEditarAlmuerzo && !esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
-            d.puedeEditarAlmuerzo = false;
-            huboCambioCorte = true;
-          }
-        });
-        if (huboCambioCorte) {
-          renderizarTarjetas();
-        } else {
-          actualizarResumenHeader();
-        }
-        actualizarEstadoBotonQR();
-      }
-    }, 20000);
-
-    function guardarSnapshotLocal() {
-      if (!STATE.usuario || !STATE.tokenActivo) return;
-      try {
-        localStorage.setItem('SBS_COMEDOR_AUTH', JSON.stringify({
-          dni: STATE.usuario.dni,
-          token: STATE.tokenActivo,
-          snapshot: {
-            hoyStr: STATE.hoyStr,
-            hoyPeruCompleto: STATE.hoyPeruCompleto,
-            etiquetaCiclo: STATE.etiquetaCiclo,
-            horaPeru: obtenerHoraPeruActual(),
-            modoPruebaQR: STATE.modoPruebaQR,
-            usuario: STATE.usuario,
-            diasSemana: STATE.diasSemana,
-            hoyFisico: STATE.hoyFisico
-          }
-        }));
-      } catch (e) {}
-    }
-
-    async function ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos = 4) {
-      for (let i = 0; i < intentos; i++) {
-        try {
-          const resp = await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: nombreFuncion, args: argsArray })
-          });
-          const data = await resp.json();
-          if (data && data.versionApp) verificarVersionServidor(data.versionApp, data.notasVersion);
-          if (onSuccess) onSuccess(data);
-          return;
-        } catch (err) {
-          if (i === intentos - 1) {
-            if (onError) onError(err);
-          } else {
-            await new Promise(r => setTimeout(r, 400 * (i + 1)));
-          }
-        }
+        btn.disabled = true;
+        btn.textContent = 'Guardar cambios';
+        if (lbl) lbl.style.display = 'none';
       }
     }
 
-    function normalizarDniCliente(val) {
+    function confirmarDescarteCambios() {
+      if (contarCambiosPendientes() === 0) return true;
+      return confirm('Tienes cambios sin guardar en la Base de Colaboradores. ¿Deseas descartarlos y continuar?');
+    }
+
+    function tienePermisoPortal(u) {
+      if (!u) return false;
+      if (u.esRRHH || u.esTecnico) return true;
+      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      return ['ADMIN_RRHH', 'RRHH', 'ADMIN_GEP', 'GEP', 'TECNICO', 'ADMIN_TECNICO', 'DEV'].includes(r);
+    }
+
+    function normalizarDni(val) {
       let s = String(val || '').replace(/\D/g, '').trim();
-      return (s.length === 7) ? '0' + s : s;
+      return s.length === 7 ? '0' + s : s;
     }
 
-    function valSeguro(v, fallback = '-') {
-      return (v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'undefined') ? v : fallback;
+    function normalizarPanPortal(rawPan) {
+      let p = String(rawPan || '').trim();
+      p = p.replace(/^pan\s+con\s+/i, '').replace(/^pan\s+de\s+/i, '').trim();
+      if (!p) return '';
+      const low = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (low.includes('pollo')) return 'Pollo';
+      if (low.includes('queso')) return 'Queso';
+      if (low.includes('aceituna')) return 'Aceituna';
+      if (low.includes('tortilla') && !low.includes('huevo')) return 'Tortilla';
+      if (low.includes('huevo')) return 'Huevo';
+      if (low.includes('hot') || low.includes('dog')) return 'Hot dog';
+      return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
     }
 
     function mostrarToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 3000);
+      setTimeout(() => { t.style.display = 'none'; }, 3600);
     }
 
-    // Login directo 1-a-1: consulta solo al DNI digitado sin descargar datos de otros colaboradores
-    function verificarPasoDNI() {
-      vibrarHaptico(15);
-      const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
+    async function llamarAPI(action, args = [], intentos = 3) {
+      for (let i = 0; i < intentos; i++) {
+        try {
+          const resp = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: action, args: args })
+          });
+          const data = await resp.json();
+          if (data && data.versionApp) verificarVersionPortalRRHH(data.versionApp);
+          return data;
+        } catch (err) {
+          if (i === intentos - 1) throw err;
+          await new Promise(r => setTimeout(r, 500 * (i + 1)));
+        }
+      }
+    }
+
+    // ========================================================================
+    // LOGIN PORTAL RRHH (MOTOR LIGERO 1-A-1 SIN SOBRESCRIBIR VERSIÓN MÓVIL)
+    // ========================================================================
+    async function verificarDniRRHH() {
+      const dni = normalizarDni(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
         mostrarToast('Ingresa un DNI válido de 8 dígitos.');
         return;
       }
-
-      const btn = document.getElementById('btn-ingresar');
+      const btn = document.getElementById('btn-login-dni');
       btn.disabled = true;
       btn.textContent = 'Verificando...';
 
-      ejecutarConReintento('sincronizarMiEstado', [dni, VERSION_LOCAL_APP], res => {
+      try {
+        const res = await llamarAPI('sincronizarMiEstado', [dni, 'PORTAL_RRHH']);
         btn.disabled = false;
         btn.textContent = 'Continuar';
-        if (ACTUALIZACION_OBLIGATORIA) return;
-        if (res && res.ok && res.registro) {
-          aplicarMetadatosSync(res);
-          abrirFormularioClave(res.registro);
+        if (res && res.ok && res.registro && res.registro.usuario) {
+          const u = res.registro.usuario;
+          if (!tienePermisoPortal(u)) {
+            mostrarToast('Acceso restringido al personal de RRHH.');
+            return;
+          }
+          STATE.pendienteLogin = u;
+          document.getElementById('step-dni').style.display = 'none';
+          document.getElementById('step-clave').style.display = 'block';
+          document.getElementById('lbl-hola-rrhh').textContent = `Hola, ${extraerPrimerNombrePortal(u)}`;
+          document.getElementById('lbl-inst-rrhh').textContent = u.tieneClave
+            ? 'Ingresa tu contraseña:'
+            : 'Crea una contraseña para tu cuenta:';
+          document.getElementById('txt-clave').value = '';
+          document.getElementById('txt-clave').focus();
         } else {
           mostrarToast(res && res.msg ? res.msg : 'DNI no registrado.');
         }
-      }, () => {
+      } catch (e) {
         btn.disabled = false;
         btn.textContent = 'Continuar';
-        mostrarToast('No se pudo conectar con el servidor.');
-      });
-    }
-
-    function abrirFormularioClave(registro) {
-      STATE.registroPendienteLogin = aplicarCandadosRegistro(registro);
-      const primerNombre = extraerPrimerNombreCliente(registro.usuario);
-      document.getElementById('step-dni').style.display = 'none';
-      document.getElementById('step-clave').style.display = 'block';
-      document.getElementById('lbl-saludo-login').textContent = `Hola, ${primerNombre}`;
-
-      if (!registro.usuario.tieneClave) {
-        document.getElementById('lbl-instruccion-clave').textContent = 'Primer ingreso: Crea una contraseña para dejar tu sesión abierta en este equipo.';
-        document.getElementById('btn-confirmar-clave').textContent = 'Guardar Contraseña e Ingresar';
-      } else {
-        document.getElementById('lbl-instruccion-clave').textContent = 'Ingresa tu contraseña para continuar:';
-        document.getElementById('btn-confirmar-clave').textContent = 'Ingresar';
+        mostrarToast('Error de conexión con el servidor.');
       }
-      document.getElementById('txt-clave').value = '';
-      document.getElementById('txt-clave').focus();
     }
 
-    function volverAPasoDNI() {
-      vibrarHaptico(10);
-      STATE.registroPendienteLogin = null;
+    function volverPasoDniRRHH() {
+      STATE.pendienteLogin = null;
       document.getElementById('step-clave').style.display = 'none';
       document.getElementById('step-dni').style.display = 'block';
-      document.getElementById('txt-clave').value = '';
     }
 
-    async function confirmarClaveLogin() {
-      if (!STATE.registroPendienteLogin) return;
-      vibrarHaptico(15);
+    async function confirmarClaveRRHH() {
+      if (!STATE.pendienteLogin) return;
       const clave = document.getElementById('txt-clave').value;
-      if (!clave || clave.trim().length === 0) {
-        mostrarToast('Escribe tu contraseña.');
+      if (!clave.trim()) {
+        mostrarToast('Ingresa tu contraseña.');
         return;
       }
-
-      const btn = document.getElementById('btn-confirmar-clave');
-      const txtOriginal = btn.textContent;
+      const btn = document.getElementById('btn-login-clave');
       btn.disabled = true;
       btn.textContent = 'Verificando...';
 
       const tInicio = performance.now();
-      const dni = STATE.registroPendienteLogin.usuario.dni;
-      const esCreacion = !STATE.registroPendienteLogin.usuario.tieneClave;
-      const hashGuardadoRAM = STATE.registroPendienteLogin.usuario.hashClave || '';
+      const dni = STATE.pendienteLogin.dni;
+      const esCreacion = !STATE.pendienteLogin.tieneClave;
+      const hashGuardadoRAM = STATE.pendienteLogin.hashClave || '';
 
-      const hashCliente = await calcularHashSHA256Cliente(dni, clave);
+      const hashCliente = await calcularHashSHA256Portal(dni, clave);
 
       if (hashCliente && (esCreacion || hashGuardadoRAM)) {
         const transcurrido = performance.now() - tInicio;
@@ -1614,1151 +1006,1040 @@
         await new Promise(r => setTimeout(r, esperaRestante));
 
         btn.disabled = false;
-        btn.textContent = txtOriginal;
+        btn.textContent = 'Ingresar';
 
         if (!esCreacion) {
           if (hashCliente === hashGuardadoRAM) {
-            document.getElementById('txt-clave').value = '';
-            asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
+            STATE.admin = STATE.pendienteLogin;
+            STATE.token = hashCliente;
+            localStorage.setItem('SBS_COMEDOR_RRHH_SESSION', JSON.stringify({
+              admin: STATE.admin,
+              token: STATE.token
+            }));
+            iniciarPortalRRHH();
           } else {
-            mostrarToast('Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
+            mostrarToast('Contraseña incorrecta.');
           }
           return;
         } else {
-          STATE.registroPendienteLogin.usuario.tieneClave = true;
-          STATE.registroPendienteLogin.usuario.hashClave = hashCliente;
-          document.getElementById('txt-clave').value = '';
-          asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
-          ejecutarConReintento('guardarHashClaveDirecto', [dni, hashCliente], null, null, 4);
+          STATE.pendienteLogin.tieneClave = true;
+          STATE.pendienteLogin.hashClave = hashCliente;
+          STATE.admin = STATE.pendienteLogin;
+          STATE.token = hashCliente;
+          localStorage.setItem('SBS_COMEDOR_RRHH_SESSION', JSON.stringify({
+            admin: STATE.admin,
+            token: STATE.token
+          }));
+          iniciarPortalRRHH();
+          llamarAPI('guardarHashClaveDirecto', [dni, hashCliente]).catch(() => {});
           return;
         }
       }
 
-      ejecutarConReintento('autenticarOConfigurarClave', [dni, clave, esCreacion], async res => {
+      try {
+        const res = await llamarAPI('autenticarOConfigurarClave', [dni, clave, esCreacion]);
         const transcurrido = performance.now() - tInicio;
         const esperaRestante = Math.max(0, 1000 - transcurrido);
         await new Promise(r => setTimeout(r, esperaRestante));
 
         btn.disabled = false;
-        btn.textContent = txtOriginal;
+        btn.textContent = 'Ingresar';
+
         if (res && res.ok) {
-          STATE.registroPendienteLogin.usuario.tieneClave = true;
-          STATE.registroPendienteLogin.usuario.hashClave = res.tokenSesion;
-          document.getElementById('txt-clave').value = '';
-          asignarUsuarioYEntrar(STATE.registroPendienteLogin, res.tokenSesion);
+          STATE.admin = STATE.pendienteLogin;
+          STATE.token = res.tokenSesion || '';
+          localStorage.setItem('SBS_COMEDOR_RRHH_SESSION', JSON.stringify({
+            admin: STATE.admin,
+            token: STATE.token
+          }));
+          iniciarPortalRRHH();
         } else {
-          mostrarToast(res ? res.msg : 'Error al validar contraseña.');
+          mostrarToast(res ? res.msg : 'Contraseña incorrecta.');
         }
-      }, () => {
+      } catch (e) {
         btn.disabled = false;
-        btn.textContent = txtOriginal;
-        mostrarToast('Error de conexión con el servidor.');
-      });
-    }
-
-    function asignarUsuarioYEntrar(registro, tokenSesion) {
-      aplicarCandadosRegistro(registro);
-      STATE.usuario = registro.usuario;
-      STATE.diasSemana = registro.diasSemana;
-      STATE.hoyFisico = registro.hoyFisico;
-      if (tokenSesion) {
-        STATE.tokenActivo = tokenSesion;
-      }
-      guardarSnapshotLocal();
-      renderizarVistaPrincipal();
-
-      if (window.AUTO_CHECKIN_QR === '1') {
-        window.AUTO_CHECKIN_QR = '0';
-        if (!document.getElementById('btn-escanear-qr').disabled) {
-          procesarRegistroQRInteligente('QR_INVERSO_DIRECTO');
-        }
+        btn.textContent = 'Ingresar';
+        mostrarToast('No se pudo conectar con el servidor.');
       }
     }
 
-    function cerrarSesion() {
-      vibrarHaptico(15);
-      cerrarEscanerQR();
-      cerrarModalTicketVerde();
-      cerrarModalDetalleConsumido();
-      localStorage.removeItem('SBS_COMEDOR_AUTH');
-      STATE.ultimoSyncMs = 0;
-      STATE.usuario = null;
-      STATE.tokenActivo = '';
-      STATE.registroPendienteLogin = null;
-      STATE.ticketCompactoActivo = null;
-      STATE.ultimoTicketPrueba = null;
-      ocultarTarjetaTicketCompacto();
-      document.getElementById('txt-dni').value = '';
-      document.getElementById('txt-clave').value = '';
-      document.getElementById('step-clave').style.display = 'none';
-      document.getElementById('step-dni').style.display = 'block';
-      document.getElementById('app-shell').classList.remove('wide-rrhh');
-      document.getElementById('view-main').style.display = 'none';
+    function cerrarSesionRRHH() {
+      if (!confirmarDescarteCambios()) return;
+      STATE.cambiosPendientes = {};
+      actualizarBotonGuardarGeneral();
+      if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
+      localStorage.removeItem('SBS_COMEDOR_RRHH_SESSION');
+      STATE.admin = null;
+      document.getElementById('view-portal').style.display = 'none';
       document.getElementById('view-login').style.display = 'flex';
-    }
-
-    function esUsuarioTecnico(u) {
-      if (!u) return false;
-      if (u.esTecnico) return true;
-      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-      return r === 'TECNICO' || r === 'ADMIN_TECNICO' || r === 'DEV';
-    }
-
-    function esUsuarioRRHH(u) {
-      if (!u) return false;
-      if (u.esRRHH) return true;
-      const r = String(u.rol || '').toUpperCase().trim();
-      return r === 'ADMIN_RRHH' || r === 'RRHH' || r === 'ADMIN_GEP' || r === 'GEP';
+      volverPasoDniRRHH();
     }
 
     // ========================================================================
-    // BANNER INFORMATIVO DINÁMICO (DESDE MENU_SEMANAL!E2)
+    // INICIALIZACIÓN Y SINCRONIZACIÓN EN TIEMPO REAL
     // ========================================================================
-    function renderizarBannerInformativo() {
-      const box = document.getElementById('banner-informativo-sbs');
-      const txtEl = document.getElementById('texto-banner-informativo');
-      const aviso = String(STATE.avisoBanner || '').trim();
-      if (!aviso) {
-        box.style.display = 'none';
-        return;
-      }
-      const cerrado = localStorage.getItem('SBS_BANNER_DISMISSED');
-      if (cerrado === aviso) {
-        box.style.display = 'none';
-        return;
-      }
-      txtEl.textContent = aviso;
-      box.style.display = 'flex';
+    function iniciarPortalRRHH() {
+      document.getElementById('view-login').style.display = 'none';
+      document.getElementById('view-portal').style.display = 'flex';
+      document.getElementById('lbl-admin-activo').textContent = STATE.admin.nombre;
+      cargarDatosPortal(true);
+      alternarAutoRefresh();
     }
 
-    function cerrarBannerInformativo() {
-      vibrarHaptico(10);
-      const aviso = String(STATE.avisoBanner || '').trim();
-      if (aviso) localStorage.setItem('SBS_BANNER_DISMISSED', aviso);
-      document.getElementById('banner-informativo-sbs').style.display = 'none';
-    }
-
-    // ========================================================================
-    // CÁLCULO DE CONSUMIDO AL CORTE + MODAL DETALLE DE CONSUMOS DEL CICLO
-    // ========================================================================
-    function construirDetalleConsumoCiclo() {
-      const mapaPorFecha = {};
-      const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
-
-      // 1. Cargar historial del ciclo enviado por el servidor (respetando fecha de arranque)
-      if (STATE.usuario && Array.isArray(STATE.usuario.historialCiclo)) {
-        STATE.usuario.historialCiclo.forEach(item => {
-          const fIso = item[0];
-          if (!fIso || fIso < FECHA_ARRANQUE_ALMUERZO) return;
-          mapaPorFecha[fIso] = {
-            fechaISO: fIso,
-            fechaCorta: item[1] || formatearDiaMesCorto(fIso),
-            des: !!item[2],
-            alm: !!item[3]
-          };
-        });
-      }
-
-      // 2. Fusionar en tiempo real los días de la semana que pertenecen al ciclo actual
-      const hf = STATE.hoyFisico;
-      (STATE.diasSemana || []).forEach(d => {
-        if (d.enCicloActual === false || d.fecha < FECHA_ARRANQUE_ALMUERZO) return;
-
-        const cerradoDes = !d.puedeEditarDesayuno || !esEditableEnTiempoReal(d.fecha, 'DESAYUNO');
-        const cerradoAlm = !d.puedeEditarAlmuerzo || !esEditableEnTiempoReal(d.fecha, 'ALMUERZO');
-
-        const habDesFecha = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
-        const desConsumido = (d.esHoyFisico && hf && hf.consumioDes) ||
-          (habDesFecha && d.desayuno !== 'NO' && (cerradoDes || d.desayuno === 'MANUAL'));
-        const almConsumido = (d.esHoyFisico && hf && hf.consumioAlm) ||
-          (d.almuerzo !== 'NO' && cerradoAlm);
-
-        const prev = mapaPorFecha[d.fecha];
-        const desFinal = (d.fecha < hoyRef && prev) ? (prev.des || desConsumido) : desConsumido;
-        const almFinal = (d.fecha < hoyRef && prev) ? (prev.alm || almConsumido) : almConsumido;
-
-        if (desFinal || almFinal || d.fecha <= hoyRef) {
-          mapaPorFecha[d.fecha] = {
-            fechaISO: d.fecha,
-            fechaCorta: d.fechaCorta || formatearDiaMesCorto(d.fecha),
-            des: desFinal,
-            alm: almFinal
-          };
-        }
-      });
-
-      const filas = Object.values(mapaPorFecha).sort((a, b) => a.fechaISO.localeCompare(b.fechaISO));
-
-      let cDes = 0;
-      let cAlm = 0;
-      filas.forEach(r => {
-        if (r.des) cDes++;
-        if (r.alm) cAlm++;
-      });
-
-      const totSoles = STATE.usuario
-        ? (cDes * STATE.usuario.costoDesayuno) + (cAlm * STATE.usuario.costoAlmuerzo)
-        : 0;
-
-      return { filas: filas, cDes: cDes, cAlm: cAlm, totSoles: totSoles };
-    }
-
-    function actualizarResumenHeader() {
-      if (!STATE.usuario) return;
-      const calc = construirDetalleConsumoCiclo();
-      document.getElementById('hdr-resumen-cant').textContent = `${calc.cDes} Des. | ${calc.cAlm} Alm.`;
-      document.getElementById('hdr-resumen-total').textContent = `Consumido: S/ ${calc.totSoles.toFixed(2)}`;
-    }
-
-    function abrirModalDetalleConsumido() {
-      vibrarHaptico(15);
-      const calc = construirDetalleConsumoCiclo();
-      const sub = STATE.etiquetaCiclo ? `Ciclo ${STATE.etiquetaCiclo} (se reinicia cada día 25)` : 'Ciclo vigente (del 25 al 24)';
-      document.getElementById('lbl-subtitulo-ciclo').textContent = sub;
-
-      const tbody = document.getElementById('tbody-detalle-consumo');
-      if (calc.filas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted); padding:20px;">Aún no registras consumos en este ciclo.</td></tr>';
-      } else {
-        tbody.innerHTML = calc.filas.map(f => `
-          <tr>
-            <td>${f.fechaCorta}</td>
-            <td>${f.des ? '<span class="chk-ok">✓</span>' : '<span class="chk-no">-</span>'}</td>
-            <td>${f.alm ? '<span class="chk-ok">✓</span>' : '<span class="chk-no">-</span>'}</td>
-          </tr>
-        `).join('');
-      }
-
-      document.getElementById('foot-cant-consumo').textContent = `${calc.cDes} Desayunos | ${calc.cAlm} Almuerzos`;
-      document.getElementById('foot-tot-consumo').textContent = `S/ ${calc.totSoles.toFixed(2)}`;
-      document.getElementById('modal-detalle-consumido').style.display = 'flex';
-    }
-
-    function cerrarModalDetalleConsumido() {
-      vibrarHaptico(10);
-      document.getElementById('modal-detalle-consumido').style.display = 'none';
-    }
-
-    // ========================================================================
-    // MÓDULO TÉCNICO + SIMULADOR DE ESTRÉS CONCURRENTE (MOTOR 1-A-1)
-    // ========================================================================
-    function cargarPanelSalud() {
-      const badge = document.getElementById('badge-salud-tech');
-      const infoBox = document.getElementById('detalle-infraestructura-tech');
-      const btnRef = document.getElementById('btn-refrescar-tech');
-      if (btnRef) {
-        btnRef.disabled = true;
-        btnRef.textContent = 'Actualizando...';
-      }
-      if (badge) {
-        badge.textContent = 'CONSULTANDO';
-        badge.style.background = '#e2e8f0';
-        badge.style.color = '#334155';
-      }
-      const tPingIni = performance.now();
-
-      ejecutarConReintento('obtenerEstadisticasSaludApp', [STATE.usuario ? STATE.usuario.dni : ''], res => {
-        if (btnRef) {
-          btnRef.disabled = false;
-          btnRef.textContent = 'Actualizar diagnóstico';
-        }
-        const latenciaRed = Math.round(performance.now() - tPingIni);
-        if (!res || !res.ok) {
-          if (badge) {
-            badge.textContent = 'SIN CONEXIÓN';
-            badge.style.background = '#fee2e2';
-            badge.style.color = '#991b1b';
+    function alternarAutoRefresh() {
+      if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
+      if (document.getElementById('chk-autorefresh').checked) {
+        STATE.timerAutoRefresh = setInterval(() => {
+          const modMonitoreoVisible = document.getElementById('mod-monitoreo').style.display !== 'none';
+          if (modMonitoreoVisible && contarCambiosPendientes() === 0) {
+            cargarDatosPortal(false);
           }
-          return;
-        }
-
-        if (typeof res.modoPruebaActivo === 'boolean') {
-          STATE.modoPruebaQR = res.modoPruebaActivo;
-        }
-        if (Array.isArray(res.dnisActivosMuestra)) {
-          STATE.dnisActivosMuestra = res.dnisActivosMuestra;
-        }
-
-        const totErr = (res.totalErrores !== undefined) ? res.totalErrores : 0;
-        if (badge) {
-          badge.textContent = valSeguro(res.salud, 'OPERATIVO');
-          badge.style.background = Number(totErr) === 0 ? '#dcfce7' : '#fef3c7';
-          badge.style.color = Number(totErr) === 0 ? '#166534' : '#92400e';
-        }
-
-        const latVal = valSeguro(res.latenciaPingMs, latenciaRed);
-        const colabAct = valSeguro(res.colaboradoresActivos, '-');
-        const colabClave = valSeguro(res.usuariosConClave, '-');
-        const qrDes = (res.escaneosDesHoy !== undefined) ? res.escaneosDesHoy : 0;
-        const qrAlm = (res.escaneosAlmHoy !== undefined) ? res.escaneosAlmHoy : 0;
-
-        document.getElementById('tkpi-latencia').textContent = `${latVal} ms`;
-        document.getElementById('tkpi-usuarios').textContent = `${colabAct} / ${colabClave}`;
-        document.getElementById('tkpi-qr-hoy').textContent = `${qrDes} / ${qrAlm}`;
-        document.getElementById('tkpi-errores').textContent = String(totErr);
-
-        infoBox.innerHTML = `
-          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')} &nbsp;|&nbsp;
-          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
-          <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
-          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)} &nbsp;|&nbsp;
-          <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
-        `;
-
-        const tbErr = document.getElementById('tbody-errores-tech');
-        if (!res.ultimosLogs || res.ultimosLogs.length === 0) {
-          tbErr.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#047857; font-weight:700;">Sin errores registrados.</td></tr>';
-        } else {
-          tbErr.innerHTML = res.ultimosLogs.map(l => `
-            <tr>
-              <td style="white-space:nowrap;">${valSeguro(l.fecha)}</td>
-              <td><b>${valSeguro(l.contexto)}</b></td>
-              <td style="color:#dc2626; font-weight:600;">${valSeguro(l.motivo)}</td>
-            </tr>
-          `).join('');
-        }
-
-        const tbEv = document.getElementById('tbody-eventos-tech');
-        if (!res.ultimosEventos || res.ultimosEventos.length === 0) {
-          tbEv.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted);">-</td></tr>';
-        } else {
-          tbEv.innerHTML = res.ultimosEventos.map(ev => `
-            <tr>
-              <td style="white-space:nowrap;">${valSeguro(ev.fecha)}</td>
-              <td><b>${valSeguro(ev.tipo)}</b></td>
-              <td>${valSeguro(ev.dni)}</td>
-              <td>${valSeguro(ev.servicio)}</td>
-              <td>${valSeguro(ev.valor)}</td>
-            </tr>
-          `).join('');
-        }
-      }, () => {
-        if (btnRef) {
-          btnRef.disabled = false;
-          btnRef.textContent = 'Actualizar diagnóstico';
-        }
-      });
+        }, 20000);
+      }
     }
 
-    async function ejecutarPruebaEstres() {
-      vibrarHaptico(15);
-      const box = document.getElementById('resultado-estres-tech');
-      const btn = document.getElementById('btn-ejecutar-estres');
-      box.style.display = 'block';
-
-      if (!STATE.modoPruebaQR) {
-        box.innerHTML = `<span style="color:#b45309; font-weight:700;">Activa primero el "Modo prueba" en el menú Comedor SBS de tu hoja de cálculo y luego presiona Actualizar diagnóstico arriba.</span>`;
-        return;
+    async function cargarDatosPortal(mostrarIndicador) {
+      if (mostrarIndicador && contarCambiosPendientes() > 0) {
+        if (!confirmarDescarteCambios()) return;
+        STATE.cambiosPendientes = {};
+        actualizarBotonGuardarGeneral();
       }
 
-      btn.disabled = true;
-      btn.textContent = 'Ejecutando ráfaga concurrente (45 peticiones)...';
-      box.innerHTML = 'Disparando <b>30 sincronizaciones 1-a-1</b> + <b>15 escaneos QR en paralelo</b>...';
-
-      const muestra = (STATE.dnisActivosMuestra && STATE.dnisActivosMuestra.length > 0)
-        ? STATE.dnisActivosMuestra
-        : [STATE.usuario.dni];
-
-      const dnisLectura = Array.from({ length: 30 }, (_, i) => muestra[i % muestra.length]);
-      const dnisQR = Array.from({ length: 15 }, (_, i) => muestra[i % muestra.length]);
-
-      const tGlobalIni = performance.now();
-
-      const promesasLectura = dnisLectura.map(dniTest => {
-        const t0 = performance.now();
-        return fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'sincronizarMiEstado', args: [dniTest, VERSION_LOCAL_APP] })
-        }).then(r => r.json()).then(d => ({
-          ok: !!(d && d.ok),
-          ms: Math.round(performance.now() - t0)
-        })).catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
-      });
-
-      const promesasQR = dnisQR.map(dniTest => {
-        const t0 = performance.now();
-        return fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'registrarConsumoInteligente', args: [dniTest, 'STRESS_TEST', 'ALMUERZO'] })
-        }).then(r => r.json()).then(d => ({
-          ok: !!(d && d.ok),
-          ms: Math.round(performance.now() - t0)
-        })).catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
-      });
-
-      const [resLecturas, resQR] = await Promise.all([
-        Promise.all(promesasLectura),
-        Promise.all(promesasQR)
-      ]);
-
-      const tGlobalTotal = Math.round(performance.now() - tGlobalIni);
-      const okLecturas = resLecturas.filter(x => x.ok).length;
-      const okQRs = resQR.filter(x => x.ok).length;
-      const promMsLectura = Math.round(resLecturas.reduce((a, b) => a + b.ms, 0) / resLecturas.length);
-      const promMsQR = Math.round(resQR.reduce((a, b) => a + b.ms, 0) / resQR.length);
-      const maxMsQR = Math.max(...resQR.map(x => x.ms));
-
-      btn.disabled = false;
-      btn.textContent = 'Simular Ráfaga Concurrente Ahora';
-
-      box.innerHTML = `
-        <b style="color:#047857;">Prueba completada en ${(tGlobalTotal / 1000).toFixed(2)} seg:</b><br>
-        - <b>Accesos simultáneos (30):</b> ${okLecturas}/30 exitosos (Promedio: ${promMsLectura} ms)<br>
-        - <b>Escaneos QR en fila (15):</b> ${okQRs}/15 registrados sin pérdida (Promedio: ${promMsQR} ms | Máximo: ${maxMsQR} ms)<br>
-        <span style="color:#64748b; font-size:11px;">Recuerda ir a Google Sheets -> Comedor SBS -> "Borrar solo registros de modo prueba" y desactivar el Modo Prueba.</span>
-      `;
-      cargarPanelSalud();
-    }
-
-    // ========================================================================
-    // MÓDULO RRHH EN APP MÓVIL (RESETEO DE CLAVE + LISTA DE PENDIENTES HOY)
-    // ========================================================================
-    function ejecutarReseteoClaveRRHH() {
-      vibrarHaptico(15);
-      const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
-      if (dniTarget.length < 7) {
-        mostrarToast('Ingresa el DNI de 8 dígitos del colaborador.');
-        return;
-      }
-      const btn = document.getElementById('btn-reset-clave');
-      btn.disabled = true;
-      btn.textContent = 'Procesando...';
-
-      ejecutarConReintento('resetearClaveColaboradorRRHH', [STATE.usuario.dni, dniTarget], res => {
-        btn.disabled = false;
-        btn.textContent = 'Restablecer';
-        if (res && res.ok) {
-          document.getElementById('rrhh-dni-reset').value = '';
-          mostrarToast(res.msg);
-        } else {
-          mostrarToast(res ? res.msg : 'No se pudo restablecer la clave.');
-        }
-      }, () => {
-        btn.disabled = false;
-        btn.textContent = 'Restablecer';
-        mostrarToast('Error de conexión.');
-      });
-    }
-
-    function cargarPendientesHoyRRHH() {
-      const btn = document.getElementById('btn-refrescar-pendientes');
-      const titulo = document.getElementById('rrhh-titulo-pendientes');
-      const badge = document.getElementById('rrhh-badge-pendientes');
-      const tbody = document.getElementById('tbody-pendientes-rrhh');
-
-      if (btn) {
+      const btn = document.getElementById('btn-sync-ahora');
+      if (mostrarIndicador && btn) {
         btn.disabled = true;
         btn.textContent = 'Actualizando...';
       }
 
-      const esDesayuno = (obtenerHoraPeruActual() < 12.0);
-      if (titulo) {
-        titulo.textContent = esDesayuno ? 'Desayunos pendientes hoy' : 'Almuerzos pendientes hoy';
-      }
+      const selFecha = document.getElementById('sel-fecha-monitoreo');
+      const fechaPedida = selFecha && selFecha.value ? selFecha.value : '';
 
-      ejecutarConReintento('obtenerPendientesHoyRRHH', [STATE.usuario ? STATE.usuario.dni : ''], res => {
+      try {
+        const res = await llamarAPI('obtenerDatosPortalRRHH', [STATE.admin.dni, fechaPedida]);
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Actualizar pendientes';
+          btn.textContent = 'Actualizar';
         }
         if (!res || !res.ok) {
-          tbody.innerHTML = '<tr><td style="text-align:center; color:var(--muted);">No se pudo cargar la lista.</td></tr>';
+          mostrarToast(res ? res.msg : 'Error al sincronizar.');
           return;
         }
 
-        const esSrvDes = (res.servicio === 'DESAYUNO');
-        titulo.textContent = esSrvDes ? 'Desayunos pendientes hoy' : 'Almuerzos pendientes hoy';
-        badge.textContent = `Total: ${res.totalPendientes}`;
-        badge.style.background = res.totalPendientes === 0 ? '#dcfce7' : '#ffedd5';
-        badge.style.color = res.totalPendientes === 0 ? '#166534' : '#c2410c';
+        STATE.hoyStr = res.hoyStr;
+        if (typeof res.horaPeru === 'number') STATE.horaPeru = res.horaPeru;
+        STATE.avisoBanner = res.avisoBanner || '';
+        STATE.fechaSeleccionada = res.fechaConsultada;
+        STATE.fechasSemana = res.fechasSemana || [];
+        STATE.panesCatalogo = (Array.isArray(res.panesCatalogo) && res.panesCatalogo.length > 0)
+          ? res.panesCatalogo.slice()
+          : PANES_CATALOGO_BASE.slice();
 
-        if (!res.pendientes || res.pendientes.length === 0) {
-          tbody.innerHTML = '<tr><td style="text-align:center; color:#047857; font-weight:700;">Todos los colaboradores con reserva ya asistieron.</td></tr>';
-          return;
+        STATE.colaboradoresBD = (res.colaboradoresBD || []).sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
+        STATE.monitoreoDia = (res.monitoreoDia || []).sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
+        STATE.menuSemanal = res.menuSemanal || [];
+
+        document.getElementById('lbl-ultima-sync').textContent = `Sincronizado ${res.timestampServidor.split(' ')[1] || res.timestampServidor}`;
+
+        if (selFecha && selFecha.options.length === 0) {
+          selFecha.innerHTML = STATE.fechasSemana.map(f =>
+            `<option value="${f.fecha}" ${f.fecha === STATE.fechaSeleccionada ? 'selected' : ''}>${f.etiqueta}</option>`
+          ).join('');
         }
 
-        tbody.innerHTML = res.pendientes.map((p, idx) => `
-          <tr>
-            <td><b>${idx + 1}. ${p.nombre}</b></td>
-          </tr>
-        `).join('');
-      }, () => {
+        if (!document.getElementById('rep-ini').value) {
+          inicializarFechasPlanilla();
+        }
+
+        renderizarTablaMonitoreo();
+        if (contarCambiosPendientes() === 0) {
+          renderizarTablaColaboradores();
+        }
+      } catch (e) {
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Actualizar pendientes';
+          btn.textContent = 'Actualizar';
+        }
+      }
+    }
+
+    function cambiarModulo(mod) {
+      const modColabVisible = document.getElementById('mod-colaboradores').style.display !== 'none';
+      if (modColabVisible && mod !== 'COLABORADORES' && contarCambiosPendientes() > 0) {
+        if (!confirmarDescarteCambios()) return;
+        STATE.cambiosPendientes = {};
+        actualizarBotonGuardarGeneral();
+      }
+
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('mod-monitoreo').style.display = 'none';
+      document.getElementById('mod-colaboradores').style.display = 'none';
+      document.getElementById('mod-planilla').style.display = 'none';
+
+      if (mod === 'MONITOREO') {
+        document.getElementById('tab-monitoreo').classList.add('active');
+        document.getElementById('mod-monitoreo').style.display = 'block';
+        cargarDatosPortal(false);
+      } else if (mod === 'COLABORADORES') {
+        document.getElementById('tab-colaboradores').classList.add('active');
+        document.getElementById('mod-colaboradores').style.display = 'block';
+        renderizarTablaColaboradores();
+      } else if (mod === 'PLANILLA') {
+        document.getElementById('tab-planilla').classList.add('active');
+        document.getElementById('mod-planilla').style.display = 'block';
+        cargarReportePlanillaRRHH();
+      }
+    }
+
+    // ========================================================================
+    // MODAL: ASIGNAR SERVICIO MANUALMENTE EN 2 SOLOS PASOS
+    // ========================================================================
+    function abrirModalAsignarServicio() {
+      document.getElementById('txt-filtro-colab-asignar').value = '';
+      filtrarSelectColaboradoresAsignar();
+      document.getElementById('sel-srv-asignar').value = 'ALMUERZO';
+      document.getElementById('modal-asignar-servicio').style.display = 'flex';
+      setTimeout(() => document.getElementById('txt-filtro-colab-asignar').focus(), 80);
+    }
+
+    function cerrarModalAsignarServicio() {
+      document.getElementById('modal-asignar-servicio').style.display = 'none';
+    }
+
+    function filtrarSelectColaboradoresAsignar() {
+      const busq = String(document.getElementById('txt-filtro-colab-asignar').value || '').toLowerCase().trim();
+      const sel = document.getElementById('sel-colab-asignar');
+      const activos = (STATE.colaboradoresBD || []).filter(c => c.estado !== 'CESADO');
+      const filtrados = activos.filter(c => !busq || c.dni.includes(busq) || c.nombre.toLowerCase().includes(busq));
+
+      if (filtrados.length === 0) {
+        sel.innerHTML = `<option value="">Sin coincidencias</option>`;
+        return;
+      }
+      sel.innerHTML = filtrados.map(c =>
+        `<option value="${c.dni}">${c.nombre} (${c.dni})</option>`
+      ).join('');
+    }
+
+    async function ejecutarAsignacionManualRRHH() {
+      const dniTarget = document.getElementById('sel-colab-asignar').value;
+      const fecha = document.getElementById('sel-fecha-monitoreo').value || STATE.hoyStr;
+      const servicio = document.getElementById('sel-srv-asignar').value;
+
+      if (!dniTarget) {
+        mostrarToast('Selecciona un colaborador de la lista.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-confirmar-asignar');
+      btn.disabled = true;
+      btn.textContent = 'Asignando...';
+
+      try {
+        const res = await llamarAPI('asignarServicioManualRRHH', [{
+          dniAdmin: STATE.admin.dni,
+          dniTarget: dniTarget,
+          fecha: fecha,
+          servicio: servicio,
+          opcionAlmuerzo: 'REGULAR'
+        }]);
+        btn.disabled = false;
+        btn.textContent = 'Asignar';
+
+        if (res && res.ok) {
+          cerrarModalAsignarServicio();
+          mostrarToast(res.msg);
+          await cargarDatosPortal(false);
+        } else {
+          mostrarToast(res ? res.msg : 'No se pudo asignar el servicio.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Asignar';
+        mostrarToast('Error de conexión con el servidor.');
+      }
+    }
+
+    // ========================================================================
+    // MÓDULO: MONITOREO EN VIVO (4 TARJETAS FILTRO + COLUMNAS DINÁMICAS)
+    // ========================================================================
+    function alternarFiltroTarjeta(filtroNuevo) {
+      STATE.filtroMonitoreo = (STATE.filtroMonitoreo === filtroNuevo) ? 'TODOS' : filtroNuevo;
+      renderizarTablaMonitoreo();
+    }
+
+    function limpiarFiltroMonitoreo() {
+      STATE.filtroMonitoreo = 'TODOS';
+      renderizarTablaMonitoreo();
+    }
+
+    function actualizarEstadoVisualTarjetasMonitoreo() {
+      const f = STATE.filtroMonitoreo;
+      const tarjetas = [
+        { id: 'DES_RESERVADO', cls: 'active-des', chipIdle: 'Ver', label: 'Reservas de Desayuno' },
+        { id: 'DES_FALTA', cls: 'active-des', chipIdle: 'Pendientes', label: 'Pendientes de Desayuno' },
+        { id: 'ALM_RESERVADO', cls: 'active-alm', chipIdle: 'Ver', label: 'Reservas de Almuerzo' },
+        { id: 'ALM_FALTA', cls: 'active-alm', chipIdle: 'Pendientes', label: 'Pendientes de Almuerzo' }
+      ];
+
+      let etiquetaActiva = '';
+      tarjetas.forEach(t => {
+        const card = document.getElementById('card-flt-' + t.id);
+        const chip = document.getElementById('chip-' + t.id);
+        if (!card) return;
+        card.classList.remove('active-des', 'active-alm');
+        if (f === t.id) {
+          card.classList.add(t.cls);
+          if (chip) chip.textContent = 'Activo';
+          etiquetaActiva = t.label;
+        } else {
+          if (chip) chip.textContent = t.chipIdle;
         }
       });
-    }
 
-    function renderizarVistaPrincipal() {
-      document.getElementById('view-login').style.display = 'none';
-      document.getElementById('view-main').style.display = 'flex';
-      document.getElementById('lbl-nombre').textContent = 'Hola, ' + extraerPrimerNombreCliente(STATE.usuario);
-
-      renderizarBannerInformativo();
-
-      const enAusenciaHoy = (STATE.usuario.estado !== 'ACTIVO') && (STATE.usuario.activoHoy === false);
-      let textoEstadoSub = `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}`;
-      if (enAusenciaHoy) {
-        if (STATE.usuario.fechaInicioEstado && STATE.usuario.fechaFinEstado) {
-          textoEstadoSub = `Estado: ${STATE.usuario.estado} (${formatearDiaMesCorto(STATE.usuario.fechaInicioEstado)} al ${formatearDiaMesCorto(STATE.usuario.fechaFinEstado)})`;
-        } else if (STATE.usuario.fechaFinEstado) {
-          textoEstadoSub = `Estado: ${STATE.usuario.estado} (hasta ${formatearDiaMesCorto(STATE.usuario.fechaFinEstado)})`;
+      const pill = document.getElementById('pill-filtro-activo');
+      const lblPill = document.getElementById('lbl-filtro-activo-texto');
+      if (pill && lblPill) {
+        if (etiquetaActiva) {
+          lblPill.textContent = `Mostrando: ${etiquetaActiva}`;
+          pill.style.display = 'inline-flex';
         } else {
-          textoEstadoSub = `Estado: ${STATE.usuario.estado}`;
+          pill.style.display = 'none';
         }
       }
-      document.getElementById('lbl-estado-rol').textContent = textoEstadoSub;
+    }
 
-      const mostrarRRHH = esUsuarioRRHH(STATE.usuario);
-      const mostrarTech = esUsuarioTecnico(STATE.usuario);
+    function renderizarTablaMonitoreo() {
+      const lista = STATE.monitoreoDia || [];
+      const filtro = STATE.filtroMonitoreo || 'TODOS';
+      const busq = String(document.getElementById('txt-buscar-monitoreo').value || '').toLowerCase().trim();
 
-      document.getElementById('tab-btn-rrhh').style.display = mostrarRRHH ? 'block' : 'none';
-      document.getElementById('tab-btn-tecnico').style.display = mostrarTech ? 'block' : 'none';
+      actualizarEstadoVisualTarjetasMonitoreo();
 
-      // Cambia al día siguiente recién a las 6:01 PM (18.016 h)
-      let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
-      if (idxHoyFisico === -1) {
-        STATE.idxPrincipal = 0;
+      // Conteos para las 4 tarjetas
+      let totDesRes = 0, totDesQR = 0, totDesPend = 0;
+      let desOp1 = 0, desOp2 = 0, desOp3 = 0, desManual = 0;
+      let totAlmRes = 0, totAlmQR = 0, totAlmPend = 0;
+      let almReg = 0, almAlt = 0;
+
+      lista.forEach(item => {
+        if (item.reservoDes) {
+          totDesRes++;
+          const raw = String(item.codigoDes || '').toUpperCase();
+          if (raw.startsWith('OP1')) desOp1++;
+          else if (raw.startsWith('OP2')) desOp2++;
+          else if (raw.startsWith('OP3')) desOp3++;
+          else if (raw === 'MANUAL') desManual++;
+
+          if (item.consumioDes) totDesQR++;
+          else totDesPend++;
+        } else if (item.consumioDes) {
+          totDesQR++;
+        }
+
+        if (item.reservoAlm) {
+          totAlmRes++;
+          if (item.detalleAlm === 'Alternativo') almAlt++;
+          else almReg++;
+
+          if (item.consumioAlm) totAlmQR++;
+          else totAlmPend++;
+        } else if (item.consumioAlm) {
+          totAlmQR++;
+        }
+      });
+
+      // Tarjeta 1: Reserva Desayuno + lista por opción
+      document.getElementById('kpi-des-res').textContent = String(totDesRes);
+      let htmlDesOps = `
+        <div class="kpi-breakdown-row"><span>Opc. 1</span><b>${desOp1}</b></div>
+        <div class="kpi-breakdown-row"><span>Opc. 2</span><b>${desOp2}</b></div>
+        <div class="kpi-breakdown-row"><span>Opc. 3</span><b>${desOp3}</b></div>
+      `;
+      if (desManual > 0) {
+        htmlDesOps += `<div class="kpi-breakdown-row"><span>RRHH</span><b>${desManual}</b></div>`;
+      }
+      document.getElementById('kpi-des-opciones').innerHTML = htmlDesOps;
+
+      // Tarjeta 2: Asistencia Desayuno (pendientes + asistieron / total)
+      const porcDes = totDesRes > 0 ? Math.round((totDesQR / totDesRes) * 100) : 0;
+      document.getElementById('kpi-des-pend').textContent = String(totDesPend);
+      document.getElementById('kpi-des-ratio').textContent = `${totDesQR} / ${totDesRes}`;
+      document.getElementById('kpi-des-porc').textContent = `${porcDes}% asistieron`;
+
+      // Tarjeta 3: Reserva Almuerzo + lista por tipo
+      document.getElementById('kpi-alm-res').textContent = String(totAlmRes);
+      document.getElementById('kpi-alm-opciones').innerHTML = `
+        <div class="kpi-breakdown-row"><span>Regular</span><b>${almReg}</b></div>
+        <div class="kpi-breakdown-row"><span>Alternativo</span><b>${almAlt}</b></div>
+      `;
+
+      // Tarjeta 4: Asistencia Almuerzo (pendientes + asistieron / total)
+      const porcAlm = totAlmRes > 0 ? Math.round((totAlmQR / totAlmRes) * 100) : 0;
+      document.getElementById('kpi-alm-pend').textContent = String(totAlmPend);
+      document.getElementById('kpi-alm-ratio').textContent = `${totAlmQR} / ${totAlmRes}`;
+      document.getElementById('kpi-alm-porc').textContent = `${porcAlm}% asistieron`;
+
+      // Definir columnas visibles según la tarjeta seleccionada
+      const soloDesayuno = (filtro === 'DES_RESERVADO' || filtro === 'DES_FALTA');
+      const soloAlmuerzo = (filtro === 'ALM_RESERVADO' || filtro === 'ALM_FALTA');
+      const totalCols = (soloDesayuno || soloAlmuerzo) ? 4 : 6;
+
+      const thead = document.getElementById('thead-monitoreo');
+      if (soloDesayuno) {
+        thead.innerHTML = `
+          <tr>
+            <th>DNI</th>
+            <th>Apellidos y Nombres</th>
+            <th>Reserva Desayuno</th>
+            <th>Asistencia Desayuno</th>
+          </tr>
+        `;
+      } else if (soloAlmuerzo) {
+        thead.innerHTML = `
+          <tr>
+            <th>DNI</th>
+            <th>Apellidos y Nombres</th>
+            <th>Reserva Almuerzo</th>
+            <th>Asistencia Almuerzo</th>
+          </tr>
+        `;
       } else {
-        const horaActualDecimal = obtenerHoraPeruActual();
-        if (horaActualDecimal >= 18.016 && idxHoyFisico < STATE.diasSemana.length - 1) {
-          STATE.idxPrincipal = idxHoyFisico + 1;
-        } else {
-          STATE.idxPrincipal = idxHoyFisico;
-        }
+        thead.innerHTML = `
+          <tr>
+            <th>DNI</th>
+            <th>Apellidos y Nombres</th>
+            <th>Reserva Desayuno</th>
+            <th>Asistencia Desayuno</th>
+            <th>Reserva Almuerzo</th>
+            <th>Asistencia Almuerzo</th>
+          </tr>
+        `;
       }
 
-      const dPrin = STATE.diasSemana[STATE.idxPrincipal];
-      const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
-      document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
-      renderizarTarjetas();
-      actualizarEstadoBotonQR();
-      cambiarTab('PRINCIPAL', true);
-    }
+      const filtrados = lista.filter(item => {
+        if (busq && !item.dni.includes(busq) && !item.nombre.toLowerCase().includes(busq)) return false;
+        if (filtro === 'DES_RESERVADO') return item.reservoDes;
+        if (filtro === 'DES_FALTA') return item.reservoDes && !item.consumioDes;
+        if (filtro === 'ALM_RESERVADO') return item.reservoAlm;
+        if (filtro === 'ALM_FALTA') return item.reservoAlm && !item.consumioAlm;
+        return true;
+      });
 
-    /**
-     * Ventanas horarias de escaneo QR:
-     * - Desayuno: 8:30 AM (8.5) a 11:59 AM (< 12.0)
-     * - Almuerzo: 12:00 PM (12.0) a 6:00 PM (<= 18.0)
-     */
-    function ocultarTarjetaTicketCompacto() {
-      const card = document.getElementById('card-ticket-compacto');
-      if (card) card.style.display = 'none';
-      STATE.ticketCompactoActivo = null;
-    }
-
-    function mostrarTarjetaTicketCompacto(servicio, horaRaw, notaExtra, mantenerBotonVisible = false) {
-      const btn = document.getElementById('btn-escanear-qr');
-      const card = document.getElementById('card-ticket-compacto');
-      if (!card) return;
-
-      const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
-      const horaVisual = formatearHoraTicket12h(horaRaw) || 'Registrado hoy';
-
-      document.getElementById('compact-ticket-titulo').textContent = `${servicio} REGISTRADO`;
-
-      const detEl = document.getElementById('compact-ticket-detalle');
-      if (servicio === 'DESAYUNO') {
-        const textoDes = obtenerDetalleDesayunoHoyParaTicket();
-        if (textoDes) {
-          detEl.textContent = textoDes;
-          detEl.style.display = 'block';
-        } else {
-          detEl.style.display = 'none';
-        }
-      } else {
-        detEl.style.display = 'none';
+      const tbody = document.getElementById('tbody-monitoreo');
+      if (filtrados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${totalCols}" style="text-align:center; color:var(--muted);">Sin registros para mostrar.</td></tr>`;
+        return;
       }
 
-      document.getElementById('compact-ticket-fecha').textContent = fechaHoy;
-      document.getElementById('compact-ticket-hora').textContent = horaVisual;
-      document.getElementById('compact-ticket-nota').textContent = notaExtra || 'Toca para ampliar';
+      tbody.innerHTML = filtrados.map(r => {
+        const tieneModDes = r.tsModDes && r.tsModDes !== 'Por defecto';
+        const badgeDesRes = r.reservoDes
+          ? `<span class="badge bg-orange">${r.detalleDes}</span>`
+          : `<span class="badge ${tieneModDes ? 'bg-red' : 'bg-gray'}">${tieneModDes ? 'Cancelado' : 'No solicitado'}</span>`;
 
-      STATE.ticketCompactoActivo = {
-        servicio: servicio,
-        fecha: fechaHoy,
-        hora: horaVisual
+        const badgeDesQR = r.consumioDes
+          ? `<span class="badge bg-green">Asistió ${r.horaScanDes || ''}</span>`
+          : (r.reservoDes ? `<span class="badge bg-gray">Pendiente</span>` : `-`);
+
+        const tieneModAlm = r.tsModAlm && r.tsModAlm !== 'Por defecto';
+        const badgeAlmRes = r.reservoAlm
+          ? `<span class="badge ${r.detalleAlm === 'Alternativo' ? 'bg-blue' : 'bg-green'}">${r.detalleAlm}</span>`
+          : `<span class="badge ${tieneModAlm ? 'bg-red' : 'bg-gray'}">${tieneModAlm ? 'Cancelado' : 'No solicitado'}</span>`;
+
+        const badgeAlmQR = r.consumioAlm
+          ? `<span class="badge bg-green">Asistió ${r.horaScanAlm || ''}</span>`
+          : (r.reservoAlm ? `<span class="badge bg-gray">Pendiente</span>` : `-`);
+
+        if (soloDesayuno) {
+          return `
+            <tr>
+              <td><b>${r.dni}</b></td>
+              <td><b>${r.nombre}</b></td>
+              <td>${badgeDesRes}</td>
+              <td>${badgeDesQR}</td>
+            </tr>
+          `;
+        }
+        if (soloAlmuerzo) {
+          return `
+            <tr>
+              <td><b>${r.dni}</b></td>
+              <td><b>${r.nombre}</b></td>
+              <td>${badgeAlmRes}</td>
+              <td>${badgeAlmQR}</td>
+            </tr>
+          `;
+        }
+        return `
+          <tr>
+            <td><b>${r.dni}</b></td>
+            <td><b>${r.nombre}</b></td>
+            <td>${badgeDesRes}</td>
+            <td>${badgeDesQR}</td>
+            <td>${badgeAlmRes}</td>
+            <td>${badgeAlmQR}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ========================================================================
+    // MÓDULO: BASE DE COLABORADORES (CON RANGO DE AUSENCIA Y COLUMNA APP)
+    // ========================================================================
+    function esVersionAlDia(verStr) {
+      const s = String(verStr || '').trim();
+      if (!s) return false;
+      const num = Number(s);
+      const target = Math.max(Number(VERSION_LOCAL_RRHH), Number(STATE.versionServidor || VERSION_LOCAL_RRHH));
+      return !isNaN(num) && num >= target;
+    }
+
+    function crearBadgeVersionApp(verStr) {
+      const s = String(verStr || '').trim();
+      if (!s) return `<span class="badge bg-gray">-</span>`;
+      if (esVersionAlDia(s)) {
+        return `<span class="badge bg-green">v${s}</span>`;
+      }
+      const etiqueta = /^\d/.test(s) ? `v${s}` : s;
+      return `<span class="badge bg-orange">${etiqueta}</span>`;
+    }
+
+    function desglosarCodigoDes(cod) {
+      const s = String(cod || 'NO').trim();
+      if (!s || s === 'NO' || s === 'MANUAL') return { op: 'NO', p1: 'Pollo', p2: 'Queso' };
+      if (s === 'OP2') return { op: 'OP2', p1: 'Pollo', p2: 'Queso' };
+      const partes = s.split('|');
+      const p1 = normalizarPanPortal(partes[1] || 'Pollo') || 'Pollo';
+      const p2 = normalizarPanPortal(partes[2] || p1) || p1;
+      return { op: partes[0] || 'NO', p1: p1, p2: p2 };
+    }
+
+    function obtenerEstadoActualColaborador(c) {
+      if (STATE.cambiosPendientes[c.dni]) {
+        const mod = STATE.cambiosPendientes[c.dni];
+        return {
+          dni: c.dni,
+          nombre: c.nombre,
+          desDef: mod.desDefCodigo,
+          almDef: mod.almDef,
+          estado: mod.estado,
+          fechaInicioEstado: mod.fechaInicioEstado || '',
+          fechaFinEstado: mod.fechaFinEstado || '',
+          versionApp: c.versionApp || '',
+          esModificado: true
+        };
+      }
+      return {
+        dni: c.dni,
+        nombre: c.nombre,
+        desDef: c.desDef,
+        almDef: c.almDef,
+        estado: c.estado,
+        fechaInicioEstado: c.fechaInicioEstado || '',
+        fechaFinEstado: c.fechaFinEstado || '',
+        versionApp: c.versionApp || '',
+        esModificado: false
       };
+    }
 
-      if (btn) {
-        btn.style.display = mantenerBotonVisible ? 'inline-flex' : 'none';
+    function renderizarTablaColaboradores() {
+      const lista = STATE.colaboradoresBD || [];
+      const filtroEst = document.getElementById('sel-filtro-estado-bd').value;
+      const busq = String(document.getElementById('txt-buscar-bd').value || '').toLowerCase().trim();
+
+      let filtrados = lista.filter(c => {
+        const actual = obtenerEstadoActualColaborador(c);
+        if (busq && !actual.dni.includes(busq) && !actual.nombre.toLowerCase().includes(busq)) return false;
+        if (filtroEst === 'ACTIVO') return actual.estado === 'ACTIVO';
+        if (filtroEst === 'INACTIVO') return actual.estado !== 'ACTIVO';
+        if (filtroEst === 'VERSION_ANTIGUA') {
+          return actual.estado !== 'CESADO' && !esVersionAlDia(actual.versionApp);
+        }
+        return true;
+      });
+
+      // Al filtrar por versión antigua, muestra primero a los que tienen versión desactualizada detectada
+      if (filtroEst === 'VERSION_ANTIGUA') {
+        filtrados = filtrados.slice().sort((a, b) => {
+          const aTiene = a.versionApp ? 0 : 1;
+          const bTiene = b.versionApp ? 0 : 1;
+          if (aTiene !== bTiene) return aTiene - bTiene;
+          return String(a.nombre).localeCompare(String(b.nombre), 'es');
+        });
       }
-      card.style.marginTop = mantenerBotonVisible ? '10px' : '2px';
-      card.style.display = 'flex';
+
+      const tbody = document.getElementById('tbody-colaboradores');
+      if (filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--muted);">Sin colaboradores para mostrar.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtrados.map(cOrig => {
+        const c = obtenerEstadoActualColaborador(cOrig);
+        const d = desglosarCodigoDes(c.desDef);
+        const mostrarP1 = (d.op === 'OP1' || d.op === 'OP3');
+        const mostrarP2 = (d.op === 'OP1');
+        const mostrarRango = (c.estado === 'VACACIONES' || c.estado === 'DM');
+
+        const optsP1 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p1 ? 'selected' : ''}>${p}</option>`).join('');
+        const optsP2 = STATE.panesCatalogo.map(p => `<option value="${p}" ${p === d.p2 ? 'selected' : ''}>${p}</option>`).join('');
+
+        return `
+          <tr id="row-colab-${c.dni}" class="${c.esModificado ? 'row-modified' : ''}">
+            <td><b>${c.dni}</b></td>
+            <td><b>${c.nombre}</b></td>
+            <td>
+              <select class="form-select" id="opdes-${c.dni}" onchange="alCambiarOpDesFila('${c.dni}')">
+                <option value="NO" ${d.op === 'NO' ? 'selected' : ''}>NO</option>
+                <option value="OP1" ${d.op === 'OP1' ? 'selected' : ''}>Opción 1</option>
+                <option value="OP2" ${d.op === 'OP2' ? 'selected' : ''}>Opción 2</option>
+                <option value="OP3" ${d.op === 'OP3' ? 'selected' : ''}>Opción 3</option>
+              </select>
+            </td>
+            <td>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <select class="form-select" id="pan1-${c.dni}" style="display:${mostrarP1 ? 'inline-block' : 'none'};" onchange="registrarCambioFila('${c.dni}')">
+                  ${optsP1}
+                </select>
+                <select class="form-select" id="pan2-${c.dni}" style="display:${mostrarP2 ? 'inline-block' : 'none'};" onchange="registrarCambioFila('${c.dni}')">
+                  ${optsP2}
+                </select>
+                <span id="lbl-sinpan-${c.dni}" style="display:${!mostrarP1 ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">
+                  ${d.op === 'OP2' ? 'bebida + 3 huevos' : '-'}
+                </span>
+              </div>
+            </td>
+            <td>
+              <select class="form-select" id="alm-${c.dni}" onchange="registrarCambioFila('${c.dni}')">
+                <option value="NO" ${c.almDef === 'NO' ? 'selected' : ''}>NO</option>
+                <option value="REGULAR" ${c.almDef === 'REGULAR' ? 'selected' : ''}>REGULAR</option>
+                <option value="ALTERNATIVO" ${c.almDef === 'ALTERNATIVO' ? 'selected' : ''}>ALTERNATIVO</option>
+              </select>
+            </td>
+            <td>
+              <select class="form-select" id="est-${c.dni}" onchange="alCambiarEstadoFila('${c.dni}')">
+                <option value="ACTIVO" ${c.estado === 'ACTIVO' ? 'selected' : ''}>ACTIVO</option>
+                <option value="VACACIONES" ${c.estado === 'VACACIONES' ? 'selected' : ''}>VACACIONES</option>
+                <option value="DM" ${c.estado === 'DM' ? 'selected' : ''}>DM</option>
+                <option value="CESADO" ${c.estado === 'CESADO' ? 'selected' : ''}>CESADO</option>
+              </select>
+            </td>
+            <td>
+              <div id="rango-wrap-${c.dni}" style="display:${mostrarRango ? 'flex' : 'none'}; align-items:center; gap:5px;">
+                <input type="date" class="form-input" style="padding:5px 7px; font-size:12px;" id="fini-${c.dni}" value="${c.fechaInicioEstado || ''}" title="Fecha de inicio" onchange="registrarCambioFila('${c.dni}')">
+                <span style="font-size:11.5px; color:var(--muted); font-weight:700;">a</span>
+                <input type="date" class="form-input" style="padding:5px 7px; font-size:12px;" id="ffin-${c.dni}" value="${c.fechaFinEstado || ''}" title="Fecha de fin" onchange="registrarCambioFila('${c.dni}')">
+              </div>
+              <span id="lbl-sinfecha-${c.dni}" style="display:${!mostrarRango ? 'inline-block' : 'none'}; font-size:12px; color:var(--muted);">-</span>
+            </td>
+            <td style="text-align:center;">${crearBadgeVersionApp(c.versionApp)}</td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    function reabrirTicketVerdeDesdeTarjeta() {
-      if (!STATE.ticketCompactoActivo) return;
-      vibrarHaptico(15);
-      mostrarTicketVerdeConfirmado(
-        STATE.ticketCompactoActivo.servicio,
-        STATE.ticketCompactoActivo.hora
-      );
+    function registrarCambioFila(dni) {
+      const op = document.getElementById('opdes-' + dni).value;
+      const p1 = document.getElementById('pan1-' + dni).value;
+      const p2 = document.getElementById('pan2-' + dni).value;
+      const alm = document.getElementById('alm-' + dni).value;
+      const est = document.getElementById('est-' + dni).value;
+      const fini = (est === 'VACACIONES' || est === 'DM') ? document.getElementById('fini-' + dni).value : '';
+      const ffin = (est === 'VACACIONES' || est === 'DM') ? document.getElementById('ffin-' + dni).value : '';
+
+      let desDefCodigo = 'NO';
+      if (op === 'OP2') desDefCodigo = 'OP2';
+      else if (op === 'OP1') desDefCodigo = `OP1|${p1}|${p2}`;
+      else if (op === 'OP3') desDefCodigo = `OP3|${p1}`;
+
+      const orig = STATE.colaboradoresBD.find(x => x.dni === dni);
+      const igualAOriginal = orig &&
+        orig.desDef === desDefCodigo &&
+        orig.almDef === alm &&
+        orig.estado === est &&
+        (orig.fechaInicioEstado || '') === fini &&
+        (orig.fechaFinEstado || '') === ffin;
+
+      const tr = document.getElementById('row-colab-' + dni);
+      if (igualAOriginal) {
+        delete STATE.cambiosPendientes[dni];
+        if (tr) tr.classList.remove('row-modified');
+      } else {
+        STATE.cambiosPendientes[dni] = {
+          dni: dni,
+          desDefCodigo: desDefCodigo,
+          almDef: alm,
+          estado: est,
+          fechaInicioEstado: fini,
+          fechaFinEstado: ffin
+        };
+        if (tr) tr.classList.add('row-modified');
+      }
+      actualizarBotonGuardarGeneral();
     }
 
-    function actualizarEstadoBotonQR() {
-      const btn = document.getElementById('btn-escanear-qr');
-      const hf = STATE.hoyFisico;
-      if (!hf || !btn) return;
+    function alCambiarOpDesFila(dni) {
+      const op = document.getElementById('opdes-' + dni).value;
+      const s1 = document.getElementById('pan1-' + dni);
+      const s2 = document.getElementById('pan2-' + dni);
+      const lbl = document.getElementById('lbl-sinpan-' + dni);
 
-      const horaActual = obtenerHoraPeruActual();
+      if (op === 'OP1') {
+        s1.style.display = 'inline-block';
+        s2.style.display = 'inline-block';
+        lbl.style.display = 'none';
+      } else if (op === 'OP3') {
+        s1.style.display = 'inline-block';
+        s2.style.display = 'none';
+        lbl.style.display = 'none';
+      } else {
+        s1.style.display = 'none';
+        s2.style.display = 'none';
+        lbl.style.display = 'inline-block';
+        lbl.textContent = (op === 'OP2') ? 'bebida + 3 huevos' : '-';
+      }
+      registrarCambioFila(dni);
+    }
 
-      if (STATE.modoPruebaQR) {
-        btn.style.display = 'inline-flex';
+    function alCambiarEstadoFila(dni) {
+      const est = document.getElementById('est-' + dni).value;
+      const wrapRango = document.getElementById('rango-wrap-' + dni);
+      const inpIni = document.getElementById('fini-' + dni);
+      const inpFin = document.getElementById('ffin-' + dni);
+      const lbl = document.getElementById('lbl-sinfecha-' + dni);
+
+      if (est === 'VACACIONES' || est === 'DM') {
+        wrapRango.style.display = 'flex';
+        lbl.style.display = 'none';
+      } else {
+        wrapRango.style.display = 'none';
+        inpIni.value = '';
+        inpFin.value = '';
+        lbl.style.display = 'inline-block';
+      }
+      registrarCambioFila(dni);
+    }
+
+    async function guardarCambiosMasivosUI() {
+      const lista = Object.values(STATE.cambiosPendientes);
+      if (lista.length === 0) return;
+
+      for (let i = 0; i < lista.length; i++) {
+        const item = lista[i];
+        if (item.estado === 'VACACIONES' || item.estado === 'DM') {
+          if (!item.fechaInicioEstado || !item.fechaFinEstado) {
+            mostrarToast(`Indica el rango completo de fechas (inicio y fin) para el DNI ${item.dni}.`);
+            return;
+          }
+          if (item.fechaInicioEstado > item.fechaFinEstado) {
+            mostrarToast(`La fecha de inicio no puede ser mayor a la fecha fin para el DNI ${item.dni}.`);
+            return;
+          }
+        }
+      }
+
+      const btn = document.getElementById('btn-guardar-masivo');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      try {
+        const res = await llamarAPI('actualizarColaboradoresMasivoRRHH', [STATE.admin.dni, lista]);
+        if (res && res.ok) {
+          STATE.cambiosPendientes = {};
+          actualizarBotonGuardarGeneral();
+          mostrarToast(res.msg);
+          await cargarDatosPortal(false);
+        } else {
+          actualizarBotonGuardarGeneral();
+          mostrarToast(res ? res.msg : 'No se pudieron guardar los cambios.');
+        }
+      } catch (e) {
+        actualizarBotonGuardarGeneral();
+        mostrarToast('Error de red al guardar los cambios.');
+      }
+    }
+
+    // ========================================================================
+    // MODAL: RESTABLECER CONTRASEÑA
+    // ========================================================================
+    function abrirModalResetClave() {
+      document.getElementById('txt-dni-reset-modal').value = '';
+      document.getElementById('modal-reset-clave').style.display = 'flex';
+      setTimeout(() => document.getElementById('txt-dni-reset-modal').focus(), 80);
+    }
+
+    function cerrarModalResetClave() {
+      document.getElementById('modal-reset-clave').style.display = 'none';
+    }
+
+    async function ejecutarResetClaveModal() {
+      const dniTarget = normalizarDni(document.getElementById('txt-dni-reset-modal').value);
+      if (dniTarget.length < 7) {
+        mostrarToast('Ingresa un DNI válido de 8 dígitos.');
+        return;
+      }
+      const btn = document.getElementById('btn-confirmar-reset-modal');
+      btn.disabled = true;
+      btn.textContent = 'Procesando...';
+
+      try {
+        const res = await llamarAPI('resetearClaveColaboradorRRHH', [STATE.admin.dni, dniTarget]);
         btn.disabled = false;
-        const srvPrueba = (horaActual < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
-        btn.textContent = (srvPrueba === 'DESAYUNO')
-          ? 'Escanear QR en Comedor (Desayuno)'
-          : 'Escanear QR en Comedor (Almuerzo)';
-        if (STATE.ultimoTicketPrueba && STATE.ultimoTicketPrueba.servicio === srvPrueba) {
-          mostrarTarjetaTicketCompacto(srvPrueba, STATE.ultimoTicketPrueba.hora, 'Modo prueba • Toca para ampliar', true);
+        btn.textContent = 'Restablecer';
+        if (res && res.ok) {
+          cerrarModalResetClave();
+          mostrarToast(res.msg);
         } else {
-          ocultarTarjetaTicketCompacto();
+          mostrarToast(res ? res.msg : 'No se pudo restablecer la contraseña.');
         }
-        return;
-      }
-
-      if (!hf.reservoDes && !hf.reservoAlm) {
-        ocultarTarjetaTicketCompacto();
-        btn.style.display = 'inline-flex';
-        btn.disabled = true;
-        btn.textContent = 'Sin servicios reservados hoy';
-        return;
-      }
-
-      if (horaActual < 12.0) {
-        if (hf.reservoDes) {
-          if (hf.consumioDes) {
-            const notaDes = hf.reservoAlm
-              ? 'Toca para ampliar • Almuerzo desde 12:00 PM'
-              : 'Toca para ampliar';
-            mostrarTarjetaTicketCompacto('DESAYUNO', hf.horaScanDes, notaDes, false);
-            return;
-          }
-          ocultarTarjetaTicketCompacto();
-          btn.style.display = 'inline-flex';
-          if (horaActual < 8.5) {
-            btn.disabled = true;
-            btn.textContent = 'El desayuno se servirá desde las 8:30 AM';
-            return;
-          }
-          btn.disabled = false;
-          btn.textContent = 'Escanear QR en Comedor (Desayuno)';
-          return;
-        } else {
-          ocultarTarjetaTicketCompacto();
-          btn.style.display = 'inline-flex';
-          btn.disabled = true;
-          btn.textContent = 'El almuerzo se servirá desde las 12:00 PM';
-          return;
-        }
-      } else if (horaActual <= 18.0) {
-        if (hf.reservoAlm) {
-          if (hf.consumioAlm) {
-            mostrarTarjetaTicketCompacto('ALMUERZO', hf.horaScanAlm, 'Toca para ampliar', false);
-            return;
-          }
-          ocultarTarjetaTicketCompacto();
-          btn.style.display = 'inline-flex';
-          btn.disabled = false;
-          btn.textContent = 'Escanear QR en Comedor (Almuerzo)';
-          return;
-        } else {
-          ocultarTarjetaTicketCompacto();
-          btn.style.display = 'inline-flex';
-          btn.disabled = true;
-          btn.textContent = hf.consumioDes
-            ? 'Ya escaneaste tu Desayuno de hoy'
-            : 'Sin servicios reservados hoy';
-          return;
-        }
-      } else {
-        ocultarTarjetaTicketCompacto();
-        btn.style.display = 'inline-flex';
-        btn.disabled = true;
-        btn.textContent = (hf.consumioDes || hf.consumioAlm)
-          ? 'Servicios de hoy ya registrados'
-          : 'Horario de comedor finalizado (6:00 PM)';
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Restablecer';
+        mostrarToast('Error de conexión.');
       }
     }
 
-    function renderizarTarjetas() {
-      actualizarResumenHeader();
-      document.getElementById('contenedor-principal').innerHTML = crearHTMLTarjetaDia(STATE.diasSemana[STATE.idxPrincipal], true);
-      document.getElementById('contenedor-semana').innerHTML = STATE.diasSemana.map(d => crearHTMLTarjetaDia(d, false)).join('');
-    }
+    // ========================================================================
+    // MODAL: MENÚ SEMANAL Y BANNER INFORMATIVO
+    // ========================================================================
+    function abrirModalMenu() {
+      document.getElementById('txt-aviso-banner-menu').value = STATE.avisoBanner || '';
 
-    function crearHTMLTarjetaDia(d, esVistaPrincipal) {
-      const habDes = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
-      const habAlm = (d.fecha >= FECHA_ARRANQUE_ALMUERZO);
+      const cont = document.getElementById('contenedor-filas-menu');
+      const dias = STATE.menuSemanal && STATE.menuSemanal.length === 5
+        ? STATE.menuSemanal
+        : [
+            { dia: 'Lunes', desayuno: '', almuerzo: '' },
+            { dia: 'Martes', desayuno: '', almuerzo: '' },
+            { dia: 'Miércoles', desayuno: '', almuerzo: '' },
+            { dia: 'Jueves', desayuno: '', almuerzo: '' },
+            { dia: 'Viernes', desayuno: '', almuerzo: '' }
+          ];
 
-      const infoMenu = obtenerInfoMenuDia(d);
-      const infoDes = desglosarDesayuno(d.desayuno, infoMenu.panes);
-      const opBase = infoDes.op;
-
-      const desActivo = habDes && (opBase !== 'NO');
-      const almActivo = habAlm && (d.almuerzo !== 'NO');
-
-      const editableDes = habDes && d.puedeEditarDesayuno && esEditableEnTiempoReal(d.fecha, 'DESAYUNO');
-      const editableAlm = habAlm && d.puedeEditarAlmuerzo && esEditableEnTiempoReal(d.fecha, 'ALMUERZO');
-
-      let lineaMenuDesayunoHtml = `<b>Desayuno:</b> Pan a elección + ${infoMenu.bebidas}`;
-      if (desActivo) {
-        if (opBase === 'OP1') {
-          const textoPanes = (infoDes.pan1.toLowerCase() === infoDes.pan2.toLowerCase())
-            ? `2 panes con ${infoDes.pan1}`
-            : `Pan con ${infoDes.pan1} / ${infoDes.pan2}`;
-          lineaMenuDesayunoHtml = `<b>Desayuno:</b> <span class="sel-highlight">${textoPanes}</span> + ${infoMenu.bebidas}`;
-        } else if (opBase === 'OP2') {
-          lineaMenuDesayunoHtml = `<b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> + ${infoMenu.bebidas}`;
-        } else if (opBase === 'OP3') {
-          lineaMenuDesayunoHtml = `<b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} + 1 Huevo</span> + ${infoMenu.bebidas}`;
-        } else if (opBase === 'MANUAL') {
-          lineaMenuDesayunoHtml = `<b>Desayuno:</b> <span class="sel-highlight">Habilitado por RRHH</span>`;
-        }
-      }
-
-      let detalleDes = '';
-      if (opBase === 'OP1') detalleDes = 'bebida + 2 panes';
-      else if (opBase === 'OP2') detalleDes = 'bebida + 3 huevos';
-      else if (opBase === 'OP3') detalleDes = 'bebida + pan + huevo';
-      else if (opBase === 'MANUAL') detalleDes = 'Asignado RRHH';
-
-      const txtDes = !habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado');
-      const txtAlm = !habAlm ? 'Registro en hoja RRHH' : (almActivo ? 'Confirmado' : 'Cancelado');
-
-      const lockDesClass = !editableDes ? 'disabled-card' : '';
-      const lockAlmClass = !editableAlm ? 'disabled-card' : '';
-
-      // Cuando llega el corte (editableDes === false), desaparecen las listas desplegables y la tarjeta queda compacta en 2 líneas
-      let dropdownsPanesHtml = '';
-      if (desActivo && editableDes) {
-        if (opBase === 'OP1') {
-          const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>${p}</option>`).join('');
-          const opts2 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan2 ? 'selected' : ''}>${p}</option>`).join('');
-          dropdownsPanesHtml = `
-            <div class="pan-dropdown-wrap" onclick="event.stopPropagation()">
-              <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 1, this.value)" title="Primer pan">${opts1}</select>
-              <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 2, this.value)" title="Segundo pan">${opts2}</select>
+      cont.innerHTML = dias.map((d, idx) => `
+        <div class="menu-day-row">
+          <label>${d.dia}</label>
+          <div class="menu-inputs">
+            <div>
+              <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">Desayuno:</span>
+              <input type="text" class="form-input" style="width:100%;" id="mdes-${idx}" value="${d.desayuno.replace(/"/g, '&quot;')}">
             </div>
-          `;
-        } else if (opBase === 'OP3') {
-          const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>${p}</option>`).join('');
-          dropdownsPanesHtml = `
-            <div class="pan-dropdown-wrap" onclick="event.stopPropagation()">
-              <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 1, this.value)" title="Tipo de pan">${opts1}</select>
-            </div>
-          `;
-        }
-      }
-
-      const numDiaVisual = d.diaNumero || extraerDiaNumeroCliente(d.fecha);
-
-      let badgeHtml = '';
-      if (d.esHoyFisico) {
-        badgeHtml = '<span style="background:#dcfce7; color:#166534; padding:3px 9px; border-radius:7px; font-size:12px;">HOY</span>';
-      } else {
-        const idxHoy = STATE.diasSemana.findIndex(x => x.esHoyFisico);
-        const thisIdx = STATE.diasSemana.findIndex(x => x.fecha === d.fecha);
-        if (idxHoy !== -1 && thisIdx === idxHoy + 1 && obtenerHoraPeruActual() >= 18.016) {
-          badgeHtml = '<span style="background:#ffedd5; color:#ea580c; padding:3px 9px; border-radius:7px; font-size:12px; font-weight:bold;">MAÑANA</span>';
-        }
-      }
-
-      return `
-        <div class="day-card" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
-          <div class="day-header">
-            <span>${d.diaTexto} ${numDiaVisual}</span>
-            ${badgeHtml}
-          </div>
-          <div class="menu-box">
-            <div>${lineaMenuDesayunoHtml}</div>
-            <div style="margin-top:4px;"><b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
-          </div>
-          <div class="srv-grid">
-            <div class="srv-split-card ${desActivo ? 'active-des' : ''} ${lockDesClass}">
-              <div class="srv-split-top" onclick="seleccionarOpcionDesayuno('${d.fecha}', '${desActivo ? 'NO' : 'OP1'}')">
-                <span class="title">Desayuno</span>
-                <span class="status">${txtDes}</span>
-              </div>
-              ${dropdownsPanesHtml}
-              <div class="srv-split-bottom">
-                <button class="op-sub-btn ${desActivo && opBase === 'OP1' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP1')">Opc. 1</button>
-                <button class="op-sub-btn ${desActivo && opBase === 'OP2' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP2')">Opc. 2</button>
-                <button class="op-sub-btn ${desActivo && opBase === 'OP3' ? 'selected-op' : ''}" onclick="seleccionarOpcionDesayuno('${d.fecha}', 'OP3')">Opc. 3</button>
-              </div>
-            </div>
-
-            <div class="srv-split-card ${almActivo ? 'active-alm' : ''} ${lockAlmClass}">
-              <div class="srv-split-top" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', '${almActivo ? 'NO' : 'REGULAR'}')">
-                <span class="title">Almuerzo</span>
-                <span class="status">${txtAlm}</span>
-              </div>
-              <div class="srv-split-bottom">
-                <button class="op-sub-btn ${almActivo && d.almuerzo === 'REGULAR' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')">Regular</button>
-                <button class="op-sub-btn ${almActivo && d.almuerzo === 'ALTERNATIVO' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'ALTERNATIVO')">Alternativo</button>
-              </div>
+            <div>
+              <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">Almuerzo:</span>
+              <input type="text" class="form-input" style="width:100%;" id="malm-${idx}" value="${d.almuerzo.replace(/"/g, '&quot;')}">
             </div>
           </div>
         </div>
-      `;
+      `).join('');
+
+      document.getElementById('modal-menu').style.display = 'flex';
     }
 
-    function construirValorDesayunoConPanes(dia, opDestino) {
-      if (opDestino === 'NO') return 'NO';
-      if (opDestino === 'OP2') return 'OP2';
-
-      const infoMenu = obtenerInfoMenuDia(dia);
-      const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
-      const defUser = desglosarDesayuno(STATE.usuario ? STATE.usuario.desDef : 'NO', infoMenu.panes);
-
-      let pan1 = (actual.op !== 'NO' && actual.op !== 'MANUAL') ? actual.pan1 : ((defUser.op !== 'NO') ? defUser.pan1 : infoMenu.panes[0]);
-      let pan2 = (actual.op === 'OP1') ? actual.pan2 : ((defUser.op === 'OP1') ? defUser.pan2 : (infoMenu.panes[1] || infoMenu.panes[0]));
-
-      if (opDestino === 'OP1') return `OP1|${pan1}|${pan2}`;
-      if (opDestino === 'OP3') return `OP3|${pan1}`;
-      return 'NO';
+    function cerrarModalMenu() {
+      document.getElementById('modal-menu').style.display = 'none';
     }
 
-    function encolarCambioServicio(fecha, servicio, nuevoValor) {
-      COLA_CAMBIOS_RESERVA[`${fecha}_${servicio}`] = {
-        fecha: fecha,
-        servicio: servicio,
-        nuevoValor: nuevoValor
-      };
-
-      if (TIMER_LOTE_RESERVA) clearTimeout(TIMER_LOTE_RESERVA);
-      TIMER_LOTE_RESERVA = setTimeout(() => {
-        const lote = Object.values(COLA_CAMBIOS_RESERVA);
-        COLA_CAMBIOS_RESERVA = {};
-        if (lote.length === 0 || !STATE.usuario) return;
-
-        ejecutarConReintento('actualizarSeleccionLote', [{
-          dniTarget: STATE.usuario.dni,
-          cambios: lote
-        }], res => {
-          if (res && !res.ok) {
-            mostrarToast(res.msg);
-          }
-        }, null, 4);
-      }, 650);
-    }
-
-    function seleccionarOpcionDesayuno(fecha, opElegida) {
-      if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
-      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
-
-      vibrarHaptico(15);
-      const infoMenu = obtenerInfoMenuDia(dia);
-      const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
-
-      let nVal = 'NO';
-      if (opElegida !== 'NO' && actual.op !== opElegida) {
-        nVal = construirValorDesayunoConPanes(dia, opElegida);
+    async function guardarMenuSemanalUI() {
+      const avisoBanner = document.getElementById('txt-aviso-banner-menu').value.trim();
+      const nuevaLista = [];
+      for (let i = 0; i < 5; i++) {
+        nuevaLista.push({
+          desayuno: document.getElementById('mdes-' + i).value,
+          almuerzo: document.getElementById('malm-' + i).value
+        });
       }
+      const btn = document.getElementById('btn-guardar-menu');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
 
-      dia.desayuno = nVal;
-      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (dia.desayuno !== 'NO');
-      guardarSnapshotLocal();
-      renderizarTarjetas();
-      actualizarEstadoBotonQR();
-
-      encolarCambioServicio(dia.fecha, 'DESAYUNO', dia.desayuno);
+      try {
+        const res = await llamarAPI('guardarMenuSemanalDesdeRRHH', [STATE.admin.dni, nuevaLista, avisoBanner]);
+        btn.disabled = false;
+        btn.textContent = 'Guardar cambios';
+        if (res && res.ok) {
+          STATE.avisoBanner = avisoBanner;
+          cerrarModalMenu();
+          mostrarToast(res.msg);
+          cargarDatosPortal(false);
+        } else {
+          mostrarToast(res ? res.msg : 'Error al guardar el menú.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Guardar cambios';
+        mostrarToast('Error de red.');
+      }
     }
 
-    function cambiarPanDesayuno(fecha, numPan, nuevoPan) {
-      if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
-      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
+    // ========================================================================
+    // MÓDULO: REPORTE DE PLANILLA (FUENTE ÚNICA DESDE SERVIDOR SIN REPROCESO)
+    // ========================================================================
+    function inicializarFechasPlanilla() {
+      const baseStr = STATE.hoyStr || new Date().toISOString().split('T')[0];
+      const hoyDate = new Date(baseStr + 'T00:00:00');
+      let mes = hoyDate.getMonth(), anio = hoyDate.getFullYear();
+      if (hoyDate.getDate() <= 24) mes = mes - 1;
+      document.getElementById('rep-ini').value = new Date(anio, mes, 25).toISOString().split('T')[0];
+      document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
+    }
 
-      vibrarHaptico(10);
-      const infoMenu = obtenerInfoMenuDia(dia);
-      const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
+    async function cargarReportePlanillaRRHH() {
+      const fIni = document.getElementById('rep-ini').value;
+      const fFin = document.getElementById('rep-fin').value;
+      const tbody = document.getElementById('tbody-planilla-rrhh');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Calculando consolidado...</td></tr>';
 
-      if (actual.op === 'OP1') {
-        const p1 = (numPan === 1) ? nuevoPan : actual.pan1;
-        const p2 = (numPan === 2) ? nuevoPan : actual.pan2;
-        dia.desayuno = `OP1|${p1}|${p2}`;
-      } else if (actual.op === 'OP3') {
-        dia.desayuno = `OP3|${nuevoPan}`;
-      } else {
+      try {
+        const res = await llamarAPI('obtenerReportePlanillaRRHH', [fIni, fFin]);
+        if (!res || !res.ok) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger);">No se pudo obtener el reporte de planilla.</td></tr>';
+          return;
+        }
+
+        STATE.ultimasFilasReporte = Array.isArray(res.filas) ? res.filas : [];
+        STATE.resumenReporte = Array.isArray(res.resumen) ? res.resumen : [];
+
+        if (STATE.resumenReporte.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin consumos registrados en este periodo.</td></tr>';
+          document.getElementById('resumen-planilla-rrhh').textContent = 'Total Planilla: S/ 0.00';
+          return;
+        }
+
+        let granTot = 0;
+        tbody.innerHTML = STATE.resumenReporte.map(r => {
+          const tot = Number(r.costoTotal || 0);
+          granTot += tot;
+          return `
+            <tr>
+              <td><b>${r.dni}</b></td>
+              <td><b>${r.nombre}</b></td>
+              <td style="text-align:center;">${Number(r.cantDesayunos || 0)}</td>
+              <td>S/ ${Number(r.costoDesayunos || 0).toFixed(2)}</td>
+              <td style="text-align:center;">${Number(r.cantAlmuerzos || 0)}</td>
+              <td>S/ ${Number(r.costoAlmuerzos || 0).toFixed(2)}</td>
+              <td style="background:#ecfdf5; color:#047857; font-weight:800;">S/ ${tot.toFixed(2)}</td>
+            </tr>
+          `;
+        }).join('');
+        document.getElementById('resumen-planilla-rrhh').textContent = `Total Planilla: S/ ${granTot.toFixed(2)}`;
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger);">Error al consultar el reporte.</td></tr>';
+      }
+    }
+
+    function descargarExcelPlanillaRRHH() {
+      if (!STATE.resumenReporte || STATE.resumenReporte.length === 0) {
+        mostrarToast('No hay consumos registrados en este rango para exportar.');
         return;
       }
 
-      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (dia.desayuno !== 'NO');
-      guardarSnapshotLocal();
-      renderizarTarjetas();
-      actualizarEstadoBotonQR();
-
-      encolarCambioServicio(dia.fecha, 'DESAYUNO', dia.desayuno);
-    }
-
-    function seleccionarOpcionAlmuerzo(fecha, opElegida) {
-      if (fecha < FECHA_ARRANQUE_ALMUERZO) return;
-      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia || !dia.puedeEditarAlmuerzo || !esEditableEnTiempoReal(fecha, 'ALMUERZO')) return;
-
-      vibrarHaptico(15);
-      const vAnt = dia.almuerzo;
-      const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
-      dia.almuerzo = nVal;
-      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (nVal !== 'NO');
-      guardarSnapshotLocal();
-      renderizarTarjetas();
-      actualizarEstadoBotonQR();
-
-      encolarCambioServicio(dia.fecha, 'ALMUERZO', dia.almuerzo);
-    }
-
-    function cambiarTab(tab, silencioso = false) {
-      if (!silencioso) vibrarHaptico(12);
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('pane-principal').style.display = 'none';
-      document.getElementById('pane-semana').style.display = 'none';
-      document.getElementById('pane-rrhh').style.display = 'none';
-      document.getElementById('pane-tecnico').style.display = 'none';
-      document.getElementById('app-shell').classList.remove('wide-rrhh');
-
-      if (tab === 'PRINCIPAL') {
-        document.getElementById('tab-btn-principal').classList.add('active');
-        document.getElementById('pane-principal').style.display = 'block';
-      } else if (tab === 'SEMANA') {
-        cerrarEscanerQR();
-        document.getElementById('tab-btn-semana').classList.add('active');
-        document.getElementById('pane-semana').style.display = 'block';
-      } else if (tab === 'RRHH') {
-        cerrarEscanerQR();
-        document.getElementById('tab-btn-rrhh').classList.add('active');
-        document.getElementById('pane-rrhh').style.display = 'block';
-        cargarPendientesHoyRRHH();
-      } else if (tab === 'TECNICO') {
-        cerrarEscanerQR();
-        document.getElementById('tab-btn-tecnico').classList.add('active');
-        document.getElementById('pane-tecnico').style.display = 'block';
-        document.getElementById('app-shell').classList.add('wide-rrhh');
-        cargarPanelSalud();
-      }
-    }
-
-    // ========================================================================
-    // ESCANEO QR INSTANTÁNEO EN 0.0 SEG + VENTANA A PANTALLA CASI COMPLETA
-    // ========================================================================
-    async function abrirEscanerQR() {
-      if (document.getElementById('btn-escanear-qr').disabled) return;
-      vibrarHaptico(15);
-
-      const overlay = document.getElementById('modal-qr-overlay');
-      overlay.style.display = 'flex';
-
-      await new Promise(r => setTimeout(r, 80));
-
-      try {
-        if (STATE.html5QrCode) {
-          if (STATE.html5QrCode.isScanning) {
-            await STATE.html5QrCode.stop().catch(() => {});
-          }
-          STATE.html5QrCode.clear();
-        } else {
-          STATE.html5QrCode = new Html5Qrcode("qr-reader");
-        }
-      } catch (e) {
-        STATE.html5QrCode = new Html5Qrcode("qr-reader");
-      }
-
-      STATE.procesandoEscaneo = false;
-      const configQR = { fps: 24, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
-
-      const onScanExito = () => {
-        if (STATE.procesandoEscaneo) return;
-        STATE.procesandoEscaneo = true;
-        cerrarEscanerQR();
-        procesarRegistroQRInteligente('QR_VIVO_APP');
+      const wb = XLSX.utils.book_new();
+      const headerStyle = {
+        fill: { fgColor: { rgb: "13392A" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
       };
+      const headerTotalStyle = {
+        fill: { fgColor: { rgb: "047857" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: { top: { style: "thin" }, bottom: { style: "thin" }, left: { style: "thin" }, right: { style: "thin" } }
+      };
+      const cellBorder = {
+        top: { style: "thin", color: { rgb: "CBD5E1" } },
+        bottom: { style: "thin", color: { rgb: "CBD5E1" } },
+        left: { style: "thin", color: { rgb: "CBD5E1" } },
+        right: { style: "thin", color: { rgb: "CBD5E1" } }
+      };
+      const totalColStyle = {
+        fill: { fgColor: { rgb: "D1FAE5" } },
+        font: { color: { rgb: "065F46" }, bold: true },
+        numFmt: '"S/" #,##0.00',
+        border: cellBorder
+      };
+      const moneyStyle = { numFmt: '"S/" #,##0.00', border: cellBorder };
+      const centerStyle = { alignment: { horizontal: "center" }, border: cellBorder };
+      const textStyle = { border: cellBorder };
 
-      try {
-        await STATE.html5QrCode.start({ facingMode: "environment" }, configQR, onScanExito, () => {});
-      } catch (err1) {
-        try {
-          const camaras = await Html5Qrcode.getCameras();
-          if (camaras && camaras.length > 0) {
-            const camTrasera = camaras.find(c => /back|trasera|environment|posterior/i.test(c.label)) || camaras[camaras.length - 1];
-            await STATE.html5QrCode.start(camTrasera.id, configQR, onScanExito, () => {});
-          } else {
-            throw err1;
-          }
-        } catch (errFinal) {
-          cerrarEscanerQR();
-          mostrarToast('Asegúrate de permitir el acceso a la cámara en tu navegador.');
-        }
-      }
-    }
+      const aoa1 = [
+        [{ v: "CONSOLIDADO DE DESCUENTO POR PLANILLA - COMEDOR SBS", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [
+          { v: "DNI", s: headerStyle },
+          { v: "Apellidos y Nombres", s: headerStyle },
+          { v: "Desayunos", s: headerStyle },
+          { v: "Costo Desayunos", s: headerStyle },
+          { v: "Almuerzos", s: headerStyle },
+          { v: "Costo Almuerzos", s: headerStyle },
+          { v: "Costo Total", s: headerTotalStyle }
+        ]
+      ];
 
-    function cerrarEscanerQR() {
-      document.getElementById('modal-qr-overlay').style.display = 'none';
-      if (STATE.html5QrCode && STATE.html5QrCode.isScanning) {
-        STATE.html5QrCode.stop().catch(() => {});
-      }
-    }
-
-    function procesarRegistroQRInteligente(metodo = 'QR_APP') {
-      if (!STATE.usuario || !STATE.hoyFisico) return;
-
-      vibrarHaptico([35, 45, 35]);
-      const horaEscaneoExacta = obtenerHoraLima24hActual();
-      const horaVisual12h = formatearHoraTicket12h(horaEscaneoExacta);
-      const tsEscaneoMs = Date.now();
-      const srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
-
-      if (!STATE.modoPruebaQR) {
-        if (srvEsperado === 'DESAYUNO') {
-          STATE.hoyFisico.consumioDes = true;
-          STATE.hoyFisico.horaScanDes = horaVisual12h;
-        }
-        if (srvEsperado === 'ALMUERZO') {
-          STATE.hoyFisico.consumioAlm = true;
-          STATE.hoyFisico.horaScanAlm = horaVisual12h;
-        }
-        try {
-          localStorage.setItem('SBS_QR_CONFIRMADO_HOY', JSON.stringify({
-            dni: STATE.usuario.dni,
-            fecha: STATE.hoyFisico.fecha,
-            des: STATE.hoyFisico.consumioDes,
-            alm: STATE.hoyFisico.consumioAlm,
-            horaDes: STATE.hoyFisico.horaScanDes || '',
-            horaAlm: STATE.hoyFisico.horaScanAlm || ''
-          }));
-        } catch (e) {}
-        guardarSnapshotLocal();
-      } else {
-        STATE.ultimoTicketPrueba = { servicio: srvEsperado, hora: horaVisual12h };
-      }
-
-      actualizarResumenHeader();
-      mostrarTicketVerdeConfirmado(srvEsperado, horaVisual12h);
-      actualizarEstadoBotonQR();
-
-      encolarRegistroQRSegundoPlano({
-        idCola: `${STATE.usuario.dni}_${STATE.hoyFisico.fecha}_${srvEsperado}_${tsEscaneoMs}`,
-        dni: STATE.usuario.dni,
-        metodo: metodo,
-        servicio: srvEsperado,
-        horaEscaneo: horaEscaneoExacta,
-        tsEscaneoMs: tsEscaneoMs
+      let sumDesC = 0, sumDesM = 0, sumAlmC = 0, sumAlmM = 0, sumTot = 0;
+      STATE.resumenReporte.forEach(r => {
+        sumDesC += Number(r.cantDesayunos);
+        sumDesM += Number(r.costoDesayunos);
+        sumAlmC += Number(r.cantAlmuerzos);
+        sumAlmM += Number(r.costoAlmuerzos);
+        sumTot += Number(r.costoTotal);
+        aoa1.push([
+          { v: String(r.dni), t: 's', s: centerStyle },
+          { v: r.nombre, t: 's', s: textStyle },
+          { v: Number(r.cantDesayunos), t: 'n', s: centerStyle },
+          { v: Number(r.costoDesayunos), t: 'n', s: moneyStyle },
+          { v: Number(r.cantAlmuerzos), t: 'n', s: centerStyle },
+          { v: Number(r.costoAlmuerzos), t: 'n', s: moneyStyle },
+          { v: Number(r.costoTotal), t: 'n', s: totalColStyle }
+        ]);
       });
-    }
 
-    function encolarRegistroQRSegundoPlano(itemQR) {
-      try {
-        const lista = JSON.parse(localStorage.getItem('SBS_COLA_QR_V1') || '[]');
-        lista.push(itemQR);
-        localStorage.setItem('SBS_COLA_QR_V1', JSON.stringify(lista));
-      } catch (e) {}
-      procesarColaQRSegundoPlano();
-    }
+      aoa1.push([
+        { v: "TOTAL PLANILLA", t: 's', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: "", t: 's', s: textStyle },
+        { v: sumDesC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: sumDesM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
+        { v: sumAlmC, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" }, border: cellBorder } },
+        { v: sumAlmM, t: 'n', s: { font: { bold: true }, numFmt: '"S/" #,##0.00', border: cellBorder } },
+        { v: sumTot, t: 'n', s: totalColStyle }
+      ]);
 
-    async function procesarColaQRSegundoPlano() {
-      if (ENVIANDO_COLA_QR) return;
-      let lista = [];
-      try {
-        lista = JSON.parse(localStorage.getItem('SBS_COLA_QR_V1') || '[]');
-      } catch (e) { lista = []; }
+      const ws1 = XLSX.utils.aoa_to_sheet(aoa1);
+      ws1['!cols'] = [{ wch: 13 }, { wch: 35 }, { wch: 14 }, { wch: 17 }, { wch: 14 }, { wch: 17 }, { wch: 17 }];
+      XLSX.utils.book_append_sheet(wb, ws1, "Consolidado_RRHH");
 
-      if (!Array.isArray(lista) || lista.length === 0) return;
-      ENVIANDO_COLA_QR = true;
+      const aoa2 = [
+        [{ v: "DETALLE DIARIO DE RESERVAS Y ASISTENCIA EN COMEDOR", s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [
+          { v: "Fecha", s: headerStyle },
+          { v: "DNI", s: headerStyle },
+          { v: "Apellidos y Nombres", s: headerStyle },
+          { v: "Servicio", s: headerStyle },
+          { v: "Reservó", s: headerStyle },
+          { v: "Asistió", s: headerStyle },
+          { v: "Monto", s: headerStyle }
+        ]
+      ];
 
-      while (lista.length > 0) {
-        const actual = lista[0];
-        let exitoEnvio = false;
+      STATE.ultimasFilasReporte.forEach(d => {
+        aoa2.push([
+          { v: String(d.fecha), t: 's', s: centerStyle },
+          { v: String(d.dni), t: 's', s: centerStyle },
+          { v: d.nombre, t: 's', s: textStyle },
+          { v: String(d.servicio), t: 's', s: centerStyle },
+          { v: d.reservo, t: 's', s: centerStyle },
+          { v: d.consumio, t: 's', s: centerStyle },
+          { v: Number(d.montoCobrar), t: 'n', s: moneyStyle }
+        ]);
+      });
 
-        try {
-          const resp = await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-              action: 'registrarConsumoInteligente',
-              args: [
-                actual.dni,
-                actual.metodo,
-                actual.servicio,
-                actual.horaEscaneo || '',
-                actual.tsEscaneoMs || 0
-              ]
-            })
-          });
-          const data = await resp.json();
+      const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
+      ws2['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 35 }, { wch: 32 }, { wch: 12 }, { wch: 16 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws2, "Detalle_Diario");
 
-          if (data && (data.ok || (data.msg && !data.msg.includes('intent') && !data.msg.includes('ocupado')))) {
-            exitoEnvio = true;
-          }
-        } catch (err) {
-          exitoEnvio = false;
-        }
-
-        if (exitoEnvio) {
-          lista.shift();
-          try { localStorage.setItem('SBS_COLA_QR_V1', JSON.stringify(lista)); } catch (e) {}
-        } else {
-          setTimeout(() => {
-            ENVIANDO_COLA_QR = false;
-            procesarColaQRSegundoPlano();
-          }, 2500);
-          return;
-        }
-      }
-
-      ENVIANDO_COLA_QR = false;
-    }
-
-    function obtenerDetalleDesayunoHoyParaTicket() {
-      const hoyISO = STATE.hoyStr || obtenerFechaHoyLimaISO();
-      const dHoy = (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyISO);
-      const valDes = dHoy ? dHoy.desayuno : (STATE.usuario ? STATE.usuario.desDef : 'NO');
-      const infoMenu = dHoy ? obtenerInfoMenuDia(dHoy) : { panes: PANES_POR_DEFECTO };
-      const infoDes = desglosarDesayuno(valDes, infoMenu.panes);
-
-      if (infoDes.op === 'OP1') {
-        return (infoDes.pan1.toLowerCase() === infoDes.pan2.toLowerCase())
-          ? `2 panes con ${infoDes.pan1}`
-          : `Pan con ${infoDes.pan1} / ${infoDes.pan2}`;
-      }
-      if (infoDes.op === 'OP2') return '3 Huevos';
-      if (infoDes.op === 'OP3') return `Pan con ${infoDes.pan1} + 1 Huevo`;
-      if (infoDes.op === 'MANUAL') return 'Asignado por RRHH';
-      return '';
-    }
-
-    function mostrarTicketVerdeConfirmado(servicio, horaGuardadaOpcional) {
-      const overlay = document.getElementById('modal-ticket-overlay');
-      const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
-      const horaExacta = horaGuardadaOpcional ? formatearHoraTicket12h(horaGuardadaOpcional) : obtenerHoraExactaActual();
-      document.getElementById('ticket-modal-titulo').textContent = `¡${servicio} REGISTRADO!`;
-
-      // El detalle de panes/huevos se muestra únicamente para DESAYUNO; en ALMUERZO solo fecha y hora
-      const detEl = document.getElementById('ticket-modal-detalle');
-      if (servicio === 'DESAYUNO') {
-        const textoDes = obtenerDetalleDesayunoHoyParaTicket();
-        if (textoDes) {
-          detEl.textContent = textoDes;
-          detEl.style.display = 'block';
-        } else {
-          detEl.style.display = 'none';
-        }
-      } else {
-        detEl.style.display = 'none';
-      }
-
-      document.getElementById('ticket-modal-fecha').textContent = fechaHoy;
-      document.getElementById('ticket-modal-hora').textContent = horaExacta;
-      overlay.style.display = 'flex';
-    }
-
-    function cerrarModalTicketVerde() {
-      vibrarHaptico(10);
-      document.getElementById('modal-ticket-overlay').style.display = 'none';
+      XLSX.writeFile(wb, `Planilla_Comedor_SBS_${STATE.hoyStr || 'RRHH'}.xlsx`);
+      mostrarToast('Archivo Excel descargado.');
     }
   </script>
 </body>

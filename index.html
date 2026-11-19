@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=23">
+  <link rel="manifest" href="manifest.json?v=24">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=23">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=23">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=23">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=24">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=24">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=24">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -237,7 +237,7 @@
     }
     .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
     .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
-    
+
     .srv-split-top .status { font-size: 13px; color: var(--muted); display: block; margin-top: 3px; line-height: 1.25; }
     .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
     .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
@@ -254,14 +254,14 @@
     }
     .pan-select option { text-align: center; font-weight: 400; }
     .pan-select:focus { border-color: var(--sbs-orange); }
-    
+
     .srv-split-bottom { display: flex; border-top: 1.5px solid var(--border); background: #f8fafc; flex-shrink: 0; }
     .srv-split-card.active-des .srv-split-bottom { border-top-color: #fdba74; }
     .srv-split-card.active-alm .srv-split-bottom { border-top-color: #a7f3d0; }
-    
+
     .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 10px 2px; font-size: 13.5px; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.15s; }
     .op-sub-btn:last-child { border-right: none; }
-    
+
     .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
     .srv-split-card.active-alm .op-sub-btn.selected-op { background: var(--sbs-accent); color: white; }
 
@@ -367,8 +367,8 @@
     }
     #modal-ticket-card {
       background: #ecfdf5; border: 5px solid #10b981;
-      width: 94vw; max-width: 500px; min-height: 82vh;
-      border-radius: 28px; padding: 44px 20px 36px; text-align: center; position: relative;
+      width: 94vw; max-width: 500px; min-height: 82vh; max-height: 94vh; overflow-y: auto;
+      border-radius: 28px; padding: 44px 20px 32px; text-align: center; position: relative;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       box-shadow: 0 25px 60px rgba(0,0,0,0.55); animation: popModal 0.18s ease-out;
     }
@@ -379,26 +379,44 @@
     }
     .btn-close-ticket:active { background: rgba(6, 95, 70, 0.3); }
     .ticket-big-icon {
-      width: 120px; height: 120px; border-radius: 50%; background: #10b981; color: #ffffff;
-      font-size: 72px; font-weight: 900; display: flex; align-items: center; justify-content: center;
-      margin-bottom: 24px; box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+      width: 112px; height: 112px; border-radius: 50%; background: #10b981; color: #ffffff;
+      font-size: 68px; font-weight: 900; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4); flex-shrink: 0;
     }
     #ticket-modal-titulo {
-      font-size: 31px; font-weight: 900; color: #065f46; line-height: 1.15; letter-spacing: -0.4px; margin: 0 0 24px;
+      font-size: 29px; font-weight: 900; color: #065f46; line-height: 1.15; letter-spacing: -0.4px; margin: 0 0 18px;
       text-transform: uppercase;
     }
     .ticket-data-stack {
       width: 100%; display: flex; flex-direction: column; gap: 14px; align-items: center;
     }
+    /* Detalle de panes/huevos: se muestra ÚNICAMENTE en Desayuno */
+    #ticket-modal-detalle {
+      width: 100%; font-size: 25px; font-weight: 900; color: #c2410c;
+      background: #fff7ed; border: 3px solid #ea580c;
+      padding: 13px 14px; border-radius: 16px; line-height: 1.25;
+      word-break: break-word;
+    }
+    /* Cuadro único de Fecha y Hora en filas separadas */
+    .ticket-datetime-box {
+      width: 100%;
+      background: #ffffff;
+      border: 3px solid #10b981;
+      border-radius: 18px;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
     #ticket-modal-fecha {
-      width: 100%; font-size: 34px; font-weight: 900; color: #065f46;
-      background: rgba(255,255,255,0.85); border: 2px solid #a7f3d0;
-      padding: 12px 16px; border-radius: 16px; letter-spacing: 0.5px;
+      font-size: 33px; font-weight: 900; color: #065f46; letter-spacing: 0.5px; line-height: 1.15;
+    }
+    .ticket-datetime-sep {
+      width: 72%; height: 2px; background: #d1fae5; border-radius: 2px;
     }
     #ticket-modal-hora {
-      width: 100%; font-size: 38px; font-weight: 900; color: #047857;
-      background: #ffffff; border: 2.5px solid #10b981;
-      padding: 14px 16px; border-radius: 16px; letter-spacing: 0.5px;
+      font-size: 38px; font-weight: 900; color: #047857; letter-spacing: 0.5px; line-height: 1.15;
     }
 
     @keyframes popModal {
@@ -426,10 +444,11 @@
       .pan-select { font-size: 11.8px; height: 27px; padding: 0 2px; }
       .op-sub-btn { padding: 9px 2px; font-size: 12.5px; }
       .btn { padding: 13px; font-size: 15px; }
-      #modal-ticket-card { width: 95vw; min-height: 84dvh; padding: 40px 16px 32px; }
-      #ticket-modal-titulo { font-size: 28px; }
-      #ticket-modal-fecha { font-size: 32px; }
-      #ticket-modal-hora { font-size: 35px; }
+      #modal-ticket-card { width: 95vw; min-height: 84dvh; max-height: 94dvh; padding: 38px 16px 28px; }
+      #ticket-modal-titulo { font-size: 26px; }
+      #ticket-modal-detalle { font-size: 23px; padding: 12px 10px; }
+      #ticket-modal-fecha { font-size: 31px; }
+      #ticket-modal-hora { font-size: 36px; }
     }
 
     .rrhh-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
@@ -454,7 +473,7 @@
   <div class="app-shell" id="app-shell">
     <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
     <div id="view-splash">
-      <img src="./Logo.jpg?v=23" alt="Comedor SBS" class="splash-logo">
+      <img src="./Logo.jpg?v=24" alt="Comedor SBS" class="splash-logo">
       <div class="splash-spinner" id="splash-spinner"></div>
       <p id="splash-texto">Actualizando...</p>
       <div id="splash-retry-wrap">
@@ -472,7 +491,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=23" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=24" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -498,7 +517,7 @@
 
     <!-- 2. PANTALLA PRINCIPAL -->
     <div id="view-main">
-      <!-- BANNER INFORMATIVO DINÁMICO (EDITABLE DESDE MENU_SEMANAL) -->
+      <!-- BANNER INFORMATIVO DINÁMICO (EDITABLE DESDE MENU_SEMANAL!E2 O PORTAL RRHH) -->
       <div id="banner-informativo-sbs">
         <span id="texto-banner-informativo"></span>
         <button class="btn-cerrar-banner-info" onclick="cerrarBannerInformativo()" title="Cerrar">✕</button>
@@ -536,12 +555,6 @@
             Escanear QR en Comedor
           </button>
 
-          <div id="link-contingencia-camara" style="display:none; text-align:center; margin-top:7px;">
-            <a href="javascript:void(0)" onclick="mostrarBoxPinContingencia()" style="font-size:12.5px; color:var(--muted); text-decoration:underline; font-weight:600;">
-              ¿Problemas con la cámara? Ingresar código
-            </a>
-          </div>
-
           <!-- VENTANA EMERGENTE CÁMARA QR -->
           <div id="modal-qr-overlay">
             <div id="modal-qr-content">
@@ -562,28 +575,14 @@
               <div class="ticket-big-icon">✓</div>
               <h3 id="ticket-modal-titulo">¡ALMUERZO REGISTRADO!</h3>
               <div class="ticket-data-stack">
-                <div id="ticket-modal-fecha">19/11/2026</div>
-                <div id="ticket-modal-hora">12:00:00 PM</div>
+                <div id="ticket-modal-detalle" style="display:none;"></div>
+                <div class="ticket-datetime-box">
+                  <div id="ticket-modal-fecha">19/11/2026</div>
+                  <div class="ticket-datetime-sep"></div>
+                  <div id="ticket-modal-hora">12:00:00 PM</div>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div id="box-pin-contingencia" style="display:none; background:white; border:2px solid #f59e0b; border-radius:14px; padding:12px; margin-top:10px; text-align:center;">
-            <p style="font-size:13.5px; font-weight:700; margin:0 0 5px; color:#b45309;">
-              Registro con Código del Comedor
-            </p>
-            <p style="font-size:12px; color:var(--muted); margin:0 0 8px;">
-              Ingresa el código de 3 dígitos que figura en el cartel del comedor:
-            </p>
-            <div style="display:flex; gap:8px;">
-              <input type="tel" id="txt-pin-comedor" maxlength="4" placeholder="Código" style="flex:1; padding:9px; font-size:16px; text-align:center; font-weight:700; border:1.5px solid var(--border); border-radius:10px; letter-spacing:3px;">
-              <button class="btn btn-primary" style="flex:1; padding:9px; font-size:14px;" onclick="confirmarPinCamaraMalograda()">
-                Validar
-              </button>
-            </div>
-            <button class="btn btn-outline" style="margin-top:7px; padding:7px; font-size:12.5px; color:var(--muted);" onclick="document.getElementById('box-pin-contingencia').style.display='none'">
-              Cancelar
-            </button>
           </div>
         </div>
 
@@ -761,17 +760,18 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    const VERSION_LOCAL_APP = "23";
+    const VERSION_LOCAL_APP = "24";
 
+    // Variables de arranque operativo (evitan sumar consumos anteriores al inicio del servicio)
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
     const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
     const PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
     /**
-     * CONFIGURACIÓN DE GUÍA / NOVEDADES DE ACTUALIZACIÓN (PUNTO 6):
-     * - Cambia `version` (ej. "24") cada vez que quieras mostrar una nueva guía una sola vez a todos.
-     * - Si quieres incluir una captura o imagen, súbela a GitHub junto a Logo.jpg y pon su nombre en `imagen` (ej. "./guia-consumido.png").
-     * - Si no quieres mostrar ninguna guía, cambia `activo: false`.
+     * CONFIGURACIÓN DE GUÍA / NOVEDADES DE ACTUALIZACIÓN:
+     * - Cambia `version` (ej. "24") cuando quieras que todos los colaboradores vuelvan a ver la guía una vez.
+     * - Para mostrar una imagen, súbela a GitHub junto a Logo.jpg y pon su nombre en `imagen` (ej. "./guia.png").
+     * - Si no deseas mostrar la ventana, cambia `activo: false`.
      */
     const CONFIG_NOVEDADES = {
       activo: true,
@@ -780,13 +780,18 @@
         {
           etiqueta: "Nueva función",
           titulo: "Consulta el detalle de tu consumo",
-          descripcion: "Ahora puedes tocar el botón verde «Consumido: S/» en la parte superior para ver el listado de tus desayunos y almuerzos en el ciclo vigente.",
+          descripcion: "Ahora puedes tocar el botón verde «Consumido: S/» en la parte superior para ver el listado día por día de tus desayunos y almuerzos del ciclo vigente.",
+          imagen: ""
+        },
+        {
+          etiqueta: "Actualización en vivo",
+          titulo: "Cobro al corte y pantalla para cocina",
+          descripcion: "Tus reservas cerradas (4:00 PM desayuno y 10:00 AM almuerzo) se reflejan automáticamente en tu acumulado. Al escanear el QR verás una confirmación grande para mostrar en cocina.",
           imagen: ""
         }
       ]
     };
 
-    let HABILITAR_MODO_CODIGO = false;
     let COLA_CAMBIOS_RESERVA = {};
     let TIMER_LOTE_RESERVA = null;
     let ENVIANDO_COLA_QR = false;
@@ -817,7 +822,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=23', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=24', { updateViaCache: 'none' }).then(reg => {
           reg.update().catch(() => {});
         }).catch(() => {});
       });
@@ -886,8 +891,6 @@
     window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
 
     let STATE = {
-      bootstrapCargado: false,
-      cargandoBootstrap: false,
       hoyStr: '',
       hoyPeruCompleto: '',
       etiquetaCiclo: '',
@@ -895,15 +898,13 @@
       horaPeru: 0,
       tsSyncHora: 0,
       ultimoSyncMs: 0,
-      pasoCorteAlmuerzo: false,
       modoPruebaQR: false,
-      diccionarioUsuarios: {},
       registroPendienteLogin: null,
       tokenActivo: '',
       usuario: null,
       diasSemana: [],
       hoyFisico: null,
-      colaboradores: [],
+      dnisActivosMuestra: [],
       html5QrCode: null,
       procesandoEscaneo: false,
       idxPrincipal: 0
@@ -1045,117 +1046,33 @@
       return ahora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     }
 
-    function normalizarPanCliente(rawPan) {
-      let p = String(rawPan || '').trim();
-      p = p.replace(/^pan\s+con\s+/i, '').replace(/^pan\s+de\s+/i, '').trim();
-      if (!p) return '';
-      const low = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      if (low.includes('pollo')) return 'Pollo';
-      if (low.includes('queso')) return 'Queso';
-      if (low.includes('aceituna')) return 'Aceituna';
-      if (low.includes('tortilla') && !low.includes('huevo')) return 'Tortilla';
-      if (low.includes('huevo')) return 'Huevo';
-      if (low.includes('hot') || low.includes('dog')) return 'Hot dog';
-      return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
-    }
-
     function obtenerInfoMenuDia(d) {
-      const raw = String(d.menuDesayuno || '');
-      const partes = raw.split('+');
-      const izq = String(partes[0] || '').trim();
-      const der = partes.length > 1 ? partes.slice(1).join('+').trim() : 'Avena / Maca / Infusión / Café';
-
-      const panes = [];
-      const origenPanes = (Array.isArray(d.panesDisponibles) && d.panesDisponibles.length > 0)
+      const panes = (Array.isArray(d.panesDisponibles) && d.panesDisponibles.length > 0)
         ? d.panesDisponibles
-        : izq.split('/');
-
-      origenPanes.forEach(item => {
-        const lowItem = String(item || '').toLowerCase();
-        if (lowItem.includes('huevo') && lowItem.includes('tortilla')) {
-          if (!panes.includes('Huevo')) panes.push('Huevo');
-          if (!panes.includes('Tortilla')) panes.push('Tortilla');
-        } else {
-          const n = normalizarPanCliente(item);
-          if (n && !panes.includes(n)) panes.push(n);
-        }
-      });
-
-      if (panes.length === 0) {
-        PANES_POR_DEFECTO.forEach(p => panes.push(p));
-      }
-
-      const bebidas = d.bebidasTexto || der.split('/').map(b => String(b || '').trim()).filter(Boolean).join(' o ');
-      return { panes: panes, bebidas: bebidas || 'Avena o Maca o Infusión o Café' };
-    }
-
-    function normalizarValorDesayunoCliente(val) {
-      let raw = String(val || 'NO').trim();
-      let upper = raw.toUpperCase();
-      if (!raw || upper === 'NO' || upper === 'SI') return 'NO';
-      if (upper === 'MANUAL' || upper === 'ASIGNADO_RRHH' || upper === 'ASIGNADO RRHH') return 'MANUAL';
-
-      if (raw.includes('(')) {
-        let op = '';
-        if (/^OP(C\.?|CION)?\s*1/i.test(upper)) op = 'OP1';
-        else if (/^OP(C\.?|CION)?\s*2/i.test(upper)) op = 'OP2';
-        else if (/^OP(C\.?|CION)?\s*3/i.test(upper)) op = 'OP3';
-        if (!op) return 'NO';
-        const m = raw.match(/\(([^)]+)\)/);
-        if (!m || !m[1].trim()) return 'NO';
-        if (op === 'OP2') return 'OP2';
-        const items = m[1].split(/[,\/;+]/).map(x => normalizarPanCliente(x)).filter(Boolean);
-        if (items.length === 0) return 'NO';
-        if (op === 'OP1') return `OP1|${items[0]}|${items[1] || items[0]}`;
-        if (op === 'OP3') return `OP3|${items[0]}`;
-        return 'NO';
-      }
-
-      if (raw.includes('|')) {
-        const p = raw.split('|').map(x => x.trim());
-        const op = p[0].toUpperCase();
-        if (op === 'OP2') return 'OP2';
-        if (op === 'MANUAL') return 'MANUAL';
-        if (op === 'OP1') {
-          const p1 = normalizarPanCliente(p[1] || 'Pollo') || 'Pollo';
-          const p2 = normalizarPanCliente(p[2] || p1) || p1;
-          return `OP1|${p1}|${p2}`;
-        }
-        if (op === 'OP3') {
-          const p1 = normalizarPanCliente(p[1] || 'Pollo') || 'Pollo';
-          return `OP3|${p1}`;
-        }
-        return 'NO';
-      }
-
-      if (upper === 'OP2') return 'OP2';
-      return 'NO';
-    }
-
-    function normalizarValorAlmuerzoCliente(val) {
-      let v = String(val || 'NO').toUpperCase().trim();
-      if (v === 'REGULAR' || v === 'SI') return 'REGULAR';
-      if (v === 'ALTERNATIVO' || v === 'ALTERNATIVA' || v === 'DIETA') return 'ALTERNATIVO';
-      return 'NO';
+        : PANES_POR_DEFECTO;
+      const bebidas = d.bebidasTexto || 'Avena o Maca o Infusión o Café';
+      return { panes: panes, bebidas: bebidas };
     }
 
     function desglosarDesayuno(val, panesDia) {
       const listaPanes = (Array.isArray(panesDia) && panesDia.length > 0) ? panesDia : PANES_POR_DEFECTO;
-      const norm = normalizarValorDesayunoCliente(val);
-      if (norm === 'NO') {
+      const raw = String(val || 'NO').trim();
+      const up = raw.toUpperCase();
+      if (!raw || up === 'NO' || up === 'SI') {
         return { op: 'NO', pan1: listaPanes[0], pan2: listaPanes[1] || listaPanes[0] };
       }
-      if (norm === 'OP2') {
+      if (up === 'OP2') {
         return { op: 'OP2', pan1: listaPanes[0], pan2: listaPanes[1] || listaPanes[0] };
       }
-      if (norm === 'MANUAL') {
+      if (up === 'MANUAL' || up === 'ASIGNADO_RRHH' || up === 'ASIGNADO RRHH') {
         return { op: 'MANUAL', pan1: listaPanes[0], pan2: listaPanes[1] || listaPanes[0] };
       }
-      const p = norm.split('|');
-      const op = p[0];
-      const p1 = normalizarPanCliente(p[1] || listaPanes[0]) || listaPanes[0];
-      const p2 = normalizarPanCliente(p[2] || p1) || p1;
-      return { op: op, pan1: p1, pan2: p2 };
+      const p = raw.split('|').map(x => x.trim());
+      return {
+        op: p[0].toUpperCase(),
+        pan1: p[1] || listaPanes[0],
+        pan2: p[2] || p[1] || listaPanes[0]
+      };
     }
 
     function sincronizarConsumosLocalesConRegistro(reg) {
@@ -1170,14 +1087,12 @@
       return reg;
     }
 
-    function aplicarReglaArranqueARegistro(reg) {
+    function aplicarCandadosRegistro(reg) {
       if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
-      const hoyLima = obtenerFechaHoyLimaISO();
+      const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
 
       reg.diasSemana.forEach(d => {
-        d.desayuno = normalizarValorDesayunoCliente(d.desayuno);
-        d.almuerzo = normalizarValorAlmuerzoCliente(d.almuerzo);
-        d.esHoyFisico = (d.fecha === (STATE.hoyStr || hoyLima));
+        d.esHoyFisico = (d.fecha === hoyRef);
 
         if (d.fecha < FECHA_ARRANQUE_DESAYUNO && d.desayuno !== 'MANUAL') {
           d.desayuno = 'NO';
@@ -1185,11 +1100,11 @@
           d.habDes = false;
         } else {
           d.habDes = true;
-          // Candado local en tiempo real: nunca permite editar si ya pasó el corte real en Lima
           if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
             d.puedeEditarDesayuno = false;
           }
         }
+
         if (d.fecha < FECHA_ARRANQUE_ALMUERZO) {
           d.almuerzo = 'NO';
           d.puedeEditarAlmuerzo = false;
@@ -1214,16 +1129,8 @@
       return sincronizarConsumosLocalesConRegistro(reg);
     }
 
-    function normalizarDiccionarioArranque(dicc) {
-      if (!dicc) return {};
-      Object.keys(dicc).forEach(dni => {
-        aplicarReglaArranqueARegistro(dicc[dni]);
-      });
-      return dicc;
-    }
-
     // ========================================================================
-    // PANTALLA DE CARGA (SPLASH) + SINCRONIZACIÓN RÁPIDA EN VIVO
+    // PANTALLA DE CARGA (SPLASH) + SINCRONIZACIÓN RÁPIDA 1-A-1 EN VIVO
     // ========================================================================
     function mostrarSplash(texto = 'Actualizando...', conBotonReintentar = false) {
       const sp = document.getElementById('view-splash');
@@ -1257,79 +1164,15 @@
       }
     }
 
-    /**
-     * Sincronización ultrarrápida de 1 solo usuario:
-     * 1) Intenta llamar al endpoint ligero `sincronizarMiEstado(dni)` (~1 KB, < 1 seg).
-     * 2) Si el servidor aún está en v22 sin ese endpoint, cae automáticamente a `loginEnVivo(dni)`.
-     */
-    async function obtenerEstadoFrescoUsuario(dni) {
-      try {
-        const resFast = await fetchConTimeout('sincronizarMiEstado', [dni], 4500);
-        if (resFast && resFast.ok && resFast.registro) {
-          return { tipo: 'FAST', payload: resFast };
-        }
-      } catch (e) {
-        // Si falló por red/timeout, lanzamos error para manejar fallback controlado
-        if (e && e.name === 'AbortError') throw e;
-      }
-
-      // Respaldo compatible con Código.gs v22
-      const resBoot = await fetchConTimeout('loginEnVivo', [dni], 6500);
-      if (resBoot && resBoot.ok && resBoot.data && resBoot.data.diccionarioUsuarios && resBoot.data.diccionarioUsuarios[dni]) {
-        return { tipo: 'FULL', payload: resBoot.data, registro: resBoot.data.diccionarioUsuarios[dni] };
-      }
-      return { tipo: 'ERROR', msg: (resBoot && resBoot.msg) ? resBoot.msg : 'No se pudo obtener tu información.' };
-    }
-
-    function aplicarRespuestaFrescoYEntrar(resultadoSync, dni, tokenGuardado) {
-      if (resultadoSync.tipo === 'FAST') {
-        const p = resultadoSync.payload;
-        STATE.hoyStr = p.hoyStr;
-        STATE.hoyPeruCompleto = p.hoyPeruCompleto || p.hoyStr;
-        STATE.etiquetaCiclo = p.etiquetaCiclo || STATE.etiquetaCiclo;
-        STATE.avisoBanner = p.avisoBanner || '';
-        STATE.horaPeru = p.horaPeru;
-        STATE.tsSyncHora = Date.now();
-        STATE.ultimoSyncMs = Date.now();
-        STATE.pasoCorteAlmuerzo = !!p.pasoCorteAlmuerzo;
-        STATE.modoPruebaQR = !!p.modoPruebaQR;
-        if (typeof p.habilitarModoCodigo === 'boolean') HABILITAR_MODO_CODIGO = p.habilitarModoCodigo;
-
-        const reg = p.registro;
-        if (!reg.usuario.tieneClave || (tokenGuardado && reg.usuario.hashClave && reg.usuario.hashClave !== tokenGuardado)) {
-          cerrarSesion();
-          return false;
-        }
-        asignarUsuarioYEntrar(reg, tokenGuardado || reg.usuario.hashClave);
-        return true;
-      }
-
-      if (resultadoSync.tipo === 'FULL') {
-        const d = resultadoSync.payload;
-        STATE.bootstrapCargado = true;
-        STATE.hoyStr = d.hoyStr;
-        STATE.hoyPeruCompleto = d.hoyPeruCompleto || d.hoyStr;
-        STATE.etiquetaCiclo = d.etiquetaCiclo || STATE.etiquetaCiclo;
-        STATE.avisoBanner = d.avisoBanner || '';
-        STATE.horaPeru = d.horaPeru;
-        STATE.tsSyncHora = Date.now();
-        STATE.ultimoSyncMs = Date.now();
-        STATE.pasoCorteAlmuerzo = !!d.pasoCorteAlmuerzo;
-        STATE.modoPruebaQR = !!d.modoPruebaQR;
-        if (typeof d.habilitarModoCodigo === 'boolean') HABILITAR_MODO_CODIGO = d.habilitarModoCodigo;
-        STATE.diccionarioUsuarios = normalizarDiccionarioArranque(d.diccionarioUsuarios || {});
-        STATE.colaboradores = d.colaboradores || [];
-
-        const reg = STATE.diccionarioUsuarios[dni];
-        if (!reg || !reg.usuario.tieneClave || (tokenGuardado && reg.usuario.hashClave && reg.usuario.hashClave !== tokenGuardado)) {
-          cerrarSesion();
-          return false;
-        }
-        asignarUsuarioYEntrar(reg, tokenGuardado || reg.usuario.hashClave);
-        return true;
-      }
-
-      return false;
+    function aplicarMetadatosSync(p) {
+      STATE.hoyStr = p.hoyStr;
+      STATE.hoyPeruCompleto = p.hoyPeruCompleto || p.hoyStr;
+      STATE.etiquetaCiclo = p.etiquetaCiclo || STATE.etiquetaCiclo;
+      STATE.avisoBanner = p.avisoBanner || '';
+      STATE.horaPeru = p.horaPeru;
+      STATE.tsSyncHora = Date.now();
+      STATE.ultimoSyncMs = Date.now();
+      STATE.modoPruebaQR = !!p.modoPruebaQR;
     }
 
     async function sincronizarSesionConSplash(sesionGuardada, duracionMinMs = 850) {
@@ -1339,24 +1182,39 @@
 
       const tIni = performance.now();
       try {
-        const resSync = await obtenerEstadoFrescoUsuario(sesionGuardada.dni);
+        const resFast = await fetchConTimeout('sincronizarMiEstado', [sesionGuardada.dni], 4500);
         const transcurrido = performance.now() - tIni;
         if (transcurrido < duracionMinMs) {
           await new Promise(r => setTimeout(r, duracionMinMs - transcurrido));
         }
 
-        const ok = aplicarRespuestaFrescoYEntrar(resSync, sesionGuardada.dni, sesionGuardada.token);
+        if (!resFast || !resFast.ok || !resFast.registro) {
+          ocultarSplash();
+          SINCRONIZANDO_AHORA = false;
+          cerrarSesion();
+          return;
+        }
+
+        aplicarMetadatosSync(resFast);
+        const reg = resFast.registro;
+
+        if (!reg.usuario.tieneClave || (sesionGuardada.token && reg.usuario.hashClave && reg.usuario.hashClave !== sesionGuardada.token)) {
+          ocultarSplash();
+          SINCRONIZANDO_AHORA = false;
+          cerrarSesion();
+          return;
+        }
+
+        asignarUsuarioYEntrar(reg, sesionGuardada.token || reg.usuario.hashClave);
         ocultarSplash();
         SINCRONIZANDO_AHORA = false;
-        if (ok) {
-          verificarYMostrarGuiaNovedades();
-        }
+        verificarYMostrarGuiaNovedades();
       } catch (err) {
         SINCRONIZANDO_AHORA = false;
         const hoyLima = obtenerFechaHoyLimaISO();
-        // Solo usamos respaldo local si es EXACTAMENTE del día de hoy (nunca mostramos data de ayer)
+        // Solo usa respaldo local si es EXACTAMENTE del día de hoy (nunca muestra data de ayer)
         if (sesionGuardada.snapshot && sesionGuardada.snapshot.hoyStr === hoyLima) {
-          aplicarReglaArranqueARegistro(sesionGuardada.snapshot);
+          aplicarCandadosRegistro(sesionGuardada.snapshot);
           STATE.tokenActivo = sesionGuardada.token || '';
           STATE.hoyStr = sesionGuardada.snapshot.hoyStr;
           STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
@@ -1401,11 +1259,7 @@
       }
 
       if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
-        // Muestra la pantalla de carga con Logo SBS (~1s) y trae data 100% real antes de mostrar la interfaz
         sincronizarSesionConSplash(sesionGuardada, 900);
-      } else {
-        // Sin sesión: precalienta bootstrap en segundo plano mientras digita su DNI
-        cargarCacheInicial();
       }
 
       document.getElementById('txt-dni').addEventListener('keyup', (e) => {
@@ -1416,7 +1270,7 @@
       });
     });
 
-    // Al volver a la app desde segundo plano: si pasaron >20s o cambió la fecha, sincroniza en vivo con splash corto
+    // Al volver a la app desde segundo plano: si pasaron >20s o cambió la fecha, sincroniza 1-a-1 con splash corto
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         procesarColaQRSegundoPlano();
@@ -1479,7 +1333,6 @@
             hoyPeruCompleto: STATE.hoyPeruCompleto,
             etiquetaCiclo: STATE.etiquetaCiclo,
             horaPeru: obtenerHoraPeruActual(),
-            pasoCorteAlmuerzo: STATE.pasoCorteAlmuerzo,
             modoPruebaQR: STATE.modoPruebaQR,
             usuario: STATE.usuario,
             diasSemana: STATE.diasSemana,
@@ -1490,15 +1343,6 @@
     }
 
     async function ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos = 4) {
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        const runner = google.script.run.withSuccessHandler(onSuccess).withFailureHandler(err => {
-          if (intentos > 1) setTimeout(() => ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos - 1), 500);
-          else if (onError) onError(err);
-        });
-        runner[nombreFuncion].apply(runner, argsArray);
-        return;
-      }
-
       for (let i = 0; i < intentos; i++) {
         try {
           const resp = await fetch(APPS_SCRIPT_URL, {
@@ -1529,36 +1373,6 @@
       return (v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'undefined') ? v : fallback;
     }
 
-    function cargarCacheInicial(callback) {
-      if (STATE.cargandoBootstrap && !callback) return;
-      STATE.cargandoBootstrap = true;
-      ejecutarConReintento('obtenerBootstrapInicial', [], res => {
-        STATE.cargandoBootstrap = false;
-        if (res && res.ok) {
-          STATE.bootstrapCargado = true;
-          STATE.hoyStr = res.hoyStr;
-          STATE.hoyPeruCompleto = res.hoyPeruCompleto || res.hoyStr;
-          STATE.etiquetaCiclo = res.etiquetaCiclo || '';
-          STATE.avisoBanner = res.avisoBanner || '';
-          STATE.horaPeru = res.horaPeru;
-          STATE.tsSyncHora = Date.now();
-          STATE.ultimoSyncMs = Date.now();
-          STATE.pasoCorteAlmuerzo = res.pasoCorteAlmuerzo;
-          STATE.modoPruebaQR = !!res.modoPruebaQR;
-          if (typeof res.habilitarModoCodigo === 'boolean') {
-            HABILITAR_MODO_CODIGO = res.habilitarModoCodigo;
-          }
-          STATE.diccionarioUsuarios = normalizarDiccionarioArranque(res.diccionarioUsuarios || {});
-          STATE.colaboradores = res.colaboradores || [];
-          if (callback) callback();
-        }
-      }, () => {
-        STATE.cargandoBootstrap = false;
-        document.getElementById('btn-ingresar').disabled = false;
-        document.getElementById('btn-ingresar').textContent = 'Continuar';
-      });
-    }
-
     function mostrarToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -1566,6 +1380,7 @@
       setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
+    // Login directo 1-a-1: consulta solo al DNI digitado sin descargar datos de otros colaboradores
     function verificarPasoDNI() {
       vibrarHaptico(15);
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
@@ -1574,47 +1389,28 @@
         return;
       }
 
-      const esCacheFresco = STATE.bootstrapCargado &&
-        (Date.now() - (STATE.ultimoSyncMs || 0) < 30000) &&
-        STATE.diccionarioUsuarios &&
-        STATE.diccionarioUsuarios[dni];
+      const btn = document.getElementById('btn-ingresar');
+      btn.disabled = true;
+      btn.textContent = 'Verificando...';
 
-      if (esCacheFresco) {
-        abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
-        return;
-      }
-
-      document.getElementById('btn-ingresar').disabled = true;
-      document.getElementById('btn-ingresar').textContent = 'Verificando...';
-      ejecutarConReintento('loginEnVivo', [dni], res => {
-        document.getElementById('btn-ingresar').disabled = false;
-        document.getElementById('btn-ingresar').textContent = 'Continuar';
-        if (res && res.ok) {
-          STATE.bootstrapCargado = true;
-          STATE.hoyStr = res.data.hoyStr;
-          STATE.hoyPeruCompleto = res.data.hoyPeruCompleto || res.data.hoyStr;
-          STATE.horaPeru = res.data.horaPeru;
-          STATE.tsSyncHora = Date.now();
-          STATE.ultimoSyncMs = Date.now();
-          STATE.pasoCorteAlmuerzo = res.data.pasoCorteAlmuerzo;
-          STATE.modoPruebaQR = !!res.data.modoPruebaQR;
-          STATE.etiquetaCiclo = res.data.etiquetaCiclo || STATE.etiquetaCiclo;
-          STATE.avisoBanner = res.data.avisoBanner || '';
-          STATE.diccionarioUsuarios = normalizarDiccionarioArranque(res.data.diccionarioUsuarios || {});
-          STATE.colaboradores = res.data.colaboradores;
-          abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
+      ejecutarConReintento('sincronizarMiEstado', [dni], res => {
+        btn.disabled = false;
+        btn.textContent = 'Continuar';
+        if (res && res.ok && res.registro) {
+          aplicarMetadatosSync(res);
+          abrirFormularioClave(res.registro);
         } else {
           mostrarToast(res && res.msg ? res.msg : 'DNI no registrado en BD_COLABORADORES.');
         }
       }, () => {
-        document.getElementById('btn-ingresar').disabled = false;
-        document.getElementById('btn-ingresar').textContent = 'Continuar';
+        btn.disabled = false;
+        btn.textContent = 'Continuar';
         mostrarToast('No se pudo conectar con el servidor.');
       });
     }
 
     function abrirFormularioClave(registro) {
-      STATE.registroPendienteLogin = aplicarReglaArranqueARegistro(registro);
+      STATE.registroPendienteLogin = aplicarCandadosRegistro(registro);
       const primerNombre = extraerPrimerNombreCliente(registro.usuario);
       document.getElementById('step-dni').style.display = 'none';
       document.getElementById('step-clave').style.display = 'block';
@@ -1712,7 +1508,7 @@
     }
 
     function asignarUsuarioYEntrar(registro, tokenSesion) {
-      aplicarReglaArranqueARegistro(registro);
+      aplicarCandadosRegistro(registro);
       STATE.usuario = registro.usuario;
       STATE.diasSemana = registro.diasSemana;
       STATE.hoyFisico = registro.hoyFisico;
@@ -1736,9 +1532,6 @@
       cerrarModalTicketVerde();
       cerrarModalDetalleConsumido();
       localStorage.removeItem('SBS_COMEDOR_AUTH');
-      // Limpieza total en memoria para garantizar lectura fresca al volver a iniciar sesión
-      STATE.bootstrapCargado = false;
-      STATE.diccionarioUsuarios = {};
       STATE.ultimoSyncMs = 0;
       STATE.usuario = null;
       STATE.tokenActivo = '';
@@ -1747,7 +1540,6 @@
       document.getElementById('txt-clave').value = '';
       document.getElementById('step-clave').style.display = 'none';
       document.getElementById('step-dni').style.display = 'block';
-      document.getElementById('box-pin-contingencia').style.display = 'none';
       document.getElementById('app-shell').classList.remove('wide-rrhh');
       document.getElementById('view-main').style.display = 'none';
       document.getElementById('view-login').style.display = 'flex';
@@ -1768,7 +1560,7 @@
     }
 
     // ========================================================================
-    // BANNER INFORMATIVO DINÁMICO Y MODAL DE NOVEDADES (PUNTO 6)
+    // BANNER INFORMATIVO DINÁMICO Y MODAL DE NOVEDADES
     // ========================================================================
     function renderizarBannerInformativo() {
       const box = document.getElementById('banner-informativo-sbs');
@@ -1844,15 +1636,17 @@
     }
 
     // ========================================================================
-    // CÁLCULO DE CONSUMIDO AL CORTE + MODAL DETALLE DE CONSUMOS (PUNTOS 1 Y 4)
+    // CÁLCULO DE CONSUMIDO AL CORTE + MODAL DETALLE DE CONSUMOS DEL CICLO
     // ========================================================================
     function construirDetalleConsumoCiclo() {
       const mapaPorFecha = {};
+      const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
 
-      // 1. Cargar historial previo del ciclo (enviado en RAM por Código.gs v23)
+      // 1. Cargar historial del ciclo enviado por el servidor (respetando fecha de arranque)
       if (STATE.usuario && Array.isArray(STATE.usuario.historialCiclo)) {
         STATE.usuario.historialCiclo.forEach(item => {
           const fIso = item[0];
+          if (!fIso || fIso < FECHA_ARRANQUE_ALMUERZO) return;
           mapaPorFecha[fIso] = {
             fechaISO: fIso,
             fechaCorta: item[1] || formatearDiaMesCorto(fIso),
@@ -1862,52 +1656,42 @@
         });
       }
 
-      // 2. Fusionar en tiempo real los días visibles de la semana que pertenecen al ciclo actual
+      // 2. Fusionar en tiempo real los días de la semana que pertenecen al ciclo actual
       const hf = STATE.hoyFisico;
       (STATE.diasSemana || []).forEach(d => {
-        if (d.enCicloActual === false) return;
+        if (d.enCicloActual === false || d.fecha < FECHA_ARRANQUE_ALMUERZO) return;
 
         const cerradoDes = !d.puedeEditarDesayuno || !esEditableEnTiempoReal(d.fecha, 'DESAYUNO');
         const cerradoAlm = !d.puedeEditarAlmuerzo || !esEditableEnTiempoReal(d.fecha, 'ALMUERZO');
 
+        const habDesFecha = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
         const desConsumido = (d.esHoyFisico && hf && hf.consumioDes) ||
-          (d.habDes !== false && d.desayuno !== 'NO' && (cerradoDes || d.desayuno === 'MANUAL'));
+          (habDesFecha && d.desayuno !== 'NO' && (cerradoDes || d.desayuno === 'MANUAL'));
         const almConsumido = (d.esHoyFisico && hf && hf.consumioAlm) ||
-          (d.habAlm !== false && d.almuerzo !== 'NO' && cerradoAlm);
+          (d.almuerzo !== 'NO' && cerradoAlm);
 
-        const incluirFila = desConsumido || almConsumido || (d.fecha <= (STATE.hoyStr || obtenerFechaHoyLimaISO()));
-        if (incluirFila) {
+        const prev = mapaPorFecha[d.fecha];
+        const desFinal = (d.fecha < hoyRef && prev) ? (prev.des || desConsumido) : desConsumido;
+        const almFinal = (d.fecha < hoyRef && prev) ? (prev.alm || almConsumido) : almConsumido;
+
+        if (desFinal || almFinal || d.fecha <= hoyRef) {
           mapaPorFecha[d.fecha] = {
             fechaISO: d.fecha,
             fechaCorta: d.fechaCorta || formatearDiaMesCorto(d.fecha),
-            des: desConsumido,
-            alm: almConsumido
+            des: desFinal,
+            alm: almFinal
           };
         }
       });
 
       const filas = Object.values(mapaPorFecha).sort((a, b) => a.fechaISO.localeCompare(b.fechaISO));
 
-      // Contar totales
       let cDes = 0;
       let cAlm = 0;
-      if (STATE.usuario && Array.isArray(STATE.usuario.historialCiclo)) {
-        filas.forEach(r => {
-          if (r.des) cDes++;
-          if (r.alm) cAlm++;
-        });
-      } else if (STATE.usuario) {
-        // Respaldo compatible mientras Código.gs sigue en v22
-        cDes = Number(STATE.usuario.baseCicloDes || 0);
-        cAlm = Number(STATE.usuario.baseCicloAlm || 0);
-        const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
-        filas.forEach(r => {
-          if (r.fechaISO >= hoyRef) {
-            if (r.des) cDes++;
-            if (r.alm) cAlm++;
-          }
-        });
-      }
+      filas.forEach(r => {
+        if (r.des) cDes++;
+        if (r.alm) cAlm++;
+      });
 
       const totSoles = STATE.usuario
         ? (cDes * STATE.usuario.costoDesayuno) + (cAlm * STATE.usuario.costoAlmuerzo)
@@ -1953,7 +1737,7 @@
     }
 
     // ========================================================================
-    // MÓDULO TÉCNICO + SIMULADOR DE ESTRÉS CONCURRENTE
+    // MÓDULO TÉCNICO + SIMULADOR DE ESTRÉS CONCURRENTE (MOTOR 1-A-1)
     // ========================================================================
     function cargarPanelSalud() {
       const badge = document.getElementById('badge-salud-tech');
@@ -1988,8 +1772,11 @@
         if (typeof res.modoPruebaActivo === 'boolean') {
           STATE.modoPruebaQR = res.modoPruebaActivo;
         }
+        if (Array.isArray(res.dnisActivosMuestra)) {
+          STATE.dnisActivosMuestra = res.dnisActivosMuestra;
+        }
 
-        const totErr = (res.totalErrores !== undefined) ? res.totalErrores : valSeguro(res.totalErroresHoy, 0);
+        const totErr = (res.totalErrores !== undefined) ? res.totalErrores : 0;
         if (badge) {
           badge.textContent = valSeguro(res.salud, 'OPERATIVO');
           badge.style.background = Number(totErr) === 0 ? '#dcfce7' : '#fef3c7';
@@ -1997,21 +1784,21 @@
         }
 
         const latVal = valSeguro(res.latenciaPingMs, latenciaRed);
-        const colabAct = valSeguro(res.colaboradoresActivos, Object.keys(STATE.diccionarioUsuarios || {}).length || '-');
+        const colabAct = valSeguro(res.colaboradoresActivos, '-');
         const colabClave = valSeguro(res.usuariosConClave, '-');
-        const qrDes = (res.escaneosDesHoy !== undefined) ? res.escaneosDesHoy : valSeguro(res.escaneosHoy, 0);
-        const qrAlm = (res.escaneosAlmHoy !== undefined) ? res.escaneosAlmHoy : '-';
+        const qrDes = (res.escaneosDesHoy !== undefined) ? res.escaneosDesHoy : 0;
+        const qrAlm = (res.escaneosAlmHoy !== undefined) ? res.escaneosAlmHoy : 0;
 
         document.getElementById('tkpi-latencia').textContent = `${latVal} ms`;
-        document.getElementById('tkpi-usuarios').textContent = (colabClave !== '-') ? `${colabAct} / ${colabClave}` : `${colabAct}`;
-        document.getElementById('tkpi-qr-hoy').textContent = (qrAlm !== '-') ? `${qrDes} / ${qrAlm}` : `${qrDes}`;
+        document.getElementById('tkpi-usuarios').textContent = `${colabAct} / ${colabClave}`;
+        document.getElementById('tkpi-qr-hoy').textContent = `${qrDes} / ${qrAlm}`;
         document.getElementById('tkpi-errores').textContent = String(totErr);
 
         infoBox.innerHTML = `
-          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
-          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'}  | 
+          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')} &nbsp;|&nbsp;
+          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
           <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
-          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
+          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)} &nbsp;|&nbsp;
           <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
 
@@ -2019,18 +1806,13 @@
         if (!res.ultimosLogs || res.ultimosLogs.length === 0) {
           tbErr.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#047857; font-weight:700;">Sin errores registrados.</td></tr>';
         } else {
-          tbErr.innerHTML = res.ultimosLogs.map(l => {
-            const f = Array.isArray(l) ? valSeguro(l[0]) : valSeguro(l.fecha);
-            const c = Array.isArray(l) ? valSeguro(l[1]) : valSeguro(l.contexto);
-            const m = Array.isArray(l) ? valSeguro(l[2]) : valSeguro(l.motivo);
-            return `
-              <tr>
-                <td style="white-space:nowrap;">${f}</td>
-                <td><b>${c}</b></td>
-                <td style="color:#dc2626; font-weight:600;">${m}</td>
-              </tr>
-            `;
-          }).join('');
+          tbErr.innerHTML = res.ultimosLogs.map(l => `
+            <tr>
+              <td style="white-space:nowrap;">${valSeguro(l.fecha)}</td>
+              <td><b>${valSeguro(l.contexto)}</b></td>
+              <td style="color:#dc2626; font-weight:600;">${valSeguro(l.motivo)}</td>
+            </tr>
+          `).join('');
         }
 
         const tbEv = document.getElementById('tbody-eventos-tech');
@@ -2068,33 +1850,30 @@
 
       btn.disabled = true;
       btn.textContent = 'Ejecutando ráfaga concurrente (45 peticiones)...';
-      box.innerHTML = 'Disparando <b>30 lecturas simultáneas</b> + <b>15 escaneos QR en paralelo</b>...';
+      box.innerHTML = 'Disparando <b>30 sincronizaciones 1-a-1</b> + <b>15 escaneos QR en paralelo</b>...';
 
-      const listaActivos = (STATE.colaboradores || []).filter(c => c.estado === 'ACTIVO');
-      const dnisPrueba = [];
-      for (let i = 0; i < 15; i++) {
-        if (listaActivos.length > 0) {
-          dnisPrueba.push(listaActivos[i % listaActivos.length].dni);
-        } else {
-          dnisPrueba.push(STATE.usuario.dni);
-        }
-      }
+      const muestra = (STATE.dnisActivosMuestra && STATE.dnisActivosMuestra.length > 0)
+        ? STATE.dnisActivosMuestra
+        : [STATE.usuario.dni];
+
+      const dnisLectura = Array.from({ length: 30 }, (_, i) => muestra[i % muestra.length]);
+      const dnisQR = Array.from({ length: 15 }, (_, i) => muestra[i % muestra.length]);
 
       const tGlobalIni = performance.now();
 
-      const promesasLectura = Array.from({ length: 30 }, () => {
+      const promesasLectura = dnisLectura.map(dniTest => {
         const t0 = performance.now();
         return fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'obtenerBootstrapInicial', args: [] })
+          body: JSON.stringify({ action: 'sincronizarMiEstado', args: [dniTest] })
         }).then(r => r.json()).then(d => ({
           ok: !!(d && d.ok),
           ms: Math.round(performance.now() - t0)
         })).catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
       });
 
-      const promesasQR = dnisPrueba.map(dniTest => {
+      const promesasQR = dnisQR.map(dniTest => {
         const t0 = performance.now();
         return fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -2148,10 +1927,6 @@
         btn.disabled = false;
         btn.textContent = 'Restablecer';
         if (res && res.ok) {
-          if (STATE.diccionarioUsuarios[res.dniReseteado]) {
-            STATE.diccionarioUsuarios[res.dniReseteado].usuario.tieneClave = false;
-            STATE.diccionarioUsuarios[res.dniReseteado].usuario.hashClave = '';
-          }
           document.getElementById('rrhh-dni-reset').value = '';
           mostrarToast(res.msg);
         } else {
@@ -2268,7 +2043,6 @@
      */
     function actualizarEstadoBotonQR() {
       const btn = document.getElementById('btn-escanear-qr');
-      const linkPin = document.getElementById('link-contingencia-camara');
       const hf = STATE.hoyFisico;
       if (!hf || !btn) return;
 
@@ -2279,14 +2053,12 @@
         btn.textContent = (horaActual < 12.0)
           ? 'Escanear QR en Comedor (Desayuno)'
           : 'Escanear QR en Comedor (Almuerzo)';
-        linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
         return;
       }
 
       if (!hf.reservoDes && !hf.reservoAlm) {
         btn.disabled = true;
         btn.textContent = 'Sin servicios reservados hoy';
-        linkPin.style.display = 'none';
         return;
       }
 
@@ -2297,23 +2069,19 @@
             btn.textContent = hf.reservoAlm
               ? 'Desayuno registrado (Almuerzo desde 12:00 PM)'
               : 'Ya escaneaste tu Desayuno de hoy';
-            linkPin.style.display = 'none';
             return;
           }
           if (horaActual < 8.5) {
             btn.disabled = true;
             btn.textContent = 'El desayuno se servirá desde las 8:30 AM';
-            linkPin.style.display = 'none';
             return;
           }
           btn.disabled = false;
           btn.textContent = 'Escanear QR en Comedor (Desayuno)';
-          linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
           return;
         } else {
           btn.disabled = true;
           btn.textContent = 'El almuerzo se servirá desde las 12:00 PM';
-          linkPin.style.display = 'none';
           return;
         }
       } else if (horaActual <= 18.0) {
@@ -2321,19 +2089,16 @@
           if (hf.consumioAlm) {
             btn.disabled = true;
             btn.textContent = 'Almuerzo ya registrado hoy';
-            linkPin.style.display = 'none';
             return;
           }
           btn.disabled = false;
           btn.textContent = 'Escanear QR en Comedor (Almuerzo)';
-          linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
           return;
         } else {
           btn.disabled = true;
           btn.textContent = hf.consumioDes
             ? 'Ya escaneaste tu Desayuno de hoy'
             : 'Sin servicios reservados hoy';
-          linkPin.style.display = 'none';
           return;
         }
       } else {
@@ -2341,7 +2106,6 @@
         btn.textContent = (hf.consumioDes || hf.consumioAlm)
           ? 'Servicios de hoy ya registrados'
           : 'Horario de comedor finalizado (6:00 PM)';
-        linkPin.style.display = 'none';
       }
     }
 
@@ -2610,7 +2374,6 @@
     async function abrirEscanerQR() {
       if (document.getElementById('btn-escanear-qr').disabled) return;
       vibrarHaptico(15);
-      document.getElementById('box-pin-contingencia').style.display = 'none';
 
       const overlay = document.getElementById('modal-qr-overlay');
       overlay.style.display = 'flex';
@@ -2653,12 +2416,7 @@
           }
         } catch (errFinal) {
           cerrarEscanerQR();
-          if (HABILITAR_MODO_CODIGO) {
-            mostrarBoxPinContingencia();
-            mostrarToast('¿Problemas con la cámara? Ingresa el código del comedor.');
-          } else {
-            mostrarToast('Asegúrate de permitir el acceso a la cámara en tu navegador.');
-          }
+          mostrarToast('Asegúrate de permitir el acceso a la cámara en tu navegador.');
         }
       }
     }
@@ -2668,44 +2426,6 @@
       if (STATE.html5QrCode && STATE.html5QrCode.isScanning) {
         STATE.html5QrCode.stop().catch(() => {});
       }
-    }
-
-    function mostrarBoxPinContingencia() {
-      if (!HABILITAR_MODO_CODIGO) return;
-      vibrarHaptico(10);
-      cerrarEscanerQR();
-      const boxPin = document.getElementById('box-pin-contingencia');
-      boxPin.style.display = 'block';
-      document.getElementById('txt-pin-comedor').value = '';
-      document.getElementById('txt-pin-comedor').focus();
-    }
-
-    function confirmarPinCamaraMalograda() {
-      vibrarHaptico(15);
-      const pin = document.getElementById('txt-pin-comedor').value.trim();
-      if (pin.length < 3) {
-        mostrarToast('Ingresa el código de 3 dígitos del comedor.');
-        return;
-      }
-      document.getElementById('box-pin-contingencia').style.display = 'none';
-      const btn = document.getElementById('btn-escanear-qr');
-      btn.disabled = true;
-      btn.textContent = 'Validando código...';
-
-      ejecutarConReintento('validarPinYRegistrarConsumo', [STATE.usuario.dni, pin], res => {
-        if (res.ok) {
-          if (!res.modoPrueba) {
-            if (res.servicioRegistrado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
-            if (res.servicioRegistrado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
-            guardarSnapshotLocal();
-          }
-          actualizarResumenHeader();
-          mostrarTicketVerdeConfirmado(res.servicioRegistrado);
-        } else {
-          mostrarToast(res.msg);
-        }
-        actualizarEstadoBotonQR();
-      });
     }
 
     function procesarRegistroQRInteligente(metodo = 'QR_APP') {
@@ -2796,11 +2516,44 @@
       ENVIANDO_COLA_QR = false;
     }
 
+    function obtenerDetalleDesayunoHoyParaTicket() {
+      const hoyISO = STATE.hoyStr || obtenerFechaHoyLimaISO();
+      const dHoy = (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyISO);
+      const valDes = dHoy ? dHoy.desayuno : (STATE.usuario ? STATE.usuario.desDef : 'NO');
+      const infoMenu = dHoy ? obtenerInfoMenuDia(dHoy) : { panes: PANES_POR_DEFECTO };
+      const infoDes = desglosarDesayuno(valDes, infoMenu.panes);
+
+      if (infoDes.op === 'OP1') {
+        return (infoDes.pan1.toLowerCase() === infoDes.pan2.toLowerCase())
+          ? `2 panes con ${infoDes.pan1}`
+          : `Pan con ${infoDes.pan1} / ${infoDes.pan2}`;
+      }
+      if (infoDes.op === 'OP2') return '3 Huevos';
+      if (infoDes.op === 'OP3') return `Pan con ${infoDes.pan1} + 1 Huevo`;
+      if (infoDes.op === 'MANUAL') return 'Asignado por RRHH';
+      return '';
+    }
+
     function mostrarTicketVerdeConfirmado(servicio) {
       const overlay = document.getElementById('modal-ticket-overlay');
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
       const horaExacta = obtenerHoraExactaActual();
       document.getElementById('ticket-modal-titulo').textContent = `¡${servicio} REGISTRADO!`;
+
+      // El detalle de panes/huevos se muestra únicamente para DESAYUNO; en ALMUERZO solo fecha y hora
+      const detEl = document.getElementById('ticket-modal-detalle');
+      if (servicio === 'DESAYUNO') {
+        const textoDes = obtenerDetalleDesayunoHoyParaTicket();
+        if (textoDes) {
+          detEl.textContent = textoDes;
+          detEl.style.display = 'block';
+        } else {
+          detEl.style.display = 'none';
+        }
+      } else {
+        detEl.style.display = 'none';
+      }
+
       document.getElementById('ticket-modal-fecha').textContent = fechaHoy;
       document.getElementById('ticket-modal-hora').textContent = horaExacta;
       overlay.style.display = 'flex';

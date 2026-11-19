@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=21">
+  <link rel="manifest" href="manifest.json?v=22">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=21">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=21">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=21">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=22">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=22">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=22">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -24,6 +24,8 @@
       --text: #1e293b;
       --muted: #64748b;
       --border: #e2e8f0;
+      /* CAMBIAR ENTRE 'uppercase' (MAYÚSCULAS) Y 'none' (Normal) PARA DESAYUNO / ALMUERZO */
+      --titulo-servicio-case: uppercase;
     }
 
     * {
@@ -120,7 +122,7 @@
     .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 12px; }
     .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16.5px; margin-bottom: 10px; }
 
-    /* Detalle de Desayuno y Almuerzo con letra más grande y SIN negrita en la descripción */
+    /* Detalle de Desayuno y Almuerzo con letra más grande y sin negrita en la descripción */
     .menu-box {
       background: #f8fafc; border-radius: 9px; padding: 10px 12px; font-size: 13.8px;
       letter-spacing: -0.1px; color: #334155; font-weight: 400; margin-bottom: 12px; line-height: 1.48;
@@ -134,17 +136,25 @@
     .srv-split-card {
       flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white;
       display: flex; flex-direction: column; overflow: hidden; transition: 0.15s;
-      min-width: 0; min-height: 134px;
+      min-width: 0; min-height: 130px;
     }
     .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
     .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
-    .srv-split-card.disabled-card { opacity: 0.55; background: #f1f5f9; pointer-events: none; }
+    .srv-split-card.disabled-card {
+      opacity: 0.58; background: #f1f5f9; pointer-events: none; min-height: 0;
+    }
 
     .srv-split-top {
       padding: 10px 6px; text-align: center; cursor: pointer; flex: 1;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
     }
-    .srv-split-top .title { font-size: 16px; font-weight: 700; display: block; color: var(--text); }
+    .srv-split-card.disabled-card .srv-split-top {
+      padding: 10px 6px;
+    }
+    .srv-split-top .title {
+      font-size: 15.5px; font-weight: 800; display: block; color: var(--text);
+      text-transform: var(--titulo-servicio-case); letter-spacing: 0.3px;
+    }
     .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
     .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
     
@@ -244,9 +254,10 @@
       .day-header { font-size: 15.5px; margin-bottom: 8px; }
       .menu-box { padding: 8px 10px; font-size: 13px; margin-bottom: 10px; }
       .srv-grid { gap: 8px; }
-      .srv-split-card { min-height: 126px; }
+      .srv-split-card { min-height: 122px; }
+      .srv-split-card.disabled-card { min-height: 0; }
       .srv-split-top { padding: 8px 4px; }
-      .srv-split-top .title { font-size: 15px; }
+      .srv-split-top .title { font-size: 14.5px; }
       .srv-split-top .status { font-size: 12.2px; margin-top: 3px; }
       .pan-dropdown-wrap { padding: 0 4px 7px; }
       .pan-select { font-size: 11.8px; height: 27px; padding: 0 2px; }
@@ -279,14 +290,14 @@
 
   <div class="app-shell" id="app-shell">
     <div id="banner-actualizacion">
-      <span>🔄 Nueva actualización disponible</span>
+      <span>Nueva actualización disponible</span>
       <button class="btn-update-now" onclick="aplicarActualizacionApp()">Actualizar ahora</button>
     </div>
 
-    <!-- 1. LOGIN (SIN TEXTO INFERIOR DE HORAS DE CORTE) -->
+    <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=21" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=22" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -301,12 +312,12 @@
         <input type="password" id="txt-clave" class="pass-input" placeholder="••••••••" autocomplete="current-password">
         <button class="btn btn-primary" id="btn-confirmar-clave" onclick="confirmarClaveLogin()">Ingresar</button>
         <button class="btn btn-outline" style="margin-top:8px; padding:11px; font-size:14px; color:var(--muted);" onclick="volverAPasoDNI()">
-          ← Cambiar DNI
+          Cambiar DNI
         </button>
       </div>
 
       <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:12px; padding:12px; font-size:14px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
-        📲 Instalar App en pantalla de inicio
+        Instalar App en pantalla de inicio
       </button>
     </div>
 
@@ -321,7 +332,7 @@
           <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
         </div>
         <div class="header-kpi-strip">
-          <span id="hdr-resumen-cant">☕ 0 Des. | 🍲 0 Alm.</span>
+          <span id="hdr-resumen-cant">0 Des. | 0 Alm.</span>
           <span class="header-kpi-total" id="hdr-resumen-total">Consumido: S/ 0.00</span>
         </div>
       </div>
@@ -329,7 +340,7 @@
       <div class="tabs">
         <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Hoy</div>
         <div class="tab" id="tab-btn-semana" onclick="cambiarTab('SEMANA')">Mi Semana</div>
-        <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">⚙️ RRHH</div>
+        <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">RRHH</div>
         <div class="tab" id="tab-btn-tecnico" style="display:none;" onclick="cambiarTab('TECNICO')">Técnico</div>
       </div>
 
@@ -339,7 +350,7 @@
           <div id="contenedor-principal"></div>
 
           <button class="btn btn-success" id="btn-escanear-qr" style="margin-top:2px;" onclick="abrirEscanerQR()">
-            📷 Escanear QR en Comedor
+            Escanear QR en Comedor
           </button>
 
           <div id="link-contingencia-camara" style="display:none; text-align:center; margin-top:7px;">
@@ -376,7 +387,7 @@
 
           <div id="box-pin-contingencia" style="display:none; background:white; border:2px solid #f59e0b; border-radius:14px; padding:12px; margin-top:10px; text-align:center;">
             <p style="font-size:13.5px; font-weight:700; margin:0 0 5px; color:#b45309;">
-              🔓 Registro con Código del Comedor
+              Registro con Código del Comedor
             </p>
             <p style="font-size:12px; color:var(--muted); margin:0 0 8px;">
               Ingresa el código de 3 dígitos que figura en el cartel del comedor:
@@ -396,10 +407,10 @@
         <!-- PESTAÑA 2: MI SEMANA -->
         <div id="pane-semana" style="display:none;"><div id="contenedor-semana"></div></div>
 
-        <!-- PESTAÑA 3A: PERFIL RRHH EN MÓVIL (CON PENDIENTES DEL DÍA EN VIVO) -->
+        <!-- PESTAÑA 3A: PERFIL RRHH EN MÓVIL -->
         <div id="pane-rrhh" style="display:none;">
           <div class="rrhh-box">
-            <h4>🔑 Restablecer Contraseña de Colaborador</h4>
+            <h4>Restablecer Contraseña de Colaborador</h4>
             <p style="font-size:13px; color:var(--muted); margin:0 0 10px;">
               Si un colaborador olvidó su contraseña, ingresa su DNI aquí para limpiarla. En su próximo acceso la App le pedirá crear una nueva.
             </p>
@@ -411,10 +422,9 @@
             </div>
           </div>
 
-          <!-- STATUS DE PENDIENTES DEL DÍA (DESAYUNOS ANTES DE LAS 12 PM / ALMUERZOS DESDE LAS 12 PM) -->
           <div class="rrhh-box">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
-              <h4 id="rrhh-titulo-pendientes" style="margin:0;">⏳ Pendientes de hoy</h4>
+              <h4 id="rrhh-titulo-pendientes" style="margin:0;">Pendientes de hoy</h4>
               <span id="rrhh-badge-pendientes" style="background:#ffedd5; color:#c2410c; padding:4px 11px; border-radius:8px; font-size:13px; font-weight:800;">
                 0
               </span>
@@ -437,7 +447,7 @@
           </div>
 
           <div class="rrhh-box">
-            <h4>💻 Portal RRHH • Comedor (Escritorio)</h4>
+            <h4>Portal RRHH - Comedor (Escritorio)</h4>
             <p style="font-size:13px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
               El monitoreo completo, la asignación manual de servicios, la base de colaboradores y el reporte de planilla están disponibles en el Portal Web de Escritorio.
             </p>
@@ -472,7 +482,7 @@
           </div>
 
           <div class="rrhh-box">
-            <h4>⚡ Prueba de Estrés en Vivo (Simulación Hora Punta)</h4>
+            <h4>Prueba de Estrés en Vivo (Simulación Hora Punta)</h4>
             <p style="font-size:12.5px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
               Simula <b>30 usuarios abriendo la App</b> y <b>15 escaneos QR simultáneos</b> en paralelo.
             </p>
@@ -515,7 +525,7 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    const VERSION_LOCAL_APP = "21";
+    const VERSION_LOCAL_APP = "22";
 
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
     const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
@@ -529,7 +539,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=21', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=22', { updateViaCache: 'none' }).then(reg => {
           reg.update().catch(() => {});
         }).catch(() => {});
       });
@@ -595,11 +605,23 @@
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         procesarColaQRSegundoPlano();
+        if (STATE.usuario) {
+          actualizarResumenHeader();
+          actualizarEstadoBotonQR();
+        }
         ejecutarConReintento('verificarVersionApp', [], res => {
           if (res && res.versionApp) verificarVersionServidor(res.versionApp);
         }, null, 1);
       }
     });
+
+    // Actualiza el consolidado y estado del botón QR cada 30 seg (para cambios exactos a las 12:00 PM y 6:00 PM)
+    setInterval(() => {
+      if (STATE.usuario) {
+        actualizarResumenHeader();
+        actualizarEstadoBotonQR();
+      }
+    }, 30000);
 
     const urlParams = new URLSearchParams(window.location.search);
     window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
@@ -611,6 +633,7 @@
       hoyPeruCompleto: '',
       etiquetaCiclo: '',
       horaPeru: 0,
+      tsSyncHora: 0,
       pasoCorteAlmuerzo: false,
       modoPruebaQR: false,
       diccionarioUsuarios: {},
@@ -624,6 +647,35 @@
       procesandoEscaneo: false,
       idxPrincipal: 0
     };
+
+    function obtenerHoraLimaNavegador() {
+      try {
+        const partes = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'America/Lima',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).formatToParts(new Date());
+        const h = Number(partes.find(p => p.type === 'hour').value);
+        const m = Number(partes.find(p => p.type === 'minute').value);
+        return (h === 24 ? 0 : h) + (m / 60);
+      } catch (e) {
+        return STATE.horaPeru || 0;
+      }
+    }
+
+    function obtenerHoraPeruActual() {
+      if (STATE.tsSyncHora) {
+        return STATE.horaPeru + ((Date.now() - STATE.tsSyncHora) / 3600000);
+      }
+      return obtenerHoraLimaNavegador();
+    }
+
+    function extraerDiaNumeroCliente(isoStr) {
+      if (!isoStr) return '';
+      const p = String(isoStr).split('-');
+      return p.length === 3 ? String(Number(p[2])) : isoStr;
+    }
 
     function extraerPrimerNombreCliente(usuarioObj) {
       if (!usuarioObj) return 'Colaborador';
@@ -854,7 +906,8 @@
         STATE.tokenActivo = sesionGuardada.token || '';
         STATE.hoyStr = sesionGuardada.snapshot.hoyStr || '';
         STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
-        STATE.horaPeru = sesionGuardada.snapshot.horaPeru || 9;
+        STATE.horaPeru = obtenerHoraLimaNavegador();
+        STATE.tsSyncHora = 0;
         STATE.pasoCorteAlmuerzo = !!sesionGuardada.snapshot.pasoCorteAlmuerzo;
         STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
         STATE.usuario = sesionGuardada.snapshot.usuario;
@@ -898,7 +951,7 @@
           snapshot: {
             hoyStr: STATE.hoyStr,
             hoyPeruCompleto: STATE.hoyPeruCompleto,
-            horaPeru: STATE.horaPeru,
+            horaPeru: obtenerHoraPeruActual(),
             pasoCorteAlmuerzo: STATE.pasoCorteAlmuerzo,
             modoPruebaQR: STATE.modoPruebaQR,
             usuario: STATE.usuario,
@@ -966,6 +1019,7 @@
           STATE.hoyPeruCompleto = res.hoyPeruCompleto || res.hoyStr;
           STATE.etiquetaCiclo = res.etiquetaCiclo || '';
           STATE.horaPeru = res.horaPeru;
+          STATE.tsSyncHora = Date.now();
           STATE.pasoCorteAlmuerzo = res.pasoCorteAlmuerzo;
           STATE.modoPruebaQR = !!res.modoPruebaQR;
           if (typeof res.habilitarModoCodigo === 'boolean') {
@@ -992,7 +1046,7 @@
     function verificarPasoDNI() {
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
-        mostrarToast('⚠️ Ingresa un DNI válido de 8 dígitos.');
+        mostrarToast('Ingresa un DNI válido de 8 dígitos.');
         return;
       }
 
@@ -1011,6 +1065,7 @@
           STATE.hoyStr = res.data.hoyStr;
           STATE.hoyPeruCompleto = res.data.hoyPeruCompleto || res.data.hoyStr;
           STATE.horaPeru = res.data.horaPeru;
+          STATE.tsSyncHora = Date.now();
           STATE.pasoCorteAlmuerzo = res.data.pasoCorteAlmuerzo;
           STATE.modoPruebaQR = !!res.data.modoPruebaQR;
           STATE.etiquetaCiclo = res.data.etiquetaCiclo || STATE.etiquetaCiclo;
@@ -1018,12 +1073,12 @@
           STATE.colaboradores = res.data.colaboradores;
           abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
         } else {
-          mostrarToast('❌ ' + (res && res.msg ? res.msg : 'DNI no registrado en BD_COLABORADORES.'));
+          mostrarToast(res && res.msg ? res.msg : 'DNI no registrado en BD_COLABORADORES.');
         }
       }, () => {
         document.getElementById('btn-ingresar').disabled = false;
         document.getElementById('btn-ingresar').textContent = 'Continuar';
-        mostrarToast('❌ No se pudo conectar con el servidor.');
+        mostrarToast('No se pudo conectar con el servidor.');
       });
     }
 
@@ -1056,7 +1111,7 @@
       if (!STATE.registroPendienteLogin) return;
       const clave = document.getElementById('txt-clave').value;
       if (!clave || clave.trim().length === 0) {
-        mostrarToast('⚠️ Escribe tu contraseña.');
+        mostrarToast('Escribe tu contraseña.');
         return;
       }
 
@@ -1085,7 +1140,7 @@
             document.getElementById('txt-clave').value = '';
             asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
           } else {
-            mostrarToast('❌ Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
+            mostrarToast('Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
           }
           return;
         } else {
@@ -1111,12 +1166,12 @@
           document.getElementById('txt-clave').value = '';
           asignarUsuarioYEntrar(STATE.registroPendienteLogin, res.tokenSesion);
         } else {
-          mostrarToast('❌ ' + (res ? res.msg : 'Error al validar contraseña.'));
+          mostrarToast(res ? res.msg : 'Error al validar contraseña.');
         }
       }, () => {
         btn.disabled = false;
         btn.textContent = txtOriginal;
-        mostrarToast('❌ Error de conexión con el servidor.');
+        mostrarToast('Error de conexión con el servidor.');
       });
     }
 
@@ -1226,10 +1281,10 @@
         document.getElementById('tkpi-errores').textContent = String(totErr);
 
         infoBox.innerHTML = `
-          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')} &nbsp;|&nbsp;
-          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
+          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')}  | 
+          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'}  | 
           <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
-          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)} &nbsp;|&nbsp;
+          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)}  | 
           <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
         `;
 
@@ -1279,12 +1334,12 @@
       box.style.display = 'block';
 
       if (!STATE.modoPruebaQR) {
-        box.innerHTML = `<span style="color:#b45309; font-weight:700;">⚠️ Activa primero el "Modo prueba" en el menú Comedor SBS de tu hoja de cálculo (y luego presiona Actualizar diagnóstico arriba).</span>`;
+        box.innerHTML = `<span style="color:#b45309; font-weight:700;">Activa primero el "Modo prueba" en el menú Comedor SBS de tu hoja de cálculo y luego presiona Actualizar diagnóstico arriba.</span>`;
         return;
       }
 
       btn.disabled = true;
-      btn.textContent = '⏳ Ejecutando ráfaga concurrente (45 peticiones)...';
+      btn.textContent = 'Ejecutando ráfaga concurrente (45 peticiones)...';
       box.innerHTML = 'Disparando <b>30 lecturas simultáneas</b> + <b>15 escaneos QR en paralelo</b>...';
 
       const listaActivos = (STATE.colaboradores || []).filter(c => c.estado === 'ACTIVO');
@@ -1339,9 +1394,9 @@
       btn.textContent = 'Simular Ráfaga Concurrente Ahora';
 
       box.innerHTML = `
-        <b style="color:#047857;">✅ Prueba completada en ${(tGlobalTotal / 1000).toFixed(2)} seg:</b><br>
-        • <b>Accesos simultáneos (30):</b> ${okLecturas}/30 exitosos (Promedio: ${promMsLectura} ms)<br>
-        • <b>Escaneos QR en fila (15):</b> ${okQRs}/15 registrados sin pérdida (Promedio: ${promMsQR} ms | Máximo: ${maxMsQR} ms)<br>
+        <b style="color:#047857;">Prueba completada en ${(tGlobalTotal / 1000).toFixed(2)} seg:</b><br>
+        - <b>Accesos simultáneos (30):</b> ${okLecturas}/30 exitosos (Promedio: ${promMsLectura} ms)<br>
+        - <b>Escaneos QR en fila (15):</b> ${okQRs}/15 registrados sin pérdida (Promedio: ${promMsQR} ms | Máximo: ${maxMsQR} ms)<br>
         <span style="color:#64748b; font-size:11px;">Recuerda ir a Google Sheets -> Comedor SBS -> "Borrar solo registros de modo prueba" y desactivar el Modo Prueba.</span>
       `;
       cargarPanelSalud();
@@ -1353,7 +1408,7 @@
     function ejecutarReseteoClaveRRHH() {
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
       if (dniTarget.length < 7) {
-        mostrarToast('⚠️ Ingresa el DNI de 8 dígitos del colaborador.');
+        mostrarToast('Ingresa el DNI de 8 dígitos del colaborador.');
         return;
       }
       const btn = document.getElementById('btn-reset-clave');
@@ -1369,14 +1424,14 @@
             STATE.diccionarioUsuarios[res.dniReseteado].usuario.hashClave = '';
           }
           document.getElementById('rrhh-dni-reset').value = '';
-          mostrarToast('✅ ' + res.msg);
+          mostrarToast(res.msg);
         } else {
-          mostrarToast('⚠️ ' + (res ? res.msg : 'No se pudo restablecer la clave.'));
+          mostrarToast(res ? res.msg : 'No se pudo restablecer la clave.');
         }
       }, () => {
         btn.disabled = false;
         btn.textContent = 'Restablecer';
-        mostrarToast('❌ Error de conexión.');
+        mostrarToast('Error de conexión.');
       });
     }
 
@@ -1391,9 +1446,9 @@
         btn.textContent = 'Actualizando...';
       }
 
-      const esDesayuno = (STATE.horaPeru < 12.0);
+      const esDesayuno = (obtenerHoraPeruActual() < 12.0);
       if (titulo) {
-        titulo.textContent = esDesayuno ? '☕ Desayunos pendientes hoy' : '🍲 Almuerzos pendientes hoy';
+        titulo.textContent = esDesayuno ? 'Desayunos pendientes hoy' : 'Almuerzos pendientes hoy';
       }
 
       ejecutarConReintento('obtenerPendientesHoyRRHH', [STATE.usuario ? STATE.usuario.dni : ''], res => {
@@ -1407,7 +1462,7 @@
         }
 
         const esSrvDes = (res.servicio === 'DESAYUNO');
-        titulo.textContent = esSrvDes ? '☕ Desayunos pendientes hoy' : '🍲 Almuerzos pendientes hoy';
+        titulo.textContent = esSrvDes ? 'Desayunos pendientes hoy' : 'Almuerzos pendientes hoy';
         badge.textContent = `Total: ${res.totalPendientes}`;
         badge.style.background = res.totalPendientes === 0 ? '#dcfce7' : '#ffedd5';
         badge.style.color = res.totalPendientes === 0 ? '#166534' : '#c2410c';
@@ -1434,9 +1489,19 @@
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-main').style.display = 'flex';
       document.getElementById('lbl-nombre').textContent = 'Hola, ' + extraerPrimerNombreCliente(STATE.usuario);
-      document.getElementById('lbl-estado-rol').textContent = (STATE.usuario.estado !== 'ACTIVO')
-        ? `Estado: ${STATE.usuario.estado}${STATE.usuario.fechaFinEstado ? ' (hasta ' + formatearDiaMesCorto(STATE.usuario.fechaFinEstado) + ')' : ''}`
-        : `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}`;
+
+      const enAusenciaHoy = (STATE.usuario.estado !== 'ACTIVO') && (STATE.usuario.activoHoy === false);
+      let textoEstadoSub = `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}`;
+      if (enAusenciaHoy) {
+        if (STATE.usuario.fechaInicioEstado && STATE.usuario.fechaFinEstado) {
+          textoEstadoSub = `Estado: ${STATE.usuario.estado} (${formatearDiaMesCorto(STATE.usuario.fechaInicioEstado)} al ${formatearDiaMesCorto(STATE.usuario.fechaFinEstado)})`;
+        } else if (STATE.usuario.fechaFinEstado) {
+          textoEstadoSub = `Estado: ${STATE.usuario.estado} (hasta ${formatearDiaMesCorto(STATE.usuario.fechaFinEstado)})`;
+        } else {
+          textoEstadoSub = `Estado: ${STATE.usuario.estado}`;
+        }
+      }
+      document.getElementById('lbl-estado-rol').textContent = textoEstadoSub;
 
       const mostrarRRHH = esUsuarioRRHH(STATE.usuario);
       const mostrarTech = esUsuarioTecnico(STATE.usuario);
@@ -1444,12 +1509,12 @@
       document.getElementById('tab-btn-rrhh').style.display = mostrarRRHH ? 'block' : 'none';
       document.getElementById('tab-btn-tecnico').style.display = mostrarTech ? 'block' : 'none';
 
-      // Cambia al día siguiente recién a las 6:01 PM (18.016 h), luego de cerrar el escaneo de almuerzo
+      // Cambia al día siguiente recién a las 6:01 PM (18.016 h)
       let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
       if (idxHoyFisico === -1) {
         STATE.idxPrincipal = 0;
       } else {
-        const horaActualDecimal = STATE.horaPeru;
+        const horaActualDecimal = obtenerHoraPeruActual();
         if (horaActualDecimal >= 18.016 && idxHoyFisico < STATE.diasSemana.length - 1) {
           STATE.idxPrincipal = idxHoyFisico + 1;
         } else {
@@ -1458,7 +1523,8 @@
       }
 
       const dPrin = STATE.diasSemana[STATE.idxPrincipal];
-      document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${dPrin.fechaCorta || formatearDiaMesCorto(dPrin.fecha)}`;
+      const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
+      document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       cambiarTab('PRINCIPAL');
@@ -1466,29 +1532,30 @@
 
     /**
      * Contador Superior "Consumido":
-     * Suma los días previos del ciclo (baseCicloDes / baseCicloAlm) y, para el día de HOY,
-     * suma únicamente si el colaborador ya escaneó su QR o si tenía reserva y ya venció la hora de escaneo
-     * (12:00 PM para Desayuno / 6:00 PM para Almuerzo).
+     * Suma los días previos del ciclo (baseCicloDes / baseCicloAlm) y, para HOY,
+     * suma si ya escaneó el QR o automáticamente al cerrarse el plazo de escaneo (12:00 PM Des / 6:00 PM Alm).
      */
     function actualizarResumenHeader() {
+      if (!STATE.usuario) return;
       let cDes = Number(STATE.usuario.baseCicloDes || 0);
       let cAlm = Number(STATE.usuario.baseCicloAlm || 0);
 
       const hf = STATE.hoyFisico;
+      const horaActual = obtenerHoraPeruActual();
       if (hf && hf.enCicloActual !== false) {
-        const cuentaDesHoy = hf.consumioDes || (hf.reservoDes && STATE.horaPeru >= 12.0);
-        const cuentaAlmHoy = hf.consumioAlm || (hf.reservoAlm && STATE.horaPeru > 18.0);
+        const cuentaDesHoy = hf.consumioDes || (hf.reservoDes && horaActual >= 12.0);
+        const cuentaAlmHoy = hf.consumioAlm || (hf.reservoAlm && horaActual >= 18.0);
         if (cuentaDesHoy) cDes++;
         if (cuentaAlmHoy) cAlm++;
       }
 
       const totSoles = (cDes * STATE.usuario.costoDesayuno) + (cAlm * STATE.usuario.costoAlmuerzo);
-      document.getElementById('hdr-resumen-cant').textContent = `☕ ${cDes} Des. | 🍲 ${cAlm} Alm.`;
+      document.getElementById('hdr-resumen-cant').textContent = `${cDes} Des. | ${cAlm} Alm.`;
       document.getElementById('hdr-resumen-total').textContent = `Consumido: S/ ${totSoles.toFixed(2)}`;
     }
 
     /**
-     * Ventanas horarias de escaneo QR:
+     * Ventanas horarias de escaneo QR (sin emojis):
      * - Desayuno: 8:30 AM (8.5) a 11:59 AM (< 12.0)
      * - Almuerzo: 12:00 PM (12.0) a 6:00 PM (<= 18.0)
      */
@@ -1496,75 +1563,77 @@
       const btn = document.getElementById('btn-escanear-qr');
       const linkPin = document.getElementById('link-contingencia-camara');
       const hf = STATE.hoyFisico;
-      if (!hf) return;
+      if (!hf || !btn) return;
+
+      const horaActual = obtenerHoraPeruActual();
 
       if (STATE.modoPruebaQR) {
         btn.disabled = false;
-        btn.textContent = (STATE.horaPeru < 12.0)
-          ? '📷 Escanear QR en Comedor (Desayuno)'
-          : '📷 Escanear QR en Comedor (Almuerzo)';
+        btn.textContent = (horaActual < 12.0)
+          ? 'Escanear QR en Comedor (Desayuno)'
+          : 'Escanear QR en Comedor (Almuerzo)';
         linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
         return;
       }
 
       if (!hf.reservoDes && !hf.reservoAlm) {
         btn.disabled = true;
-        btn.textContent = '🚫 Sin servicios reservados hoy';
+        btn.textContent = 'Sin servicios reservados hoy';
         linkPin.style.display = 'none';
         return;
       }
 
-      if (STATE.horaPeru < 12.0) {
+      if (horaActual < 12.0) {
         if (hf.reservoDes) {
           if (hf.consumioDes) {
             btn.disabled = true;
             btn.textContent = hf.reservoAlm
-              ? '✅ Desayuno registrado (Almuerzo desde 12:00 PM)'
-              : '✅ Ya escaneaste tu Desayuno de hoy';
+              ? 'Desayuno registrado (Almuerzo desde 12:00 PM)'
+              : 'Ya escaneaste tu Desayuno de hoy';
             linkPin.style.display = 'none';
             return;
           }
-          if (STATE.horaPeru < 8.5) {
+          if (horaActual < 8.5) {
             btn.disabled = true;
-            btn.textContent = '🕒 El desayuno se servirá desde las 8:30 AM';
+            btn.textContent = 'El desayuno se servirá desde las 8:30 AM';
             linkPin.style.display = 'none';
             return;
           }
           btn.disabled = false;
-          btn.textContent = '📷 Escanear QR en Comedor (Desayuno)';
+          btn.textContent = 'Escanear QR en Comedor (Desayuno)';
           linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
           return;
         } else {
           btn.disabled = true;
-          btn.textContent = '🕒 El almuerzo se servirá desde las 12:00 PM';
+          btn.textContent = 'El almuerzo se servirá desde las 12:00 PM';
           linkPin.style.display = 'none';
           return;
         }
-      } else if (STATE.horaPeru <= 18.0) {
+      } else if (horaActual <= 18.0) {
         if (hf.reservoAlm) {
           if (hf.consumioAlm) {
             btn.disabled = true;
-            btn.textContent = '✅ Almuerzo ya registrado hoy';
+            btn.textContent = 'Almuerzo ya registrado hoy';
             linkPin.style.display = 'none';
             return;
           }
           btn.disabled = false;
-          btn.textContent = '📷 Escanear QR en Comedor (Almuerzo)';
+          btn.textContent = 'Escanear QR en Comedor (Almuerzo)';
           linkPin.style.display = HABILITAR_MODO_CODIGO ? 'block' : 'none';
           return;
         } else {
           btn.disabled = true;
           btn.textContent = hf.consumioDes
-            ? '✅ Ya escaneaste tu Desayuno de hoy'
-            : '🚫 Sin servicios reservados hoy';
+            ? 'Ya escaneaste tu Desayuno de hoy'
+            : 'Sin servicios reservados hoy';
           linkPin.style.display = 'none';
           return;
         }
       } else {
         btn.disabled = true;
         btn.textContent = (hf.consumioDes || hf.consumioAlm)
-          ? '✅ Servicios de hoy ya registrados'
-          : '🕒 Horario de comedor finalizado (6:00 PM)';
+          ? 'Servicios de hoy ya registrados'
+          : 'Horario de comedor finalizado (6:00 PM)';
         linkPin.style.display = 'none';
       }
     }
@@ -1586,20 +1655,20 @@
       const desActivo = habDes && (opBase !== 'NO');
       const almActivo = habAlm && (d.almuerzo !== 'NO');
 
-      // Detalle de Desayuno y Almuerzo SIN negrita en la descripción
-      let lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> ${d.menuDesayuno}`;
+      // Cuando Desayuno NO está solicitado muestra solo "Pan a elección + [bebidas del día]"
+      let lineaMenuDesayunoHtml = `<b>Desayuno:</b> Pan a elección + ${infoMenu.bebidas}`;
       if (desActivo) {
         if (opBase === 'OP1') {
           const textoPanes = (infoDes.pan1.toLowerCase() === infoDes.pan2.toLowerCase())
             ? `2 panes con ${infoDes.pan1}`
             : `Pan con ${infoDes.pan1} / ${infoDes.pan2}`;
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">${textoPanes}</span> + ${infoMenu.bebidas}`;
+          lineaMenuDesayunoHtml = `<b>Desayuno:</b> <span class="sel-highlight">${textoPanes}</span> + ${infoMenu.bebidas}`;
         } else if (opBase === 'OP2') {
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> + ${infoMenu.bebidas}`;
+          lineaMenuDesayunoHtml = `<b>Desayuno:</b> <span class="sel-highlight">3 Huevos</span> + ${infoMenu.bebidas}`;
         } else if (opBase === 'OP3') {
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} + 1 Huevo</span> + ${infoMenu.bebidas}`;
+          lineaMenuDesayunoHtml = `<b>Desayuno:</b> <span class="sel-highlight">Pan con ${infoDes.pan1} + 1 Huevo</span> + ${infoMenu.bebidas}`;
         } else if (opBase === 'MANUAL') {
-          lineaMenuDesayunoHtml = `☕ <b>Desayuno:</b> <span class="sel-highlight">Habilitado por RRHH</span>`;
+          lineaMenuDesayunoHtml = `<b>Desayuno:</b> <span class="sel-highlight">Habilitado por RRHH</span>`;
         }
       }
 
@@ -1610,21 +1679,10 @@
       else if (opBase === 'MANUAL') detalleDes = 'Asignado RRHH';
 
       const txtDes = !habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado');
-      const txtAlm = !habAlm
-        ? 'Registro en hoja RRHH'
-        : (almActivo
-          ? `Confirmado: ${d.almuerzo === 'ALTERNATIVO' ? 'Alternativo' : 'Regular'}`
-          : 'Cancelado');
+      const txtAlm = !habAlm ? 'Registro en hoja RRHH' : (almActivo ? 'Confirmado' : 'Cancelado');
 
       const lockDesClass = (!habDes || !d.puedeEditarDesayuno) ? 'disabled-card' : '';
       const lockAlmClass = (!habAlm || !d.puedeEditarAlmuerzo) ? 'disabled-card' : '';
-
-      const avisoDes = !habDes
-        ? ''
-        : (!d.puedeEditarDesayuno ? '🔒 Cerrado (4pm día ant.)' : (!desActivo ? 'Elige Opc. 1, 2 o 3 abajo' : ''));
-      const avisoAlm = !habAlm
-        ? ''
-        : (!d.puedeEditarAlmuerzo ? '🔒 Cerrado (10am hoy)' : (!almActivo ? 'Elige Regular o Alternativo' : ''));
 
       let dropdownsPanesHtml = '';
       if (desActivo && d.puedeEditarDesayuno) {
@@ -1647,7 +1705,7 @@
         }
       }
 
-      const fechaVisual = d.fechaCorta || formatearDiaMesCorto(d.fecha);
+      const numDiaVisual = d.diaNumero || extraerDiaNumeroCliente(d.fecha);
 
       let badgeHtml = '';
       if (d.esHoyFisico) {
@@ -1655,7 +1713,7 @@
       } else {
         const idxHoy = STATE.diasSemana.findIndex(x => x.esHoyFisico);
         const thisIdx = STATE.diasSemana.findIndex(x => x.fecha === d.fecha);
-        if (idxHoy !== -1 && thisIdx === idxHoy + 1 && STATE.horaPeru >= 18.016) {
+        if (idxHoy !== -1 && thisIdx === idxHoy + 1 && obtenerHoraPeruActual() >= 18.016) {
           badgeHtml = '<span style="background:#ffedd5; color:#ea580c; padding:3px 9px; border-radius:7px; font-size:12px; font-weight:bold;">MAÑANA</span>';
         }
       }
@@ -1663,19 +1721,18 @@
       return `
         <div class="day-card" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
           <div class="day-header">
-            <span>${d.diaTexto} ${fechaVisual}</span>
+            <span>${d.diaTexto} ${numDiaVisual}</span>
             ${badgeHtml}
           </div>
           <div class="menu-box">
             <div>${lineaMenuDesayunoHtml}</div>
-            <div style="margin-top:4px;">🍲 <b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
+            <div style="margin-top:4px;"><b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
           </div>
           <div class="srv-grid">
             <div class="srv-split-card ${desActivo ? 'active-des' : ''} ${lockDesClass}">
               <div class="srv-split-top" onclick="seleccionarOpcionDesayuno('${d.fecha}', '${desActivo ? 'NO' : 'OP1'}')">
-                <span class="title">☕ Desayuno</span>
+                <span class="title">Desayuno</span>
                 <span class="status">${txtDes}</span>
-                ${avisoDes ? `<span style="font-size:11.5px; opacity:0.78; display:block; margin-top:4px;">${avisoDes}</span>` : ''}
               </div>
               ${dropdownsPanesHtml}
               <div class="srv-split-bottom">
@@ -1687,9 +1744,8 @@
 
             <div class="srv-split-card ${almActivo ? 'active-alm' : ''} ${lockAlmClass}">
               <div class="srv-split-top" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', '${almActivo ? 'NO' : 'REGULAR'}')">
-                <span class="title">🍲 Almuerzo</span>
+                <span class="title">Almuerzo</span>
                 <span class="status">${txtAlm}</span>
-                ${avisoAlm ? `<span style="font-size:11.5px; opacity:0.78; display:block; margin-top:4px;">${avisoAlm}</span>` : ''}
               </div>
               <div class="srv-split-bottom">
                 <button class="op-sub-btn ${almActivo && d.almuerzo === 'REGULAR' ? 'selected-op' : ''}" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')">Regular</button>
@@ -1735,7 +1791,7 @@
           cambios: lote
         }], res => {
           if (res && !res.ok) {
-            mostrarToast('⚠️ ' + res.msg);
+            mostrarToast(res.msg);
           }
         }, null, 4);
       }, 650);
@@ -1884,9 +1940,9 @@
           cerrarEscanerQR();
           if (HABILITAR_MODO_CODIGO) {
             mostrarBoxPinContingencia();
-            mostrarToast('⚠️ ¿Problemas con la cámara? Ingresa el código del comedor.');
+            mostrarToast('¿Problemas con la cámara? Ingresa el código del comedor.');
           } else {
-            mostrarToast('⚠️ Asegúrate de permitir el acceso a la cámara en tu navegador.');
+            mostrarToast('Asegúrate de permitir el acceso a la cámara en tu navegador.');
           }
         }
       }
@@ -1911,13 +1967,13 @@
     function confirmarPinCamaraMalograda() {
       const pin = document.getElementById('txt-pin-comedor').value.trim();
       if (pin.length < 3) {
-        mostrarToast('⚠️ Ingresa el código de 3 dígitos del comedor.');
+        mostrarToast('Ingresa el código de 3 dígitos del comedor.');
         return;
       }
       document.getElementById('box-pin-contingencia').style.display = 'none';
       const btn = document.getElementById('btn-escanear-qr');
       btn.disabled = true;
-      btn.textContent = '⏳ Validando código...';
+      btn.textContent = 'Validando código...';
 
       ejecutarConReintento('validarPinYRegistrarConsumo', [STATE.usuario.dni, pin], res => {
         if (res.ok) {
@@ -1929,7 +1985,7 @@
           actualizarResumenHeader();
           mostrarTicketVerdeConfirmado(res.servicioRegistrado);
         } else {
-          mostrarToast('❌ ' + res.msg);
+          mostrarToast(res.msg);
         }
         actualizarEstadoBotonQR();
       });
@@ -1938,7 +1994,7 @@
     function procesarRegistroQRInteligente(metodo = 'QR_APP') {
       if (!STATE.usuario || !STATE.hoyFisico) return;
 
-      const srvEsperado = (STATE.horaPeru < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
+      const srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
 
       if (!STATE.modoPruebaQR) {
         if (srvEsperado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;

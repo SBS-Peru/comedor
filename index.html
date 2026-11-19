@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=25">
+  <link rel="manifest" href="manifest.json?v=26">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=25">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=25">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=25">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=26">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=26">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=26">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -365,6 +365,101 @@
       color: #047857; font-size: 15px; font-weight: 800;
     }
 
+    /* TARJETA VERDE COMPACTA PERSISTENTE (REEMPLAZA AL BOTÓN QR TRAS ESCANEAR) */
+    #card-ticket-compacto {
+      display: none;
+      width: 100%;
+      background: #ecfdf5;
+      border: 2.5px solid #10b981;
+      border-radius: 14px;
+      padding: 14px 15px;
+      margin-top: 2px;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.12s;
+    }
+    #card-ticket-compacto:active { transform: scale(0.99); }
+    .compact-ticket-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .compact-ticket-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #10b981;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .compact-ticket-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #065f46;
+      letter-spacing: -0.2px;
+      text-transform: uppercase;
+      line-height: 1.15;
+    }
+    #compact-ticket-detalle {
+      width: 100%;
+      font-size: 17px;
+      font-weight: 800;
+      color: #c2410c;
+      background: #fff7ed;
+      border: 2px solid #ea580c;
+      border-radius: 11px;
+      padding: 8px 10px;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+    .compact-ticket-datetime {
+      width: 100%;
+      background: #ffffff;
+      border: 2px solid #10b981;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    #compact-ticket-fecha {
+      font-size: 21px;
+      font-weight: 900;
+      color: #065f46;
+      letter-spacing: 0.4px;
+      line-height: 1.15;
+    }
+    .compact-ticket-sep {
+      width: 68%;
+      height: 1.5px;
+      background: #d1fae5;
+      border-radius: 2px;
+    }
+    #compact-ticket-hora {
+      font-size: 24px;
+      font-weight: 900;
+      color: #047857;
+      letter-spacing: 0.4px;
+      line-height: 1.15;
+    }
+    .compact-ticket-hint {
+      font-size: 12px;
+      font-weight: 600;
+      color: #047857;
+      opacity: 0.85;
+      margin-top: -2px;
+    }
+
     /* VENTANA EMERGENTE DEL ESCÁNER QR */
     #modal-qr-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -464,6 +559,11 @@
       #ticket-modal-detalle { font-size: 23px; padding: 12px 10px; }
       #ticket-modal-fecha { font-size: 31px; }
       #ticket-modal-hora { font-size: 36px; }
+      #card-ticket-compacto { padding: 12px; gap: 8px; }
+      .compact-ticket-title { font-size: 16.5px; }
+      #compact-ticket-detalle { font-size: 16px; padding: 7px 8px; }
+      #compact-ticket-fecha { font-size: 19.5px; }
+      #compact-ticket-hora { font-size: 22.5px; }
     }
 
     .rrhh-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
@@ -488,7 +588,7 @@
   <div class="app-shell" id="app-shell">
     <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
     <div id="view-splash">
-      <img src="./Logo.jpg?v=25" alt="Comedor SBS" class="splash-logo">
+      <img src="./Logo.jpg?v=26" alt="Comedor SBS" class="splash-logo">
       <div class="splash-spinner" id="splash-spinner"></div>
       <p id="splash-texto">Actualizando...</p>
       <div id="splash-retry-wrap">
@@ -501,7 +601,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=25" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=26" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -523,7 +623,7 @@
       <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:12px; padding:12px; font-size:14px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
         Instalar App en pantalla de inicio
       </button>
-      <div class="login-ver-tag" id="lbl-ver-login">v25</div>
+      <div class="login-ver-tag" id="lbl-ver-login">v26</div>
     </div>
 
     <!-- 2. PANTALLA PRINCIPAL -->
@@ -542,7 +642,7 @@
           </div>
           <div class="top-bar-right">
             <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
-            <span class="topbar-ver-tag" id="lbl-ver-main">v25</span>
+            <span class="topbar-ver-tag" id="lbl-ver-main">v26</span>
           </div>
         </div>
         <div class="header-kpi-strip">
@@ -568,6 +668,21 @@
           <button class="btn btn-success" id="btn-escanear-qr" style="margin-top:2px;" onclick="abrirEscanerQR()">
             Escanear QR en Comedor
           </button>
+
+          <!-- TARJETA VERDE COMPACTA PERSISTENTE (REEMPLAZA EL BOTÓN QR TRAS ESCANEAR) -->
+          <div id="card-ticket-compacto" onclick="reabrirTicketVerdeDesdeTarjeta()" title="Toca para ampliar">
+            <div class="compact-ticket-head">
+              <div class="compact-ticket-icon">✓</div>
+              <div class="compact-ticket-title" id="compact-ticket-titulo">ALMUERZO REGISTRADO</div>
+            </div>
+            <div id="compact-ticket-detalle" style="display:none;"></div>
+            <div class="compact-ticket-datetime">
+              <div id="compact-ticket-fecha">19/11/2026</div>
+              <div class="compact-ticket-sep"></div>
+              <div id="compact-ticket-hora">12:00:00 PM</div>
+            </div>
+            <div class="compact-ticket-hint" id="compact-ticket-nota">Toca para ampliar</div>
+          </div>
 
           <!-- VENTANA EMERGENTE CÁMARA QR -->
           <div id="modal-qr-overlay">
@@ -756,7 +871,7 @@
   <!-- PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA -->
   <div id="modal-update-obligatorio">
     <div class="update-card">
-      <img src="./Logo.jpg?v=25" alt="Comedor SBS" class="update-logo">
+      <img src="./Logo.jpg?v=26" alt="Comedor SBS" class="update-logo">
       <h3>Actualiza Comedor SBS</h3>
       <button class="btn btn-primary" id="btn-actualizar-sbs" onclick="aplicarActualizacionApp()">
         Actualizar Comedor SBS
@@ -770,10 +885,10 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    const VERSION_LOCAL_APP = "25";
+    const VERSION_LOCAL_APP = "26";
 
     // Texto de mejora por defecto (puedes editarlo aquí o desde Código.gs -> CONFIG.NOTAS_VERSION)
-    const TEXTO_MEJORA_DEFECTO = "Ahora puedes ver tus panes elegidos al escanear tu desayuno y la App carga más rápido.";
+    const TEXTO_MEJORA_DEFECTO = "Ahora tu pase verde de comida queda guardado en pantalla aunque cierres la App.";
 
     // Variables de arranque operativo (evitan sumar consumos anteriores al inicio del servicio)
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
@@ -810,7 +925,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=25', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=26', { updateViaCache: 'none' }).then(reg => {
           reg.update().catch(() => {});
         }).catch(() => {});
       });
@@ -898,7 +1013,9 @@
       dnisActivosMuestra: [],
       html5QrCode: null,
       procesandoEscaneo: false,
-      idxPrincipal: 0
+      idxPrincipal: 0,
+      ticketCompactoActivo: null,
+      ultimoTicketPrueba: null
     };
 
     // ========================================================================
@@ -1032,14 +1149,28 @@
       return null;
     }
 
-    function obtenerHoraExactaActual() {
-      const ahora = new Date();
-      return ahora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    function formatearHoraTicket12h(horaRaw) {
+      const s = String(horaRaw || '').trim();
+      if (!s) return '';
+      if (/am|pm/i.test(s)) return s;
+      const m = s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+      if (!m) return s;
+      let h = Number(m[1]);
+      const min = m[2];
+      const seg = m[3] || '00';
+      const suf = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      return `${String(h).padStart(2, '0')}:${min}:${seg} ${suf}`;
     }
 
     function obtenerHoraLima24hActual() {
       const p = obtenerPartesLimaActual();
       return `${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
+    }
+
+    function obtenerHoraExactaActual() {
+      return formatearHoraTicket12h(obtenerHoraLima24hActual());
     }
 
     function obtenerInfoMenuDia(d) {
@@ -1076,8 +1207,18 @@
       try {
         const marcaLocal = JSON.parse(localStorage.getItem('SBS_QR_CONFIRMADO_HOY') || '{}');
         if (marcaLocal.dni === reg.usuario.dni && marcaLocal.fecha === reg.hoyFisico.fecha) {
-          if (marcaLocal.des) reg.hoyFisico.consumioDes = true;
-          if (marcaLocal.alm) reg.hoyFisico.consumioAlm = true;
+          if (marcaLocal.des) {
+            reg.hoyFisico.consumioDes = true;
+            if (!reg.hoyFisico.horaScanDes && marcaLocal.horaDes) {
+              reg.hoyFisico.horaScanDes = marcaLocal.horaDes;
+            }
+          }
+          if (marcaLocal.alm) {
+            reg.hoyFisico.consumioAlm = true;
+            if (!reg.hoyFisico.horaScanAlm && marcaLocal.horaAlm) {
+              reg.hoyFisico.horaScanAlm = marcaLocal.horaAlm;
+            }
+          }
         }
       } catch (e) {}
       return reg;
@@ -1544,6 +1685,9 @@
       STATE.usuario = null;
       STATE.tokenActivo = '';
       STATE.registroPendienteLogin = null;
+      STATE.ticketCompactoActivo = null;
+      STATE.ultimoTicketPrueba = null;
+      ocultarTarjetaTicketCompacto();
       document.getElementById('txt-dni').value = '';
       document.getElementById('txt-clave').value = '';
       document.getElementById('step-clave').style.display = 'none';
@@ -2000,6 +2144,61 @@
      * - Desayuno: 8:30 AM (8.5) a 11:59 AM (< 12.0)
      * - Almuerzo: 12:00 PM (12.0) a 6:00 PM (<= 18.0)
      */
+    function ocultarTarjetaTicketCompacto() {
+      const card = document.getElementById('card-ticket-compacto');
+      if (card) card.style.display = 'none';
+      STATE.ticketCompactoActivo = null;
+    }
+
+    function mostrarTarjetaTicketCompacto(servicio, horaRaw, notaExtra, mantenerBotonVisible = false) {
+      const btn = document.getElementById('btn-escanear-qr');
+      const card = document.getElementById('card-ticket-compacto');
+      if (!card) return;
+
+      const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
+      const horaVisual = formatearHoraTicket12h(horaRaw) || 'Registrado hoy';
+
+      document.getElementById('compact-ticket-titulo').textContent = `${servicio} REGISTRADO`;
+
+      const detEl = document.getElementById('compact-ticket-detalle');
+      if (servicio === 'DESAYUNO') {
+        const textoDes = obtenerDetalleDesayunoHoyParaTicket();
+        if (textoDes) {
+          detEl.textContent = textoDes;
+          detEl.style.display = 'block';
+        } else {
+          detEl.style.display = 'none';
+        }
+      } else {
+        detEl.style.display = 'none';
+      }
+
+      document.getElementById('compact-ticket-fecha').textContent = fechaHoy;
+      document.getElementById('compact-ticket-hora').textContent = horaVisual;
+      document.getElementById('compact-ticket-nota').textContent = notaExtra || 'Toca para ampliar';
+
+      STATE.ticketCompactoActivo = {
+        servicio: servicio,
+        fecha: fechaHoy,
+        hora: horaVisual
+      };
+
+      if (btn) {
+        btn.style.display = mantenerBotonVisible ? 'inline-flex' : 'none';
+      }
+      card.style.marginTop = mantenerBotonVisible ? '10px' : '2px';
+      card.style.display = 'flex';
+    }
+
+    function reabrirTicketVerdeDesdeTarjeta() {
+      if (!STATE.ticketCompactoActivo) return;
+      vibrarHaptico(15);
+      mostrarTicketVerdeConfirmado(
+        STATE.ticketCompactoActivo.servicio,
+        STATE.ticketCompactoActivo.hora
+      );
+    }
+
     function actualizarEstadoBotonQR() {
       const btn = document.getElementById('btn-escanear-qr');
       const hf = STATE.hoyFisico;
@@ -2008,14 +2207,23 @@
       const horaActual = obtenerHoraPeruActual();
 
       if (STATE.modoPruebaQR) {
+        btn.style.display = 'inline-flex';
         btn.disabled = false;
-        btn.textContent = (horaActual < 12.0)
+        const srvPrueba = (horaActual < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
+        btn.textContent = (srvPrueba === 'DESAYUNO')
           ? 'Escanear QR en Comedor (Desayuno)'
           : 'Escanear QR en Comedor (Almuerzo)';
+        if (STATE.ultimoTicketPrueba && STATE.ultimoTicketPrueba.servicio === srvPrueba) {
+          mostrarTarjetaTicketCompacto(srvPrueba, STATE.ultimoTicketPrueba.hora, 'Modo prueba • Toca para ampliar', true);
+        } else {
+          ocultarTarjetaTicketCompacto();
+        }
         return;
       }
 
       if (!hf.reservoDes && !hf.reservoAlm) {
+        ocultarTarjetaTicketCompacto();
+        btn.style.display = 'inline-flex';
         btn.disabled = true;
         btn.textContent = 'Sin servicios reservados hoy';
         return;
@@ -2024,12 +2232,14 @@
       if (horaActual < 12.0) {
         if (hf.reservoDes) {
           if (hf.consumioDes) {
-            btn.disabled = true;
-            btn.textContent = hf.reservoAlm
-              ? 'Desayuno registrado (Almuerzo desde 12:00 PM)'
-              : 'Ya escaneaste tu Desayuno de hoy';
+            const notaDes = hf.reservoAlm
+              ? 'Toca para ampliar • Almuerzo desde 12:00 PM'
+              : 'Toca para ampliar';
+            mostrarTarjetaTicketCompacto('DESAYUNO', hf.horaScanDes, notaDes, false);
             return;
           }
+          ocultarTarjetaTicketCompacto();
+          btn.style.display = 'inline-flex';
           if (horaActual < 8.5) {
             btn.disabled = true;
             btn.textContent = 'El desayuno se servirá desde las 8:30 AM';
@@ -2039,6 +2249,8 @@
           btn.textContent = 'Escanear QR en Comedor (Desayuno)';
           return;
         } else {
+          ocultarTarjetaTicketCompacto();
+          btn.style.display = 'inline-flex';
           btn.disabled = true;
           btn.textContent = 'El almuerzo se servirá desde las 12:00 PM';
           return;
@@ -2046,14 +2258,17 @@
       } else if (horaActual <= 18.0) {
         if (hf.reservoAlm) {
           if (hf.consumioAlm) {
-            btn.disabled = true;
-            btn.textContent = 'Almuerzo ya registrado hoy';
+            mostrarTarjetaTicketCompacto('ALMUERZO', hf.horaScanAlm, 'Toca para ampliar', false);
             return;
           }
+          ocultarTarjetaTicketCompacto();
+          btn.style.display = 'inline-flex';
           btn.disabled = false;
           btn.textContent = 'Escanear QR en Comedor (Almuerzo)';
           return;
         } else {
+          ocultarTarjetaTicketCompacto();
+          btn.style.display = 'inline-flex';
           btn.disabled = true;
           btn.textContent = hf.consumioDes
             ? 'Ya escaneaste tu Desayuno de hoy'
@@ -2061,6 +2276,8 @@
           return;
         }
       } else {
+        ocultarTarjetaTicketCompacto();
+        btn.style.display = 'inline-flex';
         btn.disabled = true;
         btn.textContent = (hf.consumioDes || hf.consumioAlm)
           ? 'Servicios de hoy ya registrados'
@@ -2392,25 +2609,36 @@
 
       vibrarHaptico([35, 45, 35]);
       const horaEscaneoExacta = obtenerHoraLima24hActual();
+      const horaVisual12h = formatearHoraTicket12h(horaEscaneoExacta);
       const tsEscaneoMs = Date.now();
       const srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
 
       if (!STATE.modoPruebaQR) {
-        if (srvEsperado === 'DESAYUNO') STATE.hoyFisico.consumioDes = true;
-        if (srvEsperado === 'ALMUERZO') STATE.hoyFisico.consumioAlm = true;
+        if (srvEsperado === 'DESAYUNO') {
+          STATE.hoyFisico.consumioDes = true;
+          STATE.hoyFisico.horaScanDes = horaVisual12h;
+        }
+        if (srvEsperado === 'ALMUERZO') {
+          STATE.hoyFisico.consumioAlm = true;
+          STATE.hoyFisico.horaScanAlm = horaVisual12h;
+        }
         try {
           localStorage.setItem('SBS_QR_CONFIRMADO_HOY', JSON.stringify({
             dni: STATE.usuario.dni,
             fecha: STATE.hoyFisico.fecha,
             des: STATE.hoyFisico.consumioDes,
-            alm: STATE.hoyFisico.consumioAlm
+            alm: STATE.hoyFisico.consumioAlm,
+            horaDes: STATE.hoyFisico.horaScanDes || '',
+            horaAlm: STATE.hoyFisico.horaScanAlm || ''
           }));
         } catch (e) {}
         guardarSnapshotLocal();
+      } else {
+        STATE.ultimoTicketPrueba = { servicio: srvEsperado, hora: horaVisual12h };
       }
 
       actualizarResumenHeader();
-      mostrarTicketVerdeConfirmado(srvEsperado);
+      mostrarTicketVerdeConfirmado(srvEsperado, horaVisual12h);
       actualizarEstadoBotonQR();
 
       encolarRegistroQRSegundoPlano({
@@ -2503,10 +2731,10 @@
       return '';
     }
 
-    function mostrarTicketVerdeConfirmado(servicio) {
+    function mostrarTicketVerdeConfirmado(servicio, horaGuardadaOpcional) {
       const overlay = document.getElementById('modal-ticket-overlay');
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
-      const horaExacta = obtenerHoraExactaActual();
+      const horaExacta = horaGuardadaOpcional ? formatearHoraTicket12h(horaGuardadaOpcional) : obtenerHoraExactaActual();
       document.getElementById('ticket-modal-titulo').textContent = `¡${servicio} REGISTRADO!`;
 
       // El detalle de panes/huevos se muestra únicamente para DESAYUNO; en ALMUERZO solo fecha y hora

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="e|s">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal RRHH • Comedor SBS</title>
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=23">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=24">
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
@@ -182,7 +182,7 @@
   <!-- 1. LOGIN -->
   <div id="view-login">
     <div class="login-card">
-      <img src="./Logo.jpg?v=23" alt="SBS" class="login-logo">
+      <img src="./Logo.jpg?v=24" alt="SBS" class="login-logo">
       <h1>Portal RRHH • Comedor SBS</h1>
 
       <div id="step-dni">
@@ -210,7 +210,7 @@
   <div id="view-portal">
     <header class="top-header">
       <div class="brand-wrap">
-        <img src="./Logo.jpg?v=23" alt="SBS" class="brand-logo">
+        <img src="./Logo.jpg?v=24" alt="SBS" class="brand-logo">
         <div>
           <h2>Portal RRHH • Comedor SBS</h2>
           <span id="lbl-admin-activo"></span>
@@ -483,8 +483,6 @@
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
-    const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
-    const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
     const PANES_CATALOGO_BASE = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
     let STATE = {
@@ -507,7 +505,7 @@
     };
 
     window.addEventListener('DOMContentLoaded', () => {
-      const guardada = localStorage.getItem('SBS_COMEDOR_RRHH_SESSION') || localStorage.getItem('SBS_COMEDOR_GEP_SESSION') || localStorage.getItem('SBS_COMEDOR_AUTH');
+      const guardada = localStorage.getItem('SBS_COMEDOR_RRHH_SESSION') || localStorage.getItem('SBS_COMEDOR_AUTH');
       if (guardada) {
         try {
           const parsed = JSON.parse(guardada);
@@ -548,7 +546,7 @@
       let acum = [];
       for (let i = 0; i < palabras.length; i++) {
         const w = palabras[i];
-        const low = w.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+        const low = w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         acum.push(w);
         if (!conectores.includes(low)) {
           bloques.push(acum.join(' '));
@@ -606,7 +604,7 @@
     function tienePermisoPortal(u) {
       if (!u) return false;
       if (u.esRRHH || u.esTecnico) return true;
-      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
       return ['ADMIN_RRHH', 'RRHH', 'ADMIN_GEP', 'GEP', 'TECNICO', 'ADMIN_TECNICO', 'DEV'].includes(r);
     }
 
@@ -619,7 +617,7 @@
       let p = String(rawPan || '').trim();
       p = p.replace(/^pan\s+con\s+/i, '').replace(/^pan\s+de\s+/i, '').trim();
       if (!p) return '';
-      const low = p.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+      const low = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       if (low.includes('pollo')) return 'Pollo';
       if (low.includes('queso')) return 'Queso';
       if (low.includes('aceituna')) return 'Aceituna';
@@ -653,7 +651,7 @@
     }
 
     // ========================================================================
-    // LOGIN PORTAL RRHH (CON VALIDACIÓN EN 1.0 SEGUNDO)
+    // LOGIN PORTAL RRHH (MOTOR LIGERO 1-A-1)
     // ========================================================================
     async function verificarDniRRHH() {
       const dni = normalizarDni(document.getElementById('txt-dni').value);
@@ -666,26 +664,26 @@
       btn.textContent = 'Verificando...';
 
       try {
-        const res = await llamarAPI('loginEnVivo', [dni]);
+        const res = await llamarAPI('sincronizarMiEstado', [dni]);
         btn.disabled = false;
         btn.textContent = 'Continuar';
-        if (res && res.ok && res.data && res.data.diccionarioUsuarios[dni]) {
-          const reg = res.data.diccionarioUsuarios[dni];
-          if (!tienePermisoPortal(reg.usuario)) {
+        if (res && res.ok && res.registro && res.registro.usuario) {
+          const u = res.registro.usuario;
+          if (!tienePermisoPortal(u)) {
             mostrarToast('Acceso restringido al personal de RRHH.');
             return;
           }
-          STATE.pendienteLogin = reg.usuario;
+          STATE.pendienteLogin = u;
           document.getElementById('step-dni').style.display = 'none';
           document.getElementById('step-clave').style.display = 'block';
-          document.getElementById('lbl-hola-rrhh').textContent = `Hola, ${extraerPrimerNombrePortal(reg.usuario)}`;
-          document.getElementById('lbl-inst-rrhh').textContent = reg.usuario.tieneClave
+          document.getElementById('lbl-hola-rrhh').textContent = `Hola, ${extraerPrimerNombrePortal(u)}`;
+          document.getElementById('lbl-inst-rrhh').textContent = u.tieneClave
             ? 'Ingresa tu contraseña:'
             : 'Crea una contraseña para tu cuenta:';
           document.getElementById('txt-clave').value = '';
           document.getElementById('txt-clave').focus();
         } else {
-          mostrarToast('DNI no registrado.');
+          mostrarToast(res && res.msg ? res.msg : 'DNI no registrado.');
         }
       } catch (e) {
         btn.disabled = false;
@@ -787,7 +785,6 @@
       actualizarBotonGuardarGeneral();
       if (STATE.timerAutoRefresh) clearInterval(STATE.timerAutoRefresh);
       localStorage.removeItem('SBS_COMEDOR_RRHH_SESSION');
-      localStorage.removeItem('SBS_COMEDOR_GEP_SESSION');
       STATE.admin = null;
       document.getElementById('view-portal').style.display = 'none';
       document.getElementById('view-login').style.display = 'flex';
@@ -849,7 +846,9 @@
         STATE.avisoBanner = res.avisoBanner || '';
         STATE.fechaSeleccionada = res.fechaConsultada;
         STATE.fechasSemana = res.fechasSemana || [];
-        STATE.panesCatalogo = PANES_CATALOGO_BASE.slice();
+        STATE.panesCatalogo = (Array.isArray(res.panesCatalogo) && res.panesCatalogo.length > 0)
+          ? res.panesCatalogo.slice()
+          : PANES_CATALOGO_BASE.slice();
 
         STATE.colaboradoresBD = (res.colaboradoresBD || []).sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
         STATE.monitoreoDia = (res.monitoreoDia || []).sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
@@ -1091,11 +1090,7 @@
       const partes = s.split('|');
       const p1 = normalizarPanPortal(partes[1] || 'Pollo') || 'Pollo';
       const p2 = normalizarPanPortal(partes[2] || p1) || p1;
-      return {
-        op: partes[0] || 'NO',
-        p1: p1,
-        p2: p2
-      };
+      return { op: partes[0] || 'NO', p1: p1, p2: p2 };
     }
 
     function obtenerEstadoActualColaborador(c) {
@@ -1440,7 +1435,7 @@
     }
 
     // ========================================================================
-    // MÓDULO: REPORTE DE PLANILLA (COBRO AUTOMÁTICO AL CORTE: 4 PM DES / 10 AM ALM)
+    // MÓDULO: REPORTE DE PLANILLA (FUENTE ÚNICA DESDE SERVIDOR SIN REPROCESO)
     // ========================================================================
     function inicializarFechasPlanilla() {
       const baseStr = STATE.hoyStr || new Date().toISOString().split('T')[0];
@@ -1451,13 +1446,6 @@
       document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
     }
 
-    function convertirFechaPeruAISO(fStr) {
-      const s = String(fStr || '').trim();
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-      const p = s.split('/');
-      return p.length === 3 ? `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}` : s;
-    }
-
     async function cargarReportePlanillaRRHH() {
       const fIni = document.getElementById('rep-ini').value;
       const fFin = document.getElementById('rep-fin').value;
@@ -1466,50 +1454,13 @@
 
       try {
         const res = await llamarAPI('obtenerReportePlanillaRRHH', [fIni, fFin]);
-        const filasCrudas = (res && res.filas) ? res.filas : [];
-        const hoyISO = (res && res.hoyStr) ? res.hoyStr : (STATE.hoyStr || new Date().toISOString().split('T')[0]);
+        if (!res || !res.ok) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger);">No se pudo obtener el reporte de planilla.</td></tr>';
+          return;
+        }
 
-        // Respeta el cobro por corte del servidor (incluye desayunos cerrados 4:00 PM y almuerzos cerrados 10:00 AM)
-        const filasValidas = filasCrudas.filter(f => {
-          const iso = f.fechaISO || convertirFechaPeruAISO(f.fecha);
-          const esDes = String(f.servicio || '').toUpperCase().startsWith('DESAYUNO');
-          if (esDes && iso < FECHA_ARRANQUE_DESAYUNO && !String(f.opcion || '').includes('Asignado')) return false;
-          if (!esDes && iso < FECHA_ARRANQUE_ALMUERZO) return false;
-
-          const asistio = String(f.consumio || '').toUpperCase() === 'SI';
-          const cerrado = (f.corteCerrado !== undefined) ? !!f.corteCerrado : (iso < hoyISO);
-          return asistio || cerrado;
-        });
-
-        const mapaRecalculado = {};
-        filasValidas.forEach(f => {
-          const dni = normalizarDni(f.dni);
-          if (!mapaRecalculado[dni]) {
-            mapaRecalculado[dni] = {
-              dni: dni,
-              nombre: f.nombre,
-              cantDesayunos: 0,
-              costoDesayunos: 0,
-              cantAlmuerzos: 0,
-              costoAlmuerzos: 0,
-              costoTotal: 0
-            };
-          }
-          const monto = Number(f.montoCobrar || 0);
-          if (String(f.servicio || '').toUpperCase().startsWith('DESAYUNO')) {
-            mapaRecalculado[dni].cantDesayunos++;
-            mapaRecalculado[dni].costoDesayunos += monto;
-          } else {
-            mapaRecalculado[dni].cantAlmuerzos++;
-            mapaRecalculado[dni].costoAlmuerzos += monto;
-          }
-          mapaRecalculado[dni].costoTotal += monto;
-        });
-
-        STATE.ultimasFilasReporte = filasValidas;
-        STATE.resumenReporte = Object.values(mapaRecalculado)
-          .filter(r => r.costoTotal > 0)
-          .sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
+        STATE.ultimasFilasReporte = Array.isArray(res.filas) ? res.filas : [];
+        STATE.resumenReporte = Array.isArray(res.resumen) ? res.resumen : [];
 
         if (STATE.resumenReporte.length === 0) {
           tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin consumos registrados en este periodo.</td></tr>';
@@ -1519,16 +1470,17 @@
 
         let granTot = 0;
         tbody.innerHTML = STATE.resumenReporte.map(r => {
-          granTot += Number(r.costoTotal);
+          const tot = Number(r.costoTotal || 0);
+          granTot += tot;
           return `
             <tr>
               <td><b>${r.dni}</b></td>
               <td><b>${r.nombre}</b></td>
-              <td style="text-align:center;">${r.cantDesayunos}</td>
-              <td>S/ ${r.costoDesayunos.toFixed(2)}</td>
-              <td style="text-align:center;">${r.cantAlmuerzos}</td>
-              <td>S/ ${r.costoAlmuerzos.toFixed(2)}</td>
-              <td style="background:#ecfdf5; color:#047857; font-weight:800;">S/ ${r.costoTotal.toFixed(2)}</td>
+              <td style="text-align:center;">${Number(r.cantDesayunos || 0)}</td>
+              <td>S/ ${Number(r.costoDesayunos || 0).toFixed(2)}</td>
+              <td style="text-align:center;">${Number(r.cantAlmuerzos || 0)}</td>
+              <td>S/ ${Number(r.costoAlmuerzos || 0).toFixed(2)}</td>
+              <td style="background:#ecfdf5; color:#047857; font-weight:800;">S/ ${tot.toFixed(2)}</td>
             </tr>
           `;
         }).join('');

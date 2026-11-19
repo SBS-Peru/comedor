@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=22">
+  <link rel="manifest" href="manifest.json?v=23">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=22">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=22">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=22">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=23">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=23">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=23">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -50,6 +50,50 @@
     }
     .app-shell.wide-rrhh { max-width: 900px; }
 
+    /* PANTALLA DE CARGA RÁPIDA (SPLASH) CON LOGO */
+    #view-splash {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+      z-index: 3000;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 32px;
+      text-align: center;
+    }
+    .splash-logo {
+      width: 148px;
+      height: 148px;
+      object-fit: contain;
+      margin-bottom: 18px;
+    }
+    .splash-spinner {
+      width: 34px;
+      height: 34px;
+      border: 3.5px solid #e2e8f0;
+      border-top-color: var(--sbs-primary);
+      border-radius: 50%;
+      animation: spinSplash 0.75s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spinSplash {
+      to { transform: rotate(360deg); }
+    }
+    #splash-texto {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--sbs-primary);
+      margin: 0;
+    }
+    #splash-retry-wrap {
+      display: none;
+      margin-top: 16px;
+      width: 100%;
+      max-width: 240px;
+    }
+
     /* BANNER DE ACTUALIZACIÓN EN VIVO */
     #banner-actualizacion {
       display: none;
@@ -74,6 +118,37 @@
       font-weight: 800;
       cursor: pointer;
       white-space: nowrap;
+    }
+
+    /* BANNER INFORMATIVO DINÁMICO (DESDE MENU_SEMANAL) */
+    #banner-informativo-sbs {
+      display: none;
+      background: #fffbeb;
+      border-bottom: 1.5px solid #fde68a;
+      color: #92400e;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-shrink: 0;
+      line-height: 1.35;
+    }
+    .btn-cerrar-banner-info {
+      background: rgba(146, 64, 14, 0.12);
+      color: #92400e;
+      border: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #view-login { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 26px; text-align: center; background: #ffffff; }
@@ -110,9 +185,14 @@
     .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 8px 16px; border-radius: 9px; font-size: 13.8px; cursor: pointer; font-weight: 600; flex-shrink: 0; }
     .header-kpi-strip {
       margin-top: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 11px; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; font-weight: 600;
+      border-radius: 11px; padding: 10px 13px; display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; font-weight: 600;
     }
-    .header-kpi-total { background: #10b981; color: #ffffff; font-weight: 800; padding: 5px 12px; border-radius: 8px; font-size: 14.5px; }
+    .header-kpi-total {
+      background: #10b981; color: #ffffff; font-weight: 800; padding: 6px 12px; border-radius: 8px;
+      font-size: 14.5px; border: none; cursor: pointer; transition: 0.15s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .header-kpi-total:active { transform: scale(0.97); opacity: 0.9; }
 
     .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .tab { flex: 1; text-align: center; padding: 12px 6px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
@@ -122,7 +202,6 @@
     .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 12px; }
     .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16.5px; margin-bottom: 10px; }
 
-    /* Detalle de Desayuno y Almuerzo con letra más grande y sin negrita en la descripción */
     .menu-box {
       background: #f8fafc; border-radius: 9px; padding: 10px 12px; font-size: 13.8px;
       letter-spacing: -0.1px; color: #334155; font-weight: 400; margin-bottom: 12px; line-height: 1.48;
@@ -131,17 +210,18 @@
     .menu-box b { color: #0f172a; font-weight: 700; }
     .menu-box .sel-highlight { color: #c2410c; font-weight: 700; }
 
+    /* Tarjetas compactas sin altura mínima forzada: al cerrarse el corte o no haber desplegables quedan de 2 líneas */
     .srv-grid { display: flex; gap: 10px; align-items: stretch; }
 
     .srv-split-card {
       flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white;
       display: flex; flex-direction: column; overflow: hidden; transition: 0.15s;
-      min-width: 0; min-height: 130px;
+      min-width: 0;
     }
     .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
     .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
     .srv-split-card.disabled-card {
-      opacity: 0.58; background: #f1f5f9; pointer-events: none; min-height: 0;
+      opacity: 0.58; background: #f1f5f9; pointer-events: none;
     }
 
     .srv-split-top {
@@ -149,7 +229,7 @@
       display: flex; flex-direction: column; justify-content: center; align-items: center;
     }
     .srv-split-card.disabled-card .srv-split-top {
-      padding: 10px 6px;
+      padding: 9px 6px;
     }
     .srv-split-top .title {
       font-size: 15.5px; font-weight: 800; display: block; color: var(--text);
@@ -158,7 +238,7 @@
     .srv-split-card.active-des .srv-split-top .title { color: #c2410c; }
     .srv-split-card.active-alm .srv-split-top .title { color: #047857; }
     
-    .srv-split-top .status { font-size: 13px; color: var(--muted); display: block; margin-top: 4px; line-height: 1.25; }
+    .srv-split-top .status { font-size: 13px; color: var(--muted); display: block; margin-top: 3px; line-height: 1.25; }
     .srv-split-card.active-des .srv-split-top .status { color: #c2410c; font-weight: 700; }
     .srv-split-card.active-alm .srv-split-top .status { color: #047857; font-weight: 700; }
 
@@ -184,6 +264,91 @@
     
     .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
     .srv-split-card.active-alm .op-sub-btn.selected-op { background: var(--sbs-accent); color: white; }
+
+    /* MODALES GENERALES */
+    .modal-backdrop {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.72); z-index: 9997; justify-content: center; align-items: center; padding: 16px;
+    }
+    .modal-panel {
+      background: white; width: 100%; max-width: 440px; max-height: 86vh;
+      border-radius: 20px; padding: 20px; display: flex; flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35); animation: popModal 0.16s ease-out;
+    }
+    .modal-header-row {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;
+    }
+    .modal-header-row h3 {
+      margin: 0; font-size: 18px; font-weight: 800; color: var(--sbs-primary);
+    }
+    .modal-header-row p {
+      margin: 3px 0 0; font-size: 12.5px; color: var(--muted); font-weight: 600;
+    }
+    .btn-x-sm {
+      width: 34px; height: 34px; border-radius: 50%; border: none; background: #f1f5f9;
+      color: #475569; font-size: 18px; font-weight: 800; cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ESTILOS DETALLE DE CONSUMIDOS */
+    .consumo-table-wrap {
+      flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px;
+    }
+    .consumo-table {
+      width: 100%; border-collapse: collapse; font-size: 14px;
+    }
+    .consumo-table th {
+      background: #f8fafc; color: #334155; font-weight: 800; padding: 10px 8px;
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; text-align: center;
+    }
+    .consumo-table th:first-child { text-align: left; padding-left: 14px; }
+    .consumo-table td {
+      padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: center; vertical-align: middle;
+    }
+    .consumo-table td:first-child { text-align: left; padding-left: 14px; font-weight: 700; color: #1e293b; }
+    .chk-ok {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: #dcfce7; color: #047857; font-size: 15px; font-weight: 900;
+    }
+    .chk-no {
+      color: #cbd5e1; font-size: 18px; font-weight: 800;
+    }
+    .consumo-summary-foot {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 11px;
+      padding: 11px 14px; display: flex; justify-content: space-between; align-items: center;
+      font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 12px;
+    }
+    .consumo-summary-foot .tot-pill {
+      color: #047857; font-size: 15px; font-weight: 800;
+    }
+
+    /* ESTILOS MODAL DE NOVEDADES */
+    .novedad-img {
+      width: 100%; max-height: 220px; object-fit: contain; border-radius: 12px;
+      border: 1px solid var(--border); margin-bottom: 12px; background: #f8fafc;
+    }
+    .novedad-body {
+      text-align: center; padding: 6px 4px 12px;
+    }
+    .novedad-badge {
+      display: inline-block; background: #dcfce7; color: #065f46; font-size: 11.5px;
+      font-weight: 800; padding: 4px 10px; border-radius: 999px; margin-bottom: 10px;
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .novedad-titulo {
+      margin: 0 0 8px; font-size: 19px; font-weight: 800; color: var(--sbs-primary);
+    }
+    .novedad-desc {
+      margin: 0; font-size: 14.5px; color: #475569; line-height: 1.5;
+    }
+    .novedad-dots {
+      display: flex; justify-content: center; gap: 7px; margin: 14px 0;
+    }
+    .novedad-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1;
+    }
+    .novedad-dot.active { background: var(--sbs-primary); width: 20px; border-radius: 999px; }
 
     /* VENTANA EMERGENTE DEL ESCÁNER QR */
     #modal-qr-overlay {
@@ -237,7 +402,7 @@
     }
 
     @keyframes popModal {
-      from { transform: scale(0.9); opacity: 0; }
+      from { transform: scale(0.92); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
 
@@ -246,16 +411,14 @@
       .top-bar { padding: 18px 16px 14px; }
       .top-bar h2 { font-size: 19.5px; }
       .top-bar p { margin-top: 6px; font-size: 13px; }
-      .header-kpi-strip { margin-top: 13px; padding: 10px 12px; font-size: 13.8px; }
-      .header-kpi-total { font-size: 13.8px; }
+      .header-kpi-strip { margin-top: 13px; padding: 9px 11px; font-size: 13.8px; }
+      .header-kpi-total { font-size: 13.8px; padding: 5px 10px; }
       .tab { padding: 10px 4px; font-size: 14px; }
       .scroll-area { padding: 10px 12px; }
       .day-card { padding: 12px; margin-bottom: 10px; }
       .day-header { font-size: 15.5px; margin-bottom: 8px; }
       .menu-box { padding: 8px 10px; font-size: 13px; margin-bottom: 10px; }
       .srv-grid { gap: 8px; }
-      .srv-split-card { min-height: 122px; }
-      .srv-split-card.disabled-card { min-height: 0; }
       .srv-split-top { padding: 8px 4px; }
       .srv-split-top .title { font-size: 14.5px; }
       .srv-split-top .status { font-size: 12.2px; margin-top: 3px; }
@@ -283,12 +446,24 @@
     .kpi-card-tech .num { font-size: 17px; font-weight: 800; color: var(--sbs-primary); display: block; }
     .kpi-card-tech .lbl { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 2px; display: block; }
 
-    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 14px; font-weight: 600; display: none; z-index: 999; text-align: center; width: max-content; max-width: 90vw; }
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 14px; font-weight: 600; display: none; z-index: 9999; text-align: center; width: max-content; max-width: 90vw; }
   </style>
 </head>
 <body>
 
   <div class="app-shell" id="app-shell">
+    <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
+    <div id="view-splash">
+      <img src="./Logo.jpg?v=23" alt="Comedor SBS" class="splash-logo">
+      <div class="splash-spinner" id="splash-spinner"></div>
+      <p id="splash-texto">Actualizando...</p>
+      <div id="splash-retry-wrap">
+        <button class="btn btn-primary" style="padding:12px; font-size:14.5px;" onclick="reintentarCargaInicial()">
+          Reintentar conexión
+        </button>
+      </div>
+    </div>
+
     <div id="banner-actualizacion">
       <span>Nueva actualización disponible</span>
       <button class="btn-update-now" onclick="aplicarActualizacionApp()">Actualizar ahora</button>
@@ -297,7 +472,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=22" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=23" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -323,6 +498,12 @@
 
     <!-- 2. PANTALLA PRINCIPAL -->
     <div id="view-main">
+      <!-- BANNER INFORMATIVO DINÁMICO (EDITABLE DESDE MENU_SEMANAL) -->
+      <div id="banner-informativo-sbs">
+        <span id="texto-banner-informativo"></span>
+        <button class="btn-cerrar-banner-info" onclick="cerrarBannerInformativo()" title="Cerrar">✕</button>
+      </div>
+
       <div class="top-bar">
         <div class="top-bar-row">
           <div>
@@ -333,7 +514,9 @@
         </div>
         <div class="header-kpi-strip">
           <span id="hdr-resumen-cant">0 Des. | 0 Alm.</span>
-          <span class="header-kpi-total" id="hdr-resumen-total">Consumido: S/ 0.00</span>
+          <button class="header-kpi-total" id="hdr-resumen-total" onclick="abrirModalDetalleConsumido()" title="Ver detalle de consumos del ciclo">
+            Consumido: S/ 0.00
+          </button>
         </div>
       </div>
 
@@ -379,7 +562,7 @@
               <div class="ticket-big-icon">✓</div>
               <h3 id="ticket-modal-titulo">¡ALMUERZO REGISTRADO!</h3>
               <div class="ticket-data-stack">
-                <div id="ticket-modal-fecha">18/11/2026</div>
+                <div id="ticket-modal-fecha">19/11/2026</div>
                 <div id="ticket-modal-hora">12:00:00 PM</div>
               </div>
             </div>
@@ -520,26 +703,127 @@
     </div>
   </div>
 
+  <!-- MODAL: DETALLE DE CONSUMOS DEL CICLO (AL TOCAR "CONSUMIDO: S/ X.XX") -->
+  <div class="modal-backdrop" id="modal-detalle-consumido" onclick="if(event.target===this) cerrarModalDetalleConsumido()">
+    <div class="modal-panel">
+      <div class="modal-header-row">
+        <div>
+          <h3>Detalle de Consumos</h3>
+          <p id="lbl-subtitulo-ciclo">Ciclo de planilla vigente</p>
+        </div>
+        <button class="btn-x-sm" onclick="cerrarModalDetalleConsumido()" title="Cerrar">✕</button>
+      </div>
+
+      <div class="consumo-table-wrap">
+        <table class="consumo-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Desayuno</th>
+              <th>Almuerzo</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-detalle-consumo">
+            <tr><td colspan="3" style="text-align:center; color:var(--muted);">Sin consumos registrados en este ciclo.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="consumo-summary-foot">
+        <span id="foot-cant-consumo">0 Des. | 0 Alm.</span>
+        <span class="tot-pill" id="foot-tot-consumo">S/ 0.00</span>
+      </div>
+
+      <button class="btn btn-primary" style="padding:12px; font-size:15px;" onclick="cerrarModalDetalleConsumido()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVEDADES Y GUÍA DE ACTUALIZACIÓN (SE MUESTRA 1 SOLA VEZ POR VERSIÓN) -->
+  <div class="modal-backdrop" id="modal-novedades-overlay">
+    <div class="modal-panel" style="max-width:400px;">
+      <div class="novedad-body">
+        <span class="novedad-badge" id="nov-etiqueta">Novedad</span>
+        <img id="nov-imagen" class="novedad-img" style="display:none;" alt="Guía Comedor SBS">
+        <h3 class="novedad-titulo" id="nov-titulo"></h3>
+        <p class="novedad-desc" id="nov-desc"></p>
+        <div class="novedad-dots" id="nov-dots"></div>
+      </div>
+      <button class="btn btn-primary" id="btn-nov-accion" style="padding:13px; font-size:15px;" onclick="avanzarSlideNovedades()">
+        Entendido
+      </button>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    const VERSION_LOCAL_APP = "22";
+    const VERSION_LOCAL_APP = "23";
 
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
     const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
     const PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
+    /**
+     * CONFIGURACIÓN DE GUÍA / NOVEDADES DE ACTUALIZACIÓN (PUNTO 6):
+     * - Cambia `version` (ej. "24") cada vez que quieras mostrar una nueva guía una sola vez a todos.
+     * - Si quieres incluir una captura o imagen, súbela a GitHub junto a Logo.jpg y pon su nombre en `imagen` (ej. "./guia-consumido.png").
+     * - Si no quieres mostrar ninguna guía, cambia `activo: false`.
+     */
+    const CONFIG_NOVEDADES = {
+      activo: true,
+      version: "23",
+      slides: [
+        {
+          etiqueta: "Nueva función",
+          titulo: "Consulta el detalle de tu consumo",
+          descripcion: "Ahora puedes tocar el botón verde «Consumido: S/» en la parte superior para ver el listado día por día de tus desayunos y almuerzos del ciclo vigente.",
+          imagen: ""
+        },
+        {
+          etiqueta: "Actualización en vivo",
+          titulo: "Cobro al corte y pantalla para cocina",
+          descripcion: "Tus reservas cerradas (4:00 PM desayuno y 10:00 AM almuerzo) se reflejan automáticamente en tu acumulado. Al escanear el QR verás una confirmación grande para mostrar en cocina.",
+          imagen: ""
+        }
+      ]
+    };
+
     let HABILITAR_MODO_CODIGO = false;
     let COLA_CAMBIOS_RESERVA = {};
     let TIMER_LOTE_RESERVA = null;
     let ENVIANDO_COLA_QR = false;
+    let SINCRONIZANDO_AHORA = false;
+    let IDX_SLIDE_NOVEDAD = 0;
+
+    // Limpiar parámetro ?v=... de la URL al cargar (ayuda a que iOS conserve el permiso de cámara)
+    (function limpiarParametroVersionURL() {
+      try {
+        const u = new URL(window.location.href);
+        if (u.searchParams.has('v')) {
+          u.searchParams.delete('v');
+          const limpia = u.pathname + (u.searchParams.toString() ? '?' + u.searchParams.toString() : '');
+          window.history.replaceState({}, '', limpia);
+        }
+      } catch (e) {}
+    })();
+
+    // Vibración háptica corta (funciona en Android; en iOS se ignora de forma segura)
+    function vibrarHaptico(patron = 15) {
+      try {
+        if (navigator && typeof navigator.vibrate === 'function') {
+          navigator.vibrate(patron);
+        }
+      } catch (e) {}
+    }
 
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=22', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=23', { updateViaCache: 'none' }).then(reg => {
           reg.update().catch(() => {});
         }).catch(() => {});
       });
@@ -554,6 +838,7 @@
 
     async function instalarPWAAndroid() {
       if (!deferredPromptPWA) return;
+      vibrarHaptico(15);
       deferredPromptPWA.prompt();
       await deferredPromptPWA.userChoice;
       deferredPromptPWA = null;
@@ -580,6 +865,7 @@
     }
 
     async function aplicarActualizacionApp() {
+      vibrarHaptico(20);
       const b = document.getElementById('banner-actualizacion');
       if (b && b.dataset.targetVer) {
         sessionStorage.setItem('SBS_UPDATED_VER', b.dataset.targetVer);
@@ -602,27 +888,6 @@
       window.location.replace(window.location.pathname + '?v=' + new Date().getTime());
     }
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        procesarColaQRSegundoPlano();
-        if (STATE.usuario) {
-          actualizarResumenHeader();
-          actualizarEstadoBotonQR();
-        }
-        ejecutarConReintento('verificarVersionApp', [], res => {
-          if (res && res.versionApp) verificarVersionServidor(res.versionApp);
-        }, null, 1);
-      }
-    });
-
-    // Actualiza el consolidado y estado del botón QR cada 30 seg (para cambios exactos a las 12:00 PM y 6:00 PM)
-    setInterval(() => {
-      if (STATE.usuario) {
-        actualizarResumenHeader();
-        actualizarEstadoBotonQR();
-      }
-    }, 30000);
-
     const urlParams = new URLSearchParams(window.location.search);
     window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
 
@@ -632,8 +897,10 @@
       hoyStr: '',
       hoyPeruCompleto: '',
       etiquetaCiclo: '',
+      avisoBanner: '',
       horaPeru: 0,
       tsSyncHora: 0,
+      ultimoSyncMs: 0,
       pasoCorteAlmuerzo: false,
       modoPruebaQR: false,
       diccionarioUsuarios: {},
@@ -648,20 +915,49 @@
       idxPrincipal: 0
     };
 
-    function obtenerHoraLimaNavegador() {
+    // ========================================================================
+    // RELOJ REAL DE LIMA (AMERICA/LIMA) Y CANDADO LOCAL DE CORTES
+    // ========================================================================
+    function obtenerPartesLimaActual() {
       try {
         const partes = new Intl.DateTimeFormat('en-GB', {
           timeZone: 'America/Lima',
-          hour: '2-digit',
-          minute: '2-digit',
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
           hour12: false
         }).formatToParts(new Date());
-        const h = Number(partes.find(p => p.type === 'hour').value);
-        const m = Number(partes.find(p => p.type === 'minute').value);
-        return (h === 24 ? 0 : h) + (m / 60);
+        const get = (t) => Number(partes.find(p => p.type === t).value);
+        const h = get('hour');
+        return {
+          year: get('year'),
+          month: get('month'),
+          day: get('day'),
+          hour: h === 24 ? 0 : h,
+          minute: get('minute'),
+          second: get('second')
+        };
       } catch (e) {
-        return STATE.horaPeru || 0;
+        const d = new Date();
+        return {
+          year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(),
+          hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds()
+        };
       }
+    }
+
+    function obtenerFechaHoyLimaISO() {
+      const p = obtenerPartesLimaActual();
+      return `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')}`;
+    }
+
+    function obtenerDateLimaActual() {
+      const p = obtenerPartesLimaActual();
+      return new Date(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+    }
+
+    function obtenerHoraLimaNavegador() {
+      const p = obtenerPartesLimaActual();
+      return p.hour + (p.minute / 60);
     }
 
     function obtenerHoraPeruActual() {
@@ -671,10 +967,41 @@
       return obtenerHoraLimaNavegador();
     }
 
+    function esEditableEnTiempoReal(fechaStr, tipoServicio) {
+      if (!fechaStr) return false;
+      if (tipoServicio === 'DESAYUNO' && fechaStr < FECHA_ARRANQUE_DESAYUNO) return false;
+      if (tipoServicio === 'ALMUERZO' && fechaStr < FECHA_ARRANQUE_ALMUERZO) return false;
+
+      const ahora = obtenerDateLimaActual();
+      const partes = String(fechaStr).split('-');
+      if (partes.length !== 3) return false;
+      const fechaServ = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]), 0, 0, 0);
+
+      if (tipoServicio === 'DESAYUNO') {
+        const limiteDes = new Date(fechaServ);
+        limiteDes.setDate(fechaServ.getDate() - 1);
+        limiteDes.setHours(16, 0, 0, 0);
+        if (fechaServ.getDay() === 1) {
+          limiteDes.setDate(limiteDes.getDate() - 1);
+        }
+        return ahora.getTime() <= limiteDes.getTime();
+      } else {
+        const limiteAlm = new Date(fechaServ);
+        limiteAlm.setHours(10, 0, 0, 0);
+        return ahora.getTime() <= limiteAlm.getTime();
+      }
+    }
+
     function extraerDiaNumeroCliente(isoStr) {
       if (!isoStr) return '';
       const p = String(isoStr).split('-');
       return p.length === 3 ? String(Number(p[2])) : isoStr;
+    }
+
+    function formatearDiaMesCorto(isoStr) {
+      if (!isoStr) return '';
+      const p = String(isoStr).split('-');
+      return p.length === 3 ? `${p[2]}/${p[1]}` : isoStr;
     }
 
     function extraerPrimerNombreCliente(usuarioObj) {
@@ -851,10 +1178,12 @@
 
     function aplicarReglaArranqueARegistro(reg) {
       if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
+      const hoyLima = obtenerFechaHoyLimaISO();
 
       reg.diasSemana.forEach(d => {
         d.desayuno = normalizarValorDesayunoCliente(d.desayuno);
         d.almuerzo = normalizarValorAlmuerzoCliente(d.almuerzo);
+        d.esHoyFisico = (d.fecha === (STATE.hoyStr || hoyLima));
 
         if (d.fecha < FECHA_ARRANQUE_DESAYUNO && d.desayuno !== 'MANUAL') {
           d.desayuno = 'NO';
@@ -862,6 +1191,10 @@
           d.habDes = false;
         } else {
           d.habDes = true;
+          // Candado local en tiempo real: nunca permite editar si ya pasó el corte real en Lima
+          if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
+            d.puedeEditarDesayuno = false;
+          }
         }
         if (d.fecha < FECHA_ARRANQUE_ALMUERZO) {
           d.almuerzo = 'NO';
@@ -869,6 +1202,9 @@
           d.habAlm = false;
         } else {
           d.habAlm = true;
+          if (d.puedeEditarAlmuerzo && !esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
+            d.puedeEditarAlmuerzo = false;
+          }
         }
       });
 
@@ -892,6 +1228,175 @@
       return dicc;
     }
 
+    // ========================================================================
+    // PANTALLA DE CARGA (SPLASH) + SINCRONIZACIÓN RÁPIDA EN VIVO
+    // ========================================================================
+    function mostrarSplash(texto = 'Actualizando...', conBotonReintentar = false) {
+      const sp = document.getElementById('view-splash');
+      document.getElementById('splash-texto').textContent = texto;
+      document.getElementById('splash-spinner').style.display = conBotonReintentar ? 'none' : 'block';
+      document.getElementById('splash-retry-wrap').style.display = conBotonReintentar ? 'block' : 'none';
+      sp.style.display = 'flex';
+    }
+
+    function ocultarSplash() {
+      document.getElementById('view-splash').style.display = 'none';
+    }
+
+    async function fetchConTimeout(action, argsArray, timeoutMs = 4500) {
+      const controller = new AbortController();
+      const idTimer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const resp = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: action, args: argsArray }),
+          signal: controller.signal
+        });
+        clearTimeout(idTimer);
+        const data = await resp.json();
+        if (data && data.versionApp) verificarVersionServidor(data.versionApp);
+        return data;
+      } catch (err) {
+        clearTimeout(idTimer);
+        throw err;
+      }
+    }
+
+    /**
+     * Sincronización ultrarrápida de 1 solo usuario:
+     * 1) Intenta llamar al endpoint ligero `sincronizarMiEstado(dni)` (~1 KB, < 1 seg).
+     * 2) Si el servidor aún está en v22 sin ese endpoint, cae automáticamente a `loginEnVivo(dni)`.
+     */
+    async function obtenerEstadoFrescoUsuario(dni) {
+      try {
+        const resFast = await fetchConTimeout('sincronizarMiEstado', [dni], 4500);
+        if (resFast && resFast.ok && resFast.registro) {
+          return { tipo: 'FAST', payload: resFast };
+        }
+      } catch (e) {
+        // Si falló por red/timeout, lanzamos error para manejar fallback controlado
+        if (e && e.name === 'AbortError') throw e;
+      }
+
+      // Respaldo compatible con Código.gs v22
+      const resBoot = await fetchConTimeout('loginEnVivo', [dni], 6500);
+      if (resBoot && resBoot.ok && resBoot.data && resBoot.data.diccionarioUsuarios && resBoot.data.diccionarioUsuarios[dni]) {
+        return { tipo: 'FULL', payload: resBoot.data, registro: resBoot.data.diccionarioUsuarios[dni] };
+      }
+      return { tipo: 'ERROR', msg: (resBoot && resBoot.msg) ? resBoot.msg : 'No se pudo obtener tu información.' };
+    }
+
+    function aplicarRespuestaFrescoYEntrar(resultadoSync, dni, tokenGuardado) {
+      if (resultadoSync.tipo === 'FAST') {
+        const p = resultadoSync.payload;
+        STATE.hoyStr = p.hoyStr;
+        STATE.hoyPeruCompleto = p.hoyPeruCompleto || p.hoyStr;
+        STATE.etiquetaCiclo = p.etiquetaCiclo || STATE.etiquetaCiclo;
+        STATE.avisoBanner = p.avisoBanner || '';
+        STATE.horaPeru = p.horaPeru;
+        STATE.tsSyncHora = Date.now();
+        STATE.ultimoSyncMs = Date.now();
+        STATE.pasoCorteAlmuerzo = !!p.pasoCorteAlmuerzo;
+        STATE.modoPruebaQR = !!p.modoPruebaQR;
+        if (typeof p.habilitarModoCodigo === 'boolean') HABILITAR_MODO_CODIGO = p.habilitarModoCodigo;
+
+        const reg = p.registro;
+        if (!reg.usuario.tieneClave || (tokenGuardado && reg.usuario.hashClave && reg.usuario.hashClave !== tokenGuardado)) {
+          cerrarSesion();
+          return false;
+        }
+        asignarUsuarioYEntrar(reg, tokenGuardado || reg.usuario.hashClave);
+        return true;
+      }
+
+      if (resultadoSync.tipo === 'FULL') {
+        const d = resultadoSync.payload;
+        STATE.bootstrapCargado = true;
+        STATE.hoyStr = d.hoyStr;
+        STATE.hoyPeruCompleto = d.hoyPeruCompleto || d.hoyStr;
+        STATE.etiquetaCiclo = d.etiquetaCiclo || STATE.etiquetaCiclo;
+        STATE.avisoBanner = d.avisoBanner || '';
+        STATE.horaPeru = d.horaPeru;
+        STATE.tsSyncHora = Date.now();
+        STATE.ultimoSyncMs = Date.now();
+        STATE.pasoCorteAlmuerzo = !!d.pasoCorteAlmuerzo;
+        STATE.modoPruebaQR = !!d.modoPruebaQR;
+        if (typeof d.habilitarModoCodigo === 'boolean') HABILITAR_MODO_CODIGO = d.habilitarModoCodigo;
+        STATE.diccionarioUsuarios = normalizarDiccionarioArranque(d.diccionarioUsuarios || {});
+        STATE.colaboradores = d.colaboradores || [];
+
+        const reg = STATE.diccionarioUsuarios[dni];
+        if (!reg || !reg.usuario.tieneClave || (tokenGuardado && reg.usuario.hashClave && reg.usuario.hashClave !== tokenGuardado)) {
+          cerrarSesion();
+          return false;
+        }
+        asignarUsuarioYEntrar(reg, tokenGuardado || reg.usuario.hashClave);
+        return true;
+      }
+
+      return false;
+    }
+
+    async function sincronizarSesionConSplash(sesionGuardada, duracionMinMs = 850) {
+      if (SINCRONIZANDO_AHORA) return;
+      SINCRONIZANDO_AHORA = true;
+      mostrarSplash('Actualizando tu menú...', false);
+
+      const tIni = performance.now();
+      try {
+        const resSync = await obtenerEstadoFrescoUsuario(sesionGuardada.dni);
+        const transcurrido = performance.now() - tIni;
+        if (transcurrido < duracionMinMs) {
+          await new Promise(r => setTimeout(r, duracionMinMs - transcurrido));
+        }
+
+        const ok = aplicarRespuestaFrescoYEntrar(resSync, sesionGuardada.dni, sesionGuardada.token);
+        ocultarSplash();
+        SINCRONIZANDO_AHORA = false;
+        if (ok) {
+          verificarYMostrarGuiaNovedades();
+        }
+      } catch (err) {
+        SINCRONIZANDO_AHORA = false;
+        const hoyLima = obtenerFechaHoyLimaISO();
+        // Solo usamos respaldo local si es EXACTAMENTE del día de hoy (nunca mostramos data de ayer)
+        if (sesionGuardada.snapshot && sesionGuardada.snapshot.hoyStr === hoyLima) {
+          aplicarReglaArranqueARegistro(sesionGuardada.snapshot);
+          STATE.tokenActivo = sesionGuardada.token || '';
+          STATE.hoyStr = sesionGuardada.snapshot.hoyStr;
+          STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
+          STATE.etiquetaCiclo = sesionGuardada.snapshot.etiquetaCiclo || '';
+          STATE.horaPeru = obtenerHoraLimaNavegador();
+          STATE.tsSyncHora = 0;
+          STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
+          STATE.usuario = sesionGuardada.snapshot.usuario;
+          STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
+          STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
+          ocultarSplash();
+          renderizarVistaPrincipal();
+          mostrarToast('Conexión lenta. Mostrando datos de hoy.');
+        } else {
+          mostrarSplash('No se pudo conectar para actualizar el día de hoy.', true);
+        }
+      }
+    }
+
+    function reintentarCargaInicial() {
+      vibrarHaptico(15);
+      const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
+      if (sesionStr) {
+        try {
+          const sesionGuardada = JSON.parse(sesionStr);
+          if (sesionGuardada && sesionGuardada.dni) {
+            sincronizarSesionConSplash(sesionGuardada, 700);
+            return;
+          }
+        } catch (e) {}
+      }
+      ocultarSplash();
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       procesarColaQRSegundoPlano();
 
@@ -901,38 +1406,13 @@
         try { sesionGuardada = JSON.parse(sesionStr); } catch (e) {}
       }
 
-      if (sesionGuardada && sesionGuardada.dni && sesionGuardada.snapshot) {
-        aplicarReglaArranqueARegistro(sesionGuardada.snapshot);
-        STATE.tokenActivo = sesionGuardada.token || '';
-        STATE.hoyStr = sesionGuardada.snapshot.hoyStr || '';
-        STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
-        STATE.horaPeru = obtenerHoraLimaNavegador();
-        STATE.tsSyncHora = 0;
-        STATE.pasoCorteAlmuerzo = !!sesionGuardada.snapshot.pasoCorteAlmuerzo;
-        STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
-        STATE.usuario = sesionGuardada.snapshot.usuario;
-        STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
-        STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
-        renderizarVistaPrincipal();
-
-        if (window.AUTO_CHECKIN_QR === '1') {
-          window.AUTO_CHECKIN_QR = '0';
-          if (!document.getElementById('btn-escanear-qr').disabled) {
-            procesarRegistroQRInteligente('QR_INVERSO_DIRECTO');
-          }
-        }
+      if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
+        // Muestra la pantalla de carga con Logo SBS (~1s) y trae data 100% real antes de mostrar la interfaz
+        sincronizarSesionConSplash(sesionGuardada, 900);
+      } else {
+        // Sin sesión: precalienta bootstrap en segundo plano mientras digita su DNI
+        cargarCacheInicial();
       }
-
-      cargarCacheInicial(() => {
-        if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
-          const regFresco = STATE.diccionarioUsuarios[sesionGuardada.dni];
-          if (regFresco && regFresco.usuario.tieneClave) {
-            asignarUsuarioYEntrar(regFresco, sesionGuardada.token);
-          } else if (!STATE.usuario) {
-            cerrarSesion();
-          }
-        }
-      });
 
       document.getElementById('txt-dni').addEventListener('keyup', (e) => {
         if (e.key === 'Enter') verificarPasoDNI();
@@ -941,6 +1421,58 @@
         if (e.key === 'Enter') confirmarClaveLogin();
       });
     });
+
+    // Al volver a la app desde segundo plano: si pasaron >20s o cambió la fecha, sincroniza en vivo con splash corto
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        procesarColaQRSegundoPlano();
+        if (STATE.usuario && STATE.tokenActivo) {
+          const hoyLima = obtenerFechaHoyLimaISO();
+          const pasaronMasDe20Seg = (Date.now() - (STATE.ultimoSyncMs || 0)) > 20000;
+          if (STATE.hoyStr !== hoyLima || pasaronMasDe20Seg) {
+            sincronizarSesionConSplash({
+              dni: STATE.usuario.dni,
+              token: STATE.tokenActivo,
+              snapshot: {
+                hoyStr: STATE.hoyStr,
+                hoyPeruCompleto: STATE.hoyPeruCompleto,
+                etiquetaCiclo: STATE.etiquetaCiclo,
+                modoPruebaQR: STATE.modoPruebaQR,
+                usuario: STATE.usuario,
+                diasSemana: STATE.diasSemana,
+                hoyFisico: STATE.hoyFisico
+              }
+            }, 650);
+          } else {
+            actualizarResumenHeader();
+            actualizarEstadoBotonQR();
+          }
+        }
+      }
+    });
+
+    // Revisa cada 20 segundos si se cruzó un horario de corte (10:00 AM / 4:00 PM / 12:00 PM / 6:00 PM)
+    setInterval(() => {
+      if (STATE.usuario && document.visibilityState === 'visible') {
+        let huboCambioCorte = false;
+        STATE.diasSemana.forEach(d => {
+          if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
+            d.puedeEditarDesayuno = false;
+            huboCambioCorte = true;
+          }
+          if (d.puedeEditarAlmuerzo && !esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
+            d.puedeEditarAlmuerzo = false;
+            huboCambioCorte = true;
+          }
+        });
+        if (huboCambioCorte) {
+          renderizarTarjetas();
+        } else {
+          actualizarResumenHeader();
+        }
+        actualizarEstadoBotonQR();
+      }
+    }, 20000);
 
     function guardarSnapshotLocal() {
       if (!STATE.usuario || !STATE.tokenActivo) return;
@@ -951,6 +1483,7 @@
           snapshot: {
             hoyStr: STATE.hoyStr,
             hoyPeruCompleto: STATE.hoyPeruCompleto,
+            etiquetaCiclo: STATE.etiquetaCiclo,
             horaPeru: obtenerHoraPeruActual(),
             pasoCorteAlmuerzo: STATE.pasoCorteAlmuerzo,
             modoPruebaQR: STATE.modoPruebaQR,
@@ -998,12 +1531,6 @@
       return (s.length === 7) ? '0' + s : s;
     }
 
-    function formatearDiaMesCorto(isoStr) {
-      if (!isoStr) return '';
-      const p = String(isoStr).split('-');
-      return p.length === 3 ? `${p[2]}/${p[1]}` : isoStr;
-    }
-
     function valSeguro(v, fallback = '-') {
       return (v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'undefined') ? v : fallback;
     }
@@ -1018,8 +1545,10 @@
           STATE.hoyStr = res.hoyStr;
           STATE.hoyPeruCompleto = res.hoyPeruCompleto || res.hoyStr;
           STATE.etiquetaCiclo = res.etiquetaCiclo || '';
+          STATE.avisoBanner = res.avisoBanner || '';
           STATE.horaPeru = res.horaPeru;
           STATE.tsSyncHora = Date.now();
+          STATE.ultimoSyncMs = Date.now();
           STATE.pasoCorteAlmuerzo = res.pasoCorteAlmuerzo;
           STATE.modoPruebaQR = !!res.modoPruebaQR;
           if (typeof res.habilitarModoCodigo === 'boolean') {
@@ -1044,13 +1573,19 @@
     }
 
     function verificarPasoDNI() {
+      vibrarHaptico(15);
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
         mostrarToast('Ingresa un DNI válido de 8 dígitos.');
         return;
       }
 
-      if (STATE.bootstrapCargado && STATE.diccionarioUsuarios && STATE.diccionarioUsuarios[dni]) {
+      const esCacheFresco = STATE.bootstrapCargado &&
+        (Date.now() - (STATE.ultimoSyncMs || 0) < 30000) &&
+        STATE.diccionarioUsuarios &&
+        STATE.diccionarioUsuarios[dni];
+
+      if (esCacheFresco) {
         abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
         return;
       }
@@ -1066,9 +1601,11 @@
           STATE.hoyPeruCompleto = res.data.hoyPeruCompleto || res.data.hoyStr;
           STATE.horaPeru = res.data.horaPeru;
           STATE.tsSyncHora = Date.now();
+          STATE.ultimoSyncMs = Date.now();
           STATE.pasoCorteAlmuerzo = res.data.pasoCorteAlmuerzo;
           STATE.modoPruebaQR = !!res.data.modoPruebaQR;
           STATE.etiquetaCiclo = res.data.etiquetaCiclo || STATE.etiquetaCiclo;
+          STATE.avisoBanner = res.data.avisoBanner || '';
           STATE.diccionarioUsuarios = normalizarDiccionarioArranque(res.data.diccionarioUsuarios || {});
           STATE.colaboradores = res.data.colaboradores;
           abrirFormularioClave(STATE.diccionarioUsuarios[dni]);
@@ -1101,6 +1638,7 @@
     }
 
     function volverAPasoDNI() {
+      vibrarHaptico(10);
       STATE.registroPendienteLogin = null;
       document.getElementById('step-clave').style.display = 'none';
       document.getElementById('step-dni').style.display = 'block';
@@ -1109,6 +1647,7 @@
 
     async function confirmarClaveLogin() {
       if (!STATE.registroPendienteLogin) return;
+      vibrarHaptico(15);
       const clave = document.getElementById('txt-clave').value;
       if (!clave || clave.trim().length === 0) {
         mostrarToast('Escribe tu contraseña.');
@@ -1139,6 +1678,7 @@
           if (hashCliente === hashGuardadoRAM) {
             document.getElementById('txt-clave').value = '';
             asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
+            verificarYMostrarGuiaNovedades();
           } else {
             mostrarToast('Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
           }
@@ -1148,6 +1688,7 @@
           STATE.registroPendienteLogin.usuario.hashClave = hashCliente;
           document.getElementById('txt-clave').value = '';
           asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
+          verificarYMostrarGuiaNovedades();
           ejecutarConReintento('guardarHashClaveDirecto', [dni, hashCliente], null, null, 4);
           return;
         }
@@ -1165,6 +1706,7 @@
           STATE.registroPendienteLogin.usuario.hashClave = res.tokenSesion;
           document.getElementById('txt-clave').value = '';
           asignarUsuarioYEntrar(STATE.registroPendienteLogin, res.tokenSesion);
+          verificarYMostrarGuiaNovedades();
         } else {
           mostrarToast(res ? res.msg : 'Error al validar contraseña.');
         }
@@ -1195,9 +1737,15 @@
     }
 
     function cerrarSesion() {
+      vibrarHaptico(15);
       cerrarEscanerQR();
       cerrarModalTicketVerde();
+      cerrarModalDetalleConsumido();
       localStorage.removeItem('SBS_COMEDOR_AUTH');
+      // Limpieza total en memoria para garantizar lectura fresca al volver a iniciar sesión
+      STATE.bootstrapCargado = false;
+      STATE.diccionarioUsuarios = {};
+      STATE.ultimoSyncMs = 0;
       STATE.usuario = null;
       STATE.tokenActivo = '';
       STATE.registroPendienteLogin = null;
@@ -1223,6 +1771,191 @@
       if (u.esRRHH) return true;
       const r = String(u.rol || '').toUpperCase().trim();
       return r === 'ADMIN_RRHH' || r === 'RRHH' || r === 'ADMIN_GEP' || r === 'GEP';
+    }
+
+    // ========================================================================
+    // BANNER INFORMATIVO DINÁMICO Y MODAL DE NOVEDADES (PUNTO 6)
+    // ========================================================================
+    function renderizarBannerInformativo() {
+      const box = document.getElementById('banner-informativo-sbs');
+      const txtEl = document.getElementById('texto-banner-informativo');
+      const aviso = String(STATE.avisoBanner || '').trim();
+      if (!aviso) {
+        box.style.display = 'none';
+        return;
+      }
+      const cerrado = localStorage.getItem('SBS_BANNER_DISMISSED');
+      if (cerrado === aviso) {
+        box.style.display = 'none';
+        return;
+      }
+      txtEl.textContent = aviso;
+      box.style.display = 'flex';
+    }
+
+    function cerrarBannerInformativo() {
+      vibrarHaptico(10);
+      const aviso = String(STATE.avisoBanner || '').trim();
+      if (aviso) localStorage.setItem('SBS_BANNER_DISMISSED', aviso);
+      document.getElementById('banner-informativo-sbs').style.display = 'none';
+    }
+
+    function verificarYMostrarGuiaNovedades() {
+      if (!CONFIG_NOVEDADES || !CONFIG_NOVEDADES.activo || !Array.isArray(CONFIG_NOVEDADES.slides) || CONFIG_NOVEDADES.slides.length === 0) return;
+      const visto = localStorage.getItem('SBS_NOVEDADES_VISTO');
+      if (visto === String(CONFIG_NOVEDADES.version)) return;
+
+      IDX_SLIDE_NOVEDAD = 0;
+      pintarSlideNovedad();
+      document.getElementById('modal-novedades-overlay').style.display = 'flex';
+    }
+
+    function pintarSlideNovedad() {
+      const slides = CONFIG_NOVEDADES.slides;
+      const s = slides[IDX_SLIDE_NOVEDAD];
+      document.getElementById('nov-etiqueta').textContent = s.etiqueta || 'Novedad';
+      document.getElementById('nov-titulo').textContent = s.titulo || '';
+      document.getElementById('nov-desc').textContent = s.descripcion || '';
+
+      const imgEl = document.getElementById('nov-imagen');
+      if (s.imagen && String(s.imagen).trim() !== '') {
+        imgEl.src = s.imagen;
+        imgEl.style.display = 'block';
+      } else {
+        imgEl.style.display = 'none';
+      }
+
+      const dotsEl = document.getElementById('nov-dots');
+      if (slides.length > 1) {
+        dotsEl.innerHTML = slides.map((_, idx) =>
+          `<span class="novedad-dot ${idx === IDX_SLIDE_NOVEDAD ? 'active' : ''}"></span>`
+        ).join('');
+      } else {
+        dotsEl.innerHTML = '';
+      }
+
+      const btn = document.getElementById('btn-nov-accion');
+      btn.textContent = (IDX_SLIDE_NOVEDAD < slides.length - 1) ? 'Siguiente' : 'Entendido';
+    }
+
+    function avanzarSlideNovedades() {
+      vibrarHaptico(15);
+      if (IDX_SLIDE_NOVEDAD < CONFIG_NOVEDADES.slides.length - 1) {
+        IDX_SLIDE_NOVEDAD++;
+        pintarSlideNovedad();
+      } else {
+        localStorage.setItem('SBS_NOVEDADES_VISTO', String(CONFIG_NOVEDADES.version));
+        document.getElementById('modal-novedades-overlay').style.display = 'none';
+      }
+    }
+
+    // ========================================================================
+    // CÁLCULO DE CONSUMIDO AL CORTE + MODAL DETALLE DE CONSUMOS (PUNTOS 1 Y 4)
+    // ========================================================================
+    function construirDetalleConsumoCiclo() {
+      const mapaPorFecha = {};
+
+      // 1. Cargar historial previo del ciclo (enviado en RAM por Código.gs v23)
+      if (STATE.usuario && Array.isArray(STATE.usuario.historialCiclo)) {
+        STATE.usuario.historialCiclo.forEach(item => {
+          const fIso = item[0];
+          mapaPorFecha[fIso] = {
+            fechaISO: fIso,
+            fechaCorta: item[1] || formatearDiaMesCorto(fIso),
+            des: !!item[2],
+            alm: !!item[3]
+          };
+        });
+      }
+
+      // 2. Fusionar en tiempo real los días visibles de la semana que pertenecen al ciclo actual
+      const hf = STATE.hoyFisico;
+      (STATE.diasSemana || []).forEach(d => {
+        if (d.enCicloActual === false) return;
+
+        const cerradoDes = !d.puedeEditarDesayuno || !esEditableEnTiempoReal(d.fecha, 'DESAYUNO');
+        const cerradoAlm = !d.puedeEditarAlmuerzo || !esEditableEnTiempoReal(d.fecha, 'ALMUERZO');
+
+        const desConsumido = (d.esHoyFisico && hf && hf.consumioDes) ||
+          (d.habDes !== false && d.desayuno !== 'NO' && (cerradoDes || d.desayuno === 'MANUAL'));
+        const almConsumido = (d.esHoyFisico && hf && hf.consumioAlm) ||
+          (d.habAlm !== false && d.almuerzo !== 'NO' && cerradoAlm);
+
+        const incluirFila = desConsumido || almConsumido || (d.fecha <= (STATE.hoyStr || obtenerFechaHoyLimaISO()));
+        if (incluirFila) {
+          mapaPorFecha[d.fecha] = {
+            fechaISO: d.fecha,
+            fechaCorta: d.fechaCorta || formatearDiaMesCorto(d.fecha),
+            des: desConsumido,
+            alm: almConsumido
+          };
+        }
+      });
+
+      const filas = Object.values(mapaPorFecha).sort((a, b) => a.fechaISO.localeCompare(b.fechaISO));
+
+      // Contar totales
+      let cDes = 0;
+      let cAlm = 0;
+      if (STATE.usuario && Array.isArray(STATE.usuario.historialCiclo)) {
+        filas.forEach(r => {
+          if (r.des) cDes++;
+          if (r.alm) cAlm++;
+        });
+      } else if (STATE.usuario) {
+        // Respaldo compatible mientras Código.gs sigue en v22
+        cDes = Number(STATE.usuario.baseCicloDes || 0);
+        cAlm = Number(STATE.usuario.baseCicloAlm || 0);
+        const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
+        filas.forEach(r => {
+          if (r.fechaISO >= hoyRef) {
+            if (r.des) cDes++;
+            if (r.alm) cAlm++;
+          }
+        });
+      }
+
+      const totSoles = STATE.usuario
+        ? (cDes * STATE.usuario.costoDesayuno) + (cAlm * STATE.usuario.costoAlmuerzo)
+        : 0;
+
+      return { filas: filas, cDes: cDes, cAlm: cAlm, totSoles: totSoles };
+    }
+
+    function actualizarResumenHeader() {
+      if (!STATE.usuario) return;
+      const calc = construirDetalleConsumoCiclo();
+      document.getElementById('hdr-resumen-cant').textContent = `${calc.cDes} Des. | ${calc.cAlm} Alm.`;
+      document.getElementById('hdr-resumen-total').textContent = `Consumido: S/ ${calc.totSoles.toFixed(2)}`;
+    }
+
+    function abrirModalDetalleConsumido() {
+      vibrarHaptico(15);
+      const calc = construirDetalleConsumoCiclo();
+      const sub = STATE.etiquetaCiclo ? `Ciclo ${STATE.etiquetaCiclo} (se reinicia cada día 25)` : 'Ciclo vigente (del 25 al 24)';
+      document.getElementById('lbl-subtitulo-ciclo').textContent = sub;
+
+      const tbody = document.getElementById('tbody-detalle-consumo');
+      if (calc.filas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted); padding:20px;">Aún no registras consumos en este ciclo.</td></tr>';
+      } else {
+        tbody.innerHTML = calc.filas.map(f => `
+          <tr>
+            <td>${f.fechaCorta}</td>
+            <td>${f.des ? '<span class="chk-ok">✓</span>' : '<span class="chk-no">-</span>'}</td>
+            <td>${f.alm ? '<span class="chk-ok">✓</span>' : '<span class="chk-no">-</span>'}</td>
+          </tr>
+        `).join('');
+      }
+
+      document.getElementById('foot-cant-consumo').textContent = `${calc.cDes} Desayunos | ${calc.cAlm} Almuerzos`;
+      document.getElementById('foot-tot-consumo').textContent = `S/ ${calc.totSoles.toFixed(2)}`;
+      document.getElementById('modal-detalle-consumido').style.display = 'flex';
+    }
+
+    function cerrarModalDetalleConsumido() {
+      vibrarHaptico(10);
+      document.getElementById('modal-detalle-consumido').style.display = 'none';
     }
 
     // ========================================================================
@@ -1329,6 +2062,7 @@
     }
 
     async function ejecutarPruebaEstres() {
+      vibrarHaptico(15);
       const box = document.getElementById('resultado-estres-tech');
       const btn = document.getElementById('btn-ejecutar-estres');
       box.style.display = 'block';
@@ -1406,6 +2140,7 @@
     // MÓDULO RRHH EN APP MÓVIL (RESETEO DE CLAVE + LISTA DE PENDIENTES HOY)
     // ========================================================================
     function ejecutarReseteoClaveRRHH() {
+      vibrarHaptico(15);
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
       if (dniTarget.length < 7) {
         mostrarToast('Ingresa el DNI de 8 dígitos del colaborador.');
@@ -1490,6 +2225,8 @@
       document.getElementById('view-main').style.display = 'flex';
       document.getElementById('lbl-nombre').textContent = 'Hola, ' + extraerPrimerNombreCliente(STATE.usuario);
 
+      renderizarBannerInformativo();
+
       const enAusenciaHoy = (STATE.usuario.estado !== 'ACTIVO') && (STATE.usuario.activoHoy === false);
       let textoEstadoSub = `Tarifas: Des S/${STATE.usuario.costoDesayuno.toFixed(2)} | Alm S/${STATE.usuario.costoAlmuerzo.toFixed(2)}`;
       if (enAusenciaHoy) {
@@ -1527,35 +2264,11 @@
       document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
       renderizarTarjetas();
       actualizarEstadoBotonQR();
-      cambiarTab('PRINCIPAL');
+      cambiarTab('PRINCIPAL', true);
     }
 
     /**
-     * Contador Superior "Consumido":
-     * Suma los días previos del ciclo (baseCicloDes / baseCicloAlm) y, para HOY,
-     * suma si ya escaneó el QR o automáticamente al cerrarse el plazo de escaneo (12:00 PM Des / 6:00 PM Alm).
-     */
-    function actualizarResumenHeader() {
-      if (!STATE.usuario) return;
-      let cDes = Number(STATE.usuario.baseCicloDes || 0);
-      let cAlm = Number(STATE.usuario.baseCicloAlm || 0);
-
-      const hf = STATE.hoyFisico;
-      const horaActual = obtenerHoraPeruActual();
-      if (hf && hf.enCicloActual !== false) {
-        const cuentaDesHoy = hf.consumioDes || (hf.reservoDes && horaActual >= 12.0);
-        const cuentaAlmHoy = hf.consumioAlm || (hf.reservoAlm && horaActual >= 18.0);
-        if (cuentaDesHoy) cDes++;
-        if (cuentaAlmHoy) cAlm++;
-      }
-
-      const totSoles = (cDes * STATE.usuario.costoDesayuno) + (cAlm * STATE.usuario.costoAlmuerzo);
-      document.getElementById('hdr-resumen-cant').textContent = `${cDes} Des. | ${cAlm} Alm.`;
-      document.getElementById('hdr-resumen-total').textContent = `Consumido: S/ ${totSoles.toFixed(2)}`;
-    }
-
-    /**
-     * Ventanas horarias de escaneo QR (sin emojis):
+     * Ventanas horarias de escaneo QR:
      * - Desayuno: 8:30 AM (8.5) a 11:59 AM (< 12.0)
      * - Almuerzo: 12:00 PM (12.0) a 6:00 PM (<= 18.0)
      */
@@ -1655,7 +2368,9 @@
       const desActivo = habDes && (opBase !== 'NO');
       const almActivo = habAlm && (d.almuerzo !== 'NO');
 
-      // Cuando Desayuno NO está solicitado muestra solo "Pan a elección + [bebidas del día]"
+      const editableDes = habDes && d.puedeEditarDesayuno && esEditableEnTiempoReal(d.fecha, 'DESAYUNO');
+      const editableAlm = habAlm && d.puedeEditarAlmuerzo && esEditableEnTiempoReal(d.fecha, 'ALMUERZO');
+
       let lineaMenuDesayunoHtml = `<b>Desayuno:</b> Pan a elección + ${infoMenu.bebidas}`;
       if (desActivo) {
         if (opBase === 'OP1') {
@@ -1681,11 +2396,12 @@
       const txtDes = !habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado');
       const txtAlm = !habAlm ? 'Registro en hoja RRHH' : (almActivo ? 'Confirmado' : 'Cancelado');
 
-      const lockDesClass = (!habDes || !d.puedeEditarDesayuno) ? 'disabled-card' : '';
-      const lockAlmClass = (!habAlm || !d.puedeEditarAlmuerzo) ? 'disabled-card' : '';
+      const lockDesClass = !editableDes ? 'disabled-card' : '';
+      const lockAlmClass = !editableAlm ? 'disabled-card' : '';
 
+      // Cuando llega el corte (editableDes === false), desaparecen las listas desplegables y la tarjeta queda compacta en 2 líneas
       let dropdownsPanesHtml = '';
-      if (desActivo && d.puedeEditarDesayuno) {
+      if (desActivo && editableDes) {
         if (opBase === 'OP1') {
           const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>${p}</option>`).join('');
           const opts2 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan2 ? 'selected' : ''}>${p}</option>`).join('');
@@ -1800,8 +2516,9 @@
     function seleccionarOpcionDesayuno(fecha, opElegida) {
       if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia || !dia.puedeEditarDesayuno) return;
+      if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
 
+      vibrarHaptico(15);
       const infoMenu = obtenerInfoMenuDia(dia);
       const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
 
@@ -1822,8 +2539,9 @@
     function cambiarPanDesayuno(fecha, numPan, nuevoPan) {
       if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia || !dia.puedeEditarDesayuno) return;
+      if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
 
+      vibrarHaptico(10);
       const infoMenu = obtenerInfoMenuDia(dia);
       const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
 
@@ -1848,8 +2566,9 @@
     function seleccionarOpcionAlmuerzo(fecha, opElegida) {
       if (fecha < FECHA_ARRANQUE_ALMUERZO) return;
       const dia = STATE.diasSemana.find(x => x.fecha === fecha);
-      if (!dia || !dia.puedeEditarAlmuerzo) return;
+      if (!dia || !dia.puedeEditarAlmuerzo || !esEditableEnTiempoReal(fecha, 'ALMUERZO')) return;
 
+      vibrarHaptico(15);
       const vAnt = dia.almuerzo;
       const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
       dia.almuerzo = nVal;
@@ -1861,7 +2580,8 @@
       encolarCambioServicio(dia.fecha, 'ALMUERZO', dia.almuerzo);
     }
 
-    function cambiarTab(tab) {
+    function cambiarTab(tab, silencioso = false) {
+      if (!silencioso) vibrarHaptico(12);
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.getElementById('pane-principal').style.display = 'none';
       document.getElementById('pane-semana').style.display = 'none';
@@ -1895,6 +2615,7 @@
     // ========================================================================
     async function abrirEscanerQR() {
       if (document.getElementById('btn-escanear-qr').disabled) return;
+      vibrarHaptico(15);
       document.getElementById('box-pin-contingencia').style.display = 'none';
 
       const overlay = document.getElementById('modal-qr-overlay');
@@ -1957,6 +2678,7 @@
 
     function mostrarBoxPinContingencia() {
       if (!HABILITAR_MODO_CODIGO) return;
+      vibrarHaptico(10);
       cerrarEscanerQR();
       const boxPin = document.getElementById('box-pin-contingencia');
       boxPin.style.display = 'block';
@@ -1965,6 +2687,7 @@
     }
 
     function confirmarPinCamaraMalograda() {
+      vibrarHaptico(15);
       const pin = document.getElementById('txt-pin-comedor').value.trim();
       if (pin.length < 3) {
         mostrarToast('Ingresa el código de 3 dígitos del comedor.');
@@ -1994,6 +2717,7 @@
     function procesarRegistroQRInteligente(metodo = 'QR_APP') {
       if (!STATE.usuario || !STATE.hoyFisico) return;
 
+      vibrarHaptico([35, 45, 35]);
       const srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
 
       if (!STATE.modoPruebaQR) {
@@ -2089,6 +2813,7 @@
     }
 
     function cerrarModalTicketVerde() {
+      vibrarHaptico(10);
       document.getElementById('modal-ticket-overlay').style.display = 'none';
     }
   </script>

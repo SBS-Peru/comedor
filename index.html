@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comedor SBS</title>
-  <link rel="manifest" href="manifest.json?v=26">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -369,94 +369,132 @@
     #card-ticket-compacto {
       display: none;
       width: 100%;
-      background: #ecfdf5;
-      border: 2.5px solid #10b981;
-      border-radius: 14px;
-      padding: 14px 15px;
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+      border-radius: 16px;
+      padding: 15px 15px 12px;
       margin-top: 2px;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       text-align: center;
       cursor: pointer;
       transition: transform 0.12s;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12);
     }
     #card-ticket-compacto:active { transform: scale(0.99); }
-    .compact-ticket-head {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
     .compact-ticket-icon {
-      width: 34px;
-      height: 34px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       background: #10b981;
       color: #ffffff;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.28);
       flex-shrink: 0;
     }
-    .compact-ticket-title {
-      font-size: 18px;
-      font-weight: 900;
-      color: #065f46;
-      letter-spacing: -0.2px;
+
+    .compact-ticket-opcion {
+      width: 100%;
+      border-radius: 11px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .compact-ticket-opcion.srv-des {
+      background: #fff7ed;
+      border: 1.5px solid #fdba74;
+    }
+    .compact-ticket-opcion.srv-alm {
+      background: #dcfce7;
+      border: 1.5px solid #86efac;
+    }
+    .compact-opcion-kicker {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      line-height: 1.15;
+      color: #9a3412;
+    }
+    .compact-ticket-opcion.srv-alm .compact-opcion-kicker {
+      color: #065f46;
+      font-size: 12px;
+      letter-spacing: 0.9px;
     }
     #compact-ticket-detalle {
-      width: 100%;
-      font-size: 17px;
+      font-size: 16.5px;
       font-weight: 800;
       color: #c2410c;
-      background: #fff7ed;
-      border: 2px solid #ea580c;
-      border-radius: 11px;
-      padding: 8px 10px;
       line-height: 1.25;
       word-break: break-word;
     }
     .compact-ticket-datetime {
       width: 100%;
       background: #ffffff;
-      border: 2px solid #10b981;
+      border: 1.5px solid #a7f3d0;
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 9px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
     #compact-ticket-fecha {
-      font-size: 21px;
+      font-size: 20px;
       font-weight: 900;
       color: #065f46;
       letter-spacing: 0.4px;
       line-height: 1.15;
     }
     .compact-ticket-sep {
-      width: 68%;
+      width: 64%;
       height: 1.5px;
       background: #d1fae5;
       border-radius: 2px;
     }
     #compact-ticket-hora {
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 900;
       color: #047857;
       letter-spacing: 0.4px;
       line-height: 1.15;
     }
+    .compact-ticket-cedido {
+      width: 100%;
+      background: #eff6ff;
+      border: 1.5px solid #38bdf8;
+      border-radius: 11px;
+      padding: 8px 12px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .compact-cedido-kicker {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #0369a1;
+    }
+    #compact-ticket-cedido-detalle {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0c4a6e;
+      line-height: 1.3;
+      word-break: break-word;
+    }
     .compact-ticket-hint {
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       color: #047857;
-      opacity: 0.85;
+      opacity: 0.8;
       margin-top: -2px;
     }
 
@@ -470,48 +508,110 @@
       box-shadow: 0 15px 35px rgba(0,0,0,0.35); animation: popModal 0.15s ease-out;
     }
 
-    /* VENTANA EMERGENTE A PANTALLA CASI COMPLETA PARA EL COCINERO */
+    /* VENTANA EMERGENTE EJECUTIVA PARA EL COCINERO */
     #modal-ticket-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(15, 23, 42, 0.88); z-index: 9999; justify-content: center; align-items: center; padding: 14px;
     }
     #modal-ticket-card {
-      background: #ecfdf5; border: 5px solid #10b981;
-      width: 94vw; max-width: 500px; min-height: 82vh; max-height: 94vh; overflow-y: auto;
-      border-radius: 28px; padding: 44px 20px 32px; text-align: center; position: relative;
+      background: #f0fdf4; border: 4px solid #10b981;
+      width: 94vw; max-width: 480px; min-height: 80vh; max-height: 94vh; overflow-y: auto;
+      border-radius: 28px; padding: 44px 22px 30px; text-align: center; position: relative;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
+      gap: 16px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.55); animation: popModal 0.18s ease-out;
     }
     .btn-close-ticket {
-      position: absolute; top: 16px; right: 16px; width: 50px; height: 50px; border-radius: 50%;
-      background: rgba(6, 95, 70, 0.15); color: #065f46; border: none; font-size: 26px; font-weight: 900;
+      position: absolute; top: 16px; right: 16px; width: 46px; height: 46px; border-radius: 50%;
+      background: rgba(6, 95, 70, 0.12); color: #065f46; border: none; font-size: 24px; font-weight: 900;
       cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;
     }
-    .btn-close-ticket:active { background: rgba(6, 95, 70, 0.3); }
+    .btn-close-ticket:active { background: rgba(6, 95, 70, 0.25); }
     .ticket-big-icon {
-      width: 112px; height: 112px; border-radius: 50%; background: #10b981; color: #ffffff;
-      font-size: 68px; font-weight: 900; display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px; box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4); flex-shrink: 0;
+      width: 96px; height: 96px; border-radius: 50%; background: #10b981; color: #ffffff;
+      font-size: 58px; font-weight: 900; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 12px 26px rgba(16, 185, 129, 0.36); flex-shrink: 0;
     }
-    #ticket-modal-titulo {
-      font-size: 29px; font-weight: 900; color: #065f46; line-height: 1.15; letter-spacing: -0.4px; margin: 0 0 18px;
-      text-transform: uppercase;
+    #ticket-modal-nombre {
+      font-size: 31px; font-weight: 900; color: #064e3b; line-height: 1.15; letter-spacing: -0.4px;
+      margin: 0; max-width: 100%; word-break: break-word;
     }
     .ticket-data-stack {
       width: 100%; display: flex; flex-direction: column; gap: 14px; align-items: center;
     }
-    /* Detalle de panes/huevos: se muestra ÚNICAMENTE en Desayuno */
+    .ticket-opcion-box {
+      width: 100%;
+      border-radius: 18px;
+      padding: 13px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .ticket-opcion-box.srv-des {
+      background: #fff7ed;
+      border: 2.5px solid #ea580c;
+    }
+    .ticket-opcion-box.srv-alm {
+      background: #dcfce7;
+      border: 2px solid #10b981;
+      padding: 11px 16px;
+    }
+    #ticket-modal-srv-kicker {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #9a3412;
+    }
+    .ticket-opcion-box.srv-alm #ticket-modal-srv-kicker {
+      font-size: 15px;
+      letter-spacing: 1px;
+      color: #065f46;
+    }
     #ticket-modal-detalle {
-      width: 100%; font-size: 25px; font-weight: 900; color: #c2410c;
-      background: #fff7ed; border: 3px solid #ea580c;
-      padding: 13px 14px; border-radius: 16px; line-height: 1.25;
+      font-size: 24px;
+      font-weight: 900;
+      color: #c2410c;
+      line-height: 1.22;
       word-break: break-word;
+    }
+    .ticket-cedido-box {
+      width: 100%;
+      background: #eff6ff;
+      border: 2.5px solid #0284c7;
+      border-radius: 18px;
+      padding: 12px 16px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    #ticket-modal-cedido-kicker {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #0369a1;
+    }
+    #ticket-modal-cedido-detalle {
+      font-size: 21px;
+      font-weight: 900;
+      color: #0c4a6e;
+      line-height: 1.28;
+      word-break: break-word;
+    }
+    .cedido-de-sub {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0369a1;
+      opacity: 0.9;
     }
     /* Cuadro único de Fecha y Hora en filas separadas */
     .ticket-datetime-box {
       width: 100%;
       background: #ffffff;
-      border: 3px solid #10b981;
+      border: 2.5px solid #10b981;
       border-radius: 18px;
       padding: 16px 14px;
       display: flex;
@@ -520,13 +620,13 @@
       gap: 10px;
     }
     #ticket-modal-fecha {
-      font-size: 33px; font-weight: 900; color: #065f46; letter-spacing: 0.5px; line-height: 1.15;
+      font-size: 31px; font-weight: 900; color: #065f46; letter-spacing: 0.5px; line-height: 1.15;
     }
     .ticket-datetime-sep {
-      width: 72%; height: 2px; background: #d1fae5; border-radius: 2px;
+      width: 68%; height: 2px; background: #d1fae5; border-radius: 2px;
     }
     #ticket-modal-hora {
-      font-size: 38px; font-weight: 900; color: #047857; letter-spacing: 0.5px; line-height: 1.15;
+      font-size: 36px; font-weight: 900; color: #047857; letter-spacing: 0.5px; line-height: 1.15;
     }
 
     @keyframes popModal {
@@ -554,16 +654,17 @@
       .pan-select { font-size: 11.8px; height: 27px; padding: 0 2px; }
       .op-sub-btn { padding: 9px 2px; font-size: 12.5px; }
       .btn { padding: 13px; font-size: 15px; }
-      #modal-ticket-card { width: 95vw; min-height: 84dvh; max-height: 94dvh; padding: 38px 16px 28px; }
-      #ticket-modal-titulo { font-size: 26px; }
-      #ticket-modal-detalle { font-size: 23px; padding: 12px 10px; }
-      #ticket-modal-fecha { font-size: 31px; }
-      #ticket-modal-hora { font-size: 36px; }
-      #card-ticket-compacto { padding: 12px; gap: 8px; }
-      .compact-ticket-title { font-size: 16.5px; }
-      #compact-ticket-detalle { font-size: 16px; padding: 7px 8px; }
-      #compact-ticket-fecha { font-size: 19.5px; }
-      #compact-ticket-hora { font-size: 22.5px; }
+      #modal-ticket-card { width: 95vw; min-height: 82dvh; max-height: 94dvh; padding: 40px 18px 26px; gap: 14px; }
+      .ticket-big-icon { width: 88px; height: 88px; font-size: 52px; }
+      #ticket-modal-nombre { font-size: 27px; }
+      #ticket-modal-detalle { font-size: 21px; }
+      #ticket-modal-fecha { font-size: 29px; }
+      #ticket-modal-hora { font-size: 33px; }
+      #card-ticket-compacto { padding: 13px 12px 11px; gap: 8px; }
+      #ticket-modal-cedido-detalle { font-size: 19px; }
+      #compact-ticket-detalle { font-size: 15.5px; }
+      #compact-ticket-fecha { font-size: 19px; }
+      #compact-ticket-hora { font-size: 22px; }
     }
 
     .rrhh-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
@@ -669,15 +770,19 @@
             Escanear QR en Comedor
           </button>
 
-          <!-- TARJETA VERDE COMPACTA PERSISTENTE (REEMPLAZA EL BOTÓN QR TRAS ESCANEAR) -->
+          <!-- TARJETA VERDE COMPACTA PERSISTENTE (SIN NOMBRE; REEMPLAZA EL BOTÓN QR TRAS ESCANEAR) -->
           <div id="card-ticket-compacto" onclick="reabrirTicketVerdeDesdeTarjeta()" title="Toca para ampliar">
-            <div class="compact-ticket-head">
-              <div class="compact-ticket-icon">✓</div>
-              <div class="compact-ticket-title" id="compact-ticket-titulo">ALMUERZO REGISTRADO</div>
+            <div class="compact-ticket-icon">✓</div>
+            <div class="compact-ticket-opcion srv-alm" id="compact-ticket-opcion-box">
+              <span class="compact-opcion-kicker" id="compact-ticket-kicker">ALMUERZO REGISTRADO</span>
+              <div id="compact-ticket-detalle" style="display:none;"></div>
             </div>
-            <div id="compact-ticket-detalle" style="display:none;"></div>
+            <div class="compact-ticket-cedido" id="compact-ticket-cedido-box">
+              <span class="compact-cedido-kicker" id="compact-ticket-cedido-kicker">CEDIDO</span>
+              <div id="compact-ticket-cedido-detalle"></div>
+            </div>
             <div class="compact-ticket-datetime">
-              <div id="compact-ticket-fecha">19/11/2026</div>
+              <div id="compact-ticket-fecha">20/11/2026</div>
               <div class="compact-ticket-sep"></div>
               <div id="compact-ticket-hora">12:00:00 PM</div>
             </div>
@@ -697,16 +802,23 @@
             </div>
           </div>
 
-          <!-- VENTANA EMERGENTE A PANTALLA CASI COMPLETA PARA EL COCINERO -->
+          <!-- VENTANA EMERGENTE EJECUTIVA PARA EL COCINERO -->
           <div id="modal-ticket-overlay">
             <div id="modal-ticket-card">
               <button class="btn-close-ticket" onclick="cerrarModalTicketVerde()" title="Cerrar">✕</button>
               <div class="ticket-big-icon">✓</div>
-              <h3 id="ticket-modal-titulo">¡ALMUERZO REGISTRADO!</h3>
+              <h3 id="ticket-modal-nombre">Colaborador</h3>
               <div class="ticket-data-stack">
-                <div id="ticket-modal-detalle" style="display:none;"></div>
+                <div class="ticket-opcion-box srv-alm" id="ticket-modal-opcion-box">
+                  <span id="ticket-modal-srv-kicker">ALMUERZO REGISTRADO</span>
+                  <div id="ticket-modal-detalle" style="display:none;"></div>
+                </div>
+                <div class="ticket-cedido-box" id="ticket-modal-cedido-box">
+                  <span id="ticket-modal-cedido-kicker">CEDIDO</span>
+                  <div id="ticket-modal-cedido-detalle"></div>
+                </div>
                 <div class="ticket-datetime-box">
-                  <div id="ticket-modal-fecha">19/11/2026</div>
+                  <div id="ticket-modal-fecha">20/11/2026</div>
                   <div class="ticket-datetime-sep"></div>
                   <div id="ticket-modal-hora">12:00:00 PM</div>
                 </div>
@@ -925,7 +1037,7 @@
     let deferredPromptPWA = null;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=26', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
           reg.update().catch(() => {});
         }).catch(() => {});
       });
@@ -977,20 +1089,22 @@
         btn.textContent = 'Actualizando...';
       }
       try {
-        if ('serviceWorker' in navigator) {
-          const regs = await navigator.serviceWorker.getRegistrations();
-          for (let r of regs) {
-            await r.unregister();
-          }
-        }
+        // Limpia solo la caché de archivos sin desregistrar el Service Worker ni cambiar la URL
+        // para conservar el contexto de permisos de cámara en iOS Safari / PWA.
         if ('caches' in window) {
           const keys = await caches.keys();
           for (let k of keys) {
             await caches.delete(k);
           }
         }
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          for (let r of regs) {
+            await r.update().catch(() => {});
+          }
+        }
       } catch (e) {}
-      window.location.replace(window.location.pathname + '?v=' + new Date().getTime());
+      window.location.replace(window.location.pathname);
     }
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -1135,6 +1249,66 @@
       return palabras[0];
     }
 
+    function capitalizarBloqueNombre(str) {
+      const s = String(str || '').trim();
+      if (!s) return '';
+      // Si viene todo en mayúsculas, lo pasa a formato título limpio; si ya viene mixto, lo respeta
+      if (s === s.toUpperCase()) {
+        const conectoresMin = ['de', 'del', 'la', 'las', 'los', 'y'];
+        return s.toLowerCase().split(/\s+/).map((w, i) => {
+          if (i > 0 && conectoresMin.includes(w)) return w;
+          return w.charAt(0).toUpperCase() + w.slice(1);
+        }).join(' ');
+      }
+      return s;
+    }
+
+    function agruparBloquesNombre(texto) {
+      const conectores = ['de', 'del', 'la', 'las', 'los', 'san', 'santa', 'vda', 'vda.', 'y'];
+      const palabras = String(texto || '').trim().split(/\s+/).filter(Boolean);
+      const bloques = [];
+      let acum = [];
+      for (let i = 0; i < palabras.length; i++) {
+        const w = palabras[i];
+        const low = w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        acum.push(w);
+        if (!conectores.includes(low)) {
+          bloques.push(acum.join(' '));
+          acum = [];
+        }
+      }
+      if (acum.length > 0) bloques.push(acum.join(' '));
+      return bloques;
+    }
+
+    function extraerNombreYApellidoCliente(usuarioObj) {
+      if (!usuarioObj) return 'Colaborador';
+      const limpio = String(usuarioObj.nombre || '').trim();
+      if (!limpio) return extraerPrimerNombreCliente(usuarioObj);
+
+      // Formato estándar SBS: "Apellidos, Nombres" (ej: "Arango Lopez, Keyla Pamela" -> "Keyla Arango")
+      if (limpio.includes(',')) {
+        const partes = limpio.split(',');
+        const apBloques = agruparBloquesNombre(partes[0]);
+        const nomBloques = agruparBloquesNombre(partes.slice(1).join(' '));
+        const primerNom = nomBloques.length > 0 ? nomBloques[0].split(/\s+/)[0] : extraerPrimerNombreCliente(usuarioObj);
+        const primerAp = apBloques.length > 0 ? apBloques[0] : '';
+        return capitalizarBloqueNombre([primerNom, primerAp].filter(Boolean).join(' '));
+      }
+
+      // Sin coma: agrupa bloques respetando apellidos compuestos (De La Cruz, Del Solar, etc.)
+      const bloques = agruparBloquesNombre(limpio);
+      if (bloques.length >= 3) {
+        const primerNom = bloques[2].split(/\s+/)[0];
+        const primerAp = bloques[0];
+        return capitalizarBloqueNombre(`${primerNom} ${primerAp}`);
+      }
+      if (bloques.length === 2) {
+        return capitalizarBloqueNombre(`${bloques[0]} ${bloques[1]}`);
+      }
+      return capitalizarBloqueNombre(limpio);
+    }
+
     async function calcularHashSHA256Cliente(dni, textoClave) {
       try {
         const dniNorm = normalizarDniCliente(dni);
@@ -1209,12 +1383,14 @@
         if (marcaLocal.dni === reg.usuario.dni && marcaLocal.fecha === reg.hoyFisico.fecha) {
           if (marcaLocal.des) {
             reg.hoyFisico.consumioDes = true;
+            if (marcaLocal.soloCesDes && !reg.hoyFisico.reservoDes) reg.hoyFisico.soloCesionDes = true;
             if (!reg.hoyFisico.horaScanDes && marcaLocal.horaDes) {
               reg.hoyFisico.horaScanDes = marcaLocal.horaDes;
             }
           }
           if (marcaLocal.alm) {
             reg.hoyFisico.consumioAlm = true;
+            if (marcaLocal.soloCesAlm && !reg.hoyFisico.reservoAlm) reg.hoyFisico.soloCesionAlm = true;
             if (!reg.hoyFisico.horaScanAlm && marcaLocal.horaAlm) {
               reg.hoyFisico.horaScanAlm = marcaLocal.horaAlm;
             }
@@ -1767,10 +1943,13 @@
         const cerradoDes = !d.puedeEditarDesayuno || !esEditableEnTiempoReal(d.fecha, 'DESAYUNO');
         const cerradoAlm = !d.puedeEditarAlmuerzo || !esEditableEnTiempoReal(d.fecha, 'ALMUERZO');
 
-        const habDesFecha = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
-        const desConsumido = (d.esHoyFisico && hf && hf.consumioDes) ||
-          (habDesFecha && d.desayuno !== 'NO' && (cerradoDes || d.desayuno === 'MANUAL'));
-        const almConsumido = (d.esHoyFisico && hf && hf.consumioAlm) ||
+        const esAsigDesHoy = (d.esHoyFisico && hf && hf.asignadoDes) || (d.desayuno === 'MANUAL');
+        const habDesFecha = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || esAsigDesHoy;
+        const asistDesPropia = (d.esHoyFisico && hf && hf.consumioDes && !hf.soloCesionDes);
+        const asistAlmPropia = (d.esHoyFisico && hf && hf.consumioAlm && !hf.soloCesionAlm);
+        const desConsumido = asistDesPropia ||
+          (habDesFecha && d.desayuno !== 'NO' && (cerradoDes || esAsigDesHoy));
+        const almConsumido = asistAlmPropia ||
           (d.almuerzo !== 'NO' && cerradoAlm);
 
         const prev = mapaPorFecha[d.fecha];
@@ -2150,6 +2329,39 @@
       STATE.ticketCompactoActivo = null;
     }
 
+    function obtenerCesionesServicioHoy(servicio) {
+      const hf = STATE.hoyFisico;
+      if (!hf) return [];
+      const arr = (servicio === 'DESAYUNO') ? hf.cedidosDes : hf.cedidosAlm;
+      return Array.isArray(arr) ? arr : [];
+    }
+
+    function tieneReservaPropiaActivaHoy(servicio) {
+      const hf = STATE.hoyFisico;
+      if (!hf) return false;
+      if (servicio === 'DESAYUNO') return !!(hf.reservoDes && !hf.cedioDes);
+      return !!(hf.reservoAlm && !hf.cedioAlm);
+    }
+
+    function construirHtmlDetalleCesion(servicio, listaCes, tienePropia) {
+      if (!Array.isArray(listaCes) || listaCes.length === 0) return '';
+      if (servicio === 'DESAYUNO') {
+        return listaCes.map(c => {
+          const det = String(c.detalle || 'Desayuno').replace(/</g, '&lt;');
+          const de = c.de ? `<div class="cedido-de-sub">de ${String(c.de).replace(/</g, '&lt;')}</div>` : '';
+          return `<div>${det}${de}</div>`;
+        }).join('');
+      }
+      // Almuerzo: sin mostrar Regular / Alternativo
+      const cant = listaCes.length;
+      const tituloAlm = tienePropia
+        ? (cant === 1 ? '+1 Almuerzo adicional' : `+${cant} Almuerzos adicionales`)
+        : (cant === 1 ? 'Almuerzo' : `${cant} Almuerzos`);
+      const cedentes = listaCes.map(c => c.de).filter(Boolean).join(', ');
+      const deTxt = cedentes ? `<div class="cedido-de-sub">de ${String(cedentes).replace(/</g, '&lt;')}</div>` : '';
+      return `<div>${tituloAlm}${deTxt}</div>`;
+    }
+
     function mostrarTarjetaTicketCompacto(servicio, horaRaw, notaExtra, mantenerBotonVisible = false) {
       const btn = document.getElementById('btn-escanear-qr');
       const card = document.getElementById('card-ticket-compacto');
@@ -2157,20 +2369,43 @@
 
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
       const horaVisual = formatearHoraTicket12h(horaRaw) || 'Registrado hoy';
+      const tienePropia = STATE.modoPruebaQR ? true : tieneReservaPropiaActivaHoy(servicio);
+      const listaCes = obtenerCesionesServicioHoy(servicio);
 
-      document.getElementById('compact-ticket-titulo').textContent = `${servicio} REGISTRADO`;
-
+      const opBox = document.getElementById('compact-ticket-opcion-box');
+      const kickerEl = document.getElementById('compact-ticket-kicker');
       const detEl = document.getElementById('compact-ticket-detalle');
-      if (servicio === 'DESAYUNO') {
-        const textoDes = obtenerDetalleDesayunoHoyParaTicket();
-        if (textoDes) {
-          detEl.textContent = textoDes;
-          detEl.style.display = 'block';
+      const cesBox = document.getElementById('compact-ticket-cedido-box');
+      const cesKicker = document.getElementById('compact-ticket-cedido-kicker');
+      const cesDet = document.getElementById('compact-ticket-cedido-detalle');
+
+      if (tienePropia) {
+        opBox.style.display = 'flex';
+        if (servicio === 'DESAYUNO') {
+          const textoDes = obtenerDetalleDesayunoHoyParaTicket();
+          opBox.className = 'compact-ticket-opcion srv-des';
+          kickerEl.textContent = 'DESAYUNO';
+          if (textoDes) {
+            detEl.textContent = textoDes;
+            detEl.style.display = 'block';
+          } else {
+            detEl.style.display = 'none';
+          }
         } else {
+          opBox.className = 'compact-ticket-opcion srv-alm';
+          kickerEl.textContent = 'ALMUERZO REGISTRADO';
           detEl.style.display = 'none';
         }
       } else {
-        detEl.style.display = 'none';
+        opBox.style.display = 'none';
+      }
+
+      if (listaCes.length > 0) {
+        cesKicker.textContent = tienePropia ? 'CEDIDO' : `${servicio} CEDIDO`;
+        cesDet.innerHTML = construirHtmlDetalleCesion(servicio, listaCes, tienePropia);
+        cesBox.style.display = 'flex';
+      } else {
+        cesBox.style.display = 'none';
       }
 
       document.getElementById('compact-ticket-fecha').textContent = fechaHoy;
@@ -2190,13 +2425,36 @@
       card.style.display = 'flex';
     }
 
+    async function refrescarCesionesSilenciosamente(servicioAbierto, horaGuardada) {
+      if (!STATE.usuario || !STATE.usuario.dni || STATE.modoPruebaQR) return;
+      try {
+        const res = await fetchConTimeout('sincronizarMiEstado', [STATE.usuario.dni, VERSION_LOCAL_APP], 3500);
+        if (!res || !res.ok || !res.registro || !res.registro.hoyFisico) return;
+        const nuevoHf = res.registro.hoyFisico;
+        STATE.hoyFisico.cedidosDes = Array.isArray(nuevoHf.cedidosDes) ? nuevoHf.cedidosDes : [];
+        STATE.hoyFisico.cedidosAlm = Array.isArray(nuevoHf.cedidosAlm) ? nuevoHf.cedidosAlm : [];
+        STATE.hoyFisico.cedioDes = !!nuevoHf.cedioDes;
+        STATE.hoyFisico.cedioDesA = nuevoHf.cedioDesA || '';
+        STATE.hoyFisico.cedioAlm = !!nuevoHf.cedioAlm;
+        STATE.hoyFisico.cedioAlmA = nuevoHf.cedioAlmA || '';
+        guardarSnapshotLocal();
+        actualizarEstadoBotonQR();
+
+        const overlay = document.getElementById('modal-ticket-overlay');
+        if (overlay && overlay.style.display === 'flex') {
+          mostrarTicketVerdeConfirmado(servicioAbierto, horaGuardada);
+        }
+      } catch (e) {}
+    }
+
     function reabrirTicketVerdeDesdeTarjeta() {
       if (!STATE.ticketCompactoActivo) return;
       vibrarHaptico(15);
-      mostrarTicketVerdeConfirmado(
-        STATE.ticketCompactoActivo.servicio,
-        STATE.ticketCompactoActivo.hora
-      );
+      const srv = STATE.ticketCompactoActivo.servicio;
+      const hora = STATE.ticketCompactoActivo.hora;
+      mostrarTicketVerdeConfirmado(srv, hora);
+      // Refresca silenciosamente por si RRHH acaba de cederle una ración hace unos segundos
+      refrescarCesionesSilenciosamente(srv, hora);
     }
 
     function actualizarEstadoBotonQR() {
@@ -2221,18 +2479,35 @@
         return;
       }
 
-      if (!hf.reservoDes && !hf.reservoAlm) {
+      const cedidosDes = obtenerCesionesServicioHoy('DESAYUNO');
+      const cedidosAlm = obtenerCesionesServicioHoy('ALMUERZO');
+      const tienePropDes = tieneReservaPropiaActivaHoy('DESAYUNO');
+      const tienePropAlm = tieneReservaPropiaActivaHoy('ALMUERZO');
+      const habDesQR = tienePropDes || cedidosDes.length > 0;
+      const habAlmQR = tienePropAlm || cedidosAlm.length > 0;
+
+      if (!habDesQR && !habAlmQR) {
         ocultarTarjetaTicketCompacto();
         btn.style.display = 'inline-flex';
         btn.disabled = true;
-        btn.textContent = 'Sin servicios reservados hoy';
+        if (hf.cedioDes || hf.cedioAlm) {
+          if (horaActual < 12.0 && hf.cedioDes) {
+            btn.textContent = hf.cedioDesA ? `Cediste tu Desayuno a ${hf.cedioDesA}` : 'Cediste tu Desayuno de hoy';
+          } else if (hf.cedioAlm) {
+            btn.textContent = hf.cedioAlmA ? `Cediste tu Almuerzo a ${hf.cedioAlmA}` : 'Cediste tu Almuerzo de hoy';
+          } else {
+            btn.textContent = 'Cediste tu servicio de hoy';
+          }
+        } else {
+          btn.textContent = 'Sin servicios reservados hoy';
+        }
         return;
       }
 
       if (horaActual < 12.0) {
-        if (hf.reservoDes) {
+        if (habDesQR) {
           if (hf.consumioDes) {
-            const notaDes = hf.reservoAlm
+            const notaDes = habAlmQR
               ? 'Toca para ampliar • Almuerzo desde 12:00 PM'
               : 'Toca para ampliar';
             mostrarTarjetaTicketCompacto('DESAYUNO', hf.horaScanDes, notaDes, false);
@@ -2246,17 +2521,25 @@
             return;
           }
           btn.disabled = false;
-          btn.textContent = 'Escanear QR en Comedor (Desayuno)';
+          btn.textContent = tienePropDes
+            ? 'Escanear QR en Comedor (Desayuno)'
+            : 'Escanear QR en Comedor (Desayuno cedido)';
           return;
         } else {
           ocultarTarjetaTicketCompacto();
           btn.style.display = 'inline-flex';
           btn.disabled = true;
-          btn.textContent = 'El almuerzo se servirá desde las 12:00 PM';
+          if (hf.cedioDes) {
+            btn.textContent = habAlmQR
+              ? 'Cediste tu Desayuno (Almuerzo desde 12:00 PM)'
+              : (hf.cedioDesA ? `Cediste tu Desayuno a ${hf.cedioDesA}` : 'Cediste tu Desayuno de hoy');
+          } else {
+            btn.textContent = 'El almuerzo se servirá desde las 12:00 PM';
+          }
           return;
         }
       } else if (horaActual <= 18.0) {
-        if (hf.reservoAlm) {
+        if (habAlmQR) {
           if (hf.consumioAlm) {
             mostrarTarjetaTicketCompacto('ALMUERZO', hf.horaScanAlm, 'Toca para ampliar', false);
             return;
@@ -2264,15 +2547,21 @@
           ocultarTarjetaTicketCompacto();
           btn.style.display = 'inline-flex';
           btn.disabled = false;
-          btn.textContent = 'Escanear QR en Comedor (Almuerzo)';
+          btn.textContent = tienePropAlm
+            ? 'Escanear QR en Comedor (Almuerzo)'
+            : 'Escanear QR en Comedor (Almuerzo cedido)';
           return;
         } else {
           ocultarTarjetaTicketCompacto();
           btn.style.display = 'inline-flex';
           btn.disabled = true;
-          btn.textContent = hf.consumioDes
-            ? 'Ya escaneaste tu Desayuno de hoy'
-            : 'Sin servicios reservados hoy';
+          if (hf.cedioAlm) {
+            btn.textContent = hf.cedioAlmA ? `Cediste tu Almuerzo a ${hf.cedioAlmA}` : 'Cediste tu Almuerzo de hoy';
+          } else {
+            btn.textContent = hf.consumioDes
+              ? 'Ya escaneaste tu Desayuno de hoy'
+              : 'Sin servicios reservados hoy';
+          }
           return;
         }
       } else {
@@ -2614,13 +2903,16 @@
       const srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
 
       if (!STATE.modoPruebaQR) {
+        const esSoloCes = !tieneReservaPropiaActivaHoy(srvEsperado) && obtenerCesionesServicioHoy(srvEsperado).length > 0;
         if (srvEsperado === 'DESAYUNO') {
           STATE.hoyFisico.consumioDes = true;
           STATE.hoyFisico.horaScanDes = horaVisual12h;
+          if (esSoloCes) STATE.hoyFisico.soloCesionDes = true;
         }
         if (srvEsperado === 'ALMUERZO') {
           STATE.hoyFisico.consumioAlm = true;
           STATE.hoyFisico.horaScanAlm = horaVisual12h;
+          if (esSoloCes) STATE.hoyFisico.soloCesionAlm = true;
         }
         try {
           localStorage.setItem('SBS_QR_CONFIRMADO_HOY', JSON.stringify({
@@ -2629,7 +2921,9 @@
             des: STATE.hoyFisico.consumioDes,
             alm: STATE.hoyFisico.consumioAlm,
             horaDes: STATE.hoyFisico.horaScanDes || '',
-            horaAlm: STATE.hoyFisico.horaScanAlm || ''
+            horaAlm: STATE.hoyFisico.horaScanAlm || '',
+            soloCesDes: !!STATE.hoyFisico.soloCesionDes,
+            soloCesAlm: !!STATE.hoyFisico.soloCesionAlm
           }));
         } catch (e) {}
         guardarSnapshotLocal();
@@ -2722,11 +3016,11 @@
 
       if (infoDes.op === 'OP1') {
         return (infoDes.pan1.toLowerCase() === infoDes.pan2.toLowerCase())
-          ? `2 panes con ${infoDes.pan1}`
-          : `Pan con ${infoDes.pan1} / ${infoDes.pan2}`;
+          ? `2 Panes: ${infoDes.pan1}`
+          : `2 Panes: ${infoDes.pan1} y ${infoDes.pan2}`;
       }
       if (infoDes.op === 'OP2') return '3 Huevos';
-      if (infoDes.op === 'OP3') return `Pan con ${infoDes.pan1} + 1 Huevo`;
+      if (infoDes.op === 'OP3') return `Mixto: Pan con ${infoDes.pan1} + 1 Huevo`;
       if (infoDes.op === 'MANUAL') return 'Asignado por RRHH';
       return '';
     }
@@ -2735,20 +3029,46 @@
       const overlay = document.getElementById('modal-ticket-overlay');
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
       const horaExacta = horaGuardadaOpcional ? formatearHoraTicket12h(horaGuardadaOpcional) : obtenerHoraExactaActual();
-      document.getElementById('ticket-modal-titulo').textContent = `¡${servicio} REGISTRADO!`;
+      const nombreCorto = extraerNombreYApellidoCliente(STATE.usuario);
+      const tienePropia = STATE.modoPruebaQR ? true : tieneReservaPropiaActivaHoy(servicio);
+      const listaCes = obtenerCesionesServicioHoy(servicio);
 
-      // El detalle de panes/huevos se muestra únicamente para DESAYUNO; en ALMUERZO solo fecha y hora
+      document.getElementById('ticket-modal-nombre').textContent = nombreCorto;
+
+      const opBox = document.getElementById('ticket-modal-opcion-box');
+      const kickerEl = document.getElementById('ticket-modal-srv-kicker');
       const detEl = document.getElementById('ticket-modal-detalle');
-      if (servicio === 'DESAYUNO') {
-        const textoDes = obtenerDetalleDesayunoHoyParaTicket();
-        if (textoDes) {
-          detEl.textContent = textoDes;
-          detEl.style.display = 'block';
+      const cesBox = document.getElementById('ticket-modal-cedido-box');
+      const cesKicker = document.getElementById('ticket-modal-cedido-kicker');
+      const cesDet = document.getElementById('ticket-modal-cedido-detalle');
+
+      if (tienePropia) {
+        opBox.style.display = 'flex';
+        if (servicio === 'DESAYUNO') {
+          const textoDes = obtenerDetalleDesayunoHoyParaTicket();
+          opBox.className = 'ticket-opcion-box srv-des';
+          kickerEl.textContent = 'DESAYUNO';
+          if (textoDes) {
+            detEl.textContent = textoDes;
+            detEl.style.display = 'block';
+          } else {
+            detEl.style.display = 'none';
+          }
         } else {
+          opBox.className = 'ticket-opcion-box srv-alm';
+          kickerEl.textContent = 'ALMUERZO REGISTRADO';
           detEl.style.display = 'none';
         }
       } else {
-        detEl.style.display = 'none';
+        opBox.style.display = 'none';
+      }
+
+      if (listaCes.length > 0) {
+        cesKicker.textContent = tienePropia ? 'CEDIDO' : `${servicio} CEDIDO`;
+        cesDet.innerHTML = construirHtmlDetalleCesion(servicio, listaCes, tienePropia);
+        cesBox.style.display = 'flex';
+      } else {
+        cesBox.style.display = 'none';
       }
 
       document.getElementById('ticket-modal-fecha').textContent = fechaHoy;

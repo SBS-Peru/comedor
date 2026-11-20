@@ -310,6 +310,59 @@
     .txt-cambio { color: #334155; font-weight: 600; font-size: 12.2px; white-space: nowrap; }
     .txt-cambio-rojo { color: #dc2626; font-weight: 600; font-size: 12.2px; white-space: nowrap; }
     .txt-guion { color: #cbd5e1; font-weight: 600; }
+    .txt-cedido { color: #0369a1; font-weight: 700; font-size: 12.2px; }
+    .txt-cedido-sub { display: block; font-size: 11.5px; color: #0369a1; font-weight: 600; margin-top: 2px; }
+    .res-cell-flex { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .btn-ceder-sm {
+      padding: 3px 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #0369a1;
+      background: #eff6ff;
+      border: 1px solid #bae6fd;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: 0.14s;
+    }
+    .btn-ceder-sm:hover { background: #dbeafe; border-color: #38bdf8; }
+    .btn-deshacer-sm {
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+    .btn-deshacer-sm:hover { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    .ceder-summary-box {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 13px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .asig-opt-panel {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+    .asig-opt-panel label {
+      display: block;
+      font-size: 12.2px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 7px;
+    }
 
     .dni-cell { font-variant-numeric: tabular-nums; font-weight: 700; color: #334155; white-space: nowrap; }
     .name-cell { font-weight: 600; color: #0f172a; }
@@ -697,7 +750,7 @@
           <table>
             <thead id="thead-monitoreo"></thead>
             <tbody id="tbody-monitoreo">
-              <tr><td colspan="8" style="text-align:center; color:var(--muted);">Cargando registros...</td></tr>
+              <tr><td colspan="9" style="text-align:center; color:var(--muted);">Cargando registros...</td></tr>
             </tbody>
           </table>
         </div>
@@ -815,7 +868,7 @@
     </div>
   </div>
 
-  <!-- MODAL: ASIGNAR SERVICIO MANUALMENTE -->
+  <!-- MODAL: ASIGNAR SERVICIO MANUALMENTE (CON SELECCIÓN EXACTA DE OPCIÓN) -->
   <div class="modal-overlay" id="modal-asignar-servicio">
     <div class="modal-box modal-sm">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -831,16 +884,70 @@
 
       <div class="field-group">
         <label>2. Seleccionar servicio:</label>
-        <select id="sel-srv-asignar" class="form-select">
+        <select id="sel-srv-asignar" class="form-select" onchange="actualizarOpcionesModalAsignar()">
           <option value="DESAYUNO">Desayuno</option>
           <option value="ALMUERZO" selected>Almuerzo</option>
           <option value="AMBOS">Ambos</option>
         </select>
       </div>
 
+      <!-- DETALLE DE DESAYUNO A ENTREGAR -->
+      <div class="asig-opt-panel" id="wrap-asig-des" style="display:none;">
+        <label>Detalle del desayuno:</label>
+        <div class="seg-bar" style="width:100%; margin-bottom:8px;">
+          <button type="button" class="seg-btn sel-des" id="asig-des-OP1" onclick="seleccionarOpDesModalAsignar('OP1')">Opc. 1 (2 panes)</button>
+          <button type="button" class="seg-btn" id="asig-des-OP2" onclick="seleccionarOpDesModalAsignar('OP2')">Opc. 2 (3 huevos)</button>
+          <button type="button" class="seg-btn" id="asig-des-OP3" onclick="seleccionarOpDesModalAsignar('OP3')">Opc. 3 (Mixto)</button>
+        </div>
+        <div id="wrap-asig-panes" style="display:flex; gap:8px; align-items:center;">
+          <select id="sel-asig-pan1" class="form-select" style="flex:1;"></select>
+          <select id="sel-asig-pan2" class="form-select" style="flex:1;"></select>
+          <span id="lbl-asig-huevo" style="display:none; font-size:12.5px; font-weight:700; color:#475569; white-space:nowrap;">+ 1 huevo</span>
+        </div>
+        <div id="lbl-asig-op2" style="display:none; font-size:12.5px; font-weight:600; color:#475569; text-align:center; padding:4px 0;">
+          Bebida + 3 huevos cocidos
+        </div>
+      </div>
+
+      <!-- DETALLE DE ALMUERZO -->
+      <div class="asig-opt-panel" id="wrap-asig-alm">
+        <label>Tipo de almuerzo:</label>
+        <div class="seg-bar" style="width:100%;">
+          <button type="button" class="seg-btn sel-reg" id="asig-alm-REGULAR" onclick="seleccionarOpAlmModalAsignar('REGULAR')">Regular</button>
+          <button type="button" class="seg-btn" id="asig-alm-ALTERNATIVO" onclick="seleccionarOpAlmModalAsignar('ALTERNATIVO')">Alternativo</button>
+        </div>
+      </div>
+
       <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
         <button class="btn btn-outline" onclick="cerrarModalAsignarServicio()">Cancelar</button>
         <button class="btn btn-primary" id="btn-confirmar-asignar" onclick="ejecutarAsignacionManualRRHH()">Asignar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CEDER RESERVA A OTRO COLABORADOR ACTIVO -->
+  <div class="modal-overlay" id="modal-ceder-reserva" onclick="if(event.target===this) cerrarModalCederReserva()">
+    <div class="modal-box modal-sm">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; font-size:17px; color:#0369a1; font-weight:800;">Ceder Reserva</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalCederReserva()">Cerrar</button>
+      </div>
+
+      <div class="ceder-summary-box" id="box-resumen-cesion"></div>
+
+      <div class="field-group">
+        <label>Seleccionar colaborador receptor (solo activos):</label>
+        <input type="text" id="txt-filtro-colab-ceder" class="form-input" placeholder="Buscar por apellido, nombre o DNI..." oninput="filtrarSelectColaboradoresCeder()">
+        <select id="sel-colab-ceder" class="form-select" style="margin-top:8px;"></select>
+      </div>
+
+      <p style="font-size:12px; color:var(--muted); margin:0 0 14px; line-height:1.4;">
+        El descuento en planilla se mantiene en el colaborador titular. El receptor podrá recoger esta ración sin costo adicional.
+      </p>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-outline" onclick="cerrarModalCederReserva()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-confirmar-ceder" onclick="ejecutarCederReservaRRHH()">Confirmar cesión</button>
       </div>
     </div>
   </div>
@@ -969,6 +1076,9 @@
       ultimasFilasReporte: [],
       itemsRetirables: [],
       retiroSeleccionadoIdx: -1,
+      asigOpDes: 'OP1',
+      asigOpAlm: 'REGULAR',
+      cesionTarget: null,
       timerAutoRefresh: null,
       cargandoFeed: false,
       recargandoVersion: false
@@ -1077,7 +1187,7 @@
     // DETECCIÓN Y AUTO-RECARGA ANTE NUEVA VERSIÓN DEL PORTAL RRHH
     // ========================================================================
     function hayModalAbiertoRRHH() {
-      const ids = ['modal-asignar-servicio', 'modal-retirar-reserva', 'modal-menu', 'modal-reset-clave', 'modal-rango-ausencia'];
+      const ids = ['modal-asignar-servicio', 'modal-ceder-reserva', 'modal-retirar-reserva', 'modal-menu', 'modal-reset-clave', 'modal-rango-ausencia'];
       return ids.some(id => {
         const el = document.getElementById(id);
         return el && el.style.display === 'flex';
@@ -1545,18 +1655,70 @@
     }
 
     // ========================================================================
-    // MODAL: ASIGNAR SERVICIO MANUALMENTE
+    // MODAL: ASIGNAR SERVICIO MANUALMENTE (CON OPCIÓN EXACTA DE DESAYUNO/ALMUERZO)
     // ========================================================================
     function abrirModalAsignarServicio() {
       document.getElementById('txt-filtro-colab-asignar').value = '';
       filtrarSelectColaboradoresAsignar();
       document.getElementById('sel-srv-asignar').value = 'ALMUERZO';
+
+      const panes = STATE.panesCatalogo || PANES_CATALOGO_BASE;
+      const selP1 = document.getElementById('sel-asig-pan1');
+      const selP2 = document.getElementById('sel-asig-pan2');
+      selP1.innerHTML = panes.map(p => `<option value="${p}">${p}</option>`).join('');
+      selP2.innerHTML = panes.map((p, i) => `<option value="${p}" ${i === 1 ? 'selected' : ''}>${p}</option>`).join('');
+
+      seleccionarOpDesModalAsignar('OP1');
+      seleccionarOpAlmModalAsignar('REGULAR');
+      actualizarOpcionesModalAsignar();
+
       document.getElementById('modal-asignar-servicio').style.display = 'flex';
       setTimeout(() => document.getElementById('txt-filtro-colab-asignar').focus(), 80);
     }
 
     function cerrarModalAsignarServicio() {
       document.getElementById('modal-asignar-servicio').style.display = 'none';
+    }
+
+    function actualizarOpcionesModalAsignar() {
+      const srv = document.getElementById('sel-srv-asignar').value;
+      document.getElementById('wrap-asig-des').style.display = (srv === 'DESAYUNO' || srv === 'AMBOS') ? 'block' : 'none';
+      document.getElementById('wrap-asig-alm').style.display = (srv === 'ALMUERZO' || srv === 'AMBOS') ? 'block' : 'none';
+    }
+
+    function seleccionarOpDesModalAsignar(op) {
+      STATE.asigOpDes = op;
+      ['OP1', 'OP2', 'OP3'].forEach(k => {
+        const b = document.getElementById('asig-des-' + k);
+        if (b) b.classList.toggle('sel-des', k === op);
+      });
+      const wrapPanes = document.getElementById('wrap-asig-panes');
+      const selP2 = document.getElementById('sel-asig-pan2');
+      const lblHuevo = document.getElementById('lbl-asig-huevo');
+      const lblOp2 = document.getElementById('lbl-asig-op2');
+
+      if (op === 'OP1') {
+        wrapPanes.style.display = 'flex';
+        selP2.style.display = 'block';
+        lblHuevo.style.display = 'none';
+        lblOp2.style.display = 'none';
+      } else if (op === 'OP3') {
+        wrapPanes.style.display = 'flex';
+        selP2.style.display = 'none';
+        lblHuevo.style.display = 'inline-block';
+        lblOp2.style.display = 'none';
+      } else {
+        wrapPanes.style.display = 'none';
+        lblOp2.style.display = 'block';
+      }
+    }
+
+    function seleccionarOpAlmModalAsignar(op) {
+      STATE.asigOpAlm = op;
+      const bReg = document.getElementById('asig-alm-REGULAR');
+      const bAlt = document.getElementById('asig-alm-ALTERNATIVO');
+      if (bReg) bReg.className = 'seg-btn ' + (op === 'REGULAR' ? 'sel-reg' : '');
+      if (bAlt) bAlt.className = 'seg-btn ' + (op === 'ALTERNATIVO' ? 'sel-alt' : '');
     }
 
     function filtrarSelectColaboradoresAsignar() {
@@ -1584,6 +1746,18 @@
         return;
       }
 
+      let opcionDesayuno = 'OP1|Pollo|Queso';
+      if (STATE.asigOpDes === 'OP2') {
+        opcionDesayuno = 'OP2';
+      } else if (STATE.asigOpDes === 'OP1') {
+        const p1 = document.getElementById('sel-asig-pan1').value || 'Pollo';
+        const p2 = document.getElementById('sel-asig-pan2').value || p1;
+        opcionDesayuno = `OP1|${p1}|${p2}`;
+      } else if (STATE.asigOpDes === 'OP3') {
+        const p1 = document.getElementById('sel-asig-pan1').value || 'Pollo';
+        opcionDesayuno = `OP3|${p1}`;
+      }
+
       const btn = document.getElementById('btn-confirmar-asignar');
       btn.disabled = true;
       btn.textContent = 'Asignando...';
@@ -1594,7 +1768,8 @@
           dniTarget: dniTarget,
           fecha: fecha,
           servicio: servicio,
-          opcionAlmuerzo: 'REGULAR'
+          opcionDesayuno: opcionDesayuno,
+          opcionAlmuerzo: STATE.asigOpAlm || 'REGULAR'
         }]);
         btn.disabled = false;
         btn.textContent = 'Asignar';
@@ -1610,6 +1785,115 @@
         btn.disabled = false;
         btn.textContent = 'Asignar';
         mostrarToast('Error de conexión con el servidor.');
+      }
+    }
+
+    // ========================================================================
+    // MODAL: CEDER RESERVA A OTRO COLABORADOR ACTIVO + DESHACER CESIÓN
+    // ========================================================================
+    function abrirModalCederReserva(dniCedente, servicio) {
+      const reg = (STATE.monitoreoDia || []).find(x => x.dni === dniCedente);
+      if (!reg) return;
+
+      const detalle = (servicio === 'DESAYUNO') ? reg.detalleDes : reg.detalleAlm;
+      STATE.cesionTarget = {
+        dniCedente: dniCedente,
+        nombreCedente: reg.nombre,
+        servicio: servicio,
+        detalle: detalle
+      };
+
+      const tituloSrv = (servicio === 'DESAYUNO') ? 'Desayuno' : 'Almuerzo';
+      document.getElementById('box-resumen-cesion').innerHTML = `
+        <div><b>Titular:</b> ${reg.nombre} (${reg.dni})</div>
+        <div><b>Servicio a ceder:</b> ${tituloSrv} — <span style="color:#0369a1; font-weight:700;">${detalle}</span></div>
+      `;
+
+      document.getElementById('txt-filtro-colab-ceder').value = '';
+      filtrarSelectColaboradoresCeder();
+      document.getElementById('modal-ceder-reserva').style.display = 'flex';
+      setTimeout(() => document.getElementById('txt-filtro-colab-ceder').focus(), 80);
+    }
+
+    function cerrarModalCederReserva() {
+      STATE.cesionTarget = null;
+      document.getElementById('modal-ceder-reserva').style.display = 'none';
+    }
+
+    function filtrarSelectColaboradoresCeder() {
+      const busq = normalizarTextoBusqueda(document.getElementById('txt-filtro-colab-ceder').value);
+      const sel = document.getElementById('sel-colab-ceder');
+      const dniCed = STATE.cesionTarget ? STATE.cesionTarget.dniCedente : '';
+
+      // Solo colaboradores ACTIVOS y distintos al cedente
+      const elegibles = (STATE.colaboradoresBD || []).filter(c =>
+        c.estado === 'ACTIVO' && c.estadoOriginal === 'ACTIVO' && c.dni !== dniCed
+      );
+      const filtrados = elegibles.filter(c =>
+        !busq || c.dni.includes(busq) || normalizarTextoBusqueda(c.nombre).includes(busq)
+      );
+
+      if (filtrados.length === 0) {
+        sel.innerHTML = `<option value="">Sin colaboradores activos coincidentes</option>`;
+        return;
+      }
+      sel.innerHTML = filtrados.map(c =>
+        `<option value="${c.dni}">${c.nombre} (${c.dni})</option>`
+      ).join('');
+    }
+
+    async function ejecutarCederReservaRRHH() {
+      if (!STATE.cesionTarget) return;
+      const dniReceptor = document.getElementById('sel-colab-ceder').value;
+      if (!dniReceptor) {
+        mostrarToast('Selecciona un colaborador activo receptor.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-confirmar-ceder');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      try {
+        const res = await llamarAPI('cederReservaRRHH', [{
+          dniAdmin: STATE.admin.dni,
+          dniCedente: STATE.cesionTarget.dniCedente,
+          dniReceptor: dniReceptor,
+          servicio: STATE.cesionTarget.servicio,
+          fecha: STATE.fechaSeleccionada || STATE.hoyStr
+        }]);
+        btn.disabled = false;
+        btn.textContent = 'Confirmar cesión';
+
+        if (res && res.ok) {
+          cerrarModalCederReserva();
+          mostrarToast(res.msg);
+          await cargarFeedRapidoHoy();
+        } else {
+          mostrarToast(res ? res.msg : 'No se pudo completar la cesión.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Confirmar cesión';
+        mostrarToast('Error de conexión con el servidor.');
+      }
+    }
+
+    async function deshacerCesionUI(idCesion, nombreReceptor) {
+      if (!confirm(`¿Deseas anular la cesión a ${nombreReceptor} y devolver la reserva al titular?`)) return;
+      try {
+        const res = await llamarAPI('deshacerCesionRRHH', [{
+          dniAdmin: STATE.admin.dni,
+          idCesion: idCesion
+        }]);
+        if (res && res.ok) {
+          mostrarToast(res.msg);
+          await cargarFeedRapidoHoy();
+        } else {
+          mostrarToast(res ? res.msg : 'No se pudo deshacer la cesión.');
+        }
+      } catch (e) {
+        mostrarToast('Error de conexión.');
       }
     }
 
@@ -1695,16 +1979,23 @@
     function renderizarListaRetirables() {
       const cont = document.getElementById('lista-servicios-retirables');
       cont.innerHTML = STATE.itemsRetirables.map((it, idx) => {
-        const dis = it.yaEscaneo ? 'disabled' : '';
+        const bloqueado = !!(it.yaEscaneo || it.fueCedido);
+        const dis = bloqueado ? 'disabled' : '';
         const sel = (STATE.retiroSeleccionadoIdx === idx) ? 'selected' : '';
         const tituloSrv = it.servicio === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo';
+        let avisoBloqueo = '';
+        if (it.yaEscaneo) {
+          avisoBloqueo = `<span class="retiro-item-lock">Ya registró asistencia QR (${it.horaEscaneo || 'hoy'}) — No se puede retirar</span>`;
+        } else if (it.fueCedido) {
+          avisoBloqueo = `<span class="retiro-item-lock">Cedido a ${it.cedidoA || 'otro colaborador'} — Deshaz la cesión primero</span>`;
+        }
         return `
-          <div class="retiro-item ${dis} ${sel}" onclick="${it.yaEscaneo ? '' : `seleccionarItemRetiro(${idx})`}">
-            <input type="radio" name="rad-retiro" ${STATE.retiroSeleccionadoIdx === idx ? 'checked' : ''} ${it.yaEscaneo ? 'disabled' : ''}>
+          <div class="retiro-item ${dis} ${sel}" onclick="${bloqueado ? '' : `seleccionarItemRetiro(${idx})`}">
+            <input type="radio" name="rad-retiro" ${STATE.retiroSeleccionadoIdx === idx ? 'checked' : ''} ${bloqueado ? 'disabled' : ''}>
             <div class="retiro-item-info">
               <b>${it.fechaVisual} — ${tituloSrv}</b>
               <span class="retiro-item-sub">${it.detalle}</span>
-              ${it.yaEscaneo ? `<span class="retiro-item-lock">Ya registró asistencia QR (${it.horaEscaneo || 'hoy'}) — No se puede retirar</span>` : ''}
+              ${avisoBloqueo}
             </div>
           </div>
         `;
@@ -1713,7 +2004,8 @@
     }
 
     function seleccionarItemRetiro(idx) {
-      if (!STATE.itemsRetirables[idx] || STATE.itemsRetirables[idx].yaEscaneo) return;
+      const it = STATE.itemsRetirables[idx];
+      if (!it || it.yaEscaneo || it.fueCedido) return;
       STATE.retiroSeleccionadoIdx = idx;
       renderizarListaRetirables();
     }
@@ -1820,7 +2112,7 @@
 
       actualizarEstadoVisualTarjetasMonitoreo();
 
-      // Conteos para las 6 tarjetas
+      // Conteos exactos para las 6 tarjetas (Reservas = Asistentes + Pendientes siempre cuadra)
       let totDesRes = 0, totDesQR = 0, totDesPend = 0;
       let desOp1 = 0, desOp2 = 0, desOp3 = 0, desManual = 0;
       let totAlmRes = 0, totAlmQR = 0, totAlmPend = 0;
@@ -1835,9 +2127,14 @@
           else if (raw.startsWith('OP3')) desOp3++;
           else if (raw === 'MANUAL') desManual++;
 
-          if (item.consumioDes) totDesQR++;
-          else totDesPend++;
-        } else if (item.consumioDes) {
+          if (item.cedioDes) {
+            if (item.cedioDes.receptorAsistio) totDesQR++;
+            else totDesPend++;
+          } else {
+            if (item.consumioDes) totDesQR++;
+            else totDesPend++;
+          }
+        } else if (item.consumioDes && !item.soloCesionDes) {
           totDesQR++;
         }
 
@@ -1846,9 +2143,14 @@
           if (item.detalleAlm === 'Alternativo') almAlt++;
           else almReg++;
 
-          if (item.consumioAlm) totAlmQR++;
-          else totAlmPend++;
-        } else if (item.consumioAlm) {
+          if (item.cedioAlm) {
+            if (item.cedioAlm.receptorAsistio) totAlmQR++;
+            else totAlmPend++;
+          } else {
+            if (item.consumioAlm) totAlmQR++;
+            else totAlmPend++;
+          }
+        } else if (item.consumioAlm && !item.soloCesionAlm) {
           totAlmQR++;
         }
       });
@@ -1878,12 +2180,16 @@
 
       const soloDesayuno = (filtro === 'DES_RESERVADO' || filtro === 'DES_QR' || filtro === 'DES_FALTA');
       const soloAlmuerzo = (filtro === 'ALM_RESERVADO' || filtro === 'ALM_QR' || filtro === 'ALM_FALTA');
-      const totalCols = (soloDesayuno || soloAlmuerzo) ? 5 : 8;
+      const totalCols = (soloDesayuno || soloAlmuerzo) ? 6 : 9;
+      const esFechaHoy = (STATE.fechaSeleccionada === STATE.hoyStr);
+      const mostrarBtnCederDes = esFechaHoy && (filtro === 'DES_RESERVADO' || filtro === 'DES_FALTA');
+      const mostrarBtnCederAlm = esFechaHoy && (filtro === 'ALM_RESERVADO' || filtro === 'ALM_FALTA');
 
       const thead = document.getElementById('thead-monitoreo');
       if (soloDesayuno) {
         thead.innerHTML = `
           <tr>
+            <th style="width:66px; text-align:center;">App</th>
             <th>DNI</th>
             <th>Apellidos y Nombres</th>
             <th>Reserva Desayuno</th>
@@ -1894,6 +2200,7 @@
       } else if (soloAlmuerzo) {
         thead.innerHTML = `
           <tr>
+            <th style="width:66px; text-align:center;">App</th>
             <th>DNI</th>
             <th>Apellidos y Nombres</th>
             <th>Reserva Almuerzo</th>
@@ -1904,6 +2211,7 @@
       } else {
         thead.innerHTML = `
           <tr class="th-group-row">
+            <th rowspan="2" style="width:66px; text-align:center;">App</th>
             <th rowspan="2">DNI</th>
             <th rowspan="2">Apellidos y Nombres</th>
             <th colspan="3" class="grp-head-des col-div-left">Desayuno</th>
@@ -1922,12 +2230,14 @@
 
       let filtrados = lista.filter(item => {
         if (busq && !item.dni.includes(busq) && !normalizarTextoBusqueda(item.nombre).includes(busq)) return false;
-        if (filtro === 'DES_RESERVADO') return item.reservoDes;
+        const recDes = Array.isArray(item.recibioDes) ? item.recibioDes : [];
+        const recAlm = Array.isArray(item.recibioAlm) ? item.recibioAlm : [];
+        if (filtro === 'DES_RESERVADO') return item.reservoDes || recDes.length > 0;
         if (filtro === 'DES_QR') return item.consumioDes;
-        if (filtro === 'DES_FALTA') return item.reservoDes && !item.consumioDes;
-        if (filtro === 'ALM_RESERVADO') return item.reservoAlm;
+        if (filtro === 'DES_FALTA') return ((item.reservoDes && !item.cedioDes) || recDes.length > 0) && !item.consumioDes;
+        if (filtro === 'ALM_RESERVADO') return item.reservoAlm || recAlm.length > 0;
         if (filtro === 'ALM_QR') return item.consumioAlm;
-        if (filtro === 'ALM_FALTA') return item.reservoAlm && !item.consumioAlm;
+        if (filtro === 'ALM_FALTA') return ((item.reservoAlm && !item.cedioAlm) || recAlm.length > 0) && !item.consumioAlm;
         return true;
       });
 
@@ -1952,37 +2262,99 @@
         return;
       }
 
+      const mapaVerLocal = {};
+      (STATE.colaboradoresBD || []).forEach(c => { if (c.dni && c.versionApp) mapaVerLocal[c.dni] = c.versionApp; });
+
       tbody.innerHTML = filtrados.map(r => {
-        // Solo se colorea el texto cuando es Asistió (verde), Canceló/Retiró (rojo) o No solicitó (gris tenue)
+        const verFila = r.versionApp || mapaVerLocal[r.dni] || '';
+        const htmlAppVer = crearBadgeVersionApp(verFila);
+        const recDes = Array.isArray(r.recibioDes) ? r.recibioDes : [];
+        const recAlm = Array.isArray(r.recibioAlm) ? r.recibioAlm : [];
+
+        // --- DESAYUNO ---
         const fueCanceladoDes = (r.cambioDesTipo === 'CANCELO' || r.cambioDesTipo === 'RETIRADO');
-        const htmlDesRes = r.reservoDes
-          ? `<span class="txt-res-ok">${r.detalleDes}</span>`
-          : (fueCanceladoDes
-            ? `<span class="txt-cancelado">${r.cambioDesTipo === 'RETIRADO' ? 'Retirado' : 'Cancelado'}</span>`
-            : `<span class="txt-nosolicito">No solicitó</span>`);
+        const subRecDes = recDes.length > 0
+          ? recDes.map(x => `<span class="txt-cedido-sub">+ Cedido de ${x.cedenteCorto}: ${x.detalle}</span>`).join('')
+          : '';
+
+        let htmlDesResMain = '';
+        if (r.reservoDes) {
+          htmlDesResMain = `<span class="txt-res-ok">${r.detalleDes}</span>${subRecDes}`;
+        } else if (recDes.length > 0) {
+          htmlDesResMain = recDes.map(x => `<span class="txt-cedido">Cedido de ${x.cedenteCorto}: ${x.detalle}</span>`).join('<br>');
+        } else if (fueCanceladoDes) {
+          htmlDesResMain = `<span class="txt-cancelado">${r.cambioDesTipo === 'RETIRADO' ? 'Retirado' : 'Cancelado'}</span>`;
+        } else {
+          htmlDesResMain = `<span class="txt-nosolicito">No solicitó</span>`;
+        }
+
+        const puedeCederDes = mostrarBtnCederDes && r.reservoDes && !r.consumioDes && !r.cedioDes;
+        const htmlDesRes = puedeCederDes
+          ? `<div class="res-cell-flex"><div>${htmlDesResMain}</div><button type="button" class="btn-ceder-sm" onclick="abrirModalCederReserva('${r.dni}', 'DESAYUNO')">Ceder</button></div>`
+          : htmlDesResMain;
 
         const htmlDesCambio = formatearCeldaCambio(r.cambioDes, r.cambioDesTipo, r.cambioDesHora);
 
-        const htmlDesQR = r.consumioDes
-          ? `<span class="txt-asistio">Asistió ${formatearHora12hConSeg(r.horaScanDes)}</span>`
-          : (r.reservoDes ? `<span class="txt-pendiente">Pendiente</span>` : `<span class="txt-guion">-</span>`);
+        let htmlDesQR = '<span class="txt-guion">-</span>';
+        if (r.cedioDes) {
+          if (r.cedioDes.receptorAsistio) {
+            htmlDesQR = `<span class="txt-asistio">Recogido por ${r.cedioDes.receptorCorto} ${formatearHora12hConSeg(r.cedioDes.horaRecogido)}</span>`;
+          } else {
+            const btnUndo = esFechaHoy
+              ? `<button type="button" class="btn-deshacer-sm" onclick="deshacerCesionUI('${r.cedioDes.id}', '${r.cedioDes.receptorCorto.replace(/'/g, '')}')">Deshacer</button>`
+              : '';
+            htmlDesQR = `<span class="txt-cedido">Cedido a ${r.cedioDes.receptorCorto}</span>${btnUndo}`;
+          }
+        } else if (r.consumioDes) {
+          htmlDesQR = `<span class="txt-asistio">Asistió ${formatearHora12hConSeg(r.horaScanDes)}</span>`;
+        } else if (r.reservoDes || recDes.length > 0) {
+          htmlDesQR = `<span class="txt-pendiente">Pendiente</span>`;
+        }
 
+        // --- ALMUERZO ---
         const fueCanceladoAlm = (r.cambioAlmTipo === 'CANCELO' || r.cambioAlmTipo === 'RETIRADO');
-        const htmlAlmRes = r.reservoAlm
-          ? `<span class="txt-res-ok">${r.detalleAlm}</span>`
-          : (fueCanceladoAlm
-            ? `<span class="txt-cancelado">${r.cambioAlmTipo === 'RETIRADO' ? 'Retirado' : 'Cancelado'}</span>`
-            : `<span class="txt-nosolicito">No solicitó</span>`);
+        const subRecAlm = recAlm.length > 0
+          ? recAlm.map(x => `<span class="txt-cedido-sub">+ Cedido de ${x.cedenteCorto}</span>`).join('')
+          : '';
+
+        let htmlAlmResMain = '';
+        if (r.reservoAlm) {
+          htmlAlmResMain = `<span class="txt-res-ok">${r.detalleAlm}</span>${subRecAlm}`;
+        } else if (recAlm.length > 0) {
+          htmlAlmResMain = recAlm.map(x => `<span class="txt-cedido">Cedido de ${x.cedenteCorto}</span>`).join('<br>');
+        } else if (fueCanceladoAlm) {
+          htmlAlmResMain = `<span class="txt-cancelado">${r.cambioAlmTipo === 'RETIRADO' ? 'Retirado' : 'Cancelado'}</span>`;
+        } else {
+          htmlAlmResMain = `<span class="txt-nosolicito">No solicitó</span>`;
+        }
+
+        const puedeCederAlm = mostrarBtnCederAlm && r.reservoAlm && !r.consumioAlm && !r.cedioAlm;
+        const htmlAlmRes = puedeCederAlm
+          ? `<div class="res-cell-flex"><div>${htmlAlmResMain}</div><button type="button" class="btn-ceder-sm" onclick="abrirModalCederReserva('${r.dni}', 'ALMUERZO')">Ceder</button></div>`
+          : htmlAlmResMain;
 
         const htmlAlmCambio = formatearCeldaCambio(r.cambioAlm, r.cambioAlmTipo, r.cambioAlmHora);
 
-        const htmlAlmQR = r.consumioAlm
-          ? `<span class="txt-asistio">Asistió ${formatearHora12hConSeg(r.horaScanAlm)}</span>`
-          : (r.reservoAlm ? `<span class="txt-pendiente">Pendiente</span>` : `<span class="txt-guion">-</span>`);
+        let htmlAlmQR = '<span class="txt-guion">-</span>';
+        if (r.cedioAlm) {
+          if (r.cedioAlm.receptorAsistio) {
+            htmlAlmQR = `<span class="txt-asistio">Recogido por ${r.cedioAlm.receptorCorto} ${formatearHora12hConSeg(r.cedioAlm.horaRecogido)}</span>`;
+          } else {
+            const btnUndo = esFechaHoy
+              ? `<button type="button" class="btn-deshacer-sm" onclick="deshacerCesionUI('${r.cedioAlm.id}', '${r.cedioAlm.receptorCorto.replace(/'/g, '')}')">Deshacer</button>`
+              : '';
+            htmlAlmQR = `<span class="txt-cedido">Cedido a ${r.cedioAlm.receptorCorto}</span>${btnUndo}`;
+          }
+        } else if (r.consumioAlm) {
+          htmlAlmQR = `<span class="txt-asistio">Asistió ${formatearHora12hConSeg(r.horaScanAlm)}</span>`;
+        } else if (r.reservoAlm || recAlm.length > 0) {
+          htmlAlmQR = `<span class="txt-pendiente">Pendiente</span>`;
+        }
 
         if (soloDesayuno) {
           return `
             <tr>
+              <td style="text-align:center;">${htmlAppVer}</td>
               <td class="dni-cell">${r.dni}</td>
               <td class="name-cell">${r.nombre}</td>
               <td>${htmlDesRes}</td>
@@ -1994,6 +2366,7 @@
         if (soloAlmuerzo) {
           return `
             <tr>
+              <td style="text-align:center;">${htmlAppVer}</td>
               <td class="dni-cell">${r.dni}</td>
               <td class="name-cell">${r.nombre}</td>
               <td>${htmlAlmRes}</td>
@@ -2004,6 +2377,7 @@
         }
         return `
           <tr>
+            <td style="text-align:center;">${htmlAppVer}</td>
             <td class="dni-cell">${r.dni}</td>
             <td class="name-cell">${r.nombre}</td>
             <td class="col-div-left">${htmlDesRes}</td>

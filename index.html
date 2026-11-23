@@ -10,10 +10,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=27">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=27">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=27">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=28">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=28">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=28">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --sbs-primary: #13392a;
@@ -419,11 +421,11 @@
       background: #f0fdf4;
       border: 2px solid #10b981;
       border-radius: 16px;
-      padding: 15px 15px 12px;
-      margin-top: 2px;
+      padding: 18px 15px 14px;
+      margin-top: 4px;
       flex-direction: column;
       align-items: center;
-      gap: 9px;
+      gap: 11px;
       text-align: center;
       cursor: pointer;
       transition: transform 0.12s;
@@ -431,18 +433,19 @@
     }
     #card-ticket-compacto:active { transform: scale(0.99); }
     .compact-ticket-icon {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: #10b981;
       color: #ffffff;
-      font-size: 22px;
+      font-size: 23px;
       font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 10px rgba(16, 185, 129, 0.28);
       flex-shrink: 0;
+      margin-bottom: 6px;
     }
 
     .compact-ticket-opcion {
@@ -542,7 +545,7 @@
       box-shadow: 0 15px 35px rgba(0,0,0,0.35); animation: popModal 0.15s ease-out;
     }
 
-    /* VENTANA EMERGENTE EJECUTIVA PARA EL COCINERO */
+    /* VENTANA EMERGENTE EJECUTIVA PARA EL COCINERO (BLANCO Y VERDE LIMPIO CON AIRE VISUAL) */
     #modal-ticket-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(15, 23, 42, 0.88); z-index: 9999; justify-content: center; align-items: center; padding: 14px;
@@ -550,9 +553,9 @@
     #modal-ticket-card {
       background: #f0fdf4; border: 4px solid #10b981;
       width: 94vw; max-width: 480px; min-height: 80vh; max-height: 94vh; overflow-y: auto;
-      border-radius: 28px; padding: 44px 22px 30px; text-align: center; position: relative;
+      border-radius: 28px; padding: 48px 22px 32px; text-align: center; position: relative;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      gap: 16px;
+      gap: 18px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.55); animation: popModal 0.18s ease-out;
     }
     .btn-close-ticket {
@@ -562,58 +565,44 @@
     }
     .btn-close-ticket:active { background: rgba(6, 95, 70, 0.25); }
     .ticket-big-icon {
-      width: 96px; height: 96px; border-radius: 50%; background: #10b981; color: #ffffff;
-      font-size: 58px; font-weight: 900; display: flex; align-items: center; justify-content: center;
+      width: 94px; height: 94px; border-radius: 50%; background: #10b981; color: #ffffff;
+      font-size: 56px; font-weight: 900; display: flex; align-items: center; justify-content: center;
       box-shadow: 0 12px 26px rgba(16, 185, 129, 0.36); flex-shrink: 0;
+      margin-bottom: 10px;
     }
     #ticket-modal-nombre {
-      font-size: 31px; font-weight: 900; color: #064e3b; line-height: 1.15; letter-spacing: -0.4px;
-      margin: 0; max-width: 100%; word-break: break-word;
+      font-size: 30px; font-weight: 900; color: #064e3b; line-height: 1.15; letter-spacing: -0.4px;
+      margin: 0 0 8px; max-width: 100%; word-break: break-word;
     }
     .ticket-data-stack {
-      width: 100%; display: flex; flex-direction: column; gap: 14px; align-items: center;
+      width: 100%; display: flex; flex-direction: column; gap: 16px; align-items: center;
     }
     .ticket-opcion-box {
       width: 100%;
+      background: #ffffff;
+      border: 2.5px solid #10b981;
       border-radius: 18px;
-      padding: 13px 16px;
+      padding: 15px 14px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 4px;
-    }
-    .ticket-opcion-box.srv-des {
-      background: #fff7ed;
-      border: 2.5px solid #ea580c;
-    }
-    .ticket-opcion-box.srv-alm {
-      background: #dcfce7;
-      border: 2px solid #10b981;
-      padding: 11px 16px;
-    }
-    #ticket-modal-srv-kicker {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: #9a3412;
-    }
-    .ticket-opcion-box.srv-alm #ticket-modal-srv-kicker {
-      font-size: 15px;
-      letter-spacing: 1px;
-      color: #065f46;
+      justify-content: center;
+      overflow: hidden;
     }
     #ticket-modal-detalle {
-      font-size: 24px;
+      width: 100%;
+      font-size: 26px;
       font-weight: 900;
-      color: #c2410c;
-      line-height: 1.22;
-      word-break: break-word;
+      color: #065f46;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
     }
     .ticket-cedido-box {
       width: 100%;
-      background: #eff6ff;
-      border: 2.5px solid #0284c7;
+      background: #ffffff;
+      border: 2.5px solid #10b981;
       border-radius: 18px;
       padding: 12px 16px;
       display: none;
@@ -622,24 +611,29 @@
       gap: 4px;
     }
     #ticket-modal-cedido-kicker {
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 800;
-      letter-spacing: 1.2px;
+      letter-spacing: 1.1px;
       text-transform: uppercase;
-      color: #0369a1;
+      color: #047857;
     }
     #ticket-modal-cedido-detalle {
-      font-size: 21px;
+      font-size: 20px;
       font-weight: 900;
-      color: #0c4a6e;
+      color: #065f46;
       line-height: 1.28;
       word-break: break-word;
     }
     .cedido-de-sub {
       font-size: 13px;
       font-weight: 700;
-      color: #0369a1;
-      opacity: 0.9;
+      color: #047857;
+      opacity: 0.85;
+    }
+    .btn-danger-outline {
+      background: #fef2f2;
+      border: 1.5px solid #fecaca;
+      color: #b91c1c;
     }
     /* Cuadro único de Fecha y Hora en filas separadas */
     .ticket-datetime-box {
@@ -687,13 +681,13 @@
       .pan-select { font-size: 11.8px; height: 27px; padding: 0 2px; }
       .op-sub-btn { padding: 9px 2px; font-size: 12.5px; }
       .btn { padding: 13px; font-size: 15px; }
-      #modal-ticket-card { width: 95vw; min-height: 82dvh; max-height: 94dvh; padding: 40px 18px 26px; gap: 14px; }
-      .ticket-big-icon { width: 88px; height: 88px; font-size: 52px; }
-      #ticket-modal-nombre { font-size: 27px; }
-      #ticket-modal-detalle { font-size: 21px; }
+      #modal-ticket-card { width: 95vw; min-height: 82dvh; max-height: 94dvh; padding: 44px 18px 28px; gap: 16px; }
+      .ticket-big-icon { width: 86px; height: 86px; font-size: 50px; margin-bottom: 8px; }
+      #ticket-modal-nombre { font-size: 27px; margin-bottom: 6px; }
+      #ticket-modal-detalle { font-size: 25px; }
       #ticket-modal-fecha { font-size: 29px; }
       #ticket-modal-hora { font-size: 33px; }
-      #card-ticket-compacto { padding: 13px 12px 11px; gap: 8px; }
+      #card-ticket-compacto { padding: 16px 12px 12px; gap: 10px; }
       #ticket-modal-cedido-detalle { font-size: 19px; }
       #compact-ticket-detalle { font-size: 22px; }
       #compact-ticket-fecha { font-size: 19px; }
@@ -722,7 +716,7 @@
   <div class="app-shell" id="app-shell">
     <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
     <div id="view-splash">
-      <img src="./Logo.jpg?v=27" alt="Comedor SBS" class="splash-logo">
+      <img src="./Logo.jpg?v=28" alt="Comedor SBS" class="splash-logo">
       <div class="splash-spinner" id="splash-spinner"></div>
       <p id="splash-texto">Actualizando...</p>
       <div id="splash-retry-wrap">
@@ -735,7 +729,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=27" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=28" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -757,7 +751,7 @@
       <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:12px; padding:12px; font-size:14px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
         Instalar App en pantalla de inicio
       </button>
-      <div class="login-ver-tag" id="lbl-ver-login">v27</div>
+      <div class="login-ver-tag" id="lbl-ver-login">v28</div>
     </div>
 
     <!-- 2. PANTALLA PRINCIPAL -->
@@ -776,7 +770,7 @@
           </div>
           <div class="top-bar-right">
             <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
-            <span class="topbar-ver-tag" id="lbl-ver-main">v27</span>
+            <span class="topbar-ver-tag" id="lbl-ver-main">v28</span>
           </div>
         </div>
         <button class="header-kpi-full-btn" id="hdr-resumen-total" onclick="abrirModalDetalleConsumido()" title="Ver detalle de consumos del ciclo">
@@ -840,9 +834,8 @@
               <div class="ticket-big-icon">✓</div>
               <h3 id="ticket-modal-nombre">Colaborador</h3>
               <div class="ticket-data-stack">
-                <div class="ticket-opcion-box srv-alm" id="ticket-modal-opcion-box">
-                  <span id="ticket-modal-srv-kicker">ALMUERZO REGISTRADO</span>
-                  <div id="ticket-modal-detalle" style="display:none;"></div>
+                <div class="ticket-opcion-box" id="ticket-modal-opcion-box">
+                  <div id="ticket-modal-detalle">Almuerzo registrado</div>
                 </div>
                 <div class="ticket-cedido-box" id="ticket-modal-cedido-box">
                   <span id="ticket-modal-cedido-kicker">CEDIDO</span>
@@ -947,7 +940,7 @@
           </div>
 
           <div class="rrhh-box">
-            <h4>Registro de Excepciones y Errores (LOG_AUDIT_ERRORES)</h4>
+            <h4>Registro de Excepciones y Errores (Firebase logs_errores)</h4>
             <div class="table-wrap" style="max-height:220px;">
               <table>
                 <thead><tr><th>Fecha / Hora</th><th>Contexto</th><th>Motivo del Error</th></tr></thead>
@@ -959,7 +952,7 @@
           </div>
 
           <div class="rrhh-box">
-            <h4>Actividad Reciente en Servidor (ASISTENCIA_REAL)</h4>
+            <h4>Actividad Reciente de Hoy (Firebase asistencias)</h4>
             <div class="table-wrap" style="max-height:220px;">
               <table>
                 <thead><tr><th>Fecha / Hora</th><th>Evento</th><th>DNI</th><th>Servicio</th><th>Detalle</th></tr></thead>
@@ -1011,10 +1004,30 @@
     </div>
   </div>
 
+  <!-- MODAL: CONFIRMACIÓN OBLIGATORIA PARA CANCELAR DESAYUNO O ALMUERZO -->
+  <div class="modal-backdrop" id="modal-confirmar-cancelacion" onclick="if(event.target===this) cerrarModalCancelarServicio()">
+    <div class="modal-panel" style="max-width:370px; text-align:center; padding:24px 20px 20px;">
+      <h3 id="lbl-cancel-titulo" style="margin:0 0 8px; font-size:18.5px; font-weight:800; color:var(--sbs-primary);">
+        ¿Cancelar reserva?
+      </h3>
+      <p id="lbl-cancel-mensaje" style="margin:0 0 20px; font-size:14px; color:#475569; line-height:1.48; font-weight:500;">
+        ¿Seguro que deseas cancelar este servicio?
+      </p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn btn-primary" style="padding:13px; font-size:15px;" onclick="cerrarModalCancelarServicio()">
+          Mantener reserva
+        </button>
+        <button class="btn btn-danger-outline" style="padding:12px; font-size:14.5px;" onclick="confirmarCancelacionServicio()">
+          Sí, cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA -->
   <div id="modal-update-obligatorio">
     <div class="update-card">
-      <img src="./Logo.jpg?v=27" alt="Comedor SBS" class="update-logo">
+      <img src="./Logo.jpg?v=28" alt="Comedor SBS" class="update-logo">
       <h3>Actualiza Comedor SBS</h3>
       <button class="btn btn-primary" id="btn-actualizar-sbs" onclick="aplicarActualizacionApp()">
         Actualizar Comedor SBS
@@ -1026,25 +1039,43 @@
   <div id="toast"></div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
+    // ========================================================================
+    // CONFIGURACIÓN FIREBASE FIRESTORE (COMEDOR SBS — V28 TIEMPO REAL)
+    // ========================================================================
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBxBy84E1CmVMQBK9D-EC82v-OC4BJIdUA",
+      authDomain: "comedor-sbs.firebaseapp.com",
+      projectId: "comedor-sbs",
+      storageBucket: "comedor-sbs.firebasestorage.app",
+      messagingSenderId: "645268339422",
+      appId: "1:645268339422:web:433cb69c0be8ef9bce204f"
+    };
 
-    const VERSION_LOCAL_APP = "27";
+    const VERSION_LOCAL_APP = "28";
+    const TEXTO_MEJORA_DEFECTO = "• Confirmación obligatoria antes de cancelar un almuerzo o desayuno.\n• Pase verde ejecutivo más limpio y conexión en tiempo real ultrarrápida.";
 
-    // Texto de mejora por defecto (puedes editarlo aquí o desde Código.gs -> CONFIG.NOTAS_VERSION)
-    const TEXTO_MEJORA_DEFECTO = "• Ya puedes programar tu siguiente semana desde el viernes al mediodía.\n• Se cargó tu historial de consumos del ciclo actual desde el 27/10.";
+    // Variables de arranque operativo (NO modificar en este ciclo)
+    let FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
+    let FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
+    let PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
-    // Variables de arranque operativo (evitan sumar consumos anteriores al inicio del servicio)
-    const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
-    const FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
-    const PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
+    // Inicializar Firebase + persistencia offline nativa (IndexedDB)
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const db = firebase.firestore();
+    db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
     let COLA_CAMBIOS_RESERVA = {};
     let TIMER_LOTE_RESERVA = null;
     let ENVIANDO_COLA_QR = false;
     let SINCRONIZANDO_AHORA = false;
     let ACTUALIZACION_OBLIGATORIA = false;
+    let CANCELACION_PENDIENTE = null;
 
-    // Limpiar parámetro ?v=... de la URL al cargar (ayuda a que iOS conserve el permiso de cámara)
+    // Suscripciones en vivo de Firestore
+    let UNSUB_CONFIG = null;
+    let UNSUB_USER_LIST = [];
+
+    // Limpiar parámetro ?v=... de la URL al cargar (cuida permiso de cámara en iOS)
     (function limpiarParametroVersionURL() {
       try {
         const u = new URL(window.location.href);
@@ -1056,7 +1087,6 @@
       } catch (e) {}
     })();
 
-    // Vibración háptica corta (funciona en Android; en iOS se ignora de forma segura)
     function vibrarHaptico(patron = 15) {
       try {
         if (navigator && typeof navigator.vibrate === 'function') {
@@ -1120,8 +1150,6 @@
         btn.textContent = 'Actualizando...';
       }
       try {
-        // Limpia solo la caché de archivos sin desregistrar el Service Worker ni cambiar la URL
-        // para conservar el contexto de permisos de cámara en iOS Safari / PWA.
         if ('caches' in window) {
           const keys = await caches.keys();
           for (let k of keys) {
@@ -1142,14 +1170,17 @@
     window.AUTO_CHECKIN_QR = (urlParams.get('checkin') === '1') ? '1' : '0';
 
     let STATE = {
+      configApp: null,
+      colabDoc: null,
+      reservasMap: {},
+      asistenciasMap: {},
+      cesionesHoy: [],
       hoyStr: '',
       hoyPeruCompleto: '',
       etiquetaCiclo: '',
       avisoBanner: '',
-      horaPeru: 0,
-      tsSyncHora: 0,
-      ultimoSyncMs: 0,
       modoPruebaQR: false,
+      ultimoSyncMs: 0,
       registroPendienteLogin: null,
       tokenActivo: '',
       usuario: null,
@@ -1159,13 +1190,12 @@
       dnisActivosMuestra: [],
       html5QrCode: null,
       procesandoEscaneo: false,
-      idxPrincipal: 0,
       ticketCompactoActivo: null,
       ultimoTicketPrueba: null
     };
 
     // ========================================================================
-    // RELOJ REAL DE LIMA (AMERICA/LIMA) Y CANDADO LOCAL DE CORTES
+    // RELOJ REAL DE LIMA (AMERICA/LIMA) Y REGLAS DE CORTE / SEMANA / CICLOS
     // ========================================================================
     function obtenerPartesLimaActual() {
       try {
@@ -1204,16 +1234,59 @@
       return new Date(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
     }
 
-    function obtenerHoraLimaNavegador() {
+    function obtenerHoraPeruActual() {
       const p = obtenerPartesLimaActual();
       return p.hour + (p.minute / 60);
     }
 
-    function obtenerHoraPeruActual() {
-      if (STATE.tsSyncHora) {
-        return STATE.horaPeru + ((Date.now() - STATE.tsSyncHora) / 3600000);
-      }
-      return obtenerHoraLimaNavegador();
+    function formatearFechaISOFromDate(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function aFechaPeruCompleta(isoStr) {
+      const p = String(isoStr || '').split('-');
+      return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : (isoStr || '');
+    }
+
+    function formatearDiaMesCorto(isoStr) {
+      if (!isoStr) return '';
+      const p = String(isoStr).split('-');
+      return p.length === 3 ? `${p[2]}/${p[1]}` : isoStr;
+    }
+
+    function extraerDiaNumeroCliente(isoStr) {
+      if (!isoStr) return '';
+      const p = String(isoStr).split('-');
+      return p.length === 3 ? String(Number(p[2])) : isoStr;
+    }
+
+    function obtenerHoraLima24hActual() {
+      const p = obtenerPartesLimaActual();
+      return `${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
+    }
+
+    function formatearHoraTicket12h(horaRaw) {
+      const s = String(horaRaw || '').trim();
+      if (!s) return '';
+      if (/am|pm/i.test(s)) return s.toUpperCase();
+      const m = s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+      if (!m) return s;
+      let h = Number(m[1]);
+      const min = m[2];
+      const seg = m[3] || '00';
+      const suf = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      return `${String(h).padStart(2, '0')}:${min}:${seg} ${suf}`;
+    }
+
+    function obtenerHoraExactaActual() {
+      return formatearHoraTicket12h(obtenerHoraLima24hActual());
+    }
+
+    function obtenerTimestampCortoLima() {
+      const p = obtenerPartesLimaActual();
+      return `${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
     }
 
     function esEditableEnTiempoReal(fechaStr, tipoServicio) {
@@ -1230,6 +1303,7 @@
         const limiteDes = new Date(fechaServ);
         limiteDes.setDate(fechaServ.getDate() - 1);
         limiteDes.setHours(16, 0, 0, 0);
+        // Lunes cierra Sábado 4:00 PM
         if (fechaServ.getDay() === 1) {
           limiteDes.setDate(limiteDes.getDate() - 1);
         }
@@ -1241,16 +1315,175 @@
       }
     }
 
-    function extraerDiaNumeroCliente(isoStr) {
-      if (!isoStr) return '';
-      const p = String(isoStr).split('-');
-      return p.length === 3 ? String(Number(p[2])) : isoStr;
+    function obtenerFechasSemanaOperativaCliente(horaSaltoViernes = 12.0) {
+      const hoy = obtenerDateLimaActual();
+      const diaSemana = hoy.getDay();
+      const horaDecimal = hoy.getHours() + (hoy.getMinutes() / 60);
+
+      let ajusteLunes = (diaSemana === 0) ? 1 : (diaSemana === 6 ? 2 : 1 - diaSemana);
+      if (diaSemana === 5 && horaDecimal >= horaSaltoViernes) {
+        ajusteLunes += 7;
+      }
+
+      const lunes = new Date(hoy);
+      lunes.setDate(hoy.getDate() + ajusteLunes);
+      const lista = [];
+      for (let i = 0; i < 5; i++) {
+        const d = new Date(lunes);
+        d.setDate(lunes.getDate() + i);
+        lista.push(formatearFechaISOFromDate(d));
+      }
+      return lista;
     }
 
-    function formatearDiaMesCorto(isoStr) {
-      if (!isoStr) return '';
-      const p = String(isoStr).split('-');
-      return p.length === 3 ? `${p[2]}/${p[1]}` : isoStr;
+    function obtenerCicloActualCliente(cfg) {
+      const hoy = obtenerDateLimaActual();
+      const hoyStr = formatearFechaISOFromDate(hoy);
+      const ciclos = (cfg && Array.isArray(cfg.ciclosConfig) && cfg.ciclosConfig.length > 0)
+        ? cfg.ciclosConfig.slice().sort((a, b) => String(a.inicio).localeCompare(String(b.inicio)))
+        : [
+            { id: '2026-10', nombre: 'Octubre 2026', inicio: '2026-09-25', fin: '2026-10-26' },
+            { id: '2026-11', nombre: 'Noviembre 2026', inicio: '2026-10-27', fin: '2026-11-24' },
+            { id: '2026-12', nombre: 'Diciembre 2026', inicio: '2026-11-25', fin: '2026-12-24' },
+            { id: '2027-01', nombre: 'Enero 2027', inicio: '2026-12-25', fin: '2027-01-24' }
+          ];
+
+      let actualObj = ciclos.find(c => hoyStr >= c.inicio && hoyStr <= c.fin) || null;
+      if (!actualObj) {
+        let anio = hoy.getFullYear();
+        let mes = hoy.getMonth();
+        if (hoy.getDate() <= 24) mes = mes - 1;
+        const iniD = new Date(anio, mes, 25, 0, 0, 0);
+        const finD = new Date(anio, mes + 1, 24, 23, 59, 59);
+        actualObj = {
+          inicio: formatearFechaISOFromDate(iniD),
+          fin: formatearFechaISOFromDate(finD)
+        };
+      }
+
+      const pIni = actualObj.inicio.split('-');
+      const pFin = actualObj.fin.split('-');
+      const inicioCiclo = new Date(Number(pIni[0]), Number(pIni[1]) - 1, Number(pIni[2]), 0, 0, 0);
+      const finCiclo = new Date(Number(pFin[0]), Number(pFin[1]) - 1, Number(pFin[2]), 23, 59, 59);
+      const horizonte = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 3, 23, 59, 59);
+      const tope = (horizonte > finCiclo) ? finCiclo : horizonte;
+
+      const diasHabiles = [];
+      const cursor = new Date(inicioCiclo);
+      while (cursor <= tope) {
+        const ds = cursor.getDay();
+        if (ds >= 1 && ds <= 5) diasHabiles.push(formatearFechaISOFromDate(cursor));
+        cursor.setDate(cursor.getDate() + 1);
+      }
+
+      return {
+        inicioStr: actualObj.inicio,
+        finStr: actualObj.fin,
+        etiquetaCorto: `${formatearDiaMesCorto(actualObj.inicio)} al ${formatearDiaMesCorto(actualObj.fin)}`,
+        diasHabiles: diasHabiles
+      };
+    }
+
+    function obtenerTarifasCliente(tramoStr, cfg) {
+      const t = (cfg && cfg.tarifas) ? cfg.tarifas : {};
+      const esMenor = String(tramoStr || '').toUpperCase().includes('MENOR');
+      return {
+        desayuno: esMenor ? Number(t.desMenor1500 || 1.00) : Number(t.desMayor1500 || 1.50),
+        almuerzo: esMenor ? Number(t.almMenor1500 || 2.50) : Number(t.almMayor1500 || 3.50)
+      };
+    }
+
+    function esEstadoAusenciaCliente(estadoStr) {
+      const e = String(estadoStr || '').toUpperCase().trim();
+      return e === 'AUSENTE' || e === 'VACACIONES' || e === 'DM';
+    }
+
+    function estaColaboradorActivoEnFechaCliente(colab, fechaISO) {
+      const est = String(colab.estado || 'ACTIVO').toUpperCase().trim();
+      if (est === 'ACTIVO') return true;
+      if (est === 'CESADO') return false;
+      if (esEstadoAusenciaCliente(est)) {
+        const fIni = colab.fechaInicioEstado || '';
+        const fFin = colab.fechaFinEstado || '';
+        if (fIni && fFin) return (fechaISO < fIni || fechaISO > fFin);
+        if (fFin) return fechaISO > fFin;
+        if (fIni) return fechaISO < fIni;
+        return false;
+      }
+      return false;
+    }
+
+    function normalizarNombrePanCliente(rawPan) {
+      let p = String(rawPan || '').trim();
+      p = p.replace(/^pan\s+con\s+/i, '').replace(/^pan\s+de\s+/i, '').trim();
+      if (!p) return '';
+      const low = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (low.includes('pollo')) return 'Pollo';
+      if (low.includes('queso')) return 'Queso';
+      if (low.includes('aceituna')) return 'Aceituna';
+      if (low.includes('tortilla') && !low.includes('huevo')) return 'Tortilla';
+      if (low.includes('huevo')) return 'Huevo';
+      if (low.includes('hot') || low.includes('dog')) return 'Hot dog';
+      return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
+    }
+
+    function extraerMenuDesayunoDiaCliente(menuDesStr) {
+      const raw = String(menuDesStr || '').trim();
+      if (!raw) {
+        return {
+          panes: PANES_POR_DEFECTO.slice(),
+          bebidasTexto: 'Avena o Maca o Infusión o Café'
+        };
+      }
+      const partesMas = raw.split('+');
+      const izqPanes = String(partesMas[0] || '').trim();
+      const derBebidas = partesMas.length > 1 ? partesMas.slice(1).join('+').trim() : 'Avena / Maca / Infusión / Café';
+
+      const listaPanes = [];
+      izqPanes.split('/').forEach(item => {
+        const lowItem = String(item || '').toLowerCase();
+        if (lowItem.includes('huevo') && lowItem.includes('tortilla')) {
+          if (!listaPanes.includes('Huevo')) listaPanes.push('Huevo');
+          if (!listaPanes.includes('Tortilla')) listaPanes.push('Tortilla');
+        } else {
+          const n = normalizarNombrePanCliente(item);
+          if (n && !listaPanes.includes(n)) listaPanes.push(n);
+        }
+      });
+
+      if (listaPanes.length === 0) {
+        PANES_POR_DEFECTO.forEach(p => listaPanes.push(p));
+      }
+
+      const bebidasFormateadas = derBebidas
+        .split('/')
+        .map(b => String(b || '').trim())
+        .filter(Boolean)
+        .join(' o ');
+
+      return {
+        panes: listaPanes,
+        bebidasTexto: bebidasFormateadas || 'Avena o Maca o Infusión o Café'
+      };
+    }
+
+    // ========================================================================
+    // FORMATEADORES DE NOMBRE, HASH SHA-256 Y OPCIONES
+    // ========================================================================
+    function normalizarDniCliente(val) {
+      let s = String(val || '').replace(/\D/g, '').trim();
+      return (s.length === 7) ? '0' + s : s;
+    }
+
+    function valSeguro(v, fallback = '-') {
+      return (v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'undefined') ? v : fallback;
+    }
+
+    function mostrarToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
     function extraerPrimerNombreCliente(usuarioObj) {
@@ -1284,7 +1517,6 @@
     function capitalizarBloqueNombre(str) {
       const s = String(str || '').trim();
       if (!s) return '';
-      // Si viene todo en mayúsculas, lo pasa a formato título limpio; si ya viene mixto, lo respeta
       if (s === s.toUpperCase()) {
         const conectoresMin = ['de', 'del', 'la', 'las', 'los', 'y'];
         return s.toLowerCase().split(/\s+/).map((w, i) => {
@@ -1318,7 +1550,6 @@
       const limpio = String(usuarioObj.nombre || '').trim();
       if (!limpio) return extraerPrimerNombreCliente(usuarioObj);
 
-      // Formato estándar SBS: "Apellidos, Nombres" (ej: "Arango Lopez, Keyla Pamela" -> "Keyla Arango")
       if (limpio.includes(',')) {
         const partes = limpio.split(',');
         const apBloques = agruparBloquesNombre(partes[0]);
@@ -1328,7 +1559,6 @@
         return capitalizarBloqueNombre([primerNom, primerAp].filter(Boolean).join(' '));
       }
 
-      // Sin coma: agrupa bloques respetando apellidos compuestos (De La Cruz, Del Solar, etc.)
       const bloques = agruparBloquesNombre(limpio);
       if (bloques.length >= 3) {
         const primerNom = bloques[2].split(/\s+/)[0];
@@ -1342,41 +1572,16 @@
     }
 
     async function calcularHashSHA256Cliente(dni, textoClave) {
-      try {
-        const dniNorm = normalizarDniCliente(dni);
-        const semilla = "SBS_SALT_2026_" + dniNorm + "_" + String(textoClave);
-        if (window.crypto && window.crypto.subtle) {
-          const msgBuffer = new TextEncoder().encode(semilla);
-          const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
-          const hashArray = Array.from(new Uint8Array(hashBuffer));
-          return hashArray.map(b => ('0' + b.toString(16)).slice(-2)).join('');
-        }
-      } catch (e) {}
-      return null;
-    }
-
-    function formatearHoraTicket12h(horaRaw) {
-      const s = String(horaRaw || '').trim();
-      if (!s) return '';
-      if (/am|pm/i.test(s)) return s;
-      const m = s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
-      if (!m) return s;
-      let h = Number(m[1]);
-      const min = m[2];
-      const seg = m[3] || '00';
-      const suf = h >= 12 ? 'PM' : 'AM';
-      h = h % 12;
-      if (h === 0) h = 12;
-      return `${String(h).padStart(2, '0')}:${min}:${seg} ${suf}`;
-    }
-
-    function obtenerHoraLima24hActual() {
-      const p = obtenerPartesLimaActual();
-      return `${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
-    }
-
-    function obtenerHoraExactaActual() {
-      return formatearHoraTicket12h(obtenerHoraLima24hActual());
+      const dniNorm = normalizarDniCliente(dni);
+      const semilla = "SBS_SALT_2026_" + dniNorm + "_" + String(textoClave);
+      if (window.crypto && window.crypto.subtle) {
+        const msgBuffer = new TextEncoder().encode(semilla);
+        const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => ('0' + b.toString(16)).slice(-2)).join('');
+      }
+      // Fallback SHA-256 puro JS por si algún navegador muy antiguo no expone crypto.subtle
+      throw new Error('Tu navegador no soporta cifrado SHA-256.');
     }
 
     function obtenerInfoMenuDia(d) {
@@ -1408,6 +1613,268 @@
       };
     }
 
+    function formatearEtiquetaDesayunoAsist(resDes) {
+      const info = desglosarDesayuno(resDes, PANES_POR_DEFECTO);
+      if (info.op === 'NO') return 'Sin reserva';
+      if (info.op === 'MANUAL') return 'Asignado RRHH';
+      if (info.op === 'OP2') return 'Opción 2 (3 Huevos)';
+      if (info.op === 'OP1') {
+        if (info.pan1.toLowerCase() === info.pan2.toLowerCase()) return `Opción 1 (2 panes con ${info.pan1})`;
+        return `Opción 1 (${info.pan1} / ${info.pan2})`;
+      }
+      if (info.op === 'OP3') return `Opción 3 (${info.pan1} + 1 Huevo)`;
+      return String(resDes || '');
+    }
+
+    function formatearDetalleDesayunoCorto(resDes) {
+      const info = desglosarDesayuno(resDes, PANES_POR_DEFECTO);
+      if (info.op === 'OP1') {
+        return (info.pan1.toLowerCase() === info.pan2.toLowerCase())
+          ? `2 Panes: ${info.pan1}`
+          : `2 Panes: ${info.pan1} y ${info.pan2}`;
+      }
+      if (info.op === 'OP2') return '3 Huevos';
+      if (info.op === 'OP3') return `Pan con ${info.pan1} + 1 Huevo`;
+      if (info.op === 'MANUAL') return 'Asignado por RRHH';
+      return '';
+    }
+
+    function esUsuarioTecnico(u) {
+      if (!u) return false;
+      if (u.esTecnico) return true;
+      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      return r === 'TECNICO' || r === 'ADMIN_TECNICO' || r === 'DEV';
+    }
+
+    function esUsuarioRRHH(u) {
+      if (!u) return false;
+      if (u.esRRHH) return true;
+      const r = String(u.rol || '').toUpperCase().trim();
+      return r === 'ADMIN_RRHH' || r === 'RRHH' || r === 'ADMIN_GEP' || r === 'GEP';
+    }
+
+    // ========================================================================
+    // CONSTRUCCIÓN DEL ESTADO DEL COLABORADOR DESDE FIRESTORE (EN ~150 MS)
+    // ========================================================================
+    function aplicarConfigGlobal(cfg) {
+      if (!cfg) return;
+      STATE.configApp = cfg;
+      if (cfg.fechaInicioAlmuerzo) FECHA_ARRANQUE_ALMUERZO = cfg.fechaInicioAlmuerzo;
+      if (cfg.fechaInicioDesayuno) FECHA_ARRANQUE_DESAYUNO = cfg.fechaInicioDesayuno;
+      if (Array.isArray(cfg.panesDefecto) && cfg.panesDefecto.length > 0) PANES_POR_DEFECTO = cfg.panesDefecto;
+      STATE.avisoBanner = cfg.avisoBanner || '';
+      STATE.modoPruebaQR = !!cfg.modoPruebaQR;
+
+      if (cfg.versionApp) {
+        verificarVersionServidor(cfg.versionApp, cfg.notasVersion);
+      }
+    }
+
+    function construirRegistroDesdeFirestore(colab, cfg, reservasMap, asistenciasMap, cesionesHoy) {
+      const hoyDate = obtenerDateLimaActual();
+      const hoyStr = formatearFechaISOFromDate(hoyDate);
+      const modoPrueba = !!(cfg && cfg.modoPruebaQR);
+      const fechasSemana = obtenerFechasSemanaOperativaCliente(12.0);
+      const cicloMensual = obtenerCicloActualCliente(cfg);
+      const tarifas = obtenerTarifasCliente(colab.tramo, cfg);
+
+      // Auto-reactivación silenciosa si ya venció la fecha de ausencia
+      if (esEstadoAusenciaCliente(colab.estado) && colab.fechaFinEstado && hoyStr > colab.fechaFinEstado) {
+        colab.estado = 'ACTIVO';
+        colab.fechaInicioEstado = '';
+        colab.fechaFinEstado = '';
+        db.collection('colaboradores').doc(colab.dni).set(
+          { estado: 'ACTIVO', fechaInicioEstado: '', fechaFinEstado: '' },
+          { merge: true }
+        ).catch(() => {});
+      }
+
+      // 1. Historial del ciclo vigente (regla dual: antes del arranque solo asistencias reales; desde arranque cobro al corte)
+      let baseCicloDes = 0;
+      let baseCicloAlm = 0;
+      const historialCiclo = [];
+
+      cicloMensual.diasHabiles.forEach(fCiclo => {
+        const actCiclo = estaColaboradorActivoEnFechaCliente(colab, fCiclo);
+        const pAnt = reservasMap[fCiclo] || null;
+        const aAnt = asistenciasMap[fCiclo] || { des: false, alm: false };
+
+        const esAsigDesAnt = !!(pAnt && (pAnt.des === 'MANUAL' || String(pAnt.tsDes || '').includes('Asignado RRHH')));
+        const habD = (fCiclo >= FECHA_ARRANQUE_DESAYUNO) || esAsigDesAnt;
+        const habA = (fCiclo >= FECHA_ARRANQUE_ALMUERZO);
+        const cerradoDes = !esEditableEnTiempoReal(fCiclo, 'DESAYUNO');
+        const cerradoAlm = !esEditableEnTiempoReal(fCiclo, 'ALMUERZO');
+
+        const dVal = (actCiclo && habD) ? ((pAnt && pAnt.des) ? pAnt.des : (colab.desDef || 'NO')) : 'NO';
+        const aVal = (actCiclo && habA) ? ((pAnt && pAnt.alm) ? pAnt.alm : (colab.almDef || 'NO')) : 'NO';
+
+        const asistDesPropia = !!(aAnt.des && !aAnt.desSoloCesion);
+        const asistAlmPropia = !!(aAnt.alm && !aAnt.almSoloCesion);
+        const cuentaDes = asistDesPropia || (habD && dVal !== 'NO' && (cerradoDes || esAsigDesAnt));
+        const cuentaAlm = asistAlmPropia || (habA && aVal !== 'NO' && cerradoAlm);
+
+        if (fCiclo < hoyStr) {
+          if (cuentaDes) baseCicloDes++;
+          if (cuentaAlm) baseCicloAlm++;
+        }
+
+        if (cuentaDes || cuentaAlm) {
+          historialCiclo.push([fCiclo, formatearDiaMesCorto(fCiclo), cuentaDes ? 1 : 0, cuentaAlm ? 1 : 0]);
+        }
+      });
+
+      // 2. Días de "Mi Semana" (Lunes a Viernes; salta el viernes a las 12:00 PM)
+      const nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+      const menuArr = (cfg && Array.isArray(cfg.menuSemanal)) ? cfg.menuSemanal : [];
+      const lunesSemanaMenu = (cfg && cfg.semanaMenuLunes) ? cfg.semanaMenuLunes : '';
+      const menuAlmPendienteProxima = !!(lunesSemanaMenu && fechasSemana[0] > lunesSemanaMenu);
+
+      const construirTarjetaDia = (f, idxDiaSemana, forzarAlmPorConfirmar, overrideMenuHoy) => {
+        const filaMenu = menuArr[idxDiaSemana] || {};
+        let mDesTexto = filaMenu.desayuno || 'Pan con pollo / queso / aceituna / huevo / tortilla / hot dog + Avena / Maca / Infusión / Café';
+        let mAlmTexto = forzarAlmPorConfirmar ? 'Por confirmar' : (filaMenu.almuerzo || 'Por confirmar');
+
+        if (overrideMenuHoy) {
+          if (overrideMenuHoy.desayuno) mDesTexto = overrideMenuHoy.desayuno;
+          if (overrideMenuHoy.almuerzo) mAlmTexto = overrideMenuHoy.almuerzo;
+        }
+
+        const infoDes = extraerMenuDesayunoDiaCliente(mDesTexto);
+        const pDia = reservasMap[f] || null;
+        const activoEnDia = estaColaboradorActivoEnFechaCliente(colab, f);
+        const enCicloActual = (f >= cicloMensual.inicioStr && f <= cicloMensual.finStr);
+        const esAsigDesDia = !!(pDia && (pDia.des === 'MANUAL' || String(pDia.tsDes || '').includes('Asignado RRHH')));
+        const habDesDia = (f >= FECHA_ARRANQUE_DESAYUNO) || esAsigDesDia;
+        const habAlmDia = (f >= FECHA_ARRANQUE_ALMUERZO);
+
+        const dVal = (activoEnDia && habDesDia) ? ((pDia && pDia.des) ? pDia.des : (colab.desDef || 'NO')) : 'NO';
+        const aVal = (activoEnDia && habAlmDia) ? ((pDia && pDia.alm) ? pDia.alm : (colab.almDef || 'NO')) : 'NO';
+
+        return {
+          fecha: f,
+          diaNumero: extraerDiaNumeroCliente(f),
+          fechaCorta: formatearDiaMesCorto(f),
+          enCicloActual: enCicloActual,
+          habDes: habDesDia,
+          habAlm: habAlmDia,
+          esHoyFisico: (f === hoyStr),
+          diaTexto: nombresDias[idxDiaSemana],
+          menuDesayuno: mDesTexto,
+          menuAlmuerzo: mAlmTexto,
+          panesDisponibles: infoDes.panes,
+          bebidasTexto: infoDes.bebidasTexto,
+          desayuno: dVal,
+          almuerzo: aVal,
+          puedeEditarDesayuno: activoEnDia && esEditableEnTiempoReal(f, 'DESAYUNO'),
+          puedeEditarAlmuerzo: activoEnDia && esEditableEnTiempoReal(f, 'ALMUERZO')
+        };
+      };
+
+      const diasUsuario = fechasSemana.map((f, idx) =>
+        construirTarjetaDia(f, idx, menuAlmPendienteProxima, null)
+      );
+
+      // 2B. Tarjeta dedicada de HOY (viernes 12:00 PM a 6:00 PM)
+      let diaHoyObj = diasUsuario.find(d => d.esHoyFisico) || null;
+      const diaSemHoy = hoyDate.getDay();
+      if (!diaHoyObj && diaSemHoy >= 1 && diaSemHoy <= 5) {
+        const tempHoy = (cfg && cfg.menuHoyTemp && cfg.menuHoyTemp.fecha === hoyStr) ? cfg.menuHoyTemp : null;
+        diaHoyObj = construirTarjetaDia(hoyStr, diaSemHoy - 1, false, tempHoy);
+      }
+
+      // 3. Estado de HOY físico y cesiones
+      const activoHoy = estaColaboradorActivoEnFechaCliente(colab, hoyStr);
+      const planHoy = reservasMap[hoyStr] || null;
+      const esAsigDesHoy = !!(planHoy && (planHoy.des === 'MANUAL' || String(planHoy.tsDes || '').includes('Asignado RRHH')));
+      const habDesHoy = (hoyStr >= FECHA_ARRANQUE_DESAYUNO) || esAsigDesHoy;
+      const habAlmHoy = (hoyStr >= FECHA_ARRANQUE_ALMUERZO);
+
+      const resHoyDes = (activoHoy && habDesHoy) ? ((planHoy && planHoy.des) ? planHoy.des : (colab.desDef || 'NO')) : 'NO';
+      const resHoyAlm = (activoHoy && habAlmHoy) ? ((planHoy && planHoy.alm) ? planHoy.alm : (colab.almDef || 'NO')) : 'NO';
+
+      const asistHoyReal = asistenciasMap[hoyStr] || { des: false, horaDes: '', desSoloCesion: false, alm: false, horaAlm: '', almSoloCesion: false };
+      const asistHoy = modoPrueba
+        ? { des: false, horaDes: '', desSoloCesion: false, alm: false, horaAlm: '', almSoloCesion: false }
+        : asistHoyReal;
+
+      let cedioDesObj = null;
+      let cedioAlmObj = null;
+      const cedidosDes = [];
+      const cedidosAlm = [];
+
+      (cesionesHoy || []).forEach(ces => {
+        if (ces.estado === 'ANULADA') return;
+        if (normalizarDniCliente(ces.dniCedente) === colab.dni) {
+          if (ces.servicio === 'DESAYUNO') cedioDesObj = ces;
+          if (ces.servicio === 'ALMUERZO') cedioAlmObj = ces;
+        }
+        if (normalizarDniCliente(ces.dniReceptor) === colab.dni) {
+          const objRec = {
+            id: ces.id,
+            detalle: ces.servicio === 'DESAYUNO'
+              ? (ces.detalleOpcion || formatearDetalleDesayunoCorto(ces.codigoOpcion))
+              : 'Almuerzo',
+            de: extraerNombreYApellidoCliente({ nombre: ces.nombreCedente })
+          };
+          if (ces.servicio === 'DESAYUNO') cedidosDes.push(objRec);
+          if (ces.servicio === 'ALMUERZO') cedidosAlm.push(objRec);
+        }
+      });
+
+      const registro = {
+        hoyStr: hoyStr,
+        hoyPeruCompleto: aFechaPeruCompleta(hoyStr),
+        etiquetaCiclo: cicloMensual.etiquetaCorto,
+        avisoBanner: (cfg && cfg.avisoBanner) ? cfg.avisoBanner : '',
+        modoPruebaQR: modoPrueba,
+        usuario: {
+          dni: colab.dni,
+          nombre: colab.nombre,
+          primerNombre: colab.primerNombre || extraerPrimerNombreCliente(colab),
+          estado: colab.estado || 'ACTIVO',
+          activoHoy: activoHoy,
+          fechaInicioEstado: colab.fechaInicioEstado || '',
+          fechaFinEstado: colab.fechaFinEstado || '',
+          rol: colab.rol || 'Usuario',
+          desDef: colab.desDef || 'NO',
+          almDef: colab.almDef || 'NO',
+          esRRHH: esUsuarioRRHH(colab),
+          esTecnico: esUsuarioTecnico(colab),
+          tieneClave: !!(colab.hashClave && String(colab.hashClave).trim() !== ''),
+          hashClave: colab.hashClave || '',
+          costoDesayuno: tarifas.desayuno,
+          costoAlmuerzo: tarifas.almuerzo,
+          baseCicloDes: baseCicloDes,
+          baseCicloAlm: baseCicloAlm,
+          historialCiclo: historialCiclo
+        },
+        diasSemana: diasUsuario,
+        diaHoy: diaHoyObj,
+        hoyFisico: {
+          fecha: hoyStr,
+          fechaCompleta: aFechaPeruCompleta(hoyStr),
+          enCicloActual: (hoyStr >= cicloMensual.inicioStr && hoyStr <= cicloMensual.finStr),
+          reservoDes: (resHoyDes !== 'NO'),
+          reservoAlm: (resHoyAlm !== 'NO'),
+          asignadoDes: esAsigDesHoy,
+          consumioDes: !!asistHoy.des,
+          horaScanDes: asistHoy.horaDes ? formatearHoraTicket12h(asistHoy.horaDes) : '',
+          soloCesionDes: !!asistHoy.desSoloCesion,
+          consumioAlm: !!asistHoy.alm,
+          horaScanAlm: asistHoy.horaAlm ? formatearHoraTicket12h(asistHoy.horaAlm) : '',
+          soloCesionAlm: !!asistHoy.almSoloCesion,
+          cedioDes: !!cedioDesObj,
+          cedioDesA: cedioDesObj ? extraerNombreYApellidoCliente({ nombre: cedioDesObj.nombreReceptor }) : '',
+          cedioAlm: !!cedioAlmObj,
+          cedioAlmA: cedioAlmObj ? extraerNombreYApellidoCliente({ nombre: cedioAlmObj.nombreReceptor }) : '',
+          cedidosDes: cedidosDes,
+          cedidosAlm: cedidosAlm
+        }
+      };
+
+      return sincronizarConsumosLocalesConRegistro(registro);
+    }
+
     function sincronizarConsumosLocalesConRegistro(reg) {
       if (!reg || !reg.usuario || !reg.hoyFisico) return reg;
       try {
@@ -1432,58 +1899,198 @@
       return reg;
     }
 
-    function aplicarCandadosADia(d, hoyRef, hf) {
-      if (!d) return;
-      d.esHoyFisico = (d.fecha === hoyRef);
-      const esAsigDes = (d.esHoyFisico && hf && hf.asignadoDes) || (d.desayuno === 'MANUAL');
-
-      if (d.fecha < FECHA_ARRANQUE_DESAYUNO && !esAsigDes) {
-        d.desayuno = 'NO';
-        d.puedeEditarDesayuno = false;
-        d.habDes = false;
-      } else {
-        d.habDes = true;
-        if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
-          d.puedeEditarDesayuno = false;
+    function procesarDocsAsistenciaUsuario(docs) {
+      const mapa = {};
+      docs.forEach(a => {
+        if (!a || !a.fecha || !a.servicio) return;
+        const idA = String(a.id || '');
+        if (idA.includes('TEST_')) return;
+        const f = a.fecha;
+        const srv = String(a.servicio).toUpperCase().trim();
+        const esSoloCes = !!a.esSoloCesion || idA.startsWith('CESION_');
+        if (!mapa[f]) {
+          mapa[f] = { des: false, horaDes: '', desSoloCesion: false, alm: false, horaAlm: '', almSoloCesion: false };
         }
-      }
-
-      if (d.fecha < FECHA_ARRANQUE_ALMUERZO) {
-        d.almuerzo = 'NO';
-        d.puedeEditarAlmuerzo = false;
-        d.habAlm = false;
-      } else {
-        d.habAlm = true;
-        if (d.puedeEditarAlmuerzo && !esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
-          d.puedeEditarAlmuerzo = false;
+        if (srv === 'DESAYUNO') {
+          const yaNormal = mapa[f].des && !mapa[f].desSoloCesion;
+          mapa[f].des = true;
+          if (a.horaEscaneo && a.horaEscaneo !== '-') mapa[f].horaDes = a.horaEscaneo;
+          mapa[f].desSoloCesion = yaNormal ? false : esSoloCes;
+        } else if (srv === 'ALMUERZO') {
+          const yaNormal = mapa[f].alm && !mapa[f].almSoloCesion;
+          mapa[f].alm = true;
+          if (a.horaEscaneo && a.horaEscaneo !== '-') mapa[f].horaAlm = a.horaEscaneo;
+          mapa[f].almSoloCesion = yaNormal ? false : esSoloCes;
         }
-      }
+      });
+      return mapa;
     }
 
-    function aplicarCandadosRegistro(reg) {
-      if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
-      const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
+    function registrarVersionYUltimoAccesoFirestore(dniNorm) {
+      try {
+        const key = 'SBS_ULT_ACCESO_THR_' + dniNorm;
+        const prev = JSON.parse(localStorage.getItem(key) || '{}');
+        const ahoraMs = Date.now();
+        // Throttle de 30 minutos: si la versión ya es v28 y registramos hace <30m, 0 escrituras
+        if (prev.ver === VERSION_LOCAL_APP && prev.ts && (ahoraMs - prev.ts) < 1800000) return;
 
-      reg.diasSemana.forEach(d => aplicarCandadosADia(d, hoyRef, reg.hoyFisico));
-      if (reg.diaHoy) aplicarCandadosADia(reg.diaHoy, hoyRef, reg.hoyFisico);
-
-      if (reg.hoyFisico) {
-        const dHoy = reg.diaHoy || reg.diasSemana.find(x => x.fecha === reg.hoyFisico.fecha);
-        const esAsig = !!(reg.hoyFisico.asignadoDes || (dHoy && dHoy.desayuno === 'MANUAL'));
-        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_DESAYUNO && !esAsig) {
-          reg.hoyFisico.reservoDes = false;
-        }
-        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_ALMUERZO) {
-          reg.hoyFisico.reservoAlm = false;
-        }
-      }
-      return sincronizarConsumosLocalesConRegistro(reg);
+        const p = obtenerPartesLimaActual();
+        const tsISO = `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`;
+        db.collection('colaboradores').doc(dniNorm).set(
+          { versionApp: VERSION_LOCAL_APP, ultimoAccesoISO: tsISO },
+          { merge: true }
+        ).catch(() => {});
+        localStorage.setItem(key, JSON.stringify({ ver: VERSION_LOCAL_APP, ts: ahoraMs }));
+      } catch (e) {}
     }
 
     // ========================================================================
-    // PANTALLA DE CARGA (SPLASH) + SINCRONIZACIÓN RÁPIDA 1-A-1 EN VIVO
+    // SUSCRIPCIONES EN TIEMPO REAL DE FIRESTORE (VERSIÓN ESTRICTA + DATOS LIVE)
     // ========================================================================
-    function mostrarSplash(texto = 'Actualizando...', conBotonReintentar = false) {
+    function iniciarListenerConfigGlobal() {
+      if (UNSUB_CONFIG) return;
+      UNSUB_CONFIG = db.collection('config').doc('app').onSnapshot(snap => {
+        if (!snap.exists) return;
+        aplicarConfigGlobal(snap.data());
+        if (STATE.usuario && STATE.colabDoc && !ACTUALIZACION_OBLIGATORIA) {
+          reconstruirYRefrescarUIEnVivo();
+        }
+      }, () => {});
+    }
+
+    function detenerListenersUsuario() {
+      UNSUB_USER_LIST.forEach(fn => { try { fn(); } catch (e) {} });
+      UNSUB_USER_LIST = [];
+    }
+
+    function reconstruirYRefrescarUIEnVivo() {
+      if (!STATE.colabDoc || !STATE.configApp || ACTUALIZACION_OBLIGATORIA) return;
+      const reg = construirRegistroDesdeFirestore(
+        STATE.colabDoc,
+        STATE.configApp,
+        STATE.reservasMap,
+        STATE.asistenciasMap,
+        STATE.cesionesHoy
+      );
+      if (!reg.usuario.tieneClave || (STATE.tokenActivo && reg.usuario.hashClave && reg.usuario.hashClave !== STATE.tokenActivo)) {
+        cerrarSesion();
+        return;
+      }
+
+      STATE.hoyStr = reg.hoyStr;
+      STATE.hoyPeruCompleto = reg.hoyPeruCompleto;
+      STATE.etiquetaCiclo = reg.etiquetaCiclo;
+      STATE.avisoBanner = reg.avisoBanner;
+      STATE.modoPruebaQR = reg.modoPruebaQR;
+      STATE.ultimoSyncMs = Date.now();
+      STATE.usuario = reg.usuario;
+      STATE.diasSemana = reg.diasSemana;
+      STATE.diaHoy = reg.diaHoy;
+      STATE.hoyFisico = reg.hoyFisico;
+
+      guardarSnapshotLocal();
+      renderizarBannerInformativo();
+      const dPrin = obtenerDiaPrincipalActual();
+      if (dPrin) {
+        const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
+        document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
+      }
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+
+      // Si el pase ampliado está abierto, refresca en vivo por si llegó una cesión
+      const overlay = document.getElementById('modal-ticket-overlay');
+      if (overlay && overlay.style.display === 'flex' && STATE.ticketCompactoActivo) {
+        mostrarTicketVerdeConfirmado(STATE.ticketCompactoActivo.servicio, STATE.ticketCompactoActivo.hora);
+      }
+    }
+
+    function iniciarListenersUsuario(dniNorm) {
+      detenerListenersUsuario();
+      const hoyStr = obtenerFechaHoyLimaISO();
+
+      UNSUB_USER_LIST.push(
+        db.collection('colaboradores').doc(dniNorm).onSnapshot(snap => {
+          if (!snap.exists) return;
+          STATE.colabDoc = { dni: dniNorm, ...snap.data() };
+          reconstruirYRefrescarUIEnVivo();
+        }, () => {})
+      );
+
+      UNSUB_USER_LIST.push(
+        db.collection('reservas').where('dni', '==', dniNorm).onSnapshot(snap => {
+          const mapa = {};
+          snap.forEach(doc => {
+            const d = doc.data();
+            if (d && d.fecha) mapa[d.fecha] = d;
+          });
+          STATE.reservasMap = mapa;
+          reconstruirYRefrescarUIEnVivo();
+        }, () => {})
+      );
+
+      UNSUB_USER_LIST.push(
+        db.collection('asistencias').where('dni', '==', dniNorm).onSnapshot(snap => {
+          const arr = [];
+          snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+          STATE.asistenciasMap = procesarDocsAsistenciaUsuario(arr);
+          reconstruirYRefrescarUIEnVivo();
+        }, () => {})
+      );
+
+      UNSUB_USER_LIST.push(
+        db.collection('cesiones').where('fecha', '==', hoyStr).onSnapshot(snap => {
+          const arr = [];
+          snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+          STATE.cesionesHoy = arr;
+          reconstruirYRefrescarUIEnVivo();
+        }, () => {})
+      );
+    }
+
+    async function cargarTodoUsuarioFirestore(dniNorm) {
+      const hoyStr = obtenerFechaHoyLimaISO();
+      const [cfgSnap, colabSnap, resSnap, asistSnap, cesSnap] = await Promise.all([
+        db.collection('config').doc('app').get(),
+        db.collection('colaboradores').doc(dniNorm).get(),
+        db.collection('reservas').where('dni', '==', dniNorm).get(),
+        db.collection('asistencias').where('dni', '==', dniNorm).get(),
+        db.collection('cesiones').where('fecha', '==', hoyStr).get()
+      ]);
+
+      const cfg = cfgSnap.exists ? cfgSnap.data() : {};
+      aplicarConfigGlobal(cfg);
+      if (ACTUALIZACION_OBLIGATORIA) return { bloqueadoVersion: true };
+
+      if (!colabSnap.exists) {
+        return { ok: false, msg: `El DNI ${dniNorm} no figura en BD_COLABORADORES.` };
+      }
+
+      const colab = { dni: dniNorm, ...colabSnap.data() };
+      const reservasMap = {};
+      resSnap.forEach(d => {
+        const data = d.data();
+        if (data && data.fecha) reservasMap[data.fecha] = data;
+      });
+      const asistArr = [];
+      asistSnap.forEach(d => asistArr.push({ id: d.id, ...d.data() }));
+      const asistMap = procesarDocsAsistenciaUsuario(asistArr);
+      const cesArr = [];
+      cesSnap.forEach(d => cesArr.push({ id: d.id, ...d.data() }));
+
+      STATE.colabDoc = colab;
+      STATE.reservasMap = reservasMap;
+      STATE.asistenciasMap = asistMap;
+      STATE.cesionesHoy = cesArr;
+
+      const reg = construirRegistroDesdeFirestore(colab, cfg, reservasMap, asistMap, cesArr);
+      return { ok: true, registro: reg };
+    }
+
+    // ========================================================================
+    // PANTALLA DE CARGA (SPLASH) + ARRANQUE INSTANTÁNEO + SINCRONIZACIÓN
+    // ========================================================================
+    function mostrarSplash(texto = 'Cargando...', conBotonReintentar = false) {
       const sp = document.getElementById('view-splash');
       document.getElementById('splash-texto').textContent = texto;
       document.getElementById('splash-spinner').style.display = conBotonReintentar ? 'none' : 'block';
@@ -1495,83 +2102,27 @@
       document.getElementById('view-splash').style.display = 'none';
     }
 
-    async function fetchConTimeout(action, argsArray, timeoutMs = 15000) {
-      const controller = new AbortController();
-      const idTimer = setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        const resp = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: action, args: argsArray }),
-          signal: controller.signal
-        });
-        clearTimeout(idTimer);
-        const data = await resp.json();
-        if (data && data.versionApp) verificarVersionServidor(data.versionApp, data.notasVersion);
-        return data;
-      } catch (err) {
-        clearTimeout(idTimer);
-        throw err;
-      }
-    }
-
-    async function fetchConReintentoRobusto(action, argsArray, intentos = 3, timeoutMs = 15000) {
-      let ultimoError = null;
-      for (let i = 0; i < intentos; i++) {
-        try {
-          return await fetchConTimeout(action, argsArray, timeoutMs);
-        } catch (err) {
-          ultimoError = err;
-          if (i < intentos - 1) {
-            await new Promise(r => setTimeout(r, 450 * (i + 1)));
-          }
-        }
-      }
-      throw ultimoError;
-    }
-
-    function aplicarMetadatosSync(p) {
-      STATE.hoyStr = p.hoyStr;
-      STATE.hoyPeruCompleto = p.hoyPeruCompleto || p.hoyStr;
-      STATE.etiquetaCiclo = p.etiquetaCiclo || STATE.etiquetaCiclo;
-      STATE.avisoBanner = p.avisoBanner || '';
-      STATE.horaPeru = p.horaPeru;
-      STATE.tsSyncHora = Date.now();
-      STATE.ultimoSyncMs = Date.now();
-      STATE.modoPruebaQR = !!p.modoPruebaQR;
-    }
-
     function restaurarSnapshotHoyInstantaneo(sesionGuardada) {
       if (!sesionGuardada || !sesionGuardada.snapshot) return false;
       const hoyLima = obtenerFechaHoyLimaISO();
       if (sesionGuardada.snapshot.hoyStr !== hoyLima) return false;
 
-      aplicarCandadosRegistro(sesionGuardada.snapshot);
+      const snap = sincronizarConsumosLocalesConRegistro(sesionGuardada.snapshot);
       STATE.tokenActivo = sesionGuardada.token || '';
-      STATE.hoyStr = sesionGuardada.snapshot.hoyStr;
-      STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
-      STATE.etiquetaCiclo = sesionGuardada.snapshot.etiquetaCiclo || '';
-      STATE.avisoBanner = sesionGuardada.snapshot.avisoBanner || '';
-      STATE.horaPeru = obtenerHoraLimaNavegador();
-      STATE.tsSyncHora = 0;
-      STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
-      STATE.usuario = sesionGuardada.snapshot.usuario;
-      STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
-      STATE.diaHoy = sesionGuardada.snapshot.diaHoy || null;
-      STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
+      STATE.hoyStr = snap.hoyStr;
+      STATE.hoyPeruCompleto = snap.hoyPeruCompleto || aFechaPeruCompleta(snap.hoyStr);
+      STATE.etiquetaCiclo = snap.etiquetaCiclo || '';
+      STATE.avisoBanner = snap.avisoBanner || '';
+      STATE.modoPruebaQR = !!snap.modoPruebaQR;
+      STATE.usuario = snap.usuario;
+      STATE.diasSemana = snap.diasSemana || [];
+      STATE.diaHoy = snap.diaHoy || null;
+      STATE.hoyFisico = snap.hoyFisico || null;
       ocultarSplash();
       renderizarVistaPrincipal();
       return true;
     }
 
-    /**
-     * Sincronización inteligente:
-     * - Si es el MISMO DÍA y ya hay snapshot de hoy: abre al instante en 0 ms (sin splash)
-     *   y sincroniza silenciosamente en segundo plano para traer cambios de RRHH / cesiones / menú.
-     * - Si cambió el día (estaba en segundo plano desde ayer) o no hay snapshot de hoy:
-     *   muestra splash mínimo sin espera artificial y reintenta automáticamente hasta 3 veces (15s c/u)
-     *   para garantizar datos reales del día sin margen de error.
-     */
     async function sincronizarSesionConSplash(sesionGuardada, forzarBloqueoSplash = false) {
       if (SINCRONIZANDO_AHORA || ACTUALIZACION_OBLIGATORIA) return;
       SINCRONIZANDO_AHORA = true;
@@ -1581,37 +2132,26 @@
       const modoSilencioso = (!forzarBloqueoSplash && tieneSnapshotDeHoy);
 
       if (modoSilencioso) {
-        if (!STATE.usuario) {
-          restaurarSnapshotHoyInstantaneo(sesionGuardada);
-        }
+        if (!STATE.usuario) restaurarSnapshotHoyInstantaneo(sesionGuardada);
       } else {
         mostrarSplash('Cargando tu menú...', false);
       }
 
       try {
-        const resFast = await fetchConReintentoRobusto(
-          'sincronizarMiEstado',
-          [sesionGuardada.dni, VERSION_LOCAL_APP],
-          modoSilencioso ? 2 : 3,
-          15000
-        );
-
-        // Si el servidor indica versión nueva, bloqueamos de inmediato con la pantalla de actualización
-        if (resFast && verificarVersionServidor(resFast.versionApp, resFast.notasVersion)) {
+        const dniNorm = normalizarDniCliente(sesionGuardada.dni);
+        const res = await cargarTodoUsuarioFirestore(dniNorm);
+        if (res && res.bloqueadoVersion) {
           SINCRONIZANDO_AHORA = false;
           return;
         }
-
-        if (!resFast || !resFast.ok || !resFast.registro) {
+        if (!res || !res.ok || !res.registro) {
           ocultarSplash();
           SINCRONIZANDO_AHORA = false;
           if (!modoSilencioso) cerrarSesion();
           return;
         }
 
-        aplicarMetadatosSync(resFast);
-        const reg = resFast.registro;
-
+        const reg = res.registro;
         if (!reg.usuario.tieneClave || (sesionGuardada.token && reg.usuario.hashClave && reg.usuario.hashClave !== sesionGuardada.token)) {
           ocultarSplash();
           SINCRONIZANDO_AHORA = false;
@@ -1619,12 +2159,17 @@
           return;
         }
 
-        // En modo silencioso, actualiza datos sin interrumpir la pestaña ni el escáner QR si está abierto
+        STATE.hoyStr = reg.hoyStr;
+        STATE.hoyPeruCompleto = reg.hoyPeruCompleto;
+        STATE.etiquetaCiclo = reg.etiquetaCiclo;
+        STATE.avisoBanner = reg.avisoBanner;
+        STATE.modoPruebaQR = reg.modoPruebaQR;
+        STATE.ultimoSyncMs = Date.now();
+
         if (modoSilencioso && STATE.usuario) {
-          aplicarCandadosRegistro(reg);
           STATE.usuario = reg.usuario;
           STATE.diasSemana = reg.diasSemana;
-          STATE.diaHoy = reg.diaHoy || null;
+          STATE.diaHoy = reg.diaHoy;
           STATE.hoyFisico = reg.hoyFisico;
           guardarSnapshotLocal();
           renderizarBannerInformativo();
@@ -1639,17 +2184,15 @@
           asignarUsuarioYEntrar(reg, sesionGuardada.token || reg.usuario.hashClave);
           ocultarSplash();
         }
+
+        registrarVersionYUltimoAccesoFirestore(dniNorm);
+        iniciarListenersUsuario(dniNorm);
         SINCRONIZANDO_AHORA = false;
       } catch (err) {
         SINCRONIZANDO_AHORA = false;
-        if (modoSilencioso) {
-          // Ya está viendo los datos válidos de hoy; no molestamos con avisos de error
-          return;
-        }
-        if (restaurarSnapshotHoyInstantaneo(sesionGuardada)) {
-          return;
-        }
-        mostrarSplash('Conexión inestable. Toca para reintentar.', true);
+        if (modoSilencioso) return;
+        if (restaurarSnapshotHoyInstantaneo(sesionGuardada)) return;
+        mostrarSplash('Sin conexión. Toca para reintentar.', true);
       }
     }
 
@@ -1674,6 +2217,7 @@
       if (lblVerLogin) lblVerLogin.textContent = 'v' + VERSION_LOCAL_APP;
       if (lblVerMain) lblVerMain.textContent = 'v' + VERSION_LOCAL_APP;
 
+      iniciarListenerConfigGlobal();
       procesarColaQRSegundoPlano();
 
       const sesionStr = localStorage.getItem('SBS_COMEDOR_AUTH');
@@ -1684,8 +2228,6 @@
 
       if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
         sincronizarSesionConSplash(sesionGuardada, false);
-      } else {
-        ejecutarConReintento('verificarVersionApp', [], null, null, 1);
       }
 
       document.getElementById('txt-dni').addEventListener('keyup', (e) => {
@@ -1695,40 +2237,31 @@
         if (e.key === 'Enter') confirmarClaveLogin();
       });
       window.addEventListener('resize', () => {
-        const detEl = document.getElementById('compact-ticket-detalle');
-        if (detEl && detEl.offsetParent !== null) {
-          ajustarTextoUnaLinea(detEl, window.innerWidth <= 480 ? 22 : 23, 13);
+        const detComp = document.getElementById('compact-ticket-detalle');
+        if (detComp && detComp.offsetParent !== null) {
+          ajustarTextoUnaLinea(detComp, window.innerWidth <= 480 ? 22 : 23, 13);
+        }
+        const detMod = document.getElementById('ticket-modal-detalle');
+        if (detMod && detMod.offsetParent !== null) {
+          ajustarTextoUnaLinea(detMod, window.innerWidth <= 480 ? 25 : 26, 15);
         }
       });
     });
 
-    // Al volver desde segundo plano:
-    // - Si cambió el día (abierta desde ayer): bloquea con splash rápido y carga los datos reales de HOY sin margen de error.
-    // - Si es el mismo día y pasaron >45s: sincroniza silenciosamente en segundo plano sin mostrar splash.
+    // Al volver de segundo plano: si cambió el día (abierta desde ayer), recarga de inmediato con splash y reinicia listeners para hoy
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         procesarColaQRSegundoPlano();
         if (STATE.usuario && STATE.tokenActivo) {
           const hoyLima = obtenerFechaHoyLimaISO();
-          const cambioDeDia = (STATE.hoyStr !== hoyLima);
-          const pasaronMasDe45Seg = (Date.now() - (STATE.ultimoSyncMs || 0)) > 45000;
-          if (cambioDeDia || pasaronMasDe45Seg) {
+          if (STATE.hoyStr !== hoyLima) {
             sincronizarSesionConSplash({
               dni: STATE.usuario.dni,
               token: STATE.tokenActivo,
-              snapshot: {
-                hoyStr: STATE.hoyStr,
-                hoyPeruCompleto: STATE.hoyPeruCompleto,
-                etiquetaCiclo: STATE.etiquetaCiclo,
-                avisoBanner: STATE.avisoBanner,
-                modoPruebaQR: STATE.modoPruebaQR,
-                usuario: STATE.usuario,
-                diasSemana: STATE.diasSemana,
-                diaHoy: STATE.diaHoy,
-                hoyFisico: STATE.hoyFisico
-              }
-            }, cambioDeDia);
+              snapshot: null
+            }, true);
           } else {
+            registrarVersionYUltimoAccesoFirestore(STATE.usuario.dni);
             actualizarResumenHeader();
             actualizarEstadoBotonQR();
           }
@@ -1736,7 +2269,7 @@
       }
     });
 
-    // Revisa cada 20 segundos si se cruzó un horario de corte (10:00 AM / 4:00 PM / 12:00 PM / 6:00 PM) o medianoche
+    // Revisa cada 20 segundos cortes horarios (10 AM / 4 PM / 12 PM / 6 PM) y cruce de medianoche
     setInterval(() => {
       if (STATE.usuario && document.visibilityState === 'visible') {
         const hoyLima = obtenerFechaHoyLimaISO();
@@ -1759,7 +2292,6 @@
         STATE.diasSemana.forEach(evaluar);
         if (STATE.diaHoy) evaluar(STATE.diaHoy);
 
-        // Si cruzó las 6:01 PM, actualiza automáticamente la etiqueta y tarjeta de la pestaña principal
         const dPrinActual = obtenerDiaPrincipalActual();
         const tabBtn = document.getElementById('tab-btn-principal');
         if (dPrinActual && tabBtn) {
@@ -1790,7 +2322,6 @@
             hoyPeruCompleto: STATE.hoyPeruCompleto,
             etiquetaCiclo: STATE.etiquetaCiclo,
             avisoBanner: STATE.avisoBanner,
-            horaPeru: obtenerHoraPeruActual(),
             modoPruebaQR: STATE.modoPruebaQR,
             usuario: STATE.usuario,
             diasSemana: STATE.diasSemana,
@@ -1801,46 +2332,10 @@
       } catch (e) {}
     }
 
-    async function ejecutarConReintento(nombreFuncion, argsArray, onSuccess, onError, intentos = 4) {
-      for (let i = 0; i < intentos; i++) {
-        try {
-          const resp = await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: nombreFuncion, args: argsArray })
-          });
-          const data = await resp.json();
-          if (data && data.versionApp) verificarVersionServidor(data.versionApp, data.notasVersion);
-          if (onSuccess) onSuccess(data);
-          return;
-        } catch (err) {
-          if (i === intentos - 1) {
-            if (onError) onError(err);
-          } else {
-            await new Promise(r => setTimeout(r, 400 * (i + 1)));
-          }
-        }
-      }
-    }
-
-    function normalizarDniCliente(val) {
-      let s = String(val || '').replace(/\D/g, '').trim();
-      return (s.length === 7) ? '0' + s : s;
-    }
-
-    function valSeguro(v, fallback = '-') {
-      return (v !== undefined && v !== null && String(v).trim() !== '' && String(v) !== 'undefined') ? v : fallback;
-    }
-
-    function mostrarToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 3000);
-    }
-
-    // Login directo 1-a-1: consulta solo al DNI digitado sin descargar datos de otros colaboradores
-    function verificarPasoDNI() {
+    // ========================================================================
+    // LOGIN INSTANTÁNEO CONTRA FIRESTORE (~150 MS)
+    // ========================================================================
+    async function verificarPasoDNI() {
       vibrarHaptico(15);
       const dni = normalizarDniCliente(document.getElementById('txt-dni').value);
       if (dni.length < 7) {
@@ -1852,25 +2347,31 @@
       btn.disabled = true;
       btn.textContent = 'Verificando...';
 
-      ejecutarConReintento('sincronizarMiEstado', [dni, VERSION_LOCAL_APP], res => {
+      try {
+        const res = await cargarTodoUsuarioFirestore(dni);
         btn.disabled = false;
         btn.textContent = 'Continuar';
-        if (ACTUALIZACION_OBLIGATORIA) return;
+        if (ACTUALIZACION_OBLIGATORIA || (res && res.bloqueadoVersion)) return;
+
         if (res && res.ok && res.registro) {
-          aplicarMetadatosSync(res);
+          STATE.hoyStr = res.registro.hoyStr;
+          STATE.hoyPeruCompleto = res.registro.hoyPeruCompleto;
+          STATE.etiquetaCiclo = res.registro.etiquetaCiclo;
+          STATE.avisoBanner = res.registro.avisoBanner;
+          STATE.modoPruebaQR = res.registro.modoPruebaQR;
           abrirFormularioClave(res.registro);
         } else {
           mostrarToast(res && res.msg ? res.msg : 'DNI no registrado.');
         }
-      }, () => {
+      } catch (err) {
         btn.disabled = false;
         btn.textContent = 'Continuar';
         mostrarToast('No se pudo conectar con el servidor.');
-      });
+      }
     }
 
     function abrirFormularioClave(registro) {
-      STATE.registroPendienteLogin = aplicarCandadosRegistro(registro);
+      STATE.registroPendienteLogin = registro;
       const primerNombre = extraerPrimerNombreCliente(registro.usuario);
       document.getElementById('step-dni').style.display = 'none';
       document.getElementById('step-clave').style.display = 'block';
@@ -1909,64 +2410,49 @@
       btn.disabled = true;
       btn.textContent = 'Verificando...';
 
-      const tInicio = performance.now();
-      const dni = STATE.registroPendienteLogin.usuario.dni;
-      const esCreacion = !STATE.registroPendienteLogin.usuario.tieneClave;
-      const hashGuardadoRAM = STATE.registroPendienteLogin.usuario.hashClave || '';
-
-      const hashCliente = await calcularHashSHA256Cliente(dni, clave);
-
-      if (hashCliente && (esCreacion || hashGuardadoRAM)) {
+      try {
+        const dni = STATE.registroPendienteLogin.usuario.dni;
+        const esCreacion = !STATE.registroPendienteLogin.usuario.tieneClave;
+        const hashGuardado = STATE.registroPendienteLogin.usuario.hashClave || '';
+        const hashCliente = await calcularHashSHA256Cliente(dni, clave);
 
         btn.disabled = false;
         btn.textContent = txtOriginal;
 
         if (!esCreacion) {
-          if (hashCliente === hashGuardadoRAM) {
+          if (hashCliente === hashGuardado) {
             document.getElementById('txt-clave').value = '';
             asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
+            registrarVersionYUltimoAccesoFirestore(dni);
+            iniciarListenersUsuario(dni);
           } else {
             mostrarToast('Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
           }
-          return;
         } else {
           STATE.registroPendienteLogin.usuario.tieneClave = true;
           STATE.registroPendienteLogin.usuario.hashClave = hashCliente;
+          if (STATE.colabDoc) STATE.colabDoc.hashClave = hashCliente;
           document.getElementById('txt-clave').value = '';
           asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
-          ejecutarConReintento('guardarHashClaveDirecto', [dni, hashCliente], null, null, 4);
-          return;
+
+          db.collection('colaboradores').doc(dni).set({ hashClave: hashCliente }, { merge: true }).catch(() => {});
+          registrarVersionYUltimoAccesoFirestore(dni);
+          iniciarListenersUsuario(dni);
         }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = txtOriginal;
+        mostrarToast('Error al validar la contraseña.');
       }
-
-      ejecutarConReintento('autenticarOConfigurarClave', [dni, clave, esCreacion], async res => {
-
-        btn.disabled = false;
-        btn.textContent = txtOriginal;
-        if (res && res.ok) {
-          STATE.registroPendienteLogin.usuario.tieneClave = true;
-          STATE.registroPendienteLogin.usuario.hashClave = res.tokenSesion;
-          document.getElementById('txt-clave').value = '';
-          asignarUsuarioYEntrar(STATE.registroPendienteLogin, res.tokenSesion);
-        } else {
-          mostrarToast(res ? res.msg : 'Error al validar contraseña.');
-        }
-      }, () => {
-        btn.disabled = false;
-        btn.textContent = txtOriginal;
-        mostrarToast('Error de conexión con el servidor.');
-      });
     }
 
     function asignarUsuarioYEntrar(registro, tokenSesion) {
-      aplicarCandadosRegistro(registro);
       STATE.usuario = registro.usuario;
       STATE.diasSemana = registro.diasSemana;
       STATE.diaHoy = registro.diaHoy || null;
       STATE.hoyFisico = registro.hoyFisico;
-      if (tokenSesion) {
-        STATE.tokenActivo = tokenSesion;
-      }
+      if (tokenSesion) STATE.tokenActivo = tokenSesion;
+
       guardarSnapshotLocal();
       renderizarVistaPrincipal();
 
@@ -1980,12 +2466,18 @@
 
     function cerrarSesion() {
       vibrarHaptico(15);
+      detenerListenersUsuario();
       cerrarEscanerQR();
       cerrarModalTicketVerde();
       cerrarModalDetalleConsumido();
+      cerrarModalCancelarServicio();
       localStorage.removeItem('SBS_COMEDOR_AUTH');
       STATE.ultimoSyncMs = 0;
       STATE.usuario = null;
+      STATE.colabDoc = null;
+      STATE.reservasMap = {};
+      STATE.asistenciasMap = {};
+      STATE.cesionesHoy = [];
       STATE.diaHoy = null;
       STATE.tokenActivo = '';
       STATE.registroPendienteLogin = null;
@@ -2001,22 +2493,8 @@
       document.getElementById('view-login').style.display = 'flex';
     }
 
-    function esUsuarioTecnico(u) {
-      if (!u) return false;
-      if (u.esTecnico) return true;
-      const r = String(u.rol || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-      return r === 'TECNICO' || r === 'ADMIN_TECNICO' || r === 'DEV';
-    }
-
-    function esUsuarioRRHH(u) {
-      if (!u) return false;
-      if (u.esRRHH) return true;
-      const r = String(u.rol || '').toUpperCase().trim();
-      return r === 'ADMIN_RRHH' || r === 'RRHH' || r === 'ADMIN_GEP' || r === 'GEP';
-    }
-
     // ========================================================================
-    // BANNER INFORMATIVO DINÁMICO (DESDE MENU_SEMANAL!E2)
+    // BANNER INFORMATIVO DINÁMICO
     // ========================================================================
     function renderizarBannerInformativo() {
       const box = document.getElementById('banner-informativo-sbs');
@@ -2049,7 +2527,6 @@
       const mapaPorFecha = {};
       const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
 
-      // 1. Cargar todo el historial del ciclo vigente enviado por el servidor (incluye históricos importados)
       if (STATE.usuario && Array.isArray(STATE.usuario.historialCiclo)) {
         STATE.usuario.historialCiclo.forEach(item => {
           const fIso = item[0];
@@ -2063,7 +2540,6 @@
         });
       }
 
-      // 2. Fusionar en tiempo real los días de la semana y diaHoy (para viernes 12:00-18:00) dentro del ciclo actual
       const hf = STATE.hoyFisico;
       const listaFusion = (STATE.diasSemana || []).slice();
       if (STATE.diaHoy && !listaFusion.some(x => x.fecha === STATE.diaHoy.fecha)) {
@@ -2162,76 +2638,86 @@
     }
 
     // ========================================================================
-    // MÓDULO TÉCNICO + SIMULADOR DE ESTRÉS CONCURRENTE (MOTOR 1-A-1)
+    // MÓDULO TÉCNICO EN MÓVIL (DIRECTO SOBRE FIREBASE FIRESTORE)
     // ========================================================================
-    function cargarPanelSalud() {
+    async function cargarPanelSalud() {
       const badge = document.getElementById('badge-salud-tech');
       const infoBox = document.getElementById('detalle-infraestructura-tech');
       const btnRef = document.getElementById('btn-refrescar-tech');
-      if (btnRef) {
-        btnRef.disabled = true;
-        btnRef.textContent = 'Actualizando...';
-      }
-      if (badge) {
-        badge.textContent = 'CONSULTANDO';
-        badge.style.background = '#e2e8f0';
-        badge.style.color = '#334155';
-      }
-      const tPingIni = performance.now();
+      if (btnRef) { btnRef.disabled = true; btnRef.textContent = 'Actualizando...'; }
+      if (badge) { badge.textContent = 'CONSULTANDO'; badge.style.background = '#e2e8f0'; badge.style.color = '#334155'; }
 
-      ejecutarConReintento('obtenerEstadisticasSaludApp', [STATE.usuario ? STATE.usuario.dni : ''], res => {
-        if (btnRef) {
-          btnRef.disabled = false;
-          btnRef.textContent = 'Actualizar diagnóstico';
-        }
-        const latenciaRed = Math.round(performance.now() - tPingIni);
-        if (!res || !res.ok) {
-          if (badge) {
-            badge.textContent = 'SIN CONEXIÓN';
-            badge.style.background = '#fee2e2';
-            badge.style.color = '#991b1b';
+      const t0 = performance.now();
+      try {
+        const hoyStr = obtenerFechaHoyLimaISO();
+        const [colabsSnap, asistHoySnap, logsSnap, resSnap] = await Promise.all([
+          db.collection('colaboradores').get(),
+          db.collection('asistencias').where('fecha', '==', hoyStr).get(),
+          db.collection('logs_errores').get(),
+          db.collection('reservas').where('fecha', '==', hoyStr).get()
+        ]);
+
+        const latMs = Math.round(performance.now() - t0);
+        let totalActivos = 0, conClave = 0;
+        const dnisMuestra = [];
+
+        colabsSnap.forEach(doc => {
+          const c = { dni: doc.id, ...doc.data() };
+          if (estaColaboradorActivoEnFechaCliente(c, hoyStr)) {
+            totalActivos++;
+            if (dnisMuestra.length < 15) dnisMuestra.push(c.dni);
           }
-          return;
-        }
+          if (c.hashClave) conClave++;
+        });
+        STATE.dnisActivosMuestra = dnisMuestra;
 
-        if (typeof res.modoPruebaActivo === 'boolean') {
-          STATE.modoPruebaQR = res.modoPruebaActivo;
-        }
-        if (Array.isArray(res.dnisActivosMuestra)) {
-          STATE.dnisActivosMuestra = res.dnisActivosMuestra;
-        }
+        let qrDes = 0, qrAlm = 0;
+        const eventos = [];
+        asistHoySnap.forEach(doc => {
+          const a = doc.data();
+          if (String(doc.id).includes('TEST_')) return;
+          if (a.servicio === 'DESAYUNO') qrDes++;
+          if (a.servicio === 'ALMUERZO') qrAlm++;
+          eventos.push({
+            orden: Number(a.orden || 0),
+            fecha: `${a.fecha || hoyStr} ${a.horaEscaneo || '-'}`,
+            tipo: 'ASISTENCIA_QR',
+            dni: a.dni || '-',
+            servicio: a.servicio || '-',
+            valor: a.opcionElegida || '-'
+          });
+        });
+        eventos.sort((a, b) => b.orden - a.orden);
 
-        const totErr = (res.totalErrores !== undefined) ? res.totalErrores : 0;
+        const logs = [];
+        logsSnap.forEach(doc => logs.push(doc.data()));
+        logs.sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || '')));
+
+        const totErr = logs.length;
         if (badge) {
-          badge.textContent = valSeguro(res.salud, 'OPERATIVO');
-          badge.style.background = Number(totErr) === 0 ? '#dcfce7' : '#fef3c7';
-          badge.style.color = Number(totErr) === 0 ? '#166534' : '#92400e';
+          badge.textContent = totErr === 0 ? 'ESTABLE (FIREBASE LIVE)' : 'CON ALERTAS';
+          badge.style.background = totErr === 0 ? '#dcfce7' : '#fef3c7';
+          badge.style.color = totErr === 0 ? '#166534' : '#92400e';
         }
 
-        const latVal = valSeguro(res.latenciaPingMs, latenciaRed);
-        const colabAct = valSeguro(res.colaboradoresActivos, '-');
-        const colabClave = valSeguro(res.usuariosConClave, '-');
-        const qrDes = (res.escaneosDesHoy !== undefined) ? res.escaneosDesHoy : 0;
-        const qrAlm = (res.escaneosAlmHoy !== undefined) ? res.escaneosAlmHoy : 0;
-
-        document.getElementById('tkpi-latencia').textContent = `${latVal} ms`;
-        document.getElementById('tkpi-usuarios').textContent = `${colabAct} / ${colabClave}`;
+        document.getElementById('tkpi-latencia').textContent = `${latMs} ms`;
+        document.getElementById('tkpi-usuarios').textContent = `${totalActivos} / ${conClave}`;
         document.getElementById('tkpi-qr-hoy').textContent = `${qrDes} / ${qrAlm}`;
         document.getElementById('tkpi-errores').textContent = String(totErr);
 
         infoBox.innerHTML = `
-          <b>Caché RAM:</b> ${valSeguro(res.cacheEstado, 'ACTIVA')} &nbsp;|&nbsp;
+          <b>Motor de Datos:</b> Firebase Firestore (comedor-sbs) &nbsp;|&nbsp;
           <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
           <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
-          <b>Reservas en Memoria Interna:</b> ${valSeguro(res.reservasRegistradas, 0)} &nbsp;|&nbsp;
-          <b>Registros en ASISTENCIA_REAL:</b> ${valSeguro(res.totalAsistHistorico, 0)}
+          <b>Cambios personalizados hoy:</b> ${resSnap.size} &nbsp;|&nbsp;
+          <b>Asistencias hoy:</b> ${qrDes + qrAlm}
         `;
 
         const tbErr = document.getElementById('tbody-errores-tech');
-        if (!res.ultimosLogs || res.ultimosLogs.length === 0) {
+        if (logs.length === 0) {
           tbErr.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#047857; font-weight:700;">Sin errores registrados.</td></tr>';
         } else {
-          tbErr.innerHTML = res.ultimosLogs.map(l => `
+          tbErr.innerHTML = logs.slice(0, 15).map(l => `
             <tr>
               <td style="white-space:nowrap;">${valSeguro(l.fecha)}</td>
               <td><b>${valSeguro(l.contexto)}</b></td>
@@ -2241,10 +2727,10 @@
         }
 
         const tbEv = document.getElementById('tbody-eventos-tech');
-        if (!res.ultimosEventos || res.ultimosEventos.length === 0) {
-          tbEv.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted);">-</td></tr>';
+        if (eventos.length === 0) {
+          tbEv.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted);">Sin escaneos registrados hoy.</td></tr>';
         } else {
-          tbEv.innerHTML = res.ultimosEventos.map(ev => `
+          tbEv.innerHTML = eventos.slice(0, 12).map(ev => `
             <tr>
               <td style="white-space:nowrap;">${valSeguro(ev.fecha)}</td>
               <td><b>${valSeguro(ev.tipo)}</b></td>
@@ -2254,12 +2740,11 @@
             </tr>
           `).join('');
         }
-      }, () => {
-        if (btnRef) {
-          btnRef.disabled = false;
-          btnRef.textContent = 'Actualizar diagnóstico';
-        }
-      });
+      } catch (e) {
+        if (badge) { badge.textContent = 'SIN CONEXIÓN'; badge.style.background = '#fee2e2'; badge.style.color = '#991b1b'; }
+      } finally {
+        if (btnRef) { btnRef.disabled = false; btnRef.textContent = 'Actualizar diagnóstico'; }
+      }
     }
 
     async function ejecutarPruebaEstres() {
@@ -2269,75 +2754,56 @@
       box.style.display = 'block';
 
       if (!STATE.modoPruebaQR) {
-        box.innerHTML = `<span style="color:#b45309; font-weight:700;">Activa primero el "Modo prueba" en el menú Comedor SBS de tu hoja de cálculo y luego presiona Actualizar diagnóstico arriba.</span>`;
+        box.innerHTML = `<span style="color:#b45309; font-weight:700;">Activa primero el Modo Prueba en Firebase (config/app -> modoPruebaQR: true) para simular escritura de pruebas.</span>`;
         return;
       }
 
       btn.disabled = true;
-      btn.textContent = 'Ejecutando ráfaga concurrente (45 peticiones)...';
-      box.innerHTML = 'Disparando <b>30 sincronizaciones 1-a-1</b> + <b>15 escaneos QR en paralelo</b>...';
+      btn.textContent = 'Ejecutando ráfaga en Firebase (45 ops)...';
+      const muestra = (STATE.dnisActivosMuestra && STATE.dnisActivosMuestra.length > 0) ? STATE.dnisActivosMuestra : [STATE.usuario.dni];
+      const dnisL = Array.from({ length: 30 }, (_, i) => muestra[i % muestra.length]);
+      const dnisW = Array.from({ length: 15 }, (_, i) => muestra[i % muestra.length]);
+      const tGlobal = performance.now();
 
-      const muestra = (STATE.dnisActivosMuestra && STATE.dnisActivosMuestra.length > 0)
-        ? STATE.dnisActivosMuestra
-        : [STATE.usuario.dni];
-
-      const dnisLectura = Array.from({ length: 30 }, (_, i) => muestra[i % muestra.length]);
-      const dnisQR = Array.from({ length: 15 }, (_, i) => muestra[i % muestra.length]);
-
-      const tGlobalIni = performance.now();
-
-      const promesasLectura = dnisLectura.map(dniTest => {
+      const pLect = dnisL.map(d => {
         const t0 = performance.now();
-        return fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'sincronizarMiEstado', args: [dniTest, VERSION_LOCAL_APP] })
-        }).then(r => r.json()).then(d => ({
-          ok: !!(d && d.ok),
-          ms: Math.round(performance.now() - t0)
-        })).catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
+        return db.collection('colaboradores').doc(d).get({ source: 'server' })
+          .then(() => ({ ok: true, ms: Math.round(performance.now() - t0) }))
+          .catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
       });
 
-      const promesasQR = dnisQR.map(dniTest => {
+      const hoyStr = obtenerFechaHoyLimaISO();
+      const pEsc = dnisW.map((d, idx) => {
         const t0 = performance.now();
-        return fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'registrarConsumoInteligente', args: [dniTest, 'STRESS_TEST', 'ALMUERZO'] })
-        }).then(r => r.json()).then(d => ({
-          ok: !!(d && d.ok),
-          ms: Math.round(performance.now() - t0)
-        })).catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
+        const idT = `TEST_${d}_${hoyStr}_${Date.now()}_${idx}`;
+        return db.collection('asistencias').doc(idT).set({
+          id: idT, fecha: hoyStr, dni: d, servicio: 'ALMUERZO', horaEscaneo: obtenerHoraLima24hActual(), orden: Date.now()
+        }).then(() => db.collection('asistencias').doc(idT).delete())
+          .then(() => ({ ok: true, ms: Math.round(performance.now() - t0) }))
+          .catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
       });
 
-      const [resLecturas, resQR] = await Promise.all([
-        Promise.all(promesasLectura),
-        Promise.all(promesasQR)
-      ]);
-
-      const tGlobalTotal = Math.round(performance.now() - tGlobalIni);
-      const okLecturas = resLecturas.filter(x => x.ok).length;
-      const okQRs = resQR.filter(x => x.ok).length;
-      const promMsLectura = Math.round(resLecturas.reduce((a, b) => a + b.ms, 0) / resLecturas.length);
-      const promMsQR = Math.round(resQR.reduce((a, b) => a + b.ms, 0) / resQR.length);
-      const maxMsQR = Math.max(...resQR.map(x => x.ms));
+      const [rL, rW] = await Promise.all([Promise.all(pLect), Promise.all(pEsc)]);
+      const totSeg = ((performance.now() - tGlobal) / 1000).toFixed(2);
+      const okL = rL.filter(x => x.ok).length;
+      const okW = rW.filter(x => x.ok).length;
+      const promL = Math.round(rL.reduce((a, b) => a + b.ms, 0) / rL.length);
+      const promW = Math.round(rW.reduce((a, b) => a + b.ms, 0) / rW.length);
 
       btn.disabled = false;
       btn.textContent = 'Simular Ráfaga Concurrente Ahora';
-
       box.innerHTML = `
-        <b style="color:#047857;">Prueba completada en ${(tGlobalTotal / 1000).toFixed(2)} seg:</b><br>
-        - <b>Accesos simultáneos (30):</b> ${okLecturas}/30 exitosos (Promedio: ${promMsLectura} ms)<br>
-        - <b>Escaneos QR en fila (15):</b> ${okQRs}/15 registrados sin pérdida (Promedio: ${promMsQR} ms | Máximo: ${maxMsQR} ms)<br>
-        <span style="color:#64748b; font-size:11px;">Recuerda ir a Google Sheets -> Comedor SBS -> "Borrar solo registros de modo prueba" y desactivar el Modo Prueba.</span>
+        <b style="color:#047857;">Prueba Firebase completada en ${totSeg} seg (auto-limpiada):</b><br>
+        - <b>Lecturas servidor (30):</b> ${okL}/30 exitosas (Prom: ${promL} ms)<br>
+        - <b>Escrituras QR (15):</b> ${okW}/15 exitosas (Prom: ${promW} ms)
       `;
       cargarPanelSalud();
     }
 
     // ========================================================================
-    // MÓDULO RRHH EN APP MÓVIL (RESETEO DE CLAVE + LISTA DE PENDIENTES HOY)
+    // MÓDULO RRHH EN MÓVIL (RESETEO DE CLAVE + PENDIENTES HOY EN FIRESTORE)
     // ========================================================================
-    function ejecutarReseteoClaveRRHH() {
+    async function ejecutarReseteoClaveRRHH() {
       vibrarHaptico(15);
       const dniTarget = normalizarDniCliente(document.getElementById('rrhh-dni-reset').value);
       if (dniTarget.length < 7) {
@@ -2348,72 +2814,103 @@
       btn.disabled = true;
       btn.textContent = 'Procesando...';
 
-      ejecutarConReintento('resetearClaveColaboradorRRHH', [STATE.usuario.dni, dniTarget], res => {
-        btn.disabled = false;
-        btn.textContent = 'Restablecer';
-        if (res && res.ok) {
-          document.getElementById('rrhh-dni-reset').value = '';
-          mostrarToast(res.msg);
+      try {
+        const ref = db.collection('colaboradores').doc(dniTarget);
+        const snap = await ref.get();
+        if (!snap.exists) {
+          mostrarToast(`El DNI ${dniTarget} no existe en BD_COLABORADORES.`);
         } else {
-          mostrarToast(res ? res.msg : 'No se pudo restablecer la clave.');
+          await ref.set({ hashClave: '' }, { merge: true });
+          document.getElementById('rrhh-dni-reset').value = '';
+          mostrarToast(`Contraseña de ${snap.data().nombre || dniTarget} restablecida.`);
         }
-      }, () => {
+      } catch (e) {
+        mostrarToast('Error al restablecer la clave.');
+      } finally {
         btn.disabled = false;
         btn.textContent = 'Restablecer';
-        mostrarToast('Error de conexión.');
-      });
+      }
     }
 
-    function cargarPendientesHoyRRHH() {
+    async function cargarPendientesHoyRRHH() {
       const btn = document.getElementById('btn-refrescar-pendientes');
       const titulo = document.getElementById('rrhh-titulo-pendientes');
       const badge = document.getElementById('rrhh-badge-pendientes');
       const tbody = document.getElementById('tbody-pendientes-rrhh');
 
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Actualizando...';
-      }
+      if (btn) { btn.disabled = true; btn.textContent = 'Actualizando...'; }
 
       const esDesayuno = (obtenerHoraPeruActual() < 12.0);
-      if (titulo) {
-        titulo.textContent = esDesayuno ? 'Desayunos pendientes hoy' : 'Almuerzos pendientes hoy';
-      }
+      const srvObjetivo = esDesayuno ? 'DESAYUNO' : 'ALMUERZO';
+      if (titulo) titulo.textContent = esDesayuno ? 'Desayunos pendientes hoy' : 'Almuerzos pendientes hoy';
 
-      ejecutarConReintento('obtenerPendientesHoyRRHH', [STATE.usuario ? STATE.usuario.dni : ''], res => {
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = 'Actualizar pendientes';
-        }
-        if (!res || !res.ok) {
-          tbody.innerHTML = '<tr><td style="text-align:center; color:var(--muted);">No se pudo cargar la lista.</td></tr>';
-          return;
-        }
+      try {
+        const hoyStr = obtenerFechaHoyLimaISO();
+        const [colabsSnap, resSnap, asistSnap, cesSnap] = await Promise.all([
+          db.collection('colaboradores').get(),
+          db.collection('reservas').where('fecha', '==', hoyStr).get(),
+          db.collection('asistencias').where('fecha', '==', hoyStr).get(),
+          db.collection('cesiones').where('fecha', '==', hoyStr).get()
+        ]);
 
-        const esSrvDes = (res.servicio === 'DESAYUNO');
-        titulo.textContent = esSrvDes ? 'Desayunos pendientes hoy' : 'Almuerzos pendientes hoy';
-        badge.textContent = `Total: ${res.totalPendientes}`;
-        badge.style.background = res.totalPendientes === 0 ? '#dcfce7' : '#ffedd5';
-        badge.style.color = res.totalPendientes === 0 ? '#166534' : '#c2410c';
+        const planHoyMap = {};
+        resSnap.forEach(d => { const x = d.data(); if (x && x.dni) planHoyMap[normalizarDniCliente(x.dni)] = x; });
 
-        if (!res.pendientes || res.pendientes.length === 0) {
+        const asistHoySet = {};
+        asistSnap.forEach(d => {
+          if (String(d.id).includes('TEST_')) return;
+          const x = d.data();
+          if (x && x.dni && x.servicio === srvObjetivo) asistHoySet[normalizarDniCliente(x.dni)] = true;
+        });
+
+        const cedioSet = {};
+        const recibioSet = {};
+        cesSnap.forEach(d => {
+          const x = d.data();
+          if (!x || x.estado === 'ANULADA' || x.servicio !== srvObjetivo) return;
+          cedioSet[normalizarDniCliente(x.dniCedente)] = true;
+          recibioSet[normalizarDniCliente(x.dniReceptor)] = true;
+        });
+
+        const habSrv = esDesayuno ? (hoyStr >= FECHA_ARRANQUE_DESAYUNO) : (hoyStr >= FECHA_ARRANQUE_ALMUERZO);
+        const pendientes = [];
+
+        colabsSnap.forEach(doc => {
+          const c = { dni: doc.id, ...doc.data() };
+          if (!c.dni || c.estado === 'CESADO') return;
+          const activoHoy = estaColaboradorActivoEnFechaCliente(c, hoyStr);
+          const p = planHoyMap[c.dni] || null;
+          const esAsigDes = esDesayuno && !!(p && (p.des === 'MANUAL' || String(p.tsDes || '').includes('Asignado RRHH')));
+          const valSrv = (activoHoy && (habSrv || esAsigDes))
+            ? (esDesayuno ? ((p && p.des) ? p.des : (c.desDef || 'NO')) : ((p && p.alm) ? p.alm : (c.almDef || 'NO')))
+            : 'NO';
+
+          const debeRecoger = (valSrv !== 'NO' && !cedioSet[c.dni]) || !!recibioSet[c.dni];
+          if (debeRecoger && !asistHoySet[c.dni]) {
+            pendientes.push({ dni: c.dni, nombre: c.nombre || c.dni });
+          }
+        });
+
+        pendientes.sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
+        badge.textContent = `Total: ${pendientes.length}`;
+        badge.style.background = pendientes.length === 0 ? '#dcfce7' : '#ffedd5';
+        badge.style.color = pendientes.length === 0 ? '#166534' : '#c2410c';
+
+        if (pendientes.length === 0) {
           tbody.innerHTML = '<tr><td style="text-align:center; color:#047857; font-weight:700;">Todos los colaboradores con reserva ya asistieron.</td></tr>';
-          return;
+        } else {
+          tbody.innerHTML = pendientes.map((p, idx) => `<tr><td><b>${idx + 1}. ${p.nombre}</b></td></tr>`).join('');
         }
-
-        tbody.innerHTML = res.pendientes.map((p, idx) => `
-          <tr>
-            <td><b>${idx + 1}. ${p.nombre}</b></td>
-          </tr>
-        `).join('');
-      }, () => {
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = 'Actualizar pendientes';
-        }
-      });
+      } catch (e) {
+        tbody.innerHTML = '<tr><td style="text-align:center; color:var(--muted);">No se pudo cargar la lista.</td></tr>';
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Actualizar pendientes'; }
+      }
     }
 
+    // ========================================================================
+    // VISTA PRINCIPAL, PASE VERDE EJECUTIVO Y TARJETAS DE RESERVA
+    // ========================================================================
     function renderizarVistaPrincipal() {
       document.getElementById('view-login').style.display = 'none';
       document.getElementById('view-main').style.display = 'flex';
@@ -2434,11 +2931,8 @@
       }
       document.getElementById('lbl-estado-rol').textContent = textoEstadoSub;
 
-      const mostrarRRHH = esUsuarioRRHH(STATE.usuario);
-      const mostrarTech = esUsuarioTecnico(STATE.usuario);
-
-      document.getElementById('tab-btn-rrhh').style.display = mostrarRRHH ? 'block' : 'none';
-      document.getElementById('tab-btn-tecnico').style.display = mostrarTech ? 'block' : 'none';
+      document.getElementById('tab-btn-rrhh').style.display = esUsuarioRRHH(STATE.usuario) ? 'block' : 'none';
+      document.getElementById('tab-btn-tecnico').style.display = esUsuarioTecnico(STATE.usuario) ? 'block' : 'none';
 
       const dPrin = obtenerDiaPrincipalActual();
       if (dPrin) {
@@ -2456,14 +2950,12 @@
       const horaActualDecimal = obtenerHoraPeruActual();
       const idxHoyEnSemana = lista.findIndex(d => d.esHoyFisico);
 
-      // Antes de las 6:01 PM: siempre prioriza HOY físico (incluso los viernes 12:00-18:00 cuando Mi Semana ya muestra la próxima semana)
       if (horaActualDecimal < 18.016) {
         if (STATE.diaHoy && STATE.diaHoy.esHoyFisico) return STATE.diaHoy;
         if (idxHoyEnSemana !== -1) return lista[idxHoyEnSemana];
         return lista[0];
       }
 
-      // Desde las 6:01 PM: avanza al día hábil siguiente (o al Lunes de la semana siguiente si ya saltó)
       if (idxHoyEnSemana !== -1 && idxHoyEnSemana < lista.length - 1) {
         return lista[idxHoyEnSemana + 1];
       }
@@ -2478,11 +2970,6 @@
       return null;
     }
 
-    /**
-     * Ventanas horarias de escaneo QR:
-     * - Desayuno: 8:30 AM (8.5) a 11:59 AM (< 12.0)
-     * - Almuerzo: 12:00 PM (12.0) a 6:00 PM (<= 18.0)
-     */
     function ocultarTarjetaTicketCompacto() {
       const card = document.getElementById('card-ticket-compacto');
       if (card) card.style.display = 'none';
@@ -2512,7 +2999,6 @@
           return `<div>${det}${de}</div>`;
         }).join('');
       }
-      // Almuerzo: sin mostrar Regular / Alternativo
       const cant = listaCes.length;
       const tituloAlm = tienePropia
         ? (cant === 1 ? '+1 Almuerzo adicional' : `+${cant} Almuerzos adicionales`)
@@ -2526,21 +3012,18 @@
       if (!el) return;
       let size = maxPx;
       el.style.fontSize = size + 'px';
-      // Reduce en pasos de 0.5px solo si desborda el ancho disponible para asegurar siempre 1 sola línea
       while (el.scrollWidth > el.clientWidth + 1 && size > minPx) {
         size -= 0.5;
         el.style.fontSize = size + 'px';
       }
     }
 
-    function obtenerDetalleAlmuerzoHoyParaTicket() {
-      const hoyISO = STATE.hoyStr || obtenerFechaHoyLimaISO();
-      const dHoy = (STATE.diaHoy && (STATE.diaHoy.esHoyFisico || STATE.diaHoy.fecha === hoyISO))
-        ? STATE.diaHoy
-        : (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyISO);
-      const valAlm = String(dHoy ? dHoy.almuerzo : (STATE.usuario ? STATE.usuario.almDef : 'REGULAR')).toUpperCase().trim();
-      if (valAlm === 'ALTERNATIVO') return 'Alternativo';
-      return 'Regular';
+    function obtenerTextoPaseParaServicio(servicio) {
+      if (servicio === 'ALMUERZO') {
+        // Regla estricta: en almuerzo nunca muestra detalle (ni Regular ni Alternativo), solo "Almuerzo registrado"
+        return 'Almuerzo registrado';
+      }
+      return obtenerDetalleDesayunoHoyParaTicket() || 'Desayuno registrado';
     }
 
     function mostrarTarjetaTicketCompacto(servicio, horaRaw, notaExtra, mantenerBotonVisible = false) {
@@ -2560,10 +3043,7 @@
       const cesDet = document.getElementById('compact-ticket-cedido-detalle');
 
       if (tienePropia) {
-        const textoOpcion = (servicio === 'DESAYUNO')
-          ? (obtenerDetalleDesayunoHoyParaTicket() || 'Desayuno')
-          : obtenerDetalleAlmuerzoHoyParaTicket();
-        detEl.textContent = textoOpcion;
+        detEl.textContent = obtenerTextoPaseParaServicio(servicio);
         opBox.style.display = 'flex';
       } else {
         opBox.style.display = 'none';
@@ -2587,10 +3067,8 @@
         hora: horaVisual
       };
 
-      if (btn) {
-        btn.style.display = mantenerBotonVisible ? 'inline-flex' : 'none';
-      }
-      card.style.marginTop = mantenerBotonVisible ? '10px' : '2px';
+      if (btn) btn.style.display = mantenerBotonVisible ? 'inline-flex' : 'none';
+      card.style.marginTop = mantenerBotonVisible ? '10px' : '4px';
       card.style.display = 'flex';
 
       if (tienePropia) {
@@ -2599,36 +3077,10 @@
       }
     }
 
-    async function refrescarCesionesSilenciosamente(servicioAbierto, horaGuardada) {
-      if (!STATE.usuario || !STATE.usuario.dni || STATE.modoPruebaQR) return;
-      try {
-        const res = await fetchConTimeout('sincronizarMiEstado', [STATE.usuario.dni, VERSION_LOCAL_APP], 10000);
-        if (!res || !res.ok || !res.registro || !res.registro.hoyFisico) return;
-        const nuevoHf = res.registro.hoyFisico;
-        STATE.hoyFisico.cedidosDes = Array.isArray(nuevoHf.cedidosDes) ? nuevoHf.cedidosDes : [];
-        STATE.hoyFisico.cedidosAlm = Array.isArray(nuevoHf.cedidosAlm) ? nuevoHf.cedidosAlm : [];
-        STATE.hoyFisico.cedioDes = !!nuevoHf.cedioDes;
-        STATE.hoyFisico.cedioDesA = nuevoHf.cedioDesA || '';
-        STATE.hoyFisico.cedioAlm = !!nuevoHf.cedioAlm;
-        STATE.hoyFisico.cedioAlmA = nuevoHf.cedioAlmA || '';
-        guardarSnapshotLocal();
-        actualizarEstadoBotonQR();
-
-        const overlay = document.getElementById('modal-ticket-overlay');
-        if (overlay && overlay.style.display === 'flex') {
-          mostrarTicketVerdeConfirmado(servicioAbierto, horaGuardada);
-        }
-      } catch (e) {}
-    }
-
     function reabrirTicketVerdeDesdeTarjeta() {
       if (!STATE.ticketCompactoActivo) return;
       vibrarHaptico(15);
-      const srv = STATE.ticketCompactoActivo.servicio;
-      const hora = STATE.ticketCompactoActivo.hora;
-      mostrarTicketVerdeConfirmado(srv, hora);
-      // Refresca silenciosamente por si RRHH acaba de cederle una ración hace unos segundos
-      refrescarCesionesSilenciosamente(srv, hora);
+      mostrarTicketVerdeConfirmado(STATE.ticketCompactoActivo.servicio, STATE.ticketCompactoActivo.hora);
     }
 
     function actualizarEstadoBotonQR() {
@@ -2797,7 +3249,6 @@
       const lockDesClass = !editableDes ? 'disabled-card' : '';
       const lockAlmClass = !editableAlm ? 'disabled-card' : '';
 
-      // Cuando llega el corte (editableDes === false), desaparecen las listas desplegables y la tarjeta queda compacta en 2 líneas
       let dropdownsPanesHtml = '';
       if (desActivo && editableDes) {
         if (opBase === 'OP1') {
@@ -2832,6 +3283,13 @@
         }
       }
 
+      const accionTopDes = desActivo
+        ? `solicitarCancelacionServicio('${d.fecha}', 'DESAYUNO')`
+        : `seleccionarOpcionDesayuno('${d.fecha}', 'OP1')`;
+      const accionTopAlm = almActivo
+        ? `solicitarCancelacionServicio('${d.fecha}', 'ALMUERZO')`
+        : `seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')`;
+
       return `
         <div class="day-card" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
           <div class="day-header">
@@ -2844,7 +3302,7 @@
           </div>
           <div class="srv-grid">
             <div class="srv-split-card ${desActivo ? 'active-des' : ''} ${lockDesClass}">
-              <div class="srv-split-top" onclick="seleccionarOpcionDesayuno('${d.fecha}', '${desActivo ? 'NO' : 'OP1'}')">
+              <div class="srv-split-top" onclick="${accionTopDes}">
                 <span class="title">Desayuno</span>
                 <span class="status">${txtDes}</span>
               </div>
@@ -2857,7 +3315,7 @@
             </div>
 
             <div class="srv-split-card ${almActivo ? 'active-alm' : ''} ${lockAlmClass}">
-              <div class="srv-split-top" onclick="seleccionarOpcionAlmuerzo('${d.fecha}', '${almActivo ? 'NO' : 'REGULAR'}')">
+              <div class="srv-split-top" onclick="${accionTopAlm}">
                 <span class="title">Almuerzo</span>
                 <span class="status">${txtAlm}</span>
               </div>
@@ -2869,6 +3327,59 @@
           </div>
         </div>
       `;
+    }
+
+    // ========================================================================
+    // CONFIRMACIÓN OBLIGATORIA PARA CANCELAR + GUARDADO DIRECTO EN FIRESTORE
+    // ========================================================================
+    function solicitarCancelacionServicio(fecha, servicio) {
+      const dia = buscarDiaPorFecha(fecha);
+      if (!dia) return;
+      if (servicio === 'DESAYUNO' && (!dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO'))) return;
+      if (servicio === 'ALMUERZO' && (!dia.puedeEditarAlmuerzo || !esEditableEnTiempoReal(fecha, 'ALMUERZO'))) return;
+
+      vibrarHaptico(15);
+      CANCELACION_PENDIENTE = { fecha: fecha, servicio: servicio };
+      const nombreSrv = (servicio === 'DESAYUNO') ? 'Desayuno' : 'Almuerzo';
+      const numDia = dia.diaNumero || extraerDiaNumeroCliente(dia.fecha);
+
+      document.getElementById('lbl-cancel-titulo').textContent = `¿Cancelar tu ${nombreSrv}?`;
+      document.getElementById('lbl-cancel-mensaje').textContent =
+        `¿Seguro que deseas desactivar tu ${nombreSrv} del ${dia.diaTexto} ${numDia}?`;
+      document.getElementById('modal-confirmar-cancelacion').style.display = 'flex';
+    }
+
+    function cerrarModalCancelarServicio() {
+      CANCELACION_PENDIENTE = null;
+      const m = document.getElementById('modal-confirmar-cancelacion');
+      if (m) m.style.display = 'none';
+    }
+
+    function confirmarCancelacionServicio() {
+      if (!CANCELACION_PENDIENTE) return;
+      const { fecha, servicio } = CANCELACION_PENDIENTE;
+      cerrarModalCancelarServicio();
+
+      const dia = buscarDiaPorFecha(fecha);
+      if (!dia) return;
+      vibrarHaptico(18);
+
+      if (servicio === 'DESAYUNO') {
+        if (!dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
+        dia.desayuno = 'NO';
+        if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = false;
+        encolarCambioServicio(dia.fecha, 'DESAYUNO', 'NO');
+      } else {
+        if (!dia.puedeEditarAlmuerzo || !esEditableEnTiempoReal(fecha, 'ALMUERZO')) return;
+        dia.almuerzo = 'NO';
+        if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = false;
+        encolarCambioServicio(dia.fecha, 'ALMUERZO', 'NO');
+      }
+
+      guardarSnapshotLocal();
+      renderizarTarjetas();
+      actualizarEstadoBotonQR();
+      mostrarToast(`${servicio === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo'} cancelado.`);
     }
 
     function construirValorDesayunoConPanes(dia, opDestino) {
@@ -2895,20 +3406,40 @@
       };
 
       if (TIMER_LOTE_RESERVA) clearTimeout(TIMER_LOTE_RESERVA);
-      TIMER_LOTE_RESERVA = setTimeout(() => {
+      TIMER_LOTE_RESERVA = setTimeout(async () => {
         const lote = Object.values(COLA_CAMBIOS_RESERVA);
         COLA_CAMBIOS_RESERVA = {};
         if (lote.length === 0 || !STATE.usuario) return;
 
-        ejecutarConReintento('actualizarSeleccionLote', [{
-          dniTarget: STATE.usuario.dni,
-          cambios: lote
-        }], res => {
-          if (res && !res.ok) {
-            mostrarToast(res.msg);
+        const dni = STATE.usuario.dni;
+        const tsCorto = obtenerTimestampCortoLima();
+        const porFecha = {};
+
+        lote.forEach(item => {
+          if (!esEditableEnTiempoReal(item.fecha, item.servicio)) return;
+          if (!porFecha[item.fecha]) porFecha[item.fecha] = { fecha: item.fecha, dni: dni };
+          if (item.servicio === 'DESAYUNO') {
+            porFecha[item.fecha].des = item.nuevoValor;
+            porFecha[item.fecha].tsDes = tsCorto;
+          } else if (item.servicio === 'ALMUERZO') {
+            porFecha[item.fecha].alm = item.nuevoValor;
+            porFecha[item.fecha].tsAlm = tsCorto;
           }
-        }, null, 4);
-      }, 650);
+        });
+
+        try {
+          const batch = db.batch();
+          const fechasKeys = Object.keys(porFecha);
+          if (fechasKeys.length === 0) return;
+          fechasKeys.forEach(f => {
+            const ref = db.collection('reservas').doc(`${f}_${dni}`);
+            batch.set(ref, porFecha[f], { merge: true });
+          });
+          await batch.commit();
+        } catch (err) {
+          mostrarToast('Error al sincronizar tu cambio. Verifica tu señal.');
+        }
+      }, 450);
     }
 
     function seleccionarOpcionDesayuno(fecha, opElegida) {
@@ -2916,14 +3447,16 @@
       const dia = buscarDiaPorFecha(fecha);
       if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
 
-      vibrarHaptico(15);
       const infoMenu = obtenerInfoMenuDia(dia);
       const actual = desglosarDesayuno(dia.desayuno, infoMenu.panes);
 
-      let nVal = 'NO';
-      if (opElegida !== 'NO' && actual.op !== opElegida) {
-        nVal = construirValorDesayunoConPanes(dia, opElegida);
+      // Protección anti-error: tocar el botón de la opción YA activa no cancela la reserva
+      if (opElegida !== 'NO' && actual.op === opElegida) {
+        return;
       }
+
+      vibrarHaptico(15);
+      const nVal = (opElegida === 'NO') ? 'NO' : construirValorDesayunoConPanes(dia, opElegida);
 
       dia.desayuno = nVal;
       if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (dia.desayuno !== 'NO');
@@ -2966,11 +3499,14 @@
       const dia = buscarDiaPorFecha(fecha);
       if (!dia || !dia.puedeEditarAlmuerzo || !esEditableEnTiempoReal(fecha, 'ALMUERZO')) return;
 
+      // Protección anti-error: tocar Regular o Alternativo cuando YA está seleccionado no cancela la reserva
+      if (dia.almuerzo === opElegida) {
+        return;
+      }
+
       vibrarHaptico(15);
-      const vAnt = dia.almuerzo;
-      const nVal = (vAnt === opElegida) ? 'NO' : opElegida;
-      dia.almuerzo = nVal;
-      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (nVal !== 'NO');
+      dia.almuerzo = opElegida;
+      if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (opElegida !== 'NO');
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
@@ -3009,15 +3545,15 @@
     }
 
     // ========================================================================
-    // ESCANEO QR INSTANTÁNEO EN 0.0 SEG + VENTANA A PANTALLA CASI COMPLETA
+    // ESCANEO QR INSTANTÁNEO + PERSISTENCIA GARANTIZADA EN FIRESTORE (~150 MS)
     // ========================================================================
     async function abrirEscanerQR() {
+      if (ACTUALIZACION_OBLIGATORIA) return;
       if (document.getElementById('btn-escanear-qr').disabled) return;
       vibrarHaptico(15);
 
       const overlay = document.getElementById('modal-qr-overlay');
       overlay.style.display = 'flex';
-
       await new Promise(r => setTimeout(r, 80));
 
       try {
@@ -3069,30 +3605,67 @@
     }
 
     function procesarRegistroQRInteligente(metodo = 'QR_APP') {
-      if (!STATE.usuario || !STATE.hoyFisico) return;
+      if (ACTUALIZACION_OBLIGATORIA || !STATE.usuario || !STATE.hoyFisico) return;
 
       vibrarHaptico([35, 45, 35]);
       const horaEscaneoExacta = obtenerHoraLima24hActual();
       const horaVisual12h = formatearHoraTicket12h(horaEscaneoExacta);
       const tsEscaneoMs = Date.now();
       const srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
+      const hoyStr = STATE.hoyFisico.fecha || obtenerFechaHoyLimaISO();
+      const dniNorm = STATE.usuario.dni;
+
+      const tienePropia = tieneReservaPropiaActivaHoy(srvEsperado);
+      const listaCes = obtenerCesionesServicioHoy(srvEsperado);
+      const esSoloCesion = (!tienePropia && listaCes.length > 0);
+
+      const dHoy = (STATE.diaHoy && (STATE.diaHoy.esHoyFisico || STATE.diaHoy.fecha === hoyStr))
+        ? STATE.diaHoy
+        : (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyStr);
+
+      let opcionElegida = '';
+      let origenReserva = 'Por defecto';
+      const planHoy = STATE.reservasMap[hoyStr] || null;
+
+      if (esSoloCesion) {
+        const detCes = listaCes.map(x => x.detalle || (srvEsperado === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo')).join(' + ');
+        const cedentesTxt = listaCes.map(x => x.de).filter(Boolean).join(', ');
+        opcionElegida = `Cedido: ${detCes}`;
+        origenReserva = cedentesTxt ? `Cedido por ${cedentesTxt}` : 'Cedido';
+      } else {
+        const valDes = dHoy ? dHoy.desayuno : (STATE.usuario.desDef || 'NO');
+        const valAlm = dHoy ? dHoy.almuerzo : (STATE.usuario.almDef || 'REGULAR');
+        opcionElegida = (srvEsperado === 'DESAYUNO') ? formatearEtiquetaDesayunoAsist(valDes) : (valAlm || 'REGULAR');
+        if (listaCes.length > 0) {
+          const detCes = listaCes.map(x => x.detalle || 'Adicional').join(' + ');
+          opcionElegida += ` + Cedido (${detCes})`;
+        }
+        origenReserva = (srvEsperado === 'DESAYUNO')
+          ? ((planHoy && planHoy.tsDes) ? planHoy.tsDes : 'Por defecto')
+          : ((planHoy && planHoy.tsAlm) ? planHoy.tsAlm : 'Por defecto');
+      }
+
+      const docId = STATE.modoPruebaQR
+        ? `TEST_${dniNorm}_${hoyStr}_${srvEsperado}_QR_${tsEscaneoMs}`
+        : (esSoloCesion
+          ? `CESION_${dniNorm}_${hoyStr}_${srvEsperado}_QR`
+          : `${dniNorm}_${hoyStr}_${srvEsperado}_QR`);
 
       if (!STATE.modoPruebaQR) {
-        const esSoloCes = !tieneReservaPropiaActivaHoy(srvEsperado) && obtenerCesionesServicioHoy(srvEsperado).length > 0;
         if (srvEsperado === 'DESAYUNO') {
           STATE.hoyFisico.consumioDes = true;
           STATE.hoyFisico.horaScanDes = horaVisual12h;
-          if (esSoloCes) STATE.hoyFisico.soloCesionDes = true;
+          if (esSoloCesion) STATE.hoyFisico.soloCesionDes = true;
         }
         if (srvEsperado === 'ALMUERZO') {
           STATE.hoyFisico.consumioAlm = true;
           STATE.hoyFisico.horaScanAlm = horaVisual12h;
-          if (esSoloCes) STATE.hoyFisico.soloCesionAlm = true;
+          if (esSoloCesion) STATE.hoyFisico.soloCesionAlm = true;
         }
         try {
           localStorage.setItem('SBS_QR_CONFIRMADO_HOY', JSON.stringify({
-            dni: STATE.usuario.dni,
-            fecha: STATE.hoyFisico.fecha,
+            dni: dniNorm,
+            fecha: hoyStr,
             des: STATE.hoyFisico.consumioDes,
             alm: STATE.hoyFisico.consumioAlm,
             horaDes: STATE.hoyFisico.horaScanDes || '',
@@ -3111,12 +3684,18 @@
       actualizarEstadoBotonQR();
 
       encolarRegistroQRSegundoPlano({
-        idCola: `${STATE.usuario.dni}_${STATE.hoyFisico.fecha}_${srvEsperado}_${tsEscaneoMs}`,
-        dni: STATE.usuario.dni,
-        metodo: metodo,
-        servicio: srvEsperado,
+        id: docId,
         horaEscaneo: horaEscaneoExacta,
-        tsEscaneoMs: tsEscaneoMs
+        fecha: hoyStr,
+        dni: dniNorm,
+        nombre: STATE.usuario.nombre,
+        servicio: srvEsperado,
+        opcionElegida: opcionElegida,
+        origenReserva: origenReserva,
+        esSoloCesion: esSoloCesion,
+        esHistorico: false,
+        tsEscaneoMs: tsEscaneoMs,
+        metodo: metodo
       });
     }
 
@@ -3162,25 +3741,27 @@
         let exitoEnvio = false;
 
         try {
-          const resp = await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-              action: 'registrarConsumoInteligente',
-              args: [
-                actual.dni,
-                actual.metodo,
-                actual.servicio,
-                actual.horaEscaneo || '',
-                actual.tsEscaneoMs || 0
-              ]
-            })
-          });
-          const data = await resp.json();
+          // Compatibilidad con ítems antiguos que hubieran quedado en cola antes de migrar a v28
+          const docId = actual.id || `${actual.dni}_${actual.fecha || obtenerFechaHoyLimaISO()}_${actual.servicio}_QR`;
+          const diffMs = Math.max(0, Date.now() - Number(actual.tsEscaneoMs || Date.now()));
+          const demoraTxt = diffMs < 10000 ? `${(diffMs / 1000).toFixed(1)}s` : `${Math.round(diffMs / 1000)}s`;
 
-          if (data && (data.ok || (data.msg && !data.msg.includes('intent') && !data.msg.includes('ocupado')))) {
-            exitoEnvio = true;
-          }
+          await db.collection('asistencias').doc(docId).set({
+            id: docId,
+            horaEscaneo: actual.horaEscaneo || obtenerHoraLima24hActual(),
+            fecha: actual.fecha || obtenerFechaHoyLimaISO(),
+            dni: normalizarDniCliente(actual.dni),
+            nombre: actual.nombre || (STATE.usuario ? STATE.usuario.nombre : ''),
+            servicio: actual.servicio,
+            opcionElegida: actual.opcionElegida || actual.servicio,
+            origenReserva: actual.origenReserva || 'Por defecto',
+            demoraRegistro: demoraTxt,
+            esSoloCesion: !!actual.esSoloCesion,
+            esHistorico: false,
+            orden: Number(actual.tsEscaneoMs || Date.now())
+          }, { merge: true });
+
+          exitoEnvio = true;
         } catch (err) {
           exitoEnvio = false;
         }
@@ -3205,7 +3786,9 @@
 
     function obtenerDetalleDesayunoHoyParaTicket() {
       const hoyISO = STATE.hoyStr || obtenerFechaHoyLimaISO();
-      const dHoy = (STATE.diaHoy && (STATE.diaHoy.esHoyFisico || STATE.diaHoy.fecha === hoyISO)) ? STATE.diaHoy : (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyISO);
+      const dHoy = (STATE.diaHoy && (STATE.diaHoy.esHoyFisico || STATE.diaHoy.fecha === hoyISO))
+        ? STATE.diaHoy
+        : (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyISO);
       const valDes = dHoy ? dHoy.desayuno : (STATE.usuario ? STATE.usuario.desDef : 'NO');
       const infoMenu = dHoy ? obtenerInfoMenuDia(dHoy) : { panes: PANES_POR_DEFECTO };
       const infoDes = desglosarDesayuno(valDes, infoMenu.panes);
@@ -3232,35 +3815,20 @@
       document.getElementById('ticket-modal-nombre').textContent = nombreCorto;
 
       const opBox = document.getElementById('ticket-modal-opcion-box');
-      const kickerEl = document.getElementById('ticket-modal-srv-kicker');
       const detEl = document.getElementById('ticket-modal-detalle');
       const cesBox = document.getElementById('ticket-modal-cedido-box');
       const cesKicker = document.getElementById('ticket-modal-cedido-kicker');
       const cesDet = document.getElementById('ticket-modal-cedido-detalle');
 
       if (tienePropia) {
+        detEl.textContent = obtenerTextoPaseParaServicio(servicio);
         opBox.style.display = 'flex';
-        if (servicio === 'DESAYUNO') {
-          const textoDes = obtenerDetalleDesayunoHoyParaTicket();
-          opBox.className = 'ticket-opcion-box srv-des';
-          kickerEl.textContent = 'DESAYUNO';
-          if (textoDes) {
-            detEl.textContent = textoDes;
-            detEl.style.display = 'block';
-          } else {
-            detEl.style.display = 'none';
-          }
-        } else {
-          opBox.className = 'ticket-opcion-box srv-alm';
-          kickerEl.textContent = 'ALMUERZO REGISTRADO';
-          detEl.style.display = 'none';
-        }
       } else {
         opBox.style.display = 'none';
       }
 
       if (listaCes.length > 0) {
-        cesKicker.textContent = tienePropia ? 'CEDIDO' : `${servicio} CEDIDO`;
+        cesKicker.textContent = 'CEDIDO';
         cesDet.innerHTML = construirHtmlDetalleCesion(servicio, listaCes, tienePropia);
         cesBox.style.display = 'flex';
       } else {
@@ -3270,6 +3838,11 @@
       document.getElementById('ticket-modal-fecha').textContent = fechaHoy;
       document.getElementById('ticket-modal-hora').textContent = horaExacta;
       overlay.style.display = 'flex';
+
+      if (tienePropia) {
+        const basePx = window.innerWidth <= 480 ? 25 : 26;
+        requestAnimationFrame(() => ajustarTextoUnaLinea(detEl, basePx, 15));
+      }
     }
 
     function cerrarModalTicketVerde() {

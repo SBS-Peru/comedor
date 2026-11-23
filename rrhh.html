@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal RRHH • Comedor SBS</title>
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=27">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=28">
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --sbs-primary: #13392a;
@@ -782,7 +784,7 @@
   <!-- 1. LOGIN -->
   <div id="view-login">
     <div class="login-card">
-      <img src="./Logo.jpg?v=27" alt="SBS" class="login-logo">
+      <img src="./Logo.jpg?v=28" alt="SBS" class="login-logo">
       <h1>Portal RRHH • Comedor SBS</h1>
 
       <div id="step-dni">
@@ -803,7 +805,7 @@
           Cambiar DNI
         </button>
       </div>
-      <div class="login-ver" id="lbl-ver-login-rrhh">v27</div>
+      <div class="login-ver" id="lbl-ver-login-rrhh">v28</div>
     </div>
   </div>
 
@@ -811,9 +813,9 @@
   <div id="view-portal">
     <header class="top-header">
       <div class="brand-wrap">
-        <img src="./Logo.jpg?v=27" alt="SBS" class="brand-logo">
+        <img src="./Logo.jpg?v=28" alt="SBS" class="brand-logo">
         <div>
-          <h2>Portal RRHH • Comedor SBS <span class="portal-ver-pill" id="lbl-ver-header-rrhh">v27</span></h2>
+          <h2>Portal RRHH • Comedor SBS <span class="portal-ver-pill" id="lbl-ver-header-rrhh">v28</span></h2>
           <span class="admin-sub" id="lbl-admin-activo"></span>
         </div>
       </div>
@@ -1393,9 +1395,35 @@
   <div id="toast"></div>
 
   <script>
+    // Apps Script se conserva únicamente para enviar correos de constancia desde Google Workspace
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
-    const VERSION_LOCAL_RRHH = "27";
+    const VERSION_LOCAL_RRHH = "28";
     const PANES_CATALOGO_BASE = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
+
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBxBy84E1CmVMQBK9D-EC82v-OC4BJIdUA",
+      authDomain: "comedor-sbs.firebaseapp.com",
+      projectId: "comedor-sbs",
+      storageBucket: "comedor-sbs.firebasestorage.app",
+      messagingSenderId: "645268339422",
+      appId: "1:645268339422:web:433cb69c0be8ef9bce204f"
+    };
+
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const db = firebase.firestore();
+    db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+
+    const LIVE_FB = {
+      configApp: null,
+      colabsMap: {},
+      reservasDiaMap: {},
+      asistDiaMap: {},
+      cesionesDiaArr: [],
+      fechaEscuchada: '',
+      unsubConfig: null,
+      unsubList: [],
+      timerRebuild: null
+    };
 
     // Limpiar parámetro ?v=... tras recarga automática por nueva versión
     (function limpiarParametroVersionURL() {
@@ -1692,21 +1720,1827 @@
       setTimeout(() => { t.style.display = 'none'; }, 3600);
     }
 
-    async function llamarAPI(action, args = [], intentos = 3) {
-      for (let i = 0; i < intentos; i++) {
-        try {
-          const resp = await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: action, args: args })
-          });
-          const data = await resp.json();
-          if (data && data.versionApp) verificarVersionPortalRRHH(data.versionApp);
-          return data;
-        } catch (err) {
-          if (i === intentos - 1) throw err;
-          await new Promise(r => setTimeout(r, 500 * (i + 1)));
+    // ========================================================================
+    // MOTOR FIREBASE FIRESTORE (COMEDOR SBS — V28 TIEMPO REAL)
+    // ========================================================================
+    function obtenerPartesLimaRRHH() {
+      try {
+        const partes = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'America/Lima',
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        }).formatToParts(new Date());
+        const get = (t) => Number(partes.find(p => p.type === t).value);
+        const h = get('hour');
+        return {
+          year: get('year'), month: get('month'), day: get('day'),
+          hour: h === 24 ? 0 : h, minute: get('minute'), second: get('second')
+        };
+      } catch (e) {
+        const d = new Date();
+        return {
+          year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(),
+          hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds()
+        };
+      }
+    }
+
+    function obtenerDateLimaRRHH() {
+      const p = obtenerPartesLimaRRHH();
+      return new Date(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+    }
+
+    function formatearFechaISODate(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function obtenerFechaHoyLimaISORRHH() {
+      return formatearFechaISODate(obtenerDateLimaRRHH());
+    }
+
+    function obtenerTimestampServidorVisualRRHH() {
+      const p = obtenerPartesLimaRRHH();
+      return `${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')}/${p.year} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
+    }
+
+    function obtenerFechaHoraCortaLimaRRHH() {
+      const p = obtenerPartesLimaRRHH();
+      return `${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`;
+    }
+
+    function aFechaPeruCompletaRRHH(isoStr) {
+      const p = String(isoStr || '').split('-');
+      return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : (isoStr || '');
+    }
+
+    function aDiaNumeroRRHH(isoStr) {
+      const p = String(isoStr || '').split('-');
+      return p.length === 3 ? String(Number(p[2])) : (isoStr || '');
+    }
+
+    function formatearHora24aAMPMRRHH(hhmmStr) {
+      const s = String(hhmmStr || '').trim();
+      if (!s) return '';
+      if (/am|pm/i.test(s)) return s.toUpperCase();
+      const m = s.match(/(\d{1,2}):(\d{2})(?::\d{2})?/);
+      if (!m) return '';
+      let h = Number(m[1]);
+      const min = m[2];
+      const suf = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      return `${String(h).padStart(2, '0')}:${min} ${suf}`;
+    }
+
+    function extraerHoraAMPMDeTsRRHH(tsStr) {
+      const s = String(tsStr || '').trim();
+      if (!s || s === 'Por defecto') return '';
+      const mAmpm = s.match(/(\d{1,2}:\d{2})\s*(AM|PM)/i);
+      if (mAmpm) return `${mAmpm[1].padStart(5, '0')} ${mAmpm[2].toUpperCase()}`;
+      const m24 = s.match(/(\d{1,2}:\d{2})(?::\d{2})?/);
+      if (m24) return formatearHora24aAMPMRRHH(m24[1]);
+      return '';
+    }
+
+    function formatearUltimoAccesoVisualRRHH(isoFechaHora, hoyStr, ayerStr) {
+      const s = String(isoFechaHora || '').trim();
+      if (!s) return '';
+      const partes = s.split(' ');
+      const f = partes[0] || '';
+      const h = partes[1] ? formatearHora24aAMPMRRHH(partes[1]) : '';
+      if (f === hoyStr) return h ? `Hoy ${h}` : 'Hoy';
+      if (f === ayerStr) return h ? `Ayer ${h}` : 'Ayer';
+      const dm = formatearFechaCortaDDMM(f);
+      return h ? `${dm} ${h}` : dm;
+    }
+
+    function obtenerFechasSemanaOperativaRRHH(horaSaltoViernes = 18.0) {
+      const hoy = obtenerDateLimaRRHH();
+      const diaSemana = hoy.getDay();
+      const horaDecimal = hoy.getHours() + (hoy.getMinutes() / 60);
+      let ajusteLunes = (diaSemana === 0) ? 1 : (diaSemana === 6 ? 2 : 1 - diaSemana);
+      if (diaSemana === 5 && horaDecimal >= horaSaltoViernes) ajusteLunes += 7;
+      const lunes = new Date(hoy);
+      lunes.setDate(hoy.getDate() + ajusteLunes);
+      const lista = [];
+      for (let i = 0; i < 5; i++) {
+        const d = new Date(lunes);
+        d.setDate(lunes.getDate() + i);
+        lista.push(formatearFechaISODate(d));
+      }
+      return lista;
+    }
+
+    function obtenerConfigDefaultsRRHH(cfg) {
+      const c = cfg || {};
+      return {
+        versionApp: String(c.versionApp || VERSION_LOCAL_RRHH),
+        notasVersion: String(c.notasVersion || ''),
+        fechaInicioAlmuerzo: String(c.fechaInicioAlmuerzo || '2026-11-18'),
+        fechaInicioDesayuno: String(c.fechaInicioDesayuno || '2026-11-19'),
+        modoPruebaQR: !!c.modoPruebaQR,
+        panesDefecto: (Array.isArray(c.panesDefecto) && c.panesDefecto.length > 0) ? c.panesDefecto : PANES_CATALOGO_BASE.slice(),
+        tarifas: {
+          desMenor1500: Number((c.tarifas && c.tarifas.desMenor1500) || 1.00),
+          almMenor1500: Number((c.tarifas && c.tarifas.almMenor1500) || 2.50),
+          desMayor1500: Number((c.tarifas && c.tarifas.desMayor1500) || 1.50),
+          almMayor1500: Number((c.tarifas && c.tarifas.almMayor1500) || 3.50)
+        },
+        semanaMenuLunes: String(c.semanaMenuLunes || ''),
+        avisoBanner: String(c.avisoBanner || ''),
+        menuSemanal: Array.isArray(c.menuSemanal) ? c.menuSemanal : [],
+        ciclosConfig: (Array.isArray(c.ciclosConfig) && c.ciclosConfig.length > 0)
+          ? c.ciclosConfig.slice().sort((a, b) => String(a.inicio).localeCompare(String(b.inicio)))
+          : [
+              { id: '2026-10', nombre: 'Octubre 2026', inicio: '2026-09-25', fin: '2026-10-26' },
+              { id: '2026-11', nombre: 'Noviembre 2026', inicio: '2026-10-27', fin: '2026-11-24' },
+              { id: '2026-12', nombre: 'Diciembre 2026', inicio: '2026-11-25', fin: '2026-12-24' },
+              { id: '2027-01', nombre: 'Enero 2027', inicio: '2026-12-25', fin: '2027-01-24' }
+            ],
+        menuHoyTemp: c.menuHoyTemp || null
+      };
+    }
+
+    function esServicioHabilitadoRRHH(fechaStr, tipoServicio, cfgObj) {
+      const cfg = obtenerConfigDefaultsRRHH(cfgObj || LIVE_FB.configApp);
+      if (tipoServicio === 'DESAYUNO') return fechaStr >= cfg.fechaInicioDesayuno;
+      return fechaStr >= cfg.fechaInicioAlmuerzo;
+    }
+
+    function validarHorarioCorteRRHH(fechaStr, tipoServicio, ahoraMsOpcional, cfgObj) {
+      if (!esServicioHabilitadoRRHH(fechaStr, tipoServicio, cfgObj)) return false;
+      const ahoraMs = (typeof ahoraMsOpcional === 'number' && ahoraMsOpcional > 0)
+        ? ahoraMsOpcional
+        : obtenerDateLimaRRHH().getTime();
+      const partes = String(fechaStr || '').split('-');
+      if (partes.length !== 3) return false;
+      const fechaServ = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]), 0, 0, 0);
+
+      if (tipoServicio === 'DESAYUNO') {
+        const limiteDes = new Date(fechaServ);
+        limiteDes.setDate(fechaServ.getDate() - 1);
+        limiteDes.setHours(16, 0, 0, 0);
+        if (fechaServ.getDay() === 1) limiteDes.setDate(limiteDes.getDate() - 1);
+        return ahoraMs <= limiteDes.getTime();
+      } else {
+        const limiteAlm = new Date(fechaServ);
+        limiteAlm.setHours(10, 0, 0, 0);
+        return ahoraMs <= limiteAlm.getTime();
+      }
+    }
+
+    function esEstadoAusenciaRRHH(estStr) {
+      const e = String(estStr || '').toUpperCase().trim();
+      return e === 'AUSENTE' || e === 'VACACIONES' || e === 'DM';
+    }
+
+    function estaColaboradorActivoEnFechaRRHH(c, fechaISO) {
+      const est = String(c.estado || 'ACTIVO').toUpperCase().trim();
+      if (est === 'ACTIVO') return true;
+      if (est === 'CESADO') return false;
+      if (esEstadoAusenciaRRHH(est)) {
+        const fIni = c.fechaInicioEstado || '';
+        const fFin = c.fechaFinEstado || '';
+        if (fIni && fFin) return (fechaISO < fIni || fechaISO > fFin);
+        if (fFin) return fechaISO > fFin;
+        if (fIni) return fechaISO < fIni;
+        return false;
+      }
+      return false;
+    }
+
+    function obtenerTarifasTramoRRHH(tramoStr, cfgObj) {
+      const cfg = obtenerConfigDefaultsRRHH(cfgObj || LIVE_FB.configApp);
+      const esMenor = String(tramoStr || '').toUpperCase().includes('MENOR');
+      return {
+        desayuno: esMenor ? cfg.tarifas.desMenor1500 : cfg.tarifas.desMayor1500,
+        almuerzo: esMenor ? cfg.tarifas.almMenor1500 : cfg.tarifas.almMayor1500
+      };
+    }
+
+    function obtenerCicloActualYAntRRHH(cfgObj) {
+      const cfg = obtenerConfigDefaultsRRHH(cfgObj || LIVE_FB.configApp);
+      const hoy = obtenerDateLimaRRHH();
+      const hoyStr = formatearFechaISODate(hoy);
+      const ciclos = cfg.ciclosConfig;
+      const idxActual = ciclos.findIndex(c => hoyStr >= c.inicio && hoyStr <= c.fin);
+      let actualObj = null;
+      let anteriorObj = null;
+
+      if (idxActual !== -1) {
+        actualObj = ciclos[idxActual];
+        if (idxActual > 0) anteriorObj = ciclos[idxActual - 1];
+      } else {
+        let anio = hoy.getFullYear();
+        let mes = hoy.getMonth();
+        if (hoy.getDate() <= 24) mes = mes - 1;
+        const iniD = new Date(anio, mes, 25, 0, 0, 0);
+        const finD = new Date(anio, mes + 1, 24, 23, 59, 59);
+        actualObj = {
+          id: formatearFechaISODate(finD).slice(0, 7),
+          nombre: `Ciclo ${formatearFechaCortaDDMM(formatearFechaISODate(iniD))} al ${formatearFechaCortaDDMM(formatearFechaISODate(finD))}`,
+          inicio: formatearFechaISODate(iniD),
+          fin: formatearFechaISODate(finD)
+        };
+        const iniAnt = new Date(anio, mes - 1, 25, 0, 0, 0);
+        const finAnt = new Date(anio, mes, 24, 23, 59, 59);
+        anteriorObj = {
+          id: formatearFechaISODate(finAnt).slice(0, 7),
+          nombre: `Ciclo ${formatearFechaCortaDDMM(formatearFechaISODate(iniAnt))} al ${formatearFechaCortaDDMM(formatearFechaISODate(finAnt))}`,
+          inicio: formatearFechaISODate(iniAnt),
+          fin: formatearFechaISODate(finAnt)
+        };
+      }
+
+      return {
+        ciclosConfig: ciclos,
+        cicloActual: {
+          id: actualObj.id,
+          nombre: actualObj.nombre,
+          inicio: actualObj.inicio,
+          fin: actualObj.fin,
+          etiqueta: `${formatearFechaCortaDDMM(actualObj.inicio)} al ${formatearFechaCortaDDMM(actualObj.fin)}`
+        },
+        cicloAnterior: anteriorObj ? {
+          id: anteriorObj.id,
+          nombre: anteriorObj.nombre,
+          inicio: anteriorObj.inicio,
+          fin: anteriorObj.fin,
+          etiqueta: `${formatearFechaCortaDDMM(anteriorObj.inicio)} al ${formatearFechaCortaDDMM(anteriorObj.fin)}`
+        } : null
+      };
+    }
+
+    function normalizarDesayunoPlanRRHH(val) {
+      let raw = String(val || 'NO').trim();
+      let up = raw.toUpperCase();
+      if (!raw || up === 'NO' || up === 'SI') return 'NO';
+      if (up === 'MANUAL' || up === 'ASIGNADO_RRHH' || up === 'ASIGNADO RRHH') return 'MANUAL';
+      if (up === 'OP2') return 'OP2';
+      if (raw.includes('|')) {
+        const p = raw.split('|').map(x => x.trim());
+        const op = p[0].toUpperCase();
+        if (op === 'OP2') return 'OP2';
+        if (op === 'MANUAL') return 'MANUAL';
+        if (op === 'OP1') {
+          const p1 = normalizarPanPortal(p[1] || 'Pollo') || 'Pollo';
+          const p2 = normalizarPanPortal(p[2] || p1) || p1;
+          return `OP1|${p1}|${p2}`;
         }
+        if (op === 'OP3') {
+          const p1 = normalizarPanPortal(p[1] || 'Pollo') || 'Pollo';
+          return `OP3|${p1}`;
+        }
+      }
+      return 'NO';
+    }
+
+    function convertirCodigoDesayunoATextoBDRRHH(codNorm) {
+      const norm = normalizarDesayunoPlanRRHH(codNorm);
+      if (norm === 'NO') return 'NO';
+      if (norm === 'MANUAL') return 'Asignado RRHH';
+      if (norm === 'OP2') return 'OP2 (Huevos)';
+      const p = norm.split('|');
+      if (p[0] === 'OP1') return `OP1 (${p[1] || 'Pollo'}, ${p[2] || 'Queso'})`;
+      if (p[0] === 'OP3') return `OP3 (${p[1] || 'Pollo'})`;
+      return 'NO';
+    }
+
+    function normalizarAlmuerzoRRHH(val) {
+      const v = String(val || 'NO').toUpperCase().trim();
+      if (v === 'REGULAR' || v === 'SI' || v === 'SÍ') return 'REGULAR';
+      if (v === 'ALTERNATIVO' || v === 'ALTERNATIVA' || v === 'DIETA') return 'ALTERNATIVO';
+      return 'NO';
+    }
+
+    function formatearEtiquetaDesayunoReporteRRHH(resDes) {
+      const norm = normalizarDesayunoPlanRRHH(resDes);
+      if (norm === 'NO') return 'Sin reserva';
+      if (norm === 'MANUAL') return 'Asignado RRHH';
+      if (norm === 'OP2') return 'Opción 2 (3 Huevos)';
+      const p = norm.split('|');
+      if (p[0] === 'OP1') {
+        const pan1 = p[1] || 'Pollo';
+        const pan2 = p[2] || pan1;
+        if (pan1.toLowerCase() === pan2.toLowerCase()) return `Opción 1 (2 panes con ${pan1})`;
+        return `Opción 1 (${pan1} / ${pan2})`;
+      }
+      if (p[0] === 'OP3') return `Opción 3 (${p[1] || 'Pollo'} + 1 Huevo)`;
+      return norm;
+    }
+
+    function formatearDetalleDesayunoTicketRRHH(resDes) {
+      const norm = normalizarDesayunoPlanRRHH(resDes);
+      if (norm === 'NO') return '';
+      if (norm === 'MANUAL') return 'Desayuno asignado';
+      if (norm === 'OP2') return '3 Huevos';
+      const p = norm.split('|');
+      if (p[0] === 'OP1') {
+        const pan1 = p[1] || 'Pollo';
+        const pan2 = p[2] || pan1;
+        return (pan1.toLowerCase() === pan2.toLowerCase())
+          ? `2 Panes: ${pan1}`
+          : `2 Panes: ${pan1} y ${pan2}`;
+      }
+      if (p[0] === 'OP3') return `Pan con ${p[1] || 'Pollo'} + 1 Huevo`;
+      return norm;
+    }
+
+    function capitalizarBloqueRRHH(str) {
+      const s = String(str || '').trim();
+      if (!s) return '';
+      if (s === s.toUpperCase()) {
+        const conectoresMin = ['de', 'del', 'la', 'las', 'los', 'y'];
+        return s.toLowerCase().split(/\s+/).map((w, i) => {
+          if (i > 0 && conectoresMin.includes(w)) return w;
+          return w.charAt(0).toUpperCase() + w.slice(1);
+        }).join(' ');
+      }
+      return s;
+    }
+
+    function agruparBloquesNombreRRHH(texto) {
+      const conectores = ['de', 'del', 'la', 'las', 'los', 'san', 'santa', 'vda', 'vda.', 'y'];
+      const palabras = String(texto || '').trim().split(/\s+/).filter(Boolean);
+      const bloques = [];
+      let acum = [];
+      for (let i = 0; i < palabras.length; i++) {
+        const w = palabras[i];
+        const low = normalizarTextoBusqueda(w);
+        acum.push(w);
+        if (!conectores.includes(low)) {
+          bloques.push(acum.join(' '));
+          acum = [];
+        }
+      }
+      if (acum.length > 0) bloques.push(acum.join(' '));
+      return bloques;
+    }
+
+    function extraerNombreCortoRRHH(nombreCompletoStr) {
+      const limpio = String(nombreCompletoStr || '').trim();
+      if (!limpio) return 'Colaborador';
+      if (limpio.includes(',')) {
+        const partes = limpio.split(',');
+        const apBloques = agruparBloquesNombreRRHH(partes[0]);
+        const nomBloques = agruparBloquesNombreRRHH(partes.slice(1).join(' '));
+        const pNom = nomBloques.length > 0 ? nomBloques[0].split(/\s+/)[0] : extraerPrimerNombrePortal({ nombre: limpio });
+        const pAp = apBloques.length > 0 ? apBloques[0] : '';
+        return capitalizarBloqueRRHH([pNom, pAp].filter(Boolean).join(' '));
+      }
+      const bloques = agruparBloquesNombreRRHH(limpio);
+      if (bloques.length >= 3) return capitalizarBloqueRRHH(`${bloques[2].split(/\s+/)[0]} ${bloques[0]}`);
+      if (bloques.length === 2) return capitalizarBloqueRRHH(`${bloques[0]} ${bloques[1]}`);
+      return capitalizarBloqueRRHH(limpio);
+    }
+
+    function evaluarCambioManualReservaRRHH(valActual, valDefecto, tsMod, activoEnFecha) {
+      const ts = String(tsMod || 'Por defecto').trim();
+      const horaAMPM = extraerHoraAMPMDeTsRRHH(ts);
+      if (ts.includes('Retirado RRHH')) return { huboCambio: true, tipo: 'RETIRADO', etiqueta: 'Retirado RRHH', horaAMPM: horaAMPM };
+      if (ts.includes('Asignado RRHH') || valActual === 'MANUAL') return { huboCambio: true, tipo: 'ASIGNADO', etiqueta: 'Asignado RRHH', horaAMPM: horaAMPM };
+      if (!activoEnFecha) return { huboCambio: false, tipo: 'AUSENTE', etiqueta: 'Ausente', horaAMPM: '' };
+      if (valActual !== valDefecto) {
+        if (valActual === 'NO') return { huboCambio: true, tipo: 'CANCELO', etiqueta: 'Canceló', horaAMPM: horaAMPM };
+        if (valDefecto === 'NO') return { huboCambio: true, tipo: 'ACTIVO', etiqueta: 'Activó', horaAMPM: horaAMPM };
+        return { huboCambio: true, tipo: 'CAMBIO', etiqueta: 'Cambió', horaAMPM: horaAMPM };
+      }
+      return { huboCambio: false, tipo: 'DEFECTO', etiqueta: 'Por defecto', horaAMPM: '' };
+    }
+
+    function parsearDemoraASegundosRRHH(demoraStr) {
+      const s = String(demoraStr || '').trim().toLowerCase();
+      if (!s || s === '-' || s.includes('desfasado')) return null;
+      const mMin = s.match(/^(\d+)\s*m\s*(\d+)\s*s$/);
+      if (mMin) return Number(mMin[1]) * 60 + Number(mMin[2]);
+      const mSeg = s.match(/^(\d+(?:\.\d+)?)\s*s$/);
+      if (mSeg) return Number(mSeg[1]);
+      return null;
+    }
+
+    function obtenerBucket15MinRRHH(horaStr, servicio) {
+      const m = String(horaStr || '').match(/^(\d{1,2}):(\d{2})/);
+      if (!m) return null;
+      const totalMin = Number(m[1]) * 60 + Number(m[2]);
+      if (servicio === 'DESAYUNO') {
+        if (totalMin < 510) return 'Antes 08:30';
+        if (totalMin < 525) return '08:30 - 08:44';
+        if (totalMin < 540) return '08:45 - 08:59';
+        if (totalMin < 555) return '09:00 - 09:14';
+        if (totalMin < 570) return '09:15 - 09:29';
+        if (totalMin < 585) return '09:30 - 09:44';
+        if (totalMin < 600) return '09:45 - 09:59';
+        return '10:00+';
+      } else {
+        if (totalMin < 720) return 'Antes 12:00';
+        if (totalMin < 735) return '12:00 - 12:14';
+        if (totalMin < 750) return '12:15 - 12:29';
+        if (totalMin < 765) return '12:30 - 12:44';
+        if (totalMin < 780) return '12:45 - 12:59';
+        if (totalMin < 795) return '13:00 - 13:14';
+        if (totalMin < 810) return '13:15 - 13:29';
+        if (totalMin < 840) return '13:30 - 13:59';
+        return '14:00+';
+      }
+    }
+
+    function construirAsistDiaMapDesdeDocs(docs) {
+      const mapa = {};
+      docs.forEach(a => {
+        if (!a || !a.dni || !a.servicio) return;
+        const idA = String(a.id || '');
+        if (idA.includes('TEST_')) return;
+        const dni = normalizarDni(a.dni);
+        const srv = String(a.servicio).toUpperCase().trim();
+        const esSoloCes = !!a.esSoloCesion || idA.startsWith('CESION_');
+        const hora = (a.horaEscaneo && a.horaEscaneo !== '-') ? String(a.horaEscaneo).trim() : '';
+        const ord = Number(a.orden || 0);
+        if (!mapa[dni]) {
+          mapa[dni] = { des: false, horaDes: '', ordDes: 0, desSoloCesion: false, alm: false, horaAlm: '', ordAlm: 0, almSoloCesion: false };
+        }
+        if (srv === 'DESAYUNO') {
+          const yaNorm = mapa[dni].des && !mapa[dni].desSoloCesion;
+          mapa[dni].des = true;
+          if (hora) mapa[dni].horaDes = hora;
+          mapa[dni].ordDes = Math.max(mapa[dni].ordDes, ord);
+          mapa[dni].desSoloCesion = yaNorm ? false : esSoloCes;
+        } else if (srv === 'ALMUERZO') {
+          const yaNorm = mapa[dni].alm && !mapa[dni].almSoloCesion;
+          mapa[dni].alm = true;
+          if (hora) mapa[dni].horaAlm = hora;
+          mapa[dni].ordAlm = Math.max(mapa[dni].ordAlm, ord);
+          mapa[dni].almSoloCesion = yaNorm ? false : esSoloCes;
+        }
+      });
+      return mapa;
+    }
+
+    function construirListaMonitoreoYBD(colabsMap, reservasDiaMap, asistDiaMap, cesionesDiaArr, fechaObjetivo, cfgObj) {
+      const cfg = obtenerConfigDefaultsRRHH(cfgObj);
+      const hoyDate = obtenerDateLimaRRHH();
+      const hoyStr = formatearFechaISODate(hoyDate);
+      const ayerDate = new Date(hoyDate);
+      ayerDate.setDate(hoyDate.getDate() - 1);
+      const ayerStr = formatearFechaISODate(ayerDate);
+
+      const habDes = esServicioHabilitadoRRHH(fechaObjetivo, 'DESAYUNO', cfg);
+      const habAlm = esServicioHabilitadoRRHH(fechaObjetivo, 'ALMUERZO', cfg);
+
+      const cedioPorDni = {};
+      const recibioPorDni = {};
+      (cesionesDiaArr || []).forEach(ces => {
+        if (!ces || ces.estado === 'ANULADA') return;
+        const dc = normalizarDni(ces.dniCedente);
+        const dr = normalizarDni(ces.dniReceptor);
+        if (!cedioPorDni[dc]) cedioPorDni[dc] = { des: null, alm: null };
+        if (!recibioPorDni[dr]) recibioPorDni[dr] = { des: [], alm: [] };
+        if (ces.servicio === 'DESAYUNO') {
+          cedioPorDni[dc].des = ces;
+          recibioPorDni[dr].des.push(ces);
+        } else if (ces.servicio === 'ALMUERZO') {
+          cedioPorDni[dc].alm = ces;
+          recibioPorDni[dr].alm.push(ces);
+        }
+      });
+
+      const buildCesOut = (cesObj) => {
+        if (!cesObj) return null;
+        const aRec = asistDiaMap[normalizarDni(cesObj.dniReceptor)] || null;
+        const esDes = (cesObj.servicio === 'DESAYUNO');
+        return {
+          id: cesObj.id,
+          dniReceptor: normalizarDni(cesObj.dniReceptor),
+          receptorCorto: extraerNombreCortoRRHH(cesObj.nombreReceptor),
+          horaRegistro: cesObj.horaRegistro || '',
+          receptorAsistio: esDes ? !!(aRec && aRec.des) : !!(aRec && aRec.alm),
+          horaRecogido: esDes ? ((aRec && aRec.horaDes) || '') : ((aRec && aRec.horaAlm) || '')
+        };
+      };
+
+      const buildCesIn = (arr) => {
+        if (!Array.isArray(arr) || arr.length === 0) return [];
+        return arr.map(ces => ({
+          id: ces.id,
+          dniCedente: normalizarDni(ces.dniCedente),
+          cedenteCorto: extraerNombreCortoRRHH(ces.nombreCedente),
+          detalle: ces.servicio === 'DESAYUNO'
+            ? (ces.detalleOpcion || formatearDetalleDesayunoTicketRRHH(ces.codigoOpcion))
+            : 'Almuerzo',
+          horaRegistro: ces.horaRegistro || ''
+        }));
+      };
+
+      const listaBD = [];
+      const monitoreoDia = [];
+
+      Object.keys(colabsMap).forEach(dniKey => {
+        const raw = colabsMap[dniKey];
+        if (!raw) return;
+        const c = {
+          dni: normalizarDni(raw.dni || dniKey),
+          nombre: String(raw.nombre || '').trim(),
+          primerNombre: String(raw.primerNombre || '').trim() || extraerPrimerNombrePortal({ nombre: raw.nombre }),
+          desDef: normalizarDesayunoPlanRRHH(raw.desDef || 'NO'),
+          almDef: normalizarAlmuerzoRRHH(raw.almDef || 'NO'),
+          estado: String(raw.estado || 'ACTIVO').toUpperCase().trim(),
+          rol: String(raw.rol || 'Usuario').trim(),
+          tramo: String(raw.tramo || 'MAYOR_1500').toUpperCase().trim(),
+          hashClave: String(raw.hashClave || '').trim(),
+          fechaInicioEstado: String(raw.fechaInicioEstado || '').trim(),
+          fechaFinEstado: String(raw.fechaFinEstado || '').trim(),
+          versionApp: String(raw.versionApp || '').trim(),
+          ultimoAccesoISO: String(raw.ultimoAccesoISO || '').trim()
+        };
+        if (!c.dni) return;
+
+        // Auto-reactivación silenciosa si ya venció fechaFinEstado
+        if (esEstadoAusenciaRRHH(c.estado) && c.fechaFinEstado && hoyStr > c.fechaFinEstado) {
+          c.estado = 'ACTIVO';
+          c.fechaInicioEstado = '';
+          c.fechaFinEstado = '';
+          db.collection('colaboradores').doc(c.dni).set(
+            { estado: 'ACTIVO', fechaInicioEstado: '', fechaFinEstado: '' },
+            { merge: true }
+          ).catch(() => {});
+        }
+
+        const tarifas = obtenerTarifasTramoRRHH(c.tramo, cfg);
+        const estadoPortal = (c.estado === 'ACTIVO') ? 'ACTIVO' : 'AUSENTE';
+        const ultVis = c.ultimoAccesoISO ? formatearUltimoAccesoVisualRRHH(c.ultimoAccesoISO, hoyStr, ayerStr) : '';
+
+        listaBD.push({
+          dni: c.dni,
+          nombre: c.nombre,
+          primerNombre: c.primerNombre,
+          desDef: c.desDef,
+          desDefTexto: convertirCodigoDesayunoATextoBDRRHH(c.desDef),
+          almDef: c.almDef,
+          estado: estadoPortal,
+          estadoOriginal: c.estado,
+          fechaInicioEstado: c.fechaInicioEstado,
+          fechaFinEstado: c.fechaFinEstado,
+          rol: c.rol,
+          tramo: c.tramo,
+          tieneClave: (c.hashClave !== ''),
+          versionApp: c.versionApp,
+          ultimoAcceso: ultVis,
+          ultimoAccesoISO: c.ultimoAccesoISO,
+          precioDes: tarifas.desayuno,
+          precioAlm: tarifas.almuerzo
+        });
+
+        const activoEnFecha = estaColaboradorActivoEnFechaRRHH(c, fechaObjetivo);
+        const pDia = reservasDiaMap[c.dni] || null;
+        const aDia = asistDiaMap[c.dni] || { des: false, horaDes: '', ordDes: 0, desSoloCesion: false, alm: false, horaAlm: '', ordAlm: 0, almSoloCesion: false };
+        const esAsigDesDia = !!(pDia && (pDia.des === 'MANUAL' || String(pDia.tsDes || '').includes('Asignado RRHH')));
+
+        const valDes = (activoEnFecha && (habDes || esAsigDesDia)) ? ((pDia && pDia.des) ? normalizarDesayunoPlanRRHH(pDia.des) : c.desDef) : 'NO';
+        const valAlm = (activoEnFecha && habAlm) ? ((pDia && pDia.alm) ? normalizarAlmuerzoRRHH(pDia.alm) : c.almDef) : 'NO';
+        const tsDes = (pDia && pDia.tsDes) ? String(pDia.tsDes) : 'Por defecto';
+        const tsAlm = (pDia && pDia.tsAlm) ? String(pDia.tsAlm) : 'Por defecto';
+
+        const cOut = cedioPorDni[c.dni] || { des: null, alm: null };
+        const cIn = recibioPorDni[c.dni] || { des: [], alm: [] };
+        const tieneCes = !!(cOut.des || cOut.alm || cIn.des.length > 0 || cIn.alm.length > 0);
+
+        if (valDes !== 'NO' || valAlm !== 'NO' || aDia.des || aDia.alm || (pDia && (pDia.tsDes || pDia.tsAlm)) || tieneCes) {
+          const cambioDes = evaluarCambioManualReservaRRHH(valDes, c.desDef, tsDes, activoEnFecha);
+          const cambioAlm = evaluarCambioManualReservaRRHH(valAlm, c.almDef, tsAlm, activoEnFecha);
+
+          monitoreoDia.push({
+            dni: c.dni,
+            nombre: c.nombre,
+            versionApp: c.versionApp,
+            estado: activoEnFecha ? 'ACTIVO' : c.estado,
+            reservoDes: (valDes !== 'NO'),
+            codigoDes: valDes,
+            detalleDes: valDes !== 'NO' ? formatearEtiquetaDesayunoReporteRRHH(valDes) : 'No solicitado',
+            tsModDes: tsDes,
+            cambioDes: cambioDes.huboCambio ? cambioDes.etiqueta : '',
+            cambioDesTipo: cambioDes.tipo,
+            cambioDesHora: cambioDes.huboCambio ? cambioDes.horaAMPM : '',
+            consumioDes: !!aDia.des,
+            horaScanDes: aDia.horaDes || '',
+            ordScanDes: aDia.ordDes || 0,
+            soloCesionDes: !!aDia.desSoloCesion,
+            cedioDes: buildCesOut(cOut.des),
+            recibioDes: buildCesIn(cIn.des),
+            reservoAlm: (valAlm !== 'NO'),
+            detalleAlm: valAlm !== 'NO' ? (valAlm === 'ALTERNATIVO' ? 'Alternativo' : 'Regular') : 'No solicitado',
+            tsModAlm: tsAlm,
+            cambioAlm: cambioAlm.huboCambio ? cambioAlm.etiqueta : '',
+            cambioAlmTipo: cambioAlm.tipo,
+            cambioAlmHora: cambioAlm.huboCambio ? cambioAlm.horaAMPM : '',
+            consumioAlm: !!aDia.alm,
+            horaScanAlm: aDia.horaAlm || '',
+            ordScanAlm: aDia.ordAlm || 0,
+            soloCesionAlm: !!aDia.almSoloCesion,
+            cedioAlm: buildCesOut(cOut.alm),
+            recibioAlm: buildCesIn(cIn.alm)
+          });
+        }
+      });
+
+      listaBD.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+      monitoreoDia.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+      return { listaBD: listaBD, monitoreoDia: monitoreoDia };
+    }
+
+    // Listeners en tiempo real para Portal RRHH (0.3s sin polling)
+    function detenerListenersPortalFirebase() {
+      if (LIVE_FB.unsubConfig) { try { LIVE_FB.unsubConfig(); } catch (e) {} LIVE_FB.unsubConfig = null; }
+      detenerListenersMonitoreoFirebase();
+    }
+
+    function detenerListenersMonitoreoFirebase() {
+      LIVE_FB.unsubList.forEach(fn => { try { fn(); } catch (e) {} });
+      LIVE_FB.unsubList = [];
+      LIVE_FB.fechaEscuchada = '';
+    }
+
+    function programarReconstruccionLiveRRHH() {
+      if (LIVE_FB.timerRebuild) clearTimeout(LIVE_FB.timerRebuild);
+      LIVE_FB.timerRebuild = setTimeout(() => {
+        if (!STATE.admin || !LIVE_FB.fechaEscuchada) return;
+        const cfg = obtenerConfigDefaultsRRHH(LIVE_FB.configApp);
+        const pack = construirListaMonitoreoYBD(
+          LIVE_FB.colabsMap,
+          LIVE_FB.reservasDiaMap,
+          LIVE_FB.asistDiaMap,
+          LIVE_FB.cesionesDiaArr,
+          LIVE_FB.fechaEscuchada,
+          cfg
+        );
+        STATE.monitoreoDia = pack.monitoreoDia;
+        if (contarCambiosPendientes() === 0) {
+          STATE.colaboradoresBD = pack.listaBD;
+          const modColabVis = document.getElementById('mod-colaboradores').style.display !== 'none';
+          if (modColabVis) renderizarTablaColaboradores();
+        }
+        renderizarTablaMonitoreo();
+        actualizarEtiquetaSync(obtenerTimestampServidorVisualRRHH(), true);
+      }, 120);
+    }
+
+    function iniciarListenersLiveRRHH(fechaObjetivo) {
+      const chk = document.getElementById('chk-autorefresh');
+      if (!chk || !chk.checked || !STATE.admin) {
+        detenerListenersMonitoreoFirebase();
+        return;
+      }
+
+      if (!LIVE_FB.unsubConfig) {
+        LIVE_FB.unsubConfig = db.collection('config').doc('app').onSnapshot(snap => {
+          if (!snap.exists) return;
+          const cfg = obtenerConfigDefaultsRRHH(snap.data());
+          LIVE_FB.configApp = cfg;
+          STATE.avisoBanner = cfg.avisoBanner;
+          STATE.semanaMenuLunes = cfg.semanaMenuLunes;
+          STATE.menuSemanal = cfg.menuSemanal;
+          const ciclosInfo = obtenerCicloActualYAntRRHH(cfg);
+          STATE.ciclosConfig = ciclosInfo.ciclosConfig;
+          STATE.cicloActual = ciclosInfo.cicloActual;
+          STATE.cicloAnterior = ciclosInfo.cicloAnterior;
+          verificarVersionPortalRRHH(cfg.versionApp);
+          programarReconstruccionLiveRRHH();
+        }, () => {});
+      }
+
+      if (LIVE_FB.fechaEscuchada === fechaObjetivo && LIVE_FB.unsubList.length > 0) return;
+      detenerListenersMonitoreoFirebase();
+      LIVE_FB.fechaEscuchada = fechaObjetivo;
+
+      LIVE_FB.unsubList.push(
+        db.collection('colaboradores').onSnapshot(snap => {
+          const mapa = {};
+          snap.forEach(doc => { mapa[doc.id] = { dni: doc.id, ...doc.data() }; });
+          LIVE_FB.colabsMap = mapa;
+          programarReconstruccionLiveRRHH();
+        }, () => {})
+      );
+
+      LIVE_FB.unsubList.push(
+        db.collection('reservas').where('fecha', '==', fechaObjetivo).onSnapshot(snap => {
+          const mapa = {};
+          snap.forEach(doc => {
+            const d = doc.data();
+            if (d && d.dni) mapa[normalizarDni(d.dni)] = d;
+          });
+          LIVE_FB.reservasDiaMap = mapa;
+          programarReconstruccionLiveRRHH();
+        }, () => {})
+      );
+
+      LIVE_FB.unsubList.push(
+        db.collection('asistencias').where('fecha', '==', fechaObjetivo).onSnapshot(snap => {
+          const docs = [];
+          snap.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+          LIVE_FB.asistDiaMap = construirAsistDiaMapDesdeDocs(docs);
+          programarReconstruccionLiveRRHH();
+        }, () => {})
+      );
+
+      LIVE_FB.unsubList.push(
+        db.collection('cesiones').where('fecha', '==', fechaObjetivo).onSnapshot(snap => {
+          const arr = [];
+          snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+          LIVE_FB.cesionesDiaArr = arr;
+          programarReconstruccionLiveRRHH();
+        }, () => {})
+      );
+    }
+
+    async function enviarCorreoConstanciaBridge(payloadCorreo) {
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'enviarConstanciaRetiroCorreo', args: [payloadCorreo] })
+        });
+      } catch (e) {}
+    }
+
+    async function obtenerConfigAppFirestore() {
+      const snap = await db.collection('config').doc('app').get();
+      const cfg = obtenerConfigDefaultsRRHH(snap.exists ? snap.data() : {});
+      LIVE_FB.configApp = cfg;
+      verificarVersionPortalRRHH(cfg.versionApp);
+      return cfg;
+    }
+
+    async function verificarPermisoAdminFirestore(dniAdminInput) {
+      const dniAdmin = normalizarDni(dniAdminInput);
+      if (!dniAdmin) return null;
+      const snap = await db.collection('colaboradores').doc(dniAdmin).get();
+      if (!snap.exists) return null;
+      const u = { dni: dniAdmin, ...snap.data() };
+      return tienePermisoPortal(u) ? u : null;
+    }
+
+    async function llamarAPI(action, args = []) {
+      try {
+        if (action === 'sincronizarMiEstado') {
+          const dniNorm = normalizarDni(args[0]);
+          if (!dniNorm || dniNorm.length < 7) return { ok: false, msg: 'Ingresa un DNI válido de 8 dígitos.' };
+          const [cfg, colabSnap] = await Promise.all([
+            obtenerConfigAppFirestore(),
+            db.collection('colaboradores').doc(dniNorm).get()
+          ]);
+          if (!colabSnap.exists) return { ok: false, msg: `El DNI ${dniNorm} no figura en BD_COLABORADORES.` };
+          const d = colabSnap.data();
+          const u = {
+            dni: dniNorm,
+            nombre: String(d.nombre || '').trim(),
+            primerNombre: String(d.primerNombre || '').trim() || extraerPrimerNombrePortal({ nombre: d.nombre }),
+            rol: String(d.rol || 'Usuario').trim(),
+            tieneClave: !!(d.hashClave && String(d.hashClave).trim() !== ''),
+            hashClave: String(d.hashClave || '').trim()
+          };
+          return { ok: true, versionApp: cfg.versionApp, registro: { usuario: u } };
+        }
+
+        if (action === 'guardarHashClaveDirecto') {
+          const dniNorm = normalizarDni(args[0]);
+          const hashStr = String(args[1] || '').trim();
+          await db.collection('colaboradores').doc(dniNorm).set({ hashClave: hashStr }, { merge: true });
+          return { ok: true, tokenSesion: hashStr };
+        }
+
+        if (action === 'autenticarOConfigurarClave') {
+          const dniNorm = normalizarDni(args[0]);
+          const clave = String(args[1] || '');
+          const esCreacion = !!args[2];
+          const hashCalc = await calcularHashSHA256Portal(dniNorm, clave);
+          const snap = await db.collection('colaboradores').doc(dniNorm).get();
+          if (!snap.exists) return { ok: false, msg: 'DNI no encontrado.' };
+          if (!esCreacion && snap.data().hashClave && snap.data().hashClave !== hashCalc) {
+            return { ok: false, msg: 'Contraseña incorrecta.' };
+          }
+          await db.collection('colaboradores').doc(dniNorm).set({ hashClave: hashCalc }, { merge: true });
+          return { ok: true, tokenSesion: hashCalc };
+        }
+
+        if (action === 'obtenerDatosPortalRRHH') {
+          const hoyStr = obtenerFechaHoyLimaISORRHH();
+          const fechaFiltroISO = args[1];
+          const fechaObjetivo = (fechaFiltroISO && /^\d{4}-\d{2}-\d{2}$/.test(fechaFiltroISO)) ? fechaFiltroISO : hoyStr;
+
+          const [cfg, colabsSnap, resSnap, asistSnap, cesSnap] = await Promise.all([
+            obtenerConfigAppFirestore(),
+            db.collection('colaboradores').get(),
+            db.collection('reservas').where('fecha', '==', fechaObjetivo).get(),
+            db.collection('asistencias').where('fecha', '==', fechaObjetivo).get(),
+            db.collection('cesiones').where('fecha', '==', fechaObjetivo).get()
+          ]);
+
+          const colabsMap = {};
+          colabsSnap.forEach(doc => { colabsMap[doc.id] = { dni: doc.id, ...doc.data() }; });
+          const reservasDiaMap = {};
+          resSnap.forEach(doc => { const x = doc.data(); if (x && x.dni) reservasDiaMap[normalizarDni(x.dni)] = x; });
+          const asistDocs = [];
+          asistSnap.forEach(doc => asistDocs.push({ id: doc.id, ...doc.data() }));
+          const asistDiaMap = construirAsistDiaMapDesdeDocs(asistDocs);
+          const cesArr = [];
+          cesSnap.forEach(doc => cesArr.push({ id: doc.id, ...doc.data() }));
+
+          LIVE_FB.colabsMap = colabsMap;
+          LIVE_FB.reservasDiaMap = reservasDiaMap;
+          LIVE_FB.asistDiaMap = asistDiaMap;
+          LIVE_FB.cesionesDiaArr = cesArr;
+
+          const pack = construirListaMonitoreoYBD(colabsMap, reservasDiaMap, asistDiaMap, cesArr, fechaObjetivo, cfg);
+          const ciclosInfo = obtenerCicloActualYAntRRHH(cfg);
+          const fechasSemana = obtenerFechasSemanaOperativaRRHH(18.0);
+          const fechasProxApp = obtenerFechasSemanaOperativaRRHH(12.0);
+          const nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+
+          return {
+            ok: true,
+            versionApp: cfg.versionApp,
+            timestampServidor: obtenerTimestampServidorVisualRRHH(),
+            hoyStr: hoyStr,
+            horaPeru: obtenerHoraLimaActualDecimal(),
+            enHoraPico: true,
+            avisoBanner: cfg.avisoBanner,
+            semanaMenuLunes: cfg.semanaMenuLunes,
+            proximoLunesApp: fechasProxApp[0] || '',
+            ciclosConfig: ciclosInfo.ciclosConfig,
+            cicloActual: ciclosInfo.cicloActual,
+            cicloAnterior: ciclosInfo.cicloAnterior,
+            fechaConsultada: fechaObjetivo,
+            fechaConsultadaVisual: aFechaPeruCompletaRRHH(fechaObjetivo),
+            fechasSemana: fechasSemana.map((f, idx) => ({ fecha: f, etiqueta: `${nombresDias[idx]} ${aDiaNumeroRRHH(f)}` })),
+            panesCatalogo: cfg.panesDefecto,
+            colaboradoresBD: pack.listaBD,
+            monitoreoDia: pack.monitoreoDia,
+            menuSemanal: cfg.menuSemanal
+          };
+        }
+
+        if (action === 'obtenerFeedHoyRRHH') {
+          const hoyStr = obtenerFechaHoyLimaISORRHH();
+          const resFull = await llamarAPI('obtenerDatosPortalRRHH', [args[0], hoyStr]);
+          if (!resFull || !resFull.ok) return resFull;
+          return {
+            ok: true,
+            versionApp: resFull.versionApp,
+            timestampServidor: resFull.timestampServidor,
+            hoyStr: resFull.hoyStr,
+            horaPeru: resFull.horaPeru,
+            enHoraPico: true,
+            monitoreoDia: resFull.monitoreoDia
+          };
+        }
+
+        if (action === 'asignarServicioManualRRHH') {
+          const p = args[0] || {};
+          const admin = await verificarPermisoAdminFirestore(p.dniAdmin);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para asignar servicios.' };
+          const dniTarget = normalizarDni(p.dniTarget);
+          const colabSnap = await db.collection('colaboradores').doc(dniTarget).get();
+          if (!colabSnap.exists) return { ok: false, msg: `El DNI ${dniTarget} no figura en BD_COLABORADORES.` };
+
+          const hoyStr = obtenerFechaHoyLimaISORRHH();
+          const fechaObj = (p.fecha && /^\d{4}-\d{2}-\d{2}$/.test(p.fecha)) ? p.fecha : hoyStr;
+          const srv = String(p.servicio || 'ALMUERZO').toUpperCase().trim();
+          const tsAsig = `Asignado RRHH (${obtenerFechaHoraCortaLimaRRHH()})`;
+
+          const updateData = { fecha: fechaObj, dni: dniTarget };
+          if (srv === 'DESAYUNO' || srv === 'AMBOS') {
+            const opDesNorm = normalizarDesayunoPlanRRHH(p.opcionDesayuno || '');
+            updateData.des = (opDesNorm && opDesNorm !== 'NO' && opDesNorm !== 'MANUAL') ? opDesNorm : 'OP1|Pollo|Queso';
+            updateData.tsDes = tsAsig;
+          }
+          if (srv === 'ALMUERZO' || srv === 'AMBOS') {
+            const opAlm = normalizarAlmuerzoRRHH(p.opcionAlmuerzo || 'REGULAR');
+            updateData.alm = (opAlm === 'NO') ? 'REGULAR' : opAlm;
+            updateData.tsAlm = tsAsig;
+          }
+
+          await db.collection('reservas').doc(`${fechaObj}_${dniTarget}`).set(updateData, { merge: true });
+          const etiq = srv === 'AMBOS' ? 'Desayuno y Almuerzo' : (srv === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo');
+          return { ok: true, msg: `${etiq} habilitado para ${colabSnap.data().nombre}. Ya puede escanear el QR.` };
+        }
+
+        if (action === 'cederReservaRRHH') {
+          const p = args[0] || {};
+          const admin = await verificarPermisoAdminFirestore(p.dniAdmin);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para ceder reservas.' };
+          const dniCed = normalizarDni(p.dniCedente);
+          const dniRec = normalizarDni(p.dniReceptor);
+          const srv = String(p.servicio || '').toUpperCase().trim();
+          const hoyStr = obtenerFechaHoyLimaISORRHH();
+          const fechaObj = (p.fecha && /^\d{4}-\d{2}-\d{2}$/.test(p.fecha)) ? p.fecha : hoyStr;
+
+          if (!dniCed || !dniRec || dniCed === dniRec) return { ok: false, msg: 'Selecciona cedente y receptor distintos.' };
+          if (fechaObj !== hoyStr) return { ok: false, msg: 'Solo se pueden ceder reservas del día de hoy.' };
+
+          const [cfg, cedSnap, recSnap, planSnap, asistSnap, cesSnap] = await Promise.all([
+            obtenerConfigAppFirestore(),
+            db.collection('colaboradores').doc(dniCed).get(),
+            db.collection('colaboradores').doc(dniRec).get(),
+            db.collection('reservas').doc(`${hoyStr}_${dniCed}`).get(),
+            db.collection('asistencias').where('fecha', '==', hoyStr).get(),
+            db.collection('cesiones').where('fecha', '==', hoyStr).get()
+          ]);
+
+          if (!cedSnap.exists || !recSnap.exists) return { ok: false, msg: 'No se encontró al cedente o receptor.' };
+          const ced = { dni: dniCed, ...cedSnap.data() };
+          const rec = { dni: dniRec, ...recSnap.data() };
+          if (String(rec.estado || '').toUpperCase() !== 'ACTIVO' || !estaColaboradorActivoEnFechaRRHH(rec, hoyStr)) {
+            return { ok: false, msg: `${rec.nombre} no figura como ACTIVO hoy.` };
+          }
+
+          let yaCedida = false;
+          cesSnap.forEach(d => {
+            const x = d.data();
+            if (x && x.estado !== 'ANULADA' && normalizarDni(x.dniCedente) === dniCed && x.servicio === srv) yaCedida = true;
+          });
+          if (yaCedida) return { ok: false, msg: `Esta reserva de ${srv.toLowerCase()} ya fue cedida hoy.` };
+
+          let yaEscaneo = false;
+          asistSnap.forEach(d => {
+            const x = d.data();
+            const idA = String(d.id || '');
+            if (idA.includes('TEST_') || idA.startsWith('CESION_')) return;
+            if (normalizarDni(x.dni) === dniCed && String(x.servicio || '').toUpperCase() === srv) yaEscaneo = true;
+          });
+          if (yaEscaneo) return { ok: false, msg: `${ced.nombre} ya escaneó su ${srv.toLowerCase()} hoy.` };
+
+          const pDia = planSnap.exists ? planSnap.data() : null;
+          const esAsigDes = !!(pDia && (pDia.des === 'MANUAL' || String(pDia.tsDes || '').includes('Asignado RRHH')));
+          const habSrv = (srv === 'DESAYUNO')
+            ? (esServicioHabilitadoRRHH(hoyStr, 'DESAYUNO', cfg) || esAsigDes)
+            : esServicioHabilitadoRRHH(hoyStr, 'ALMUERZO', cfg);
+          const valRes = (estaColaboradorActivoEnFechaRRHH(ced, hoyStr) && habSrv)
+            ? (srv === 'DESAYUNO' ? ((pDia && pDia.des) ? normalizarDesayunoPlanRRHH(pDia.des) : normalizarDesayunoPlanRRHH(ced.desDef)) : ((pDia && pDia.alm) ? normalizarAlmuerzoRRHH(pDia.alm) : normalizarAlmuerzoRRHH(ced.almDef)))
+            : 'NO';
+
+          if (!valRes || valRes === 'NO') return { ok: false, msg: `${ced.nombre} no tiene reserva de ${srv.toLowerCase()} hoy.` };
+
+          const idCes = `CES_${Date.now()}_${dniCed.slice(-4)}`;
+          const pNow = obtenerPartesLimaRRHH();
+          const horaRegAMPM = formatearHora24aAMPMRRHH(`${String(pNow.hour).padStart(2, '0')}:${String(pNow.minute).padStart(2, '0')}`);
+
+          await db.collection('cesiones').doc(idCes).set({
+            id: idCes,
+            fecha: hoyStr,
+            servicio: srv,
+            codigoOpcion: valRes,
+            detalleOpcion: srv === 'DESAYUNO' ? formatearDetalleDesayunoTicketRRHH(valRes) : 'Almuerzo',
+            dniCedente: dniCed,
+            nombreCedente: ced.nombre,
+            dniReceptor: dniRec,
+            nombreReceptor: rec.nombre,
+            registradoPor: admin.nombre,
+            horaRegistro: horaRegAMPM,
+            estado: 'CEDIDA'
+          });
+
+          const etiq = srv === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo';
+          return { ok: true, msg: `${etiq} de ${extraerNombreCortoRRHH(ced.nombre)} cedido a ${extraerNombreCortoRRHH(rec.nombre)}.` };
+        }
+
+        if (action === 'deshacerCesionRRHH') {
+          const p = args[0] || {};
+          const admin = await verificarPermisoAdminFirestore(p.dniAdmin);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para deshacer cesiones.' };
+          const idCes = String(p.idCesion || '').trim();
+          const cesRef = db.collection('cesiones').doc(idCes);
+          const cesSnap = await cesRef.get();
+          if (!cesSnap.exists || cesSnap.data().estado === 'ANULADA') {
+            return { ok: false, msg: 'La cesión indicada ya no está activa.' };
+          }
+          const ces = cesSnap.data();
+
+          const asistSnap = await db.collection('asistencias').where('fecha', '==', ces.fecha).get();
+          let recAsistio = false;
+          asistSnap.forEach(d => {
+            if (String(d.id || '').includes('TEST_')) return;
+            const x = d.data();
+            if (normalizarDni(x.dni) === normalizarDni(ces.dniReceptor) && String(x.servicio || '').toUpperCase() === ces.servicio) {
+              recAsistio = true;
+            }
+          });
+          if (recAsistio) {
+            return { ok: false, msg: `No se puede deshacer porque ${extraerNombreCortoRRHH(ces.nombreReceptor)} ya registró su asistencia.` };
+          }
+
+          await cesRef.set({ estado: 'ANULADA', anuladoPor: admin.nombre }, { merge: true });
+          return { ok: true, msg: `Cesión anulada. La reserva regresó a ${extraerNombreCortoRRHH(ces.nombreCedente)}.` };
+        }
+
+        if (action === 'obtenerReservasRetirablesRRHH') {
+          const admin = await verificarPermisoAdminFirestore(args[0]);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para retirar reservas.' };
+          const dniTarget = normalizarDni(args[1]);
+          const hoyDate = obtenerDateLimaRRHH();
+          const ahoraMs = hoyDate.getTime();
+          const hoyISO = formatearFechaISODate(hoyDate);
+          const ayerDate = new Date(hoyDate);
+          ayerDate.setDate(hoyDate.getDate() - 1);
+          const ayerISO = formatearFechaISODate(ayerDate);
+
+          const [cfg, colabSnap, resSnap, asistSnap, cesHoySnap, cesAyerSnap] = await Promise.all([
+            obtenerConfigAppFirestore(),
+            db.collection('colaboradores').doc(dniTarget).get(),
+            db.collection('reservas').where('dni', '==', dniTarget).get(),
+            db.collection('asistencias').where('dni', '==', dniTarget).get(),
+            db.collection('cesiones').where('fecha', '==', hoyISO).get(),
+            db.collection('cesiones').where('fecha', '==', ayerISO).get()
+          ]);
+          if (!colabSnap.exists) return { ok: false, msg: `El DNI ${dniTarget} no figura en BD_COLABORADORES.` };
+          const colab = { dni: dniTarget, ...colabSnap.data() };
+
+          const planesPorFecha = {};
+          resSnap.forEach(d => { const x = d.data(); if (x && x.fecha) planesPorFecha[x.fecha] = x; });
+          const asistPorFecha = {};
+          asistSnap.forEach(d => {
+            const idA = String(d.id || '');
+            if (idA.includes('TEST_') || idA.startsWith('CESION_')) return;
+            const x = d.data();
+            if (!x || !x.fecha) return;
+            if (!asistPorFecha[x.fecha]) asistPorFecha[x.fecha] = { des: false, horaDes: '', alm: false, horaAlm: '' };
+            if (x.servicio === 'DESAYUNO') { asistPorFecha[x.fecha].des = true; asistPorFecha[x.fecha].horaDes = x.horaEscaneo || ''; }
+            if (x.servicio === 'ALMUERZO') { asistPorFecha[x.fecha].alm = true; asistPorFecha[x.fecha].horaAlm = x.horaEscaneo || ''; }
+          });
+
+          const cesMap = {};
+          [cesHoySnap, cesAyerSnap].forEach(sn => {
+            sn.forEach(d => {
+              const x = d.data();
+              if (x && x.estado !== 'ANULADA' && normalizarDni(x.dniCedente) === dniTarget) {
+                cesMap[`${x.fecha}_${x.servicio}`] = x;
+              }
+            });
+          });
+
+          const items = [];
+          [hoyISO, ayerISO].forEach(f => {
+            if (f < cfg.fechaInicioAlmuerzo) return;
+            const pPart = f.split('-');
+            const dSem = new Date(Number(pPart[0]), Number(pPart[1]) - 1, Number(pPart[2]), 12, 0, 0).getDay();
+            if (dSem === 0 || dSem === 6) return;
+
+            const activoEnDia = estaColaboradorActivoEnFechaRRHH(colab, f);
+            const pDia = planesPorFecha[f] || null;
+            const aDia = asistPorFecha[f] || { des: false, horaDes: '', alm: false, horaAlm: '' };
+            const etiqDia = (f === hoyISO) ? `Hoy (${aFechaPeruCompletaRRHH(f)})` : `Ayer (${aFechaPeruCompletaRRHH(f)})`;
+
+            const esAsigDes = !!(pDia && (pDia.des === 'MANUAL' || String(pDia.tsDes || '').includes('Asignado RRHH')));
+            const habDes = esServicioHabilitadoRRHH(f, 'DESAYUNO', cfg) || esAsigDes;
+            const valDes = (activoEnDia && habDes) ? ((pDia && pDia.des) ? normalizarDesayunoPlanRRHH(pDia.des) : normalizarDesayunoPlanRRHH(colab.desDef)) : 'NO';
+            const cerradoDes = !validarHorarioCorteRRHH(f, 'DESAYUNO', ahoraMs, cfg) || esAsigDes;
+            if (valDes !== 'NO' && cerradoDes) {
+              const cesD = cesMap[`${f}_DESAYUNO`] || null;
+              items.push({
+                fecha: f, fechaVisual: etiqDia, servicio: 'DESAYUNO',
+                detalle: formatearEtiquetaDesayunoReporteRRHH(valDes),
+                yaEscaneo: !!aDia.des,
+                horaEscaneo: aDia.horaDes ? formatearHora24aAMPMRRHH(aDia.horaDes) : '',
+                fueCedido: !!cesD,
+                cedidoA: cesD ? extraerNombreCortoRRHH(cesD.nombreReceptor) : ''
+              });
+            }
+
+            const habAlm = esServicioHabilitadoRRHH(f, 'ALMUERZO', cfg);
+            const valAlm = (activoEnDia && habAlm) ? ((pDia && pDia.alm) ? normalizarAlmuerzoRRHH(pDia.alm) : normalizarAlmuerzoRRHH(colab.almDef)) : 'NO';
+            const cerradoAlm = !validarHorarioCorteRRHH(f, 'ALMUERZO', ahoraMs, cfg);
+            if (valAlm !== 'NO' && cerradoAlm) {
+              const cesA = cesMap[`${f}_ALMUERZO`] || null;
+              items.push({
+                fecha: f, fechaVisual: etiqDia, servicio: 'ALMUERZO',
+                detalle: valAlm === 'ALTERNATIVO' ? 'Alternativo' : 'Regular',
+                yaEscaneo: !!aDia.alm,
+                horaEscaneo: aDia.horaAlm ? formatearHora24aAMPMRRHH(aDia.horaAlm) : '',
+                fueCedido: !!cesA,
+                cedidoA: cesA ? extraerNombreCortoRRHH(cesA.nombreReceptor) : ''
+              });
+            }
+          });
+
+          return { ok: true, colaborador: { dni: colab.dni, nombre: colab.nombre }, items: items };
+        }
+
+        if (action === 'retirarReservaRRHH') {
+          const p = args[0] || {};
+          const admin = await verificarPermisoAdminFirestore(p.dniAdmin);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para retirar reservas.' };
+          const dniTarget = normalizarDni(p.dniTarget);
+          const fechaObj = String(p.fecha || '').trim();
+          const srv = String(p.servicio || '').toUpperCase().trim();
+          const motivo = String(p.motivo || '').trim();
+          if (motivo.length < 3) return { ok: false, msg: 'Ingresa el motivo del retiro de reserva.' };
+
+          const hoyDate = obtenerDateLimaRRHH();
+          const hoyISO = formatearFechaISODate(hoyDate);
+          const ayerDate = new Date(hoyDate);
+          ayerDate.setDate(hoyDate.getDate() - 1);
+          const ayerISO = formatearFechaISODate(ayerDate);
+          if (fechaObj !== hoyISO && fechaObj !== ayerISO) {
+            return { ok: false, msg: 'Solo se pueden retirar reservas bloqueadas de hoy o de ayer.' };
+          }
+
+          const [colabSnap, planSnap, asistSnap, cesSnap] = await Promise.all([
+            db.collection('colaboradores').doc(dniTarget).get(),
+            db.collection('reservas').doc(`${fechaObj}_${dniTarget}`).get(),
+            db.collection('asistencias').where('fecha', '==', fechaObj).get(),
+            db.collection('cesiones').where('fecha', '==', fechaObj).get()
+          ]);
+          if (!colabSnap.exists) return { ok: false, msg: 'Colaborador no encontrado.' };
+          const colab = { dni: dniTarget, ...colabSnap.data() };
+
+          let yaCedida = null;
+          cesSnap.forEach(d => {
+            const x = d.data();
+            if (x && x.estado !== 'ANULADA' && normalizarDni(x.dniCedente) === dniTarget && x.servicio === srv) yaCedida = x;
+          });
+          if (yaCedida) {
+            return { ok: false, msg: `Esta reserva fue cedida a ${extraerNombreCortoRRHH(yaCedida.nombreReceptor)}. Deshaz primero la cesión.` };
+          }
+
+          let yaEscaneo = false;
+          asistSnap.forEach(d => {
+            const idA = String(d.id || '');
+            if (idA.includes('TEST_') || idA.startsWith('CESION_')) return;
+            const x = d.data();
+            if (normalizarDni(x.dni) === dniTarget && String(x.servicio || '').toUpperCase() === srv) yaEscaneo = true;
+          });
+          if (yaEscaneo) return { ok: false, msg: 'No se puede retirar esta reserva porque el colaborador ya registró su asistencia con QR.' };
+
+          const pDia = planSnap.exists ? planSnap.data() : null;
+          const valAnt = (srv === 'DESAYUNO')
+            ? ((pDia && pDia.des) ? normalizarDesayunoPlanRRHH(pDia.des) : normalizarDesayunoPlanRRHH(colab.desDef))
+            : ((pDia && pDia.alm) ? normalizarAlmuerzoRRHH(pDia.alm) : normalizarAlmuerzoRRHH(colab.almDef));
+          if (!valAnt || valAnt === 'NO') return { ok: false, msg: 'Esta reserva ya se encuentra cancelada o retirada.' };
+
+          const detalleAnt = (srv === 'DESAYUNO')
+            ? formatearEtiquetaDesayunoReporteRRHH(valAnt)
+            : (valAnt === 'ALTERNATIVO' ? 'Alternativo' : 'Regular');
+          const tsRetiro = `Retirado RRHH (${obtenerFechaHoraCortaLimaRRHH()})`;
+
+          const updateObj = { fecha: fechaObj, dni: dniTarget };
+          if (srv === 'DESAYUNO') { updateObj.des = 'NO'; updateObj.tsDes = tsRetiro; }
+          else { updateObj.alm = 'NO'; updateObj.tsAlm = tsRetiro; }
+          await db.collection('reservas').doc(`${fechaObj}_${dniTarget}`).set(updateObj, { merge: true });
+
+          // Enviar constancia automática por correo a través de Google Workspace (sin bloquear al usuario)
+          enviarCorreoConstanciaBridge({
+            dniAdmin: admin.dni,
+            nombreAdmin: admin.nombre,
+            dniTarget: colab.dni,
+            nombreTarget: colab.nombre,
+            fecha: fechaObj,
+            servicio: srv,
+            detalleAnterior: detalleAnt,
+            motivo: motivo
+          });
+
+          return {
+            ok: true,
+            msg: `Reserva de ${srv === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo'} (${aFechaPeruCompletaRRHH(fechaObj)}) retirada para ${colab.nombre}. Constancia enviada por correo.`
+          };
+        }
+
+        if (action === 'actualizarColaboradoresMasivoRRHH') {
+          const admin = await verificarPermisoAdminFirestore(args[0]);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para guardar cambios.' };
+          const listaCambios = Array.isArray(args[1]) ? args[1] : [];
+          if (listaCambios.length === 0) return { ok: false, msg: 'No hay cambios para guardar.' };
+
+          const cfg = await obtenerConfigAppFirestore();
+          const batch = db.batch();
+          const estadosAct = {};
+
+          listaCambios.forEach(item => {
+            const dni = normalizarDni(item.dni);
+            if (!dni) return;
+            const desNorm = normalizarDesayunoPlanRRHH(item.desDefCodigo || 'NO');
+            const almNorm = normalizarAlmuerzoRRHH(item.almDef || 'NO');
+            const estadoNuevo = String(item.estado || 'ACTIVO').toUpperCase().trim();
+            let fIni = '', fFin = '';
+            if (esEstadoAusenciaRRHH(estadoNuevo)) {
+              fIni = String(item.fechaInicioEstado || '').trim();
+              fFin = String(item.fechaFinEstado || '').trim();
+              if (fIni && fFin && fIni > fFin) { const t = fIni; fIni = fFin; fFin = t; }
+            }
+            const ref = db.collection('colaboradores').doc(dni);
+            batch.set(ref, {
+              desDef: desNorm,
+              desDefTexto: convertirCodigoDesayunoATextoBDRRHH(desNorm),
+              almDef: almNorm,
+              estado: estadoNuevo,
+              fechaInicioEstado: fIni,
+              fechaFinEstado: fFin
+            }, { merge: true });
+            estadosAct[dni] = { desNorm: desNorm, almNorm: almNorm, estado: estadoNuevo, fechaInicioEstado: fIni, fechaFinEstado: fFin };
+          });
+
+          // Propagar cambios a reservas personalizadas abiertas de la semana operativa
+          const fechasSem = obtenerFechasSemanaOperativaRRHH(18.0);
+          const tsCorto = obtenerFechaHoraCortaLimaRRHH() + ' (RRHH)';
+          const resSnaps = await Promise.all(
+            fechasSem.map(f => db.collection('reservas').where('fecha', '==', f).get())
+          );
+
+          resSnaps.forEach((snap, idxF) => {
+            const fPlan = fechasSem[idxF];
+            snap.forEach(doc => {
+              const d = doc.data();
+              const dPlan = normalizarDni(d && d.dni);
+              if (dPlan && estadosAct[dPlan]) {
+                const info = estadosAct[dPlan];
+                const actEnDia = estaColaboradorActivoEnFechaRRHH(info, fPlan);
+                const patch = {};
+                if (validarHorarioCorteRRHH(fPlan, 'DESAYUNO', null, cfg)) {
+                  patch.des = actEnDia ? info.desNorm : 'NO';
+                  patch.tsDes = tsCorto;
+                }
+                if (validarHorarioCorteRRHH(fPlan, 'ALMUERZO', null, cfg)) {
+                  patch.alm = actEnDia ? info.almNorm : 'NO';
+                  patch.tsAlm = tsCorto;
+                }
+                if (Object.keys(patch).length > 0) {
+                  batch.set(doc.ref, patch, { merge: true });
+                }
+              }
+            });
+          });
+
+          await batch.commit();
+          return { ok: true, actualizados: listaCambios.length, msg: `Se guardaron ${listaCambios.length} registro(s) correctamente.` };
+        }
+
+        if (action === 'crearColaboradorRRHH') {
+          const admin = await verificarPermisoAdminFirestore(args[0]);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para crear colaboradores.' };
+          const p = args[1] || {};
+          const dniNuevo = normalizarDni(p.dni);
+          const nombreNuevo = String(p.nombre || '').trim();
+          if (!dniNuevo || dniNuevo.length !== 8) return { ok: false, msg: 'Ingresa un DNI válido de 8 dígitos.' };
+          if (nombreNuevo.length < 4) return { ok: false, msg: 'Ingresa los apellidos y nombres del colaborador.' };
+
+          const ref = db.collection('colaboradores').doc(dniNuevo);
+          const existe = await ref.get();
+          if (existe.exists) return { ok: false, msg: `El DNI ${dniNuevo} ya está registrado (${existe.data().nombre}).` };
+
+          const desNorm = normalizarDesayunoPlanRRHH(p.desDefCodigo || 'NO');
+          const almNorm = normalizarAlmuerzoRRHH(p.almDef || 'REGULAR');
+          const estadoNuevo = (String(p.estado || 'ACTIVO').toUpperCase().trim() === 'AUSENTE') ? 'AUSENTE' : 'ACTIVO';
+          const tramoNuevo = String(p.tramo || 'MAYOR_1500').toUpperCase().includes('MENOR') ? 'MENOR_1500' : 'MAYOR_1500';
+          const rolNuevo = String(p.rol || 'Usuario').trim() || 'Usuario';
+
+          await ref.set({
+            dni: dniNuevo,
+            nombre: nombreNuevo,
+            primerNombre: extraerPrimerNombrePortal({ nombre: nombreNuevo }),
+            desDef: desNorm,
+            desDefTexto: convertirCodigoDesayunoATextoBDRRHH(desNorm),
+            almDef: almNorm,
+            estado: estadoNuevo,
+            rol: rolNuevo,
+            tramo: tramoNuevo,
+            hashClave: '',
+            fechaInicioEstado: '',
+            fechaFinEstado: '',
+            versionApp: '',
+            ultimoAccesoISO: ''
+          });
+          return { ok: true, msg: `Colaborador ${nombreNuevo} (${dniNuevo}) agregado correctamente.` };
+        }
+
+        if (action === 'resetearClaveColaboradorRRHH') {
+          const admin = await verificarPermisoAdminFirestore(args[0]);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para restablecer contraseñas.' };
+          const dniObj = normalizarDni(args[1]);
+          if (!dniObj || dniObj.length < 7) return { ok: false, msg: 'Ingresa un DNI válido de 8 dígitos.' };
+          const ref = db.collection('colaboradores').doc(dniObj);
+          const snap = await ref.get();
+          if (!snap.exists) return { ok: false, msg: `El DNI ${dniObj} no existe en BD_COLABORADORES.` };
+          await ref.set({ hashClave: '' }, { merge: true });
+          return { ok: true, dniReseteado: dniObj, msg: `Contraseña de ${snap.data().nombre} (${dniObj}) restablecida.` };
+        }
+
+        if (action === 'guardarMenuSemanalDesdeRRHH') {
+          const admin = await verificarPermisoAdminFirestore(args[0]);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para actualizar el menú.' };
+          const listaMenu = args[1];
+          const avisoBanner = args[2];
+          const confirmarParaSemanaProxima = args[3];
+          if (!Array.isArray(listaMenu) || listaMenu.length < 5) return { ok: false, msg: 'Datos de menú incompletos.' };
+
+          const cfg = await obtenerConfigAppFirestore();
+          const prevMenu = Array.isArray(cfg.menuSemanal) ? cfg.menuSemanal : [];
+          const nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+          const nuevoMenu = [];
+          let cambioAlmuerzo = false;
+
+          for (let i = 0; i < 5; i++) {
+            const it = listaMenu[i] || {};
+            const nDes = String(it.desayuno || '').trim();
+            const nAlm = String(it.almuerzo || '').trim();
+            const prevAlm = (prevMenu[i] && prevMenu[i].almuerzo) ? String(prevMenu[i].almuerzo).trim() : '';
+            if (nAlm !== prevAlm) cambioAlmuerzo = true;
+            nuevoMenu.push({ dia: nombresDias[i], desayuno: nDes, almuerzo: nAlm });
+          }
+
+          const hoy = obtenerDateLimaRRHH();
+          const diaSem = hoy.getDay();
+          const horaDec = hoy.getHours() + (hoy.getMinutes() / 60);
+          const hoyStr = formatearFechaISODate(hoy);
+          const debeActualizarSemana = (confirmarParaSemanaProxima === true) || cambioAlmuerzo;
+
+          const patchCfg = { menuSemanal: nuevoMenu };
+          if (avisoBanner !== undefined && avisoBanner !== null) {
+            patchCfg.avisoBanner = String(avisoBanner).trim();
+          }
+
+          // Blindaje viernes antes de las 6 PM: respalda el menú de hoy en menuHoyTemp
+          if (debeActualizarSemana && diaSem === 5 && horaDec < 18.0) {
+            const yaGuardado = !!(cfg.menuHoyTemp && cfg.menuHoyTemp.fecha === hoyStr);
+            if (!yaGuardado && prevMenu[4]) {
+              patchCfg.menuHoyTemp = {
+                fecha: hoyStr,
+                desayuno: String(prevMenu[4].desayuno || '').trim(),
+                almuerzo: String(prevMenu[4].almuerzo || '').trim()
+              };
+            }
+          }
+
+          if (debeActualizarSemana) {
+            patchCfg.semanaMenuLunes = obtenerFechasSemanaOperativaRRHH(12.0)[0];
+          }
+
+          await db.collection('config').doc('app').set(patchCfg, { merge: true });
+          return { ok: true, msg: 'Menú semanal y aviso actualizados.' };
+        }
+
+        if (action === 'guardarCiclosCorteRRHH') {
+          const admin = await verificarPermisoAdminFirestore(args[0]);
+          if (!admin) return { ok: false, msg: 'No tienes permisos para modificar los ciclos de corte.' };
+          const listaCiclos = args[1];
+          if (!Array.isArray(listaCiclos) || listaCiclos.length === 0) {
+            return { ok: false, msg: 'Debe existir al menos un ciclo configurado.' };
+          }
+          const limpios = [];
+          for (let i = 0; i < listaCiclos.length; i++) {
+            const it = listaCiclos[i] || {};
+            const ini = String(it.inicio || '').trim();
+            const fin = String(it.fin || '').trim();
+            const nom = String(it.nombre || '').trim() || `Ciclo ${formatearFechaCortaDDMM(ini)} al ${formatearFechaCortaDDMM(fin)}`;
+            if (!ini || !fin) return { ok: false, msg: `Completa las fechas de inicio y fin para "${nom}".` };
+            if (ini > fin) return { ok: false, msg: `La fecha inicio no puede ser mayor a la fecha fin en "${nom}".` };
+            limpios.push({ id: String(it.id || fin.slice(0, 7)), nombre: nom, inicio: ini, fin: fin });
+          }
+          limpios.sort((a, b) => a.inicio.localeCompare(b.inicio));
+          for (let i = 1; i < limpios.length; i++) {
+            if (limpios[i].inicio <= limpios[i - 1].fin) {
+              return { ok: false, msg: `Las fechas de "${limpios[i - 1].nombre}" y "${limpios[i].nombre}" se superponen.` };
+            }
+          }
+          await db.collection('config').doc('app').set({ ciclosConfig: limpios }, { merge: true });
+          return { ok: true, ciclos: limpios, msg: 'Ciclos de corte actualizados correctamente.' };
+        }
+
+        if (action === 'obtenerReportePlanillaRRHH') {
+          const fechaInicio = String(args[0] || '').trim();
+          const fechaFin = String(args[1] || '').trim();
+          const ahoraDate = obtenerDateLimaRRHH();
+          const ahoraMs = ahoraDate.getTime();
+          const hoyStr = formatearFechaISODate(ahoraDate);
+
+          const [cfg, colabsSnap, resSnap, asistSnap] = await Promise.all([
+            obtenerConfigAppFirestore(),
+            db.collection('colaboradores').get(),
+            db.collection('reservas').where('fecha', '>=', fechaInicio).where('fecha', '<=', fechaFin).get(),
+            db.collection('asistencias').where('fecha', '>=', fechaInicio).where('fecha', '<=', fechaFin).get()
+          ]);
+
+          const mapaPlanTotal = {};
+          resSnap.forEach(d => {
+            const x = d.data();
+            if (!x || !x.dni || !x.fecha) return;
+            const dni = normalizarDni(x.dni);
+            if (!mapaPlanTotal[dni]) mapaPlanTotal[dni] = {};
+            mapaPlanTotal[dni][x.fecha] = x;
+          });
+
+          const mapaAsist = {};
+          const nombresExtra = {};
+          asistSnap.forEach(d => {
+            const idA = String(d.id || '');
+            if (idA.includes('TEST_') || idA.startsWith('CESION_')) return;
+            const x = d.data();
+            if (!x || x.esSoloCesion || !x.dni || !x.fecha || !x.servicio) return;
+            const dni = normalizarDni(x.dni);
+            const srv = String(x.servicio).toUpperCase().trim();
+            mapaAsist[`${dni}_${x.fecha}_${srv}`] = true;
+            if (x.nombre && !nombresExtra[dni]) nombresExtra[dni] = x.nombre;
+          });
+
+          const pI = fechaInicio.split('-');
+          const pF = fechaFin.split('-');
+          const dCur = new Date(Number(pI[0]), Number(pI[1]) - 1, Number(pI[2]), 12, 0, 0);
+          const dFin = new Date(Number(pF[0]), Number(pF[1]) - 1, Number(pF[2]), 12, 0, 0);
+          const diasHabiles = [];
+          while (dCur <= dFin) {
+            const ds = dCur.getDay();
+            if (ds >= 1 && ds <= 5) diasHabiles.push(formatearFechaISODate(dCur));
+            dCur.setDate(dCur.getDate() + 1);
+          }
+
+          const listaColabs = [];
+          const dnisEnBD = {};
+          colabsSnap.forEach(doc => {
+            const raw = doc.data();
+            const dni = normalizarDni(raw.dni || doc.id);
+            if (!dni) return;
+            dnisEnBD[dni] = true;
+            listaColabs.push({
+              dni: dni,
+              nombre: String(raw.nombre || '').trim(),
+              desDef: normalizarDesayunoPlanRRHH(raw.desDef || 'NO'),
+              almDef: normalizarAlmuerzoRRHH(raw.almDef || 'NO'),
+              estado: String(raw.estado || 'ACTIVO').toUpperCase().trim(),
+              fechaInicioEstado: String(raw.fechaInicioEstado || '').trim(),
+              fechaFinEstado: String(raw.fechaFinEstado || '').trim(),
+              tarifas: obtenerTarifasTramoRRHH(raw.tramo, cfg)
+            });
+          });
+
+          Object.keys(mapaAsist).forEach(k => {
+            const dniK = k.split('_')[0];
+            if (dniK && !dnisEnBD[dniK]) {
+              dnisEnBD[dniK] = true;
+              listaColabs.push({
+                dni: dniK, nombre: nombresExtra[dniK] || ('DNI ' + dniK),
+                desDef: 'NO', almDef: 'NO', estado: 'CESADO',
+                fechaInicioEstado: '', fechaFinEstado: '',
+                tarifas: obtenerTarifasTramoRRHH('MAYOR_1500', cfg)
+              });
+            }
+          });
+
+          listaColabs.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+          const mapaResumen = {};
+          listaColabs.forEach(c => {
+            mapaResumen[c.dni] = { dni: c.dni, nombre: c.nombre, cantDesayunos: 0, costoDesayunos: 0, cantAlmuerzos: 0, costoAlmuerzos: 0, costoTotal: 0 };
+          });
+
+          const detalleFilas = [];
+          diasHabiles.forEach(fecha => {
+            const fechaFormateada = aFechaPeruCompletaRRHH(fecha);
+            const habDes = esServicioHabilitadoRRHH(fecha, 'DESAYUNO', cfg);
+            const habAlm = esServicioHabilitadoRRHH(fecha, 'ALMUERZO', cfg);
+            const pasoCorteDes = !validarHorarioCorteRRHH(fecha, 'DESAYUNO', ahoraMs, cfg);
+            const pasoCorteAlm = !validarHorarioCorteRRHH(fecha, 'ALMUERZO', ahoraMs, cfg);
+
+            listaColabs.forEach(c => {
+              const actEnFecha = estaColaboradorActivoEnFechaRRHH(c, fecha);
+              const plan = (mapaPlanTotal[c.dni] && mapaPlanTotal[c.dni][fecha]) ? mapaPlanTotal[c.dni][fecha] : null;
+              const esAsigDes = !!(plan && (plan.des === 'MANUAL' || String(plan.tsDes || '').includes('Asignado RRHH')));
+              const resDes = (actEnFecha && (habDes || esAsigDes)) ? ((plan && plan.des) ? normalizarDesayunoPlanRRHH(plan.des) : c.desDef) : 'NO';
+              const resAlm = (actEnFecha && habAlm) ? ((plan && plan.alm) ? normalizarAlmuerzoRRHH(plan.alm) : c.almDef) : 'NO';
+
+              const pidioDes = (resDes !== 'NO');
+              const asistDes = mapaAsist[`${c.dni}_${fecha}_DESAYUNO`] ? 'SI' : 'NO';
+              if (asistDes === 'SI' || (pidioDes && (pasoCorteDes || esAsigDes))) {
+                const opLabel = pidioDes ? formatearEtiquetaDesayunoReporteRRHH(resDes) : (habDes ? 'Sin reserva' : 'Registro manual RRHH');
+                detalleFilas.push({
+                  fecha: fechaFormateada, fechaISO: fecha, dni: c.dni, nombre: c.nombre,
+                  servicio: pidioDes ? `Desayuno ${opLabel}` : (habDes ? 'Desayuno' : 'Desayuno (Manual RRHH)'),
+                  opcion: opLabel, codigoRaw: resDes,
+                  reservo: pidioDes ? 'SÍ' : (habDes ? 'NO' : 'SÍ'),
+                  consumio: asistDes,
+                  corteCerrado: (pasoCorteDes || esAsigDes || !habDes),
+                  montoCobrar: c.tarifas.desayuno
+                });
+                mapaResumen[c.dni].cantDesayunos++;
+                mapaResumen[c.dni].costoDesayunos += c.tarifas.desayuno;
+                mapaResumen[c.dni].costoTotal += c.tarifas.desayuno;
+              }
+
+              const pidioAlm = (resAlm !== 'NO');
+              const asistAlm = mapaAsist[`${c.dni}_${fecha}_ALMUERZO`] ? 'SI' : 'NO';
+              if (asistAlm === 'SI' || (pidioAlm && pasoCorteAlm)) {
+                const opAlmLabel = pidioAlm ? resAlm : (habAlm ? 'REGULAR' : 'MANUAL');
+                const opAlmVis = opAlmLabel === 'ALTERNATIVO' ? 'Alternativo' : (opAlmLabel === 'MANUAL' ? '(Manual RRHH)' : 'Regular');
+                detalleFilas.push({
+                  fecha: fechaFormateada, fechaISO: fecha, dni: c.dni, nombre: c.nombre,
+                  servicio: `Almuerzo ${opAlmVis}`,
+                  opcion: opAlmLabel,
+                  reservo: pidioAlm ? 'SÍ' : (habAlm ? 'NO' : 'SÍ'),
+                  consumio: asistAlm,
+                  corteCerrado: (pasoCorteAlm || !habAlm),
+                  montoCobrar: c.tarifas.almuerzo
+                });
+                mapaResumen[c.dni].cantAlmuerzos++;
+                mapaResumen[c.dni].costoAlmuerzos += c.tarifas.almuerzo;
+                mapaResumen[c.dni].costoTotal += c.tarifas.almuerzo;
+              }
+            });
+          });
+
+          const resumenOrdenado = Object.values(mapaResumen)
+            .filter(r => r.costoTotal > 0)
+            .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+
+          return {
+            ok: true,
+            hoyStr: hoyStr,
+            horaPeru: obtenerHoraLimaActualDecimal(),
+            resumen: resumenOrdenado,
+            filas: detalleFilas
+          };
+        }
+
+        if (action === 'obtenerAnalisisRRHH') {
+          const hoyReal = obtenerDateLimaRRHH();
+          const hoyMs = hoyReal.getTime();
+          const hoyStr = formatearFechaISODate(hoyReal);
+          const cfg = await obtenerConfigAppFirestore();
+          const cicloInfo = obtenerCicloActualYAntRRHH(cfg);
+
+          const fIniStr = String(args[1] || '').trim() || cicloInfo.cicloActual.inicio;
+          const fFinRaw = String(args[2] || '').trim() || hoyStr;
+          const topeFin = (fFinRaw > hoyStr) ? hoyStr : fFinRaw;
+
+          const [colabsSnap, resSnap, asistSnap, cesSnap] = await Promise.all([
+            db.collection('colaboradores').get(),
+            db.collection('reservas').where('fecha', '>=', fIniStr).where('fecha', '<=', topeFin).get(),
+            db.collection('asistencias').where('fecha', '>=', fIniStr).where('fecha', '<=', topeFin).get(),
+            db.collection('cesiones').where('fecha', '>=', fIniStr).where('fecha', '<=', topeFin).get()
+          ]);
+
+          const mapaPlanTotal = {};
+          resSnap.forEach(d => {
+            const x = d.data();
+            if (!x || !x.dni || !x.fecha) return;
+            const dni = normalizarDni(x.dni);
+            if (!mapaPlanTotal[dni]) mapaPlanTotal[dni] = {};
+            mapaPlanTotal[dni][x.fecha] = x;
+          });
+
+          const cesionesPorFecha = {};
+          cesSnap.forEach(d => {
+            const x = d.data();
+            if (!x || x.estado === 'ANULADA' || !x.fecha) return;
+            if (!cesionesPorFecha[x.fecha]) cesionesPorFecha[x.fecha] = [];
+            cesionesPorFecha[x.fecha].push(x);
+          });
+
+          const hace7 = new Date(hoyReal);
+          hace7.setDate(hoyReal.getDate() - 7);
+          const hace7Str = formatearFechaISODate(hace7);
+
+          const todosColabs = [];
+          const listaActivos = [];
+          let conClave = 0, ingresaron7d = 0;
+          const nuncaIngresaron = [];
+          const versionesCount = {};
+
+          colabsSnap.forEach(doc => {
+            const raw = doc.data();
+            const c = {
+              dni: normalizarDni(raw.dni || doc.id),
+              nombre: String(raw.nombre || '').trim(),
+              desDef: normalizarDesayunoPlanRRHH(raw.desDef || 'NO'),
+              almDef: normalizarAlmuerzoRRHH(raw.almDef || 'NO'),
+              estado: String(raw.estado || 'ACTIVO').toUpperCase().trim(),
+              fechaInicioEstado: String(raw.fechaInicioEstado || '').trim(),
+              fechaFinEstado: String(raw.fechaFinEstado || '').trim(),
+              hashClave: String(raw.hashClave || '').trim(),
+              versionApp: String(raw.versionApp || '').trim(),
+              ultimoAccesoISO: String(raw.ultimoAccesoISO || '').trim()
+            };
+            if (!c.dni) return;
+            todosColabs.push(c);
+            if (c.estado === 'ACTIVO') {
+              listaActivos.push(c);
+              if (c.hashClave) conClave++;
+              const vTag = c.versionApp ? (/^\d/.test(c.versionApp) ? 'v' + c.versionApp : c.versionApp) : 'Sin ingreso';
+              versionesCount[vTag] = (versionesCount[vTag] || 0) + 1;
+              if (c.ultimoAccesoISO && c.ultimoAccesoISO.slice(0, 10) >= hace7Str) ingresaron7d++;
+              if (!c.hashClave && !c.ultimoAccesoISO) nuncaIngresaron.push({ dni: c.dni, nombre: c.nombre });
+            }
+          });
+          nuncaIngresaron.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+
+          const mapaAsistRango = {};
+          const bucketsDes = { 'Antes 08:30': 0, '08:30 - 08:44': 0, '08:45 - 08:59': 0, '09:00 - 09:14': 0, '09:15 - 09:29': 0, '09:30 - 09:44': 0, '09:45 - 09:59': 0, '10:00+': 0 };
+          const bucketsAlm = { 'Antes 12:00': 0, '12:00 - 12:14': 0, '12:15 - 12:29': 0, '12:30 - 12:44': 0, '12:45 - 12:59': 0, '13:00 - 13:14': 0, '13:15 - 13:29': 0, '13:30 - 13:59': 0, '14:00+': 0 };
+          let sumaDemora = 0, countDemora = 0;
+
+          asistSnap.forEach(doc => {
+            const idA = String(doc.id || '');
+            if (idA.includes('TEST_')) return;
+            const x = doc.data();
+            if (!x || !x.dni || !x.fecha || !x.servicio) return;
+            const dA = normalizarDni(x.dni);
+            const srvA = String(x.servicio).toUpperCase().trim();
+            const esHist = !!x.esHistorico || idA.startsWith('HIST_');
+            const esCes = !!x.esSoloCesion || idA.startsWith('CESION_');
+            if (!esCes) mapaAsistRango[`${dA}_${x.fecha}_${srvA}`] = { esHist: esHist };
+            if (!esHist) {
+              const b = obtenerBucket15MinRRHH(x.horaEscaneo, srvA);
+              if (b) {
+                if (srvA === 'DESAYUNO' && bucketsDes[b] !== undefined) bucketsDes[b]++;
+                if (srvA === 'ALMUERZO' && bucketsAlm[b] !== undefined) bucketsAlm[b]++;
+              }
+              const demSeg = parsearDemoraASegundosRRHH(x.demoraRegistro);
+              if (demSeg !== null) { sumaDemora += demSeg; countDemora++; }
+            }
+          });
+
+          const pI = fIniStr.split('-');
+          const pF = topeFin.split('-');
+          const dCur = new Date(Number(pI[0]), Number(pI[1]) - 1, Number(pI[2]), 12, 0, 0);
+          const dFin = new Date(Number(pF[0]), Number(pF[1]) - 1, Number(pF[2]), 12, 0, 0);
+          const diasHabiles = [];
+          while (dCur <= dFin) {
+            const ds = dCur.getDay();
+            if (ds >= 1 && ds <= 5) diasHabiles.push({ fecha: formatearFechaISODate(dCur), diaSem: ds });
+            dCur.setDate(dCur.getDate() + 1);
+          }
+
+          const conteoPanes = {};
+          const opsDes = { op1: 0, op2: 0, op3: 0, manual: 0 };
+          const almTipos = { regular: 0, alternativo: 0 };
+          const porDia = {
+            1: { dia: 'Lunes', totDes: 0, totAlm: 0, diasDes: 0, diasAlm: 0 },
+            2: { dia: 'Martes', totDes: 0, totAlm: 0, diasDes: 0, diasAlm: 0 },
+            3: { dia: 'Miércoles', totDes: 0, totAlm: 0, diasDes: 0, diasAlm: 0 },
+            4: { dia: 'Jueves', totDes: 0, totAlm: 0, diasDes: 0, diasAlm: 0 },
+            5: { dia: 'Viernes', totDes: 0, totAlm: 0, diasDes: 0, diasAlm: 0 }
+          };
+
+          let totDesRes = 0, totDesQR = 0, totDesAppRes = 0, totDesAppQR = 0;
+          let totAlmRes = 0, totAlmQR = 0, totAlmAppRes = 0, totAlmAppQR = 0;
+          let totCesiones = 0, totRetiros = 0;
+          const cambiosCont = { activo: 0, cancelo: 0, cambio: 0, asignado: 0, retirado: 0 };
+
+          const statsColab = {};
+          todosColabs.forEach(c => {
+            statsColab[c.dni] = {
+              dni: c.dni, nombre: c.nombre, activo: (c.estado === 'ACTIVO'),
+              consumosDes: 0, consumosAlm: 0, resAppDes: 0, faltasDes: 0, resAppAlm: 0, faltasAlm: 0
+            };
+          });
+
+          const horaHoyDec = hoyReal.getHours() + (hoyReal.getMinutes() / 60);
+          diasHabiles.forEach(dObj => {
+            const f = dObj.fecha;
+            const ds = dObj.diaSem;
+            const habDes = esServicioHabilitadoRRHH(f, 'DESAYUNO', cfg);
+            const habAlm = esServicioHabilitadoRRHH(f, 'ALMUERZO', cfg);
+            const pasoCorteDes = !validarHorarioCorteRRHH(f, 'DESAYUNO', hoyMs, cfg);
+            const pasoCorteAlm = !validarHorarioCorteRRHH(f, 'ALMUERZO', hoyMs, cfg);
+            const yaTerminoDes = (f < hoyStr) || (f === hoyStr && horaHoyDec >= 12.0);
+            const yaTerminoAlm = (f < hoyStr) || (f === hoyStr && horaHoyDec >= 18.0);
+
+            const cesF = cesionesPorFecha[f] || [];
+            totCesiones += cesF.length;
+            const cedDesSet = {}, cedAlmSet = {};
+            cesF.forEach(ces => {
+              if (ces.servicio === 'DESAYUNO') cedDesSet[normalizarDni(ces.dniCedente)] = true;
+              if (ces.servicio === 'ALMUERZO') cedAlmSet[normalizarDni(ces.dniCedente)] = true;
+            });
+
+            let huboDesDia = false, huboAlmDia = false;
+            todosColabs.forEach(c => {
+              if (c.estado === 'CESADO') return;
+              const actEnFecha = estaColaboradorActivoEnFechaRRHH(c, f);
+              const plan = (mapaPlanTotal[c.dni] && mapaPlanTotal[c.dni][f]) ? mapaPlanTotal[c.dni][f] : null;
+              const st = statsColab[c.dni];
+
+              const esAsigDes = !!(plan && (plan.des === 'MANUAL' || String(plan.tsDes || '').includes('Asignado RRHH')));
+              const asistDesObj = mapaAsistRango[`${c.dni}_${f}_DESAYUNO`] || null;
+              const resDes = (actEnFecha && (habDes || esAsigDes)) ? ((plan && plan.des) ? normalizarDesayunoPlanRRHH(plan.des) : c.desDef) : 'NO';
+              const cuentaDes = !!asistDesObj || ((habDes || esAsigDes) && resDes !== 'NO' && (pasoCorteDes || esAsigDes));
+
+              if (cuentaDes) {
+                totDesRes++; porDia[ds].totDes++; huboDesDia = true; st.consumosDes++;
+                if (asistDesObj) totDesQR++;
+                if (habDes && resDes !== 'NO') {
+                  if (resDes.startsWith('OP1')) {
+                    opsDes.op1++;
+                    const pp = resDes.split('|');
+                    const p1 = normalizarPanPortal(pp[1] || 'Pollo') || 'Pollo';
+                    const p2 = normalizarPanPortal(pp[2] || p1) || p1;
+                    conteoPanes[p1] = (conteoPanes[p1] || 0) + 1;
+                    conteoPanes[p2] = (conteoPanes[p2] || 0) + 1;
+                  } else if (resDes.startsWith('OP2')) {
+                    opsDes.op2++;
+                  } else if (resDes.startsWith('OP3')) {
+                    opsDes.op3++;
+                    const pp = resDes.split('|');
+                    const p1 = normalizarPanPortal(pp[1] || 'Pollo') || 'Pollo';
+                    conteoPanes[p1] = (conteoPanes[p1] || 0) + 1;
+                  } else {
+                    opsDes.manual++;
+                  }
+                  if (yaTerminoDes && !cedDesSet[c.dni]) {
+                    totDesAppRes++; st.resAppDes++;
+                    if (asistDesObj) totDesAppQR++; else st.faltasDes++;
+                  }
+                }
+              }
+
+              if (habDes && plan && plan.tsDes) {
+                const evD = evaluarCambioManualReservaRRHH(resDes, c.desDef, plan.tsDes, actEnFecha);
+                if (evD.tipo === 'ACTIVO') cambiosCont.activo++;
+                else if (evD.tipo === 'CANCELO') cambiosCont.cancelo++;
+                else if (evD.tipo === 'CAMBIO') cambiosCont.cambio++;
+                else if (evD.tipo === 'ASIGNADO') cambiosCont.asignado++;
+                else if (evD.tipo === 'RETIRADO') { cambiosCont.retirado++; totRetiros++; }
+              }
+
+              const asistAlmObj = mapaAsistRango[`${c.dni}_${f}_ALMUERZO`] || null;
+              const resAlm = (actEnFecha && habAlm) ? ((plan && plan.alm) ? normalizarAlmuerzoRRHH(plan.alm) : c.almDef) : 'NO';
+              const cuentaAlm = !!asistAlmObj || (habAlm && resAlm !== 'NO' && pasoCorteAlm);
+
+              if (cuentaAlm) {
+                totAlmRes++; porDia[ds].totAlm++; huboAlmDia = true; st.consumosAlm++;
+                if (asistAlmObj) totAlmQR++;
+                if (habAlm && resAlm !== 'NO') {
+                  if (resAlm === 'ALTERNATIVO') almTipos.alternativo++; else almTipos.regular++;
+                  if (yaTerminoAlm && !cedAlmSet[c.dni]) {
+                    totAlmAppRes++; st.resAppAlm++;
+                    if (asistAlmObj) totAlmAppQR++; else st.faltasAlm++;
+                  }
+                }
+              }
+
+              if (habAlm && plan && plan.tsAlm) {
+                const evA = evaluarCambioManualReservaRRHH(resAlm, c.almDef, plan.tsAlm, actEnFecha);
+                if (evA.tipo === 'ACTIVO') cambiosCont.activo++;
+                else if (evA.tipo === 'CANCELO') cambiosCont.cancelo++;
+                else if (evA.tipo === 'CAMBIO') cambiosCont.cambio++;
+                else if (evA.tipo === 'ASIGNADO') cambiosCont.asignado++;
+                else if (evA.tipo === 'RETIRADO') { cambiosCont.retirado++; totRetiros++; }
+              }
+            });
+
+            if (huboDesDia) porDia[ds].diasDes++;
+            if (huboAlmDia) porDia[ds].diasAlm++;
+          });
+
+          const panesRanking = Object.keys(conteoPanes).map(k => ({ pan: k, cantidad: conteoPanes[k] })).sort((a, b) => b.cantidad - a.cantidad);
+          const noShows = Object.values(statsColab)
+            .filter(s => (s.faltasDes + s.faltasAlm) > 0)
+            .map(s => ({ dni: s.dni, nombre: s.nombre, faltasDes: s.faltasDes, faltasAlm: s.faltasAlm, totalFaltas: s.faltasDes + s.faltasAlm, totalResApp: s.resAppDes + s.resAppAlm }))
+            .sort((a, b) => b.totalFaltas - a.totalFaltas || a.nombre.localeCompare(b.nombre, 'es'))
+            .slice(0, 20);
+          const sinUso = Object.values(statsColab)
+            .filter(s => s.activo && (s.consumosDes + s.consumosAlm) === 0)
+            .map(s => ({ dni: s.dni, nombre: s.nombre }))
+            .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+          const conUso = Math.max(0, listaActivos.length - sinUso.length);
+          const porDiaArr = [1, 2, 3, 4, 5].map(ds => ({
+            dia: porDia[ds].dia, totDes: porDia[ds].totDes, totAlm: porDia[ds].totAlm,
+            promDes: porDia[ds].diasDes > 0 ? Math.round((porDia[ds].totDes / porDia[ds].diasDes) * 10) / 10 : 0,
+            promAlm: porDia[ds].diasAlm > 0 ? Math.round((porDia[ds].totAlm / porDia[ds].diasAlm) * 10) / 10 : 0
+          }));
+
+          return {
+            ok: true,
+            rango: { inicio: fIniStr, fin: topeFin, diasHabiles: diasHabiles.length },
+            adopcion: {
+              totalActivos: listaActivos.length, conClave: conClave,
+              porcConClave: listaActivos.length > 0 ? Math.round((conClave / listaActivos.length) * 100) : 0,
+              ingresaron7d: ingresaron7d,
+              porcIngresaron7d: listaActivos.length > 0 ? Math.round((ingresaron7d / listaActivos.length) * 100) : 0,
+              conUso: conUso, sinUsoCount: sinUso.length,
+              porcUsabilidad: listaActivos.length > 0 ? Math.round((conUso / listaActivos.length) * 100) : 0,
+              nuncaIngresaron: nuncaIngresaron, sinUsoLista: sinUso,
+              versionesDist: Object.keys(versionesCount).map(v => ({ version: v, cantidad: versionesCount[v] })).sort((a, b) => b.cantidad - a.cantidad)
+            },
+            resumen: {
+              totDesRes: totDesRes, totDesQR: totDesQR,
+              tasaQrDes: totDesAppRes > 0 ? Math.round((totDesAppQR / totDesAppRes) * 100) : 0,
+              totDesAppRes: totDesAppRes, totDesAppQR: totDesAppQR,
+              totAlmRes: totAlmRes, totAlmQR: totAlmQR,
+              tasaQrAlm: totAlmAppRes > 0 ? Math.round((totAlmAppQR / totAlmAppRes) * 100) : 0,
+              totAlmAppRes: totAlmAppRes, totAlmAppQR: totAlmAppQR,
+              totCesiones: totCesiones, totRetiros: totRetiros,
+              demoraPromedioSeg: countDemora > 0 ? Number((sumaDemora / countDemora).toFixed(1)) : null,
+              muestrasDemora: countDemora
+            },
+            preferenciasDesayuno: { opciones: opsDes, panesRanking: panesRanking },
+            porDiaSemana: porDiaArr, almuerzoTipos: almTipos, noShows: noShows,
+            horasPico: {
+              desayuno: Object.keys(bucketsDes).map(k => ({ franja: k, cantidad: bucketsDes[k] })),
+              almuerzo: Object.keys(bucketsAlm).map(k => ({ franja: k, cantidad: bucketsAlm[k] }))
+            },
+            cambiosManuales: cambiosCont
+          };
+        }
+
+        return { ok: false, msg: 'Acción no reconocida: ' + action };
+      } catch (err) {
+        console.error('Error Firebase RRHH:', action, err);
+        return { ok: false, msg: err && err.message ? err.message : 'Error de conexión con Firebase.' };
       }
     }
 
@@ -1777,9 +3611,6 @@
       const hashCliente = await calcularHashSHA256Portal(dni, clave);
 
       if (hashCliente && (esCreacion || hashGuardadoRAM)) {
-        const transcurrido = performance.now() - tInicio;
-        const esperaRestante = Math.max(0, 1000 - transcurrido);
-        await new Promise(r => setTimeout(r, esperaRestante));
 
         btn.disabled = false;
         btn.textContent = 'Ingresar';
@@ -1814,9 +3645,6 @@
 
       try {
         const res = await llamarAPI('autenticarOConfigurarClave', [dni, clave, esCreacion]);
-        const transcurrido = performance.now() - tInicio;
-        const esperaRestante = Math.max(0, 1000 - transcurrido);
-        await new Promise(r => setTimeout(r, esperaRestante));
 
         btn.disabled = false;
         btn.textContent = 'Ingresar';
@@ -1844,6 +3672,7 @@
       STATE.cambiosPendientes = {};
       actualizarBotonGuardarGeneral();
       if (STATE.timerAutoRefresh) clearTimeout(STATE.timerAutoRefresh);
+      detenerListenersPortalFirebase();
       localStorage.removeItem('SBS_COMEDOR_RRHH_SESSION');
       STATE.admin = null;
       document.getElementById('view-portal').style.display = 'none';
@@ -1861,12 +3690,14 @@
       cargarDatosPortal(true);
     }
 
-    function actualizarEtiquetaSync(tsServidor, enPico) {
+    function actualizarEtiquetaSync(tsServidor, enVivoLive) {
       const lbl = document.getElementById('lbl-ultima-sync');
       const dot = document.getElementById('dot-sync-live');
       const hora = (tsServidor && tsServidor.includes(' ')) ? tsServidor.split(' ')[1] : tsServidor;
-      if (enPico) {
-        if (lbl) lbl.textContent = `En vivo (5s) • ${hora || ''}`;
+      const chk = document.getElementById('chk-autorefresh');
+      const activoLive = enVivoLive && chk && chk.checked;
+      if (activoLive) {
+        if (lbl) lbl.textContent = `En vivo (Firebase) • ${hora || ''}`;
         if (dot) dot.classList.add('pico');
       } else {
         if (lbl) lbl.textContent = `Sincronizado ${hora || ''}`;
@@ -1877,25 +3708,15 @@
     function programarSiguienteRefresh(ejecutarPronto = false) {
       if (STATE.timerAutoRefresh) clearTimeout(STATE.timerAutoRefresh);
       const chk = document.getElementById('chk-autorefresh');
-      if (!chk || !chk.checked || !STATE.admin) return;
-
-      const enPico = esHoraPicoLocal();
-      STATE.enHoraPico = enPico;
-      const delayMs = ejecutarPronto ? 1200 : (enPico ? 5000 : 30000);
-
-      STATE.timerAutoRefresh = setTimeout(async () => {
-        const modMonitoreoVisible = document.getElementById('mod-monitoreo').style.display !== 'none';
-        if (document.visibilityState === 'visible' && modMonitoreoVisible && contarCambiosPendientes() === 0 && !hayModalAbiertoRRHH()) {
-          const selFecha = document.getElementById('sel-fecha-monitoreo');
-          const fechaActualSel = selFecha && selFecha.value ? selFecha.value : STATE.hoyStr;
-          if (fechaActualSel === STATE.hoyStr) {
-            await cargarFeedRapidoHoy();
-          } else {
-            await cargarDatosPortal(false);
-          }
-        }
-        programarSiguienteRefresh(false);
-      }, delayMs);
+      if (!chk || !chk.checked || !STATE.admin) {
+        detenerListenersMonitoreoFirebase();
+        actualizarEtiquetaSync(obtenerTimestampServidorVisualRRHH(), false);
+        return;
+      }
+      const selFecha = document.getElementById('sel-fecha-monitoreo');
+      const fechaObj = (selFecha && selFecha.value) ? selFecha.value : (STATE.fechaSeleccionada || obtenerFechaHoyLimaISORRHH());
+      iniciarListenersLiveRRHH(fechaObj);
+      actualizarEtiquetaSync(obtenerTimestampServidorVisualRRHH(), true);
     }
 
     async function cargarFeedRapidoHoy() {

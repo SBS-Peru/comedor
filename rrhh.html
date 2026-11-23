@@ -397,6 +397,7 @@
     .seg-bar.seg-des { width: 274px; }
     .seg-bar.seg-alm { width: 204px; }
     .seg-bar.seg-est { width: 168px; }
+    .seg-bar.seg-tramo { width: 152px; }
 
     .seg-btn {
       flex: 1;
@@ -1008,13 +1009,14 @@
                 <th style="width:118px;">Último acceso</th>
                 <th style="width:94px;">DNI</th>
                 <th>Apellidos y Nombres</th>
+                <th style="width:166px;">Planilla</th>
                 <th style="width:292px;">Desayuno</th>
                 <th style="width:222px;">Almuerzo</th>
                 <th style="width:186px;">Estado</th>
               </tr>
             </thead>
             <tbody id="tbody-colaboradores">
-              <tr><td colspan="7" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
+              <tr><td colspan="8" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1318,8 +1320,8 @@
         <div class="field-group">
           <label for="new-colab-tramo">Tramo salarial:</label>
           <select id="new-colab-tramo" class="form-select">
-            <option value="MAYOR_1500" selected>&gt;= S/ 1,500</option>
-            <option value="MENOR_1500">&lt; S/ 1,500</option>
+            <option value="MAYOR_1500" selected>&gt;= S/ 1,501 (Tarifa mayor)</option>
+            <option value="MENOR_1500">&lt;= S/ 1,500 (Tarifa menor)</option>
           </select>
         </div>
       </div>
@@ -2925,8 +2927,10 @@
               fFin = String(item.fechaFinEstado || '').trim();
               if (fIni && fFin && fIni > fFin) { const t = fIni; fIni = fFin; fFin = t; }
             }
+            const tramoNuevo = String(item.tramo || 'MAYOR_1500').toUpperCase().includes('MENOR') ? 'MENOR_1500' : 'MAYOR_1500';
             const ref = db.collection('colaboradores').doc(dni);
             batch.set(ref, {
+              tramo: tramoNuevo,
               desDef: desNorm,
               desDefTexto: convertirCodigoDesayunoATextoBDRRHH(desNorm),
               almDef: almNorm,
@@ -4622,11 +4626,13 @@
     }
 
     function obtenerEstadoActualColaborador(c) {
+      const tramoOrig = String(c.tramo || 'MAYOR_1500').toUpperCase().includes('MENOR') ? 'MENOR_1500' : 'MAYOR_1500';
       if (STATE.cambiosPendientes[c.dni]) {
         const mod = STATE.cambiosPendientes[c.dni];
         return {
           dni: c.dni,
           nombre: c.nombre,
+          tramo: mod.tramo || tramoOrig,
           desDef: mod.desDefCodigo,
           almDef: mod.almDef,
           estado: mod.estado,
@@ -4639,6 +4645,7 @@
       return {
         dni: c.dni,
         nombre: c.nombre,
+        tramo: tramoOrig,
         desDef: c.desDef,
         almDef: c.almDef,
         estado: (c.estado === 'ACTIVO') ? 'ACTIVO' : 'AUSENTE',
@@ -4647,6 +4654,16 @@
         versionApp: c.versionApp || '',
         esModificado: false
       };
+    }
+
+    function construirHtmlBarraTramo(c) {
+      const esMenor = (c.tramo === 'MENOR_1500');
+      return `
+        <div class="seg-bar seg-tramo">
+          <button type="button" class="seg-btn ${esMenor ? 'sel-reg' : ''}" onclick="seleccionarTramoBar('${c.dni}', 'MENOR_1500')" title="Sueldo <= S/ 1,500 (Des S/ 1.00 | Alm S/ 2.50)">&lt;= 1,500</button>
+          <button type="button" class="seg-btn ${!esMenor ? 'sel-alt' : ''}" onclick="seleccionarTramoBar('${c.dni}', 'MAYOR_1500')" title="Sueldo >= S/ 1,501 (Des S/ 1.50 | Alm S/ 3.50)">&gt;= 1,501</button>
+        </div>
+      `;
     }
 
     function construirHtmlBarraDesayuno(c) {
@@ -4761,7 +4778,7 @@
 
       const tbody = document.getElementById('tbody-colaboradores');
       if (filtrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin colaboradores para mostrar.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--muted);">Sin colaboradores para mostrar.</td></tr>';
         return;
       }
 
@@ -4775,6 +4792,7 @@
             <td><span class="${ultCls}">${ultTxt}</span></td>
             <td class="dni-cell">${c.dni}</td>
             <td class="name-cell">${c.nombre}</td>
+            <td id="cell-tramo-${c.dni}">${construirHtmlBarraTramo(c)}</td>
             <td id="cell-des-${c.dni}">${construirHtmlBarraDesayuno(c)}</td>
             <td id="cell-alm-${c.dni}">${construirHtmlBarraAlmuerzo(c)}</td>
             <td id="cell-est-${c.dni}">${construirHtmlBarraEstado(c)}</td>
@@ -4790,6 +4808,7 @@
       const actual = obtenerEstadoActualColaborador(orig);
       const next = {
         dni: dni,
+        tramo: (nuevoParcial.tramo !== undefined) ? nuevoParcial.tramo : actual.tramo,
         desDefCodigo: (nuevoParcial.desDefCodigo !== undefined) ? nuevoParcial.desDefCodigo : actual.desDef,
         almDef: (nuevoParcial.almDef !== undefined) ? nuevoParcial.almDef : actual.almDef,
         estado: (nuevoParcial.estado !== undefined) ? nuevoParcial.estado : actual.estado,
@@ -4798,7 +4817,9 @@
       };
 
       const estOrigNorm = (orig.estado === 'ACTIVO') ? 'ACTIVO' : 'AUSENTE';
+      const tramoOrigNorm = String(orig.tramo || 'MAYOR_1500').toUpperCase().includes('MENOR') ? 'MENOR_1500' : 'MAYOR_1500';
       const igualAOriginal =
+        tramoOrigNorm === next.tramo &&
         orig.desDef === next.desDefCodigo &&
         orig.almDef === next.almDef &&
         estOrigNorm === next.estado &&
@@ -4815,14 +4836,20 @@
       const cNuevo = obtenerEstadoActualColaborador(orig);
       const tr = document.getElementById('row-colab-' + dni);
       if (tr) tr.classList.toggle('row-modified', cNuevo.esModificado);
+      const cTramo = document.getElementById('cell-tramo-' + dni);
       const cDes = document.getElementById('cell-des-' + dni);
       const cAlm = document.getElementById('cell-alm-' + dni);
       const cEst = document.getElementById('cell-est-' + dni);
+      if (cTramo) cTramo.innerHTML = construirHtmlBarraTramo(cNuevo);
       if (cDes) cDes.innerHTML = construirHtmlBarraDesayuno(cNuevo);
       if (cAlm) cAlm.innerHTML = construirHtmlBarraAlmuerzo(cNuevo);
       if (cEst) cEst.innerHTML = construirHtmlBarraEstado(cNuevo);
 
       actualizarBotonGuardarGeneral();
+    }
+
+    function seleccionarTramoBar(dni, nuevoTramo) {
+      aplicarCambioColaborador(dni, { tramo: nuevoTramo });
     }
 
     function abrirSelectorDesayunoBar(dni) {

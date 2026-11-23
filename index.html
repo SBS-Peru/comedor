@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=26">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=26">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=26">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=27">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=27">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=27">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -133,10 +133,16 @@
     }
     #update-notas-texto {
       margin: 16px 0 0;
-      font-size: 13.5px;
-      color: var(--muted);
-      line-height: 1.5;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.55;
       font-weight: 500;
+      text-align: left;
+      white-space: pre-line;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 14px;
     }
 
     /* ETIQUETA DISCRETA DE VERSIÓN */
@@ -225,16 +231,51 @@
     .top-bar h2 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.2; }
     .top-bar p { margin: 7px 0 0; font-size: 13.8px; color: rgba(255,255,255,0.92); line-height: 1.35; }
     .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 8px 16px; border-radius: 9px; font-size: 13.8px; cursor: pointer; font-weight: 600; flex-shrink: 0; }
-    .header-kpi-strip {
-      margin-top: 15px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 11px; padding: 10px 13px; display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; font-weight: 600;
+    .header-kpi-full-btn {
+      margin-top: 14px;
+      width: 100%;
+      background: #10b981;
+      color: #ffffff;
+      border: none;
+      border-radius: 11px;
+      padding: 11px 14px;
+      font-size: 14.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.14s, opacity 0.14s;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+      text-align: left;
     }
-    .header-kpi-total {
-      background: #10b981; color: #ffffff; font-weight: 800; padding: 6px 12px; border-radius: 8px;
-      font-size: 14.5px; border: none; cursor: pointer; transition: 0.15s;
-      display: inline-flex; align-items: center; gap: 6px;
+    .header-kpi-full-btn:active { transform: scale(0.985); opacity: 0.92; }
+    .header-kpi-chevron {
+      font-size: 19px;
+      font-weight: 800;
+      line-height: 1;
+      opacity: 0.88;
+      flex-shrink: 0;
     }
-    .header-kpi-total:active { transform: scale(0.97); opacity: 0.9; }
+    .menu-por-confirmar {
+      color: var(--muted);
+      font-style: italic;
+      font-weight: 500;
+    }
+    #aviso-cola-qr-pendiente {
+      display: none;
+      margin-top: 8px;
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      color: #92400e;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.35;
+    }
 
     .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .tab { flex: 1; text-align: center; padding: 12px 6px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
@@ -332,34 +373,40 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* ESTILOS DETALLE DE CONSUMIDOS */
+    /* ESTILOS COMPACTOS DETALLE DE CONSUMIDOS (OPTIMIZADO PARA 20+ DÍAS) */
     .consumo-table-wrap {
-      flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px;
+      flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 11px; margin-bottom: 10px;
+      max-height: 52vh;
     }
     .consumo-table {
-      width: 100%; border-collapse: collapse; font-size: 14px;
+      width: 100%; border-collapse: collapse; font-size: 13px;
     }
     .consumo-table th {
-      background: #f8fafc; color: #334155; font-weight: 800; padding: 10px 8px;
+      background: #f8fafc; color: #334155; font-weight: 800; padding: 7px 8px;
       border-bottom: 1px solid var(--border); position: sticky; top: 0; text-align: center;
+      font-size: 12px; letter-spacing: 0.2px;
     }
-    .consumo-table th:first-child { text-align: left; padding-left: 14px; }
+    .consumo-table th:first-child { text-align: left; padding-left: 12px; }
     .consumo-table td {
-      padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: center; vertical-align: middle;
+      padding: 5.5px 8px; border-bottom: 1px solid #f1f5f9; text-align: center; vertical-align: middle;
     }
-    .consumo-table td:first-child { text-align: left; padding-left: 14px; font-weight: 700; color: #1e293b; }
+    .consumo-table tbody tr:nth-child(even) td { background: #fafbfc; }
+    .consumo-table td:first-child {
+      text-align: left; padding-left: 12px; font-weight: 700; color: #1e293b;
+      font-variant-numeric: tabular-nums;
+    }
     .chk-ok {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: #dcfce7; color: #047857; font-size: 15px; font-weight: 900;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #dcfce7; color: #047857; font-size: 12px; font-weight: 900;
     }
     .chk-no {
-      color: #cbd5e1; font-size: 18px; font-weight: 800;
+      color: #cbd5e1; font-size: 14px; font-weight: 700;
     }
     .consumo-summary-foot {
-      background: #f8fafc; border: 1px solid var(--border); border-radius: 11px;
-      padding: 11px 14px; display: flex; justify-content: space-between; align-items: center;
-      font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 12px;
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+      padding: 9px 13px; display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px;
     }
     .consumo-summary-foot .tot-pill {
       color: #047857; font-size: 15px; font-weight: 800;
@@ -639,8 +686,7 @@
       .top-bar { padding: 18px 16px 14px; }
       .top-bar h2 { font-size: 19.5px; }
       .top-bar p { margin-top: 6px; font-size: 13px; }
-      .header-kpi-strip { margin-top: 13px; padding: 9px 11px; font-size: 13.8px; }
-      .header-kpi-total { font-size: 13.8px; padding: 5px 10px; }
+      .header-kpi-full-btn { margin-top: 12px; padding: 10px 12px; font-size: 13.6px; }
       .tab { padding: 10px 4px; font-size: 14px; }
       .scroll-area { padding: 10px 12px; }
       .day-card { padding: 12px; margin-bottom: 10px; }
@@ -689,7 +735,7 @@
   <div class="app-shell" id="app-shell">
     <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
     <div id="view-splash">
-      <img src="./Logo.jpg?v=26" alt="Comedor SBS" class="splash-logo">
+      <img src="./Logo.jpg?v=27" alt="Comedor SBS" class="splash-logo">
       <div class="splash-spinner" id="splash-spinner"></div>
       <p id="splash-texto">Actualizando...</p>
       <div id="splash-retry-wrap">
@@ -702,7 +748,7 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=26" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=27" alt="SBS">
       </div>
 
       <div id="step-dni" style="width:100%;">
@@ -724,7 +770,7 @@
       <button class="btn btn-outline" id="btn-instalar-pwa" style="display:none; margin-top:12px; padding:12px; font-size:14px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="instalarPWAAndroid()">
         Instalar App en pantalla de inicio
       </button>
-      <div class="login-ver-tag" id="lbl-ver-login">v26</div>
+      <div class="login-ver-tag" id="lbl-ver-login">v27</div>
     </div>
 
     <!-- 2. PANTALLA PRINCIPAL -->
@@ -743,15 +789,13 @@
           </div>
           <div class="top-bar-right">
             <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
-            <span class="topbar-ver-tag" id="lbl-ver-main">v26</span>
+            <span class="topbar-ver-tag" id="lbl-ver-main">v27</span>
           </div>
         </div>
-        <div class="header-kpi-strip">
-          <span id="hdr-resumen-cant">0 Des. | 0 Alm.</span>
-          <button class="header-kpi-total" id="hdr-resumen-total" onclick="abrirModalDetalleConsumido()" title="Ver detalle de consumos del ciclo">
-            Consumido: S/ 0.00
-          </button>
-        </div>
+        <button class="header-kpi-full-btn" id="hdr-resumen-total" onclick="abrirModalDetalleConsumido()" title="Ver detalle de consumos del ciclo">
+          <span id="hdr-resumen-texto">Consumido: S/ 0.00</span>
+          <span class="header-kpi-chevron">›</span>
+        </button>
       </div>
 
       <div class="tabs">
@@ -788,6 +832,7 @@
             </div>
             <div class="compact-ticket-hint" id="compact-ticket-nota">Toca para ampliar</div>
           </div>
+          <div id="aviso-cola-qr-pendiente">Sincronizando tu registro con el comedor...</div>
 
           <!-- VENTANA EMERGENTE CÁMARA QR -->
           <div id="modal-qr-overlay">
@@ -983,7 +1028,7 @@
   <!-- PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA -->
   <div id="modal-update-obligatorio">
     <div class="update-card">
-      <img src="./Logo.jpg?v=26" alt="Comedor SBS" class="update-logo">
+      <img src="./Logo.jpg?v=27" alt="Comedor SBS" class="update-logo">
       <h3>Actualiza Comedor SBS</h3>
       <button class="btn btn-primary" id="btn-actualizar-sbs" onclick="aplicarActualizacionApp()">
         Actualizar Comedor SBS
@@ -997,10 +1042,10 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
 
-    const VERSION_LOCAL_APP = "26";
+    const VERSION_LOCAL_APP = "27";
 
     // Texto de mejora por defecto (puedes editarlo aquí o desde Código.gs -> CONFIG.NOTAS_VERSION)
-    const TEXTO_MEJORA_DEFECTO = "Ahora tu pase verde de comida queda guardado en pantalla aunque cierres la App.";
+    const TEXTO_MEJORA_DEFECTO = "• Ya puedes programar tu siguiente semana desde el viernes al mediodía.\n• Se cargó tu historial de consumos del ciclo actual desde el 27/10.";
 
     // Variables de arranque operativo (evitan sumar consumos anteriores al inicio del servicio)
     const FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
@@ -1123,6 +1168,7 @@
       tokenActivo: '',
       usuario: null,
       diasSemana: [],
+      diaHoy: null,
       hoyFisico: null,
       dnisActivosMuestra: [],
       html5QrCode: null,
@@ -1400,39 +1446,45 @@
       return reg;
     }
 
+    function aplicarCandadosADia(d, hoyRef, hf) {
+      if (!d) return;
+      d.esHoyFisico = (d.fecha === hoyRef);
+      const esAsigDes = (d.esHoyFisico && hf && hf.asignadoDes) || (d.desayuno === 'MANUAL');
+
+      if (d.fecha < FECHA_ARRANQUE_DESAYUNO && !esAsigDes) {
+        d.desayuno = 'NO';
+        d.puedeEditarDesayuno = false;
+        d.habDes = false;
+      } else {
+        d.habDes = true;
+        if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
+          d.puedeEditarDesayuno = false;
+        }
+      }
+
+      if (d.fecha < FECHA_ARRANQUE_ALMUERZO) {
+        d.almuerzo = 'NO';
+        d.puedeEditarAlmuerzo = false;
+        d.habAlm = false;
+      } else {
+        d.habAlm = true;
+        if (d.puedeEditarAlmuerzo && !esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
+          d.puedeEditarAlmuerzo = false;
+        }
+      }
+    }
+
     function aplicarCandadosRegistro(reg) {
       if (!reg || !reg.usuario || !Array.isArray(reg.diasSemana)) return reg;
       const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
 
-      reg.diasSemana.forEach(d => {
-        d.esHoyFisico = (d.fecha === hoyRef);
-
-        if (d.fecha < FECHA_ARRANQUE_DESAYUNO && d.desayuno !== 'MANUAL') {
-          d.desayuno = 'NO';
-          d.puedeEditarDesayuno = false;
-          d.habDes = false;
-        } else {
-          d.habDes = true;
-          if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
-            d.puedeEditarDesayuno = false;
-          }
-        }
-
-        if (d.fecha < FECHA_ARRANQUE_ALMUERZO) {
-          d.almuerzo = 'NO';
-          d.puedeEditarAlmuerzo = false;
-          d.habAlm = false;
-        } else {
-          d.habAlm = true;
-          if (d.puedeEditarAlmuerzo && !esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
-            d.puedeEditarAlmuerzo = false;
-          }
-        }
-      });
+      reg.diasSemana.forEach(d => aplicarCandadosADia(d, hoyRef, reg.hoyFisico));
+      if (reg.diaHoy) aplicarCandadosADia(reg.diaHoy, hoyRef, reg.hoyFisico);
 
       if (reg.hoyFisico) {
-        const dHoy = reg.diasSemana.find(x => x.fecha === reg.hoyFisico.fecha);
-        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_DESAYUNO && (!dHoy || dHoy.desayuno !== 'MANUAL')) {
+        const dHoy = reg.diaHoy || reg.diasSemana.find(x => x.fecha === reg.hoyFisico.fecha);
+        const esAsig = !!(reg.hoyFisico.asignadoDes || (dHoy && dHoy.desayuno === 'MANUAL'));
+        if (reg.hoyFisico.fecha < FECHA_ARRANQUE_DESAYUNO && !esAsig) {
           reg.hoyFisico.reservoDes = false;
         }
         if (reg.hoyFisico.fecha < FECHA_ARRANQUE_ALMUERZO) {
@@ -1543,6 +1595,7 @@
           STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
           STATE.usuario = sesionGuardada.snapshot.usuario;
           STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
+          STATE.diaHoy = sesionGuardada.snapshot.diaHoy || null;
           STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
           ocultarSplash();
           renderizarVistaPrincipal();
@@ -1615,6 +1668,7 @@
                 modoPruebaQR: STATE.modoPruebaQR,
                 usuario: STATE.usuario,
                 diasSemana: STATE.diasSemana,
+                diaHoy: STATE.diaHoy,
                 hoyFisico: STATE.hoyFisico
               }
             }, 650);
@@ -1630,7 +1684,8 @@
     setInterval(() => {
       if (STATE.usuario && document.visibilityState === 'visible') {
         let huboCambioCorte = false;
-        STATE.diasSemana.forEach(d => {
+        const evaluar = (d) => {
+          if (!d) return;
           if (d.puedeEditarDesayuno && !esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
             d.puedeEditarDesayuno = false;
             huboCambioCorte = true;
@@ -1639,7 +1694,21 @@
             d.puedeEditarAlmuerzo = false;
             huboCambioCorte = true;
           }
-        });
+        };
+        STATE.diasSemana.forEach(evaluar);
+        if (STATE.diaHoy) evaluar(STATE.diaHoy);
+
+        // Si cruzó las 6:01 PM, actualiza automáticamente la etiqueta y tarjeta de la pestaña principal
+        const dPrinActual = obtenerDiaPrincipalActual();
+        const tabBtn = document.getElementById('tab-btn-principal');
+        if (dPrinActual && tabBtn) {
+          const etiqEsperada = `${dPrinActual.diaTexto} ${dPrinActual.diaNumero || extraerDiaNumeroCliente(dPrinActual.fecha)}`;
+          if (tabBtn.textContent !== etiqEsperada) {
+            tabBtn.textContent = etiqEsperada;
+            huboCambioCorte = true;
+          }
+        }
+
         if (huboCambioCorte) {
           renderizarTarjetas();
         } else {
@@ -1663,6 +1732,7 @@
             modoPruebaQR: STATE.modoPruebaQR,
             usuario: STATE.usuario,
             diasSemana: STATE.diasSemana,
+            diaHoy: STATE.diaHoy,
             hoyFisico: STATE.hoyFisico
           }
         }));
@@ -1836,6 +1906,7 @@
       aplicarCandadosRegistro(registro);
       STATE.usuario = registro.usuario;
       STATE.diasSemana = registro.diasSemana;
+      STATE.diaHoy = registro.diaHoy || null;
       STATE.hoyFisico = registro.hoyFisico;
       if (tokenSesion) {
         STATE.tokenActivo = tokenSesion;
@@ -1859,6 +1930,7 @@
       localStorage.removeItem('SBS_COMEDOR_AUTH');
       STATE.ultimoSyncMs = 0;
       STATE.usuario = null;
+      STATE.diaHoy = null;
       STATE.tokenActivo = '';
       STATE.registroPendienteLogin = null;
       STATE.ticketCompactoActivo = null;
@@ -1921,11 +1993,11 @@
       const mapaPorFecha = {};
       const hoyRef = STATE.hoyStr || obtenerFechaHoyLimaISO();
 
-      // 1. Cargar historial del ciclo enviado por el servidor (respetando fecha de arranque)
+      // 1. Cargar todo el historial del ciclo vigente enviado por el servidor (incluye históricos importados)
       if (STATE.usuario && Array.isArray(STATE.usuario.historialCiclo)) {
         STATE.usuario.historialCiclo.forEach(item => {
           const fIso = item[0];
-          if (!fIso || fIso < FECHA_ARRANQUE_ALMUERZO) return;
+          if (!fIso) return;
           mapaPorFecha[fIso] = {
             fechaISO: fIso,
             fechaCorta: item[1] || formatearDiaMesCorto(fIso),
@@ -1935,10 +2007,15 @@
         });
       }
 
-      // 2. Fusionar en tiempo real los días de la semana que pertenecen al ciclo actual
+      // 2. Fusionar en tiempo real los días de la semana y diaHoy (para viernes 12:00-18:00) dentro del ciclo actual
       const hf = STATE.hoyFisico;
-      (STATE.diasSemana || []).forEach(d => {
-        if (d.enCicloActual === false || d.fecha < FECHA_ARRANQUE_ALMUERZO) return;
+      const listaFusion = (STATE.diasSemana || []).slice();
+      if (STATE.diaHoy && !listaFusion.some(x => x.fecha === STATE.diaHoy.fecha)) {
+        listaFusion.push(STATE.diaHoy);
+      }
+
+      listaFusion.forEach(d => {
+        if (!d || d.enCicloActual === false || d.fecha < FECHA_ARRANQUE_ALMUERZO) return;
 
         const cerradoDes = !d.puedeEditarDesayuno || !esEditableEnTiempoReal(d.fecha, 'DESAYUNO');
         const cerradoAlm = !d.puedeEditarAlmuerzo || !esEditableEnTiempoReal(d.fecha, 'ALMUERZO');
@@ -1953,10 +2030,14 @@
           (d.almuerzo !== 'NO' && cerradoAlm);
 
         const prev = mapaPorFecha[d.fecha];
-        const desFinal = (d.fecha < hoyRef && prev) ? (prev.des || desConsumido) : desConsumido;
-        const almFinal = (d.fecha < hoyRef && prev) ? (prev.alm || almConsumido) : almConsumido;
+        const desFinal = (prev && (d.fecha < hoyRef || d.fecha < FECHA_ARRANQUE_DESAYUNO))
+          ? (prev.des || desConsumido)
+          : desConsumido;
+        const almFinal = (prev && d.fecha < hoyRef)
+          ? (prev.alm || almConsumido)
+          : almConsumido;
 
-        if (desFinal || almFinal || d.fecha <= hoyRef) {
+        if (desFinal || almFinal) {
           mapaPorFecha[d.fecha] = {
             fechaISO: d.fecha,
             fechaCorta: d.fechaCorta || formatearDiaMesCorto(d.fecha),
@@ -1966,7 +2047,9 @@
         }
       });
 
-      const filas = Object.values(mapaPorFecha).sort((a, b) => a.fechaISO.localeCompare(b.fechaISO));
+      const filas = Object.values(mapaPorFecha)
+        .filter(r => r.des || r.alm)
+        .sort((a, b) => a.fechaISO.localeCompare(b.fechaISO));
 
       let cDes = 0;
       let cAlm = 0;
@@ -1985,14 +2068,18 @@
     function actualizarResumenHeader() {
       if (!STATE.usuario) return;
       const calc = construirDetalleConsumoCiclo();
-      document.getElementById('hdr-resumen-cant').textContent = `${calc.cDes} Des. | ${calc.cAlm} Alm.`;
-      document.getElementById('hdr-resumen-total').textContent = `Consumido: S/ ${calc.totSoles.toFixed(2)}`;
+      const etiq = String(STATE.etiquetaCiclo || '').trim();
+      const texto = etiq
+        ? `Consumido del ${etiq}: S/ ${calc.totSoles.toFixed(2)}`
+        : `Consumido: S/ ${calc.totSoles.toFixed(2)}`;
+      const el = document.getElementById('hdr-resumen-texto');
+      if (el) el.textContent = texto;
     }
 
     function abrirModalDetalleConsumido() {
       vibrarHaptico(15);
       const calc = construirDetalleConsumoCiclo();
-      const sub = STATE.etiquetaCiclo ? `Ciclo ${STATE.etiquetaCiclo} (se reinicia cada día 25)` : 'Ciclo vigente (del 25 al 24)';
+      const sub = STATE.etiquetaCiclo ? `Ciclo del ${STATE.etiquetaCiclo}` : 'Ciclo vigente';
       document.getElementById('lbl-subtitulo-ciclo').textContent = sub;
 
       const tbody = document.getElementById('tbody-detalle-consumo');
@@ -2297,25 +2384,42 @@
       document.getElementById('tab-btn-rrhh').style.display = mostrarRRHH ? 'block' : 'none';
       document.getElementById('tab-btn-tecnico').style.display = mostrarTech ? 'block' : 'none';
 
-      // Cambia al día siguiente recién a las 6:01 PM (18.016 h)
-      let idxHoyFisico = STATE.diasSemana.findIndex(d => d.esHoyFisico);
-      if (idxHoyFisico === -1) {
-        STATE.idxPrincipal = 0;
-      } else {
-        const horaActualDecimal = obtenerHoraPeruActual();
-        if (horaActualDecimal >= 18.016 && idxHoyFisico < STATE.diasSemana.length - 1) {
-          STATE.idxPrincipal = idxHoyFisico + 1;
-        } else {
-          STATE.idxPrincipal = idxHoyFisico;
-        }
+      const dPrin = obtenerDiaPrincipalActual();
+      if (dPrin) {
+        const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
+        document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
       }
-
-      const dPrin = STATE.diasSemana[STATE.idxPrincipal];
-      const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
-      document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       cambiarTab('PRINCIPAL', true);
+    }
+
+    function obtenerDiaPrincipalActual() {
+      const lista = STATE.diasSemana || [];
+      if (lista.length === 0) return STATE.diaHoy || null;
+      const horaActualDecimal = obtenerHoraPeruActual();
+      const idxHoyEnSemana = lista.findIndex(d => d.esHoyFisico);
+
+      // Antes de las 6:01 PM: siempre prioriza HOY físico (incluso los viernes 12:00-18:00 cuando Mi Semana ya muestra la próxima semana)
+      if (horaActualDecimal < 18.016) {
+        if (STATE.diaHoy && STATE.diaHoy.esHoyFisico) return STATE.diaHoy;
+        if (idxHoyEnSemana !== -1) return lista[idxHoyEnSemana];
+        return lista[0];
+      }
+
+      // Desde las 6:01 PM: avanza al día hábil siguiente (o al Lunes de la semana siguiente si ya saltó)
+      if (idxHoyEnSemana !== -1 && idxHoyEnSemana < lista.length - 1) {
+        return lista[idxHoyEnSemana + 1];
+      }
+      return lista[0];
+    }
+
+    function buscarDiaPorFecha(fecha) {
+      if (!fecha) return null;
+      const enSem = (STATE.diasSemana || []).find(x => x.fecha === fecha);
+      if (enSem) return enSem;
+      if (STATE.diaHoy && STATE.diaHoy.fecha === fecha) return STATE.diaHoy;
+      return null;
     }
 
     /**
@@ -2576,8 +2680,9 @@
 
     function renderizarTarjetas() {
       actualizarResumenHeader();
-      document.getElementById('contenedor-principal').innerHTML = crearHTMLTarjetaDia(STATE.diasSemana[STATE.idxPrincipal], true);
-      document.getElementById('contenedor-semana').innerHTML = STATE.diasSemana.map(d => crearHTMLTarjetaDia(d, false)).join('');
+      const dPrin = obtenerDiaPrincipalActual();
+      document.getElementById('contenedor-principal').innerHTML = dPrin ? crearHTMLTarjetaDia(dPrin, true) : '';
+      document.getElementById('contenedor-semana').innerHTML = (STATE.diasSemana || []).map(d => crearHTMLTarjetaDia(d, false)).join('');
     }
 
     function crearHTMLTarjetaDia(d, esVistaPrincipal) {
@@ -2665,7 +2770,7 @@
           </div>
           <div class="menu-box">
             <div>${lineaMenuDesayunoHtml}</div>
-            <div style="margin-top:4px;"><b>Almuerzo:</b> ${d.menuAlmuerzo}</div>
+            <div style="margin-top:4px;"><b>Almuerzo:</b> ${String(d.menuAlmuerzo || "").trim().toLowerCase() === "por confirmar" ? '<span class="menu-por-confirmar">Por confirmar</span>' : d.menuAlmuerzo}</div>
           </div>
           <div class="srv-grid">
             <div class="srv-split-card ${desActivo ? 'active-des' : ''} ${lockDesClass}">
@@ -2738,7 +2843,7 @@
 
     function seleccionarOpcionDesayuno(fecha, opElegida) {
       if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
-      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
+      const dia = buscarDiaPorFecha(fecha);
       if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
 
       vibrarHaptico(15);
@@ -2761,7 +2866,7 @@
 
     function cambiarPanDesayuno(fecha, numPan, nuevoPan) {
       if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
-      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
+      const dia = buscarDiaPorFecha(fecha);
       if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
 
       vibrarHaptico(10);
@@ -2788,7 +2893,7 @@
 
     function seleccionarOpcionAlmuerzo(fecha, opElegida) {
       if (fecha < FECHA_ARRANQUE_ALMUERZO) return;
-      const dia = STATE.diasSemana.find(x => x.fecha === fecha);
+      const dia = buscarDiaPorFecha(fecha);
       if (!dia || !dia.puedeEditarAlmuerzo || !esEditableEnTiempoReal(fecha, 'ALMUERZO')) return;
 
       vibrarHaptico(15);
@@ -2945,11 +3050,25 @@
       });
     }
 
+    function actualizarAvisoColaQR(cantPendientes) {
+      const el = document.getElementById('aviso-cola-qr-pendiente');
+      if (!el) return;
+      if (cantPendientes > 0) {
+        el.textContent = cantPendientes === 1
+          ? 'Sincronizando tu registro con el comedor...'
+          : `Sincronizando ${cantPendientes} registros con el comedor...`;
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    }
+
     function encolarRegistroQRSegundoPlano(itemQR) {
       try {
         const lista = JSON.parse(localStorage.getItem('SBS_COLA_QR_V1') || '[]');
         lista.push(itemQR);
         localStorage.setItem('SBS_COLA_QR_V1', JSON.stringify(lista));
+        actualizarAvisoColaQR(lista.length);
       } catch (e) {}
       procesarColaQRSegundoPlano();
     }
@@ -2961,8 +3080,12 @@
         lista = JSON.parse(localStorage.getItem('SBS_COLA_QR_V1') || '[]');
       } catch (e) { lista = []; }
 
-      if (!Array.isArray(lista) || lista.length === 0) return;
+      if (!Array.isArray(lista) || lista.length === 0) {
+        actualizarAvisoColaQR(0);
+        return;
+      }
       ENVIANDO_COLA_QR = true;
+      actualizarAvisoColaQR(lista.length);
 
       while (lista.length > 0) {
         const actual = lista[0];
@@ -2995,7 +3118,9 @@
         if (exitoEnvio) {
           lista.shift();
           try { localStorage.setItem('SBS_COLA_QR_V1', JSON.stringify(lista)); } catch (e) {}
+          actualizarAvisoColaQR(lista.length);
         } else {
+          actualizarAvisoColaQR(lista.length);
           setTimeout(() => {
             ENVIANDO_COLA_QR = false;
             procesarColaQRSegundoPlano();
@@ -3005,11 +3130,12 @@
       }
 
       ENVIANDO_COLA_QR = false;
+      actualizarAvisoColaQR(0);
     }
 
     function obtenerDetalleDesayunoHoyParaTicket() {
       const hoyISO = STATE.hoyStr || obtenerFechaHoyLimaISO();
-      const dHoy = (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyISO);
+      const dHoy = (STATE.diaHoy && (STATE.diaHoy.esHoyFisico || STATE.diaHoy.fecha === hoyISO)) ? STATE.diaHoy : (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyISO);
       const valDes = dHoy ? dHoy.desayuno : (STATE.usuario ? STATE.usuario.desDef : 'NO');
       const infoMenu = dHoy ? obtenerInfoMenuDia(dHoy) : { panes: PANES_POR_DEFECTO };
       const infoDes = desglosarDesayuno(valDes, infoMenu.panes);

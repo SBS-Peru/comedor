@@ -447,39 +447,26 @@
 
     .compact-ticket-opcion {
       width: 100%;
-      border-radius: 11px;
-      padding: 8px 12px;
+      background: #ffffff;
+      border: 1.5px solid #a7f3d0;
+      border-radius: 12px;
+      padding: 10px 12px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 2px;
-    }
-    .compact-ticket-opcion.srv-des {
-      background: #fff7ed;
-      border: 1.5px solid #fdba74;
-    }
-    .compact-ticket-opcion.srv-alm {
-      background: #dcfce7;
-      border: 1.5px solid #86efac;
-    }
-    .compact-opcion-kicker {
-      font-size: 10.5px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: #9a3412;
-    }
-    .compact-ticket-opcion.srv-alm .compact-opcion-kicker {
-      color: #065f46;
-      font-size: 12px;
-      letter-spacing: 0.9px;
+      justify-content: center;
+      overflow: hidden;
     }
     #compact-ticket-detalle {
-      font-size: 16.5px;
-      font-weight: 800;
-      color: #c2410c;
-      line-height: 1.25;
-      word-break: break-word;
+      width: 100%;
+      font-size: 23px;
+      font-weight: 900;
+      color: #065f46;
+      letter-spacing: 0.1px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
     }
     .compact-ticket-datetime {
       width: 100%;
@@ -514,9 +501,9 @@
     }
     .compact-ticket-cedido {
       width: 100%;
-      background: #eff6ff;
-      border: 1.5px solid #38bdf8;
-      border-radius: 11px;
+      background: #ffffff;
+      border: 1.5px solid #a7f3d0;
+      border-radius: 12px;
       padding: 8px 12px;
       display: none;
       flex-direction: column;
@@ -528,13 +515,13 @@
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
-      color: #0369a1;
+      color: #047857;
     }
     #compact-ticket-cedido-detalle {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 800;
-      color: #0c4a6e;
-      line-height: 1.3;
+      color: #065f46;
+      line-height: 1.25;
       word-break: break-word;
     }
     .compact-ticket-hint {
@@ -708,7 +695,7 @@
       #ticket-modal-hora { font-size: 33px; }
       #card-ticket-compacto { padding: 13px 12px 11px; gap: 8px; }
       #ticket-modal-cedido-detalle { font-size: 19px; }
-      #compact-ticket-detalle { font-size: 15.5px; }
+      #compact-ticket-detalle { font-size: 22px; }
       #compact-ticket-fecha { font-size: 19px; }
       #compact-ticket-hora { font-size: 22px; }
     }
@@ -814,12 +801,11 @@
             Escanear QR en Comedor
           </button>
 
-          <!-- TARJETA VERDE COMPACTA PERSISTENTE (SIN NOMBRE; REEMPLAZA EL BOTÓN QR TRAS ESCANEAR) -->
+          <!-- TARJETA VERDE COMPACTA PERSISTENTE (SIN NOMBRE NI ETIQUETA DE SERVICIO; FONDO BLANCO EJECUTIVO) -->
           <div id="card-ticket-compacto" onclick="reabrirTicketVerdeDesdeTarjeta()" title="Toca para ampliar">
             <div class="compact-ticket-icon">✓</div>
-            <div class="compact-ticket-opcion srv-alm" id="compact-ticket-opcion-box">
-              <span class="compact-opcion-kicker" id="compact-ticket-kicker">ALMUERZO REGISTRADO</span>
-              <div id="compact-ticket-detalle" style="display:none;"></div>
+            <div class="compact-ticket-opcion" id="compact-ticket-opcion-box">
+              <div id="compact-ticket-detalle">Regular</div>
             </div>
             <div class="compact-ticket-cedido" id="compact-ticket-cedido-box">
               <span class="compact-cedido-kicker" id="compact-ticket-cedido-kicker">CEDIDO</span>
@@ -1509,7 +1495,7 @@
       document.getElementById('view-splash').style.display = 'none';
     }
 
-    async function fetchConTimeout(action, argsArray, timeoutMs = 4500) {
+    async function fetchConTimeout(action, argsArray, timeoutMs = 15000) {
       const controller = new AbortController();
       const idTimer = setTimeout(() => controller.abort(), timeoutMs);
       try {
@@ -1529,6 +1515,21 @@
       }
     }
 
+    async function fetchConReintentoRobusto(action, argsArray, intentos = 3, timeoutMs = 15000) {
+      let ultimoError = null;
+      for (let i = 0; i < intentos; i++) {
+        try {
+          return await fetchConTimeout(action, argsArray, timeoutMs);
+        } catch (err) {
+          ultimoError = err;
+          if (i < intentos - 1) {
+            await new Promise(r => setTimeout(r, 450 * (i + 1)));
+          }
+        }
+      }
+      throw ultimoError;
+    }
+
     function aplicarMetadatosSync(p) {
       STATE.hoyStr = p.hoyStr;
       STATE.hoyPeruCompleto = p.hoyPeruCompleto || p.hoyStr;
@@ -1540,14 +1541,60 @@
       STATE.modoPruebaQR = !!p.modoPruebaQR;
     }
 
-    async function sincronizarSesionConSplash(sesionGuardada, duracionMinMs = 850) {
+    function restaurarSnapshotHoyInstantaneo(sesionGuardada) {
+      if (!sesionGuardada || !sesionGuardada.snapshot) return false;
+      const hoyLima = obtenerFechaHoyLimaISO();
+      if (sesionGuardada.snapshot.hoyStr !== hoyLima) return false;
+
+      aplicarCandadosRegistro(sesionGuardada.snapshot);
+      STATE.tokenActivo = sesionGuardada.token || '';
+      STATE.hoyStr = sesionGuardada.snapshot.hoyStr;
+      STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
+      STATE.etiquetaCiclo = sesionGuardada.snapshot.etiquetaCiclo || '';
+      STATE.avisoBanner = sesionGuardada.snapshot.avisoBanner || '';
+      STATE.horaPeru = obtenerHoraLimaNavegador();
+      STATE.tsSyncHora = 0;
+      STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
+      STATE.usuario = sesionGuardada.snapshot.usuario;
+      STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
+      STATE.diaHoy = sesionGuardada.snapshot.diaHoy || null;
+      STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
+      ocultarSplash();
+      renderizarVistaPrincipal();
+      return true;
+    }
+
+    /**
+     * Sincronización inteligente:
+     * - Si es el MISMO DÍA y ya hay snapshot de hoy: abre al instante en 0 ms (sin splash)
+     *   y sincroniza silenciosamente en segundo plano para traer cambios de RRHH / cesiones / menú.
+     * - Si cambió el día (estaba en segundo plano desde ayer) o no hay snapshot de hoy:
+     *   muestra splash mínimo sin espera artificial y reintenta automáticamente hasta 3 veces (15s c/u)
+     *   para garantizar datos reales del día sin margen de error.
+     */
+    async function sincronizarSesionConSplash(sesionGuardada, forzarBloqueoSplash = false) {
       if (SINCRONIZANDO_AHORA || ACTUALIZACION_OBLIGATORIA) return;
       SINCRONIZANDO_AHORA = true;
-      mostrarSplash('Cargando tu menú...', false);
 
-      const tIni = performance.now();
+      const hoyLima = obtenerFechaHoyLimaISO();
+      const tieneSnapshotDeHoy = !!(sesionGuardada && sesionGuardada.snapshot && sesionGuardada.snapshot.hoyStr === hoyLima);
+      const modoSilencioso = (!forzarBloqueoSplash && tieneSnapshotDeHoy);
+
+      if (modoSilencioso) {
+        if (!STATE.usuario) {
+          restaurarSnapshotHoyInstantaneo(sesionGuardada);
+        }
+      } else {
+        mostrarSplash('Cargando tu menú...', false);
+      }
+
       try {
-        const resFast = await fetchConTimeout('sincronizarMiEstado', [sesionGuardada.dni, VERSION_LOCAL_APP], 4500);
+        const resFast = await fetchConReintentoRobusto(
+          'sincronizarMiEstado',
+          [sesionGuardada.dni, VERSION_LOCAL_APP],
+          modoSilencioso ? 2 : 3,
+          15000
+        );
 
         // Si el servidor indica versión nueva, bloqueamos de inmediato con la pantalla de actualización
         if (resFast && verificarVersionServidor(resFast.versionApp, resFast.notasVersion)) {
@@ -1555,15 +1602,10 @@
           return;
         }
 
-        const transcurrido = performance.now() - tIni;
-        if (transcurrido < duracionMinMs) {
-          await new Promise(r => setTimeout(r, duracionMinMs - transcurrido));
-        }
-
         if (!resFast || !resFast.ok || !resFast.registro) {
           ocultarSplash();
           SINCRONIZANDO_AHORA = false;
-          cerrarSesion();
+          if (!modoSilencioso) cerrarSesion();
           return;
         }
 
@@ -1577,32 +1619,37 @@
           return;
         }
 
-        asignarUsuarioYEntrar(reg, sesionGuardada.token || reg.usuario.hashClave);
-        ocultarSplash();
+        // En modo silencioso, actualiza datos sin interrumpir la pestaña ni el escáner QR si está abierto
+        if (modoSilencioso && STATE.usuario) {
+          aplicarCandadosRegistro(reg);
+          STATE.usuario = reg.usuario;
+          STATE.diasSemana = reg.diasSemana;
+          STATE.diaHoy = reg.diaHoy || null;
+          STATE.hoyFisico = reg.hoyFisico;
+          guardarSnapshotLocal();
+          renderizarBannerInformativo();
+          const dPrin = obtenerDiaPrincipalActual();
+          if (dPrin) {
+            const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
+            document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
+          }
+          renderizarTarjetas();
+          actualizarEstadoBotonQR();
+        } else {
+          asignarUsuarioYEntrar(reg, sesionGuardada.token || reg.usuario.hashClave);
+          ocultarSplash();
+        }
         SINCRONIZANDO_AHORA = false;
       } catch (err) {
         SINCRONIZANDO_AHORA = false;
-        const hoyLima = obtenerFechaHoyLimaISO();
-        // Solo usa respaldo local si es EXACTAMENTE del día de hoy (nunca muestra data de ayer)
-        if (sesionGuardada.snapshot && sesionGuardada.snapshot.hoyStr === hoyLima) {
-          aplicarCandadosRegistro(sesionGuardada.snapshot);
-          STATE.tokenActivo = sesionGuardada.token || '';
-          STATE.hoyStr = sesionGuardada.snapshot.hoyStr;
-          STATE.hoyPeruCompleto = sesionGuardada.snapshot.hoyPeruCompleto || '';
-          STATE.etiquetaCiclo = sesionGuardada.snapshot.etiquetaCiclo || '';
-          STATE.horaPeru = obtenerHoraLimaNavegador();
-          STATE.tsSyncHora = 0;
-          STATE.modoPruebaQR = !!sesionGuardada.snapshot.modoPruebaQR;
-          STATE.usuario = sesionGuardada.snapshot.usuario;
-          STATE.diasSemana = sesionGuardada.snapshot.diasSemana;
-          STATE.diaHoy = sesionGuardada.snapshot.diaHoy || null;
-          STATE.hoyFisico = sesionGuardada.snapshot.hoyFisico;
-          ocultarSplash();
-          renderizarVistaPrincipal();
-          mostrarToast('Conexión lenta. Mostrando datos de hoy.');
-        } else {
-          mostrarSplash('Sin conexión. Toca para intentar de nuevo.', true);
+        if (modoSilencioso) {
+          // Ya está viendo los datos válidos de hoy; no molestamos con avisos de error
+          return;
         }
+        if (restaurarSnapshotHoyInstantaneo(sesionGuardada)) {
+          return;
+        }
+        mostrarSplash('Conexión inestable. Toca para reintentar.', true);
       }
     }
 
@@ -1613,7 +1660,7 @@
         try {
           const sesionGuardada = JSON.parse(sesionStr);
           if (sesionGuardada && sesionGuardada.dni) {
-            sincronizarSesionConSplash(sesionGuardada, 700);
+            sincronizarSesionConSplash(sesionGuardada, true);
             return;
           }
         } catch (e) {}
@@ -1636,9 +1683,8 @@
       }
 
       if (sesionGuardada && sesionGuardada.dni && sesionGuardada.token) {
-        sincronizarSesionConSplash(sesionGuardada, 900);
+        sincronizarSesionConSplash(sesionGuardada, false);
       } else {
-        // Verifica versión incluso antes de iniciar sesión
         ejecutarConReintento('verificarVersionApp', [], null, null, 1);
       }
 
@@ -1648,16 +1694,25 @@
       document.getElementById('txt-clave').addEventListener('keyup', (e) => {
         if (e.key === 'Enter') confirmarClaveLogin();
       });
+      window.addEventListener('resize', () => {
+        const detEl = document.getElementById('compact-ticket-detalle');
+        if (detEl && detEl.offsetParent !== null) {
+          ajustarTextoUnaLinea(detEl, window.innerWidth <= 480 ? 22 : 23, 13);
+        }
+      });
     });
 
-    // Al volver a la app desde segundo plano: si pasaron >20s o cambió la fecha, sincroniza 1-a-1 con splash corto
+    // Al volver desde segundo plano:
+    // - Si cambió el día (abierta desde ayer): bloquea con splash rápido y carga los datos reales de HOY sin margen de error.
+    // - Si es el mismo día y pasaron >45s: sincroniza silenciosamente en segundo plano sin mostrar splash.
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         procesarColaQRSegundoPlano();
         if (STATE.usuario && STATE.tokenActivo) {
           const hoyLima = obtenerFechaHoyLimaISO();
-          const pasaronMasDe20Seg = (Date.now() - (STATE.ultimoSyncMs || 0)) > 20000;
-          if (STATE.hoyStr !== hoyLima || pasaronMasDe20Seg) {
+          const cambioDeDia = (STATE.hoyStr !== hoyLima);
+          const pasaronMasDe45Seg = (Date.now() - (STATE.ultimoSyncMs || 0)) > 45000;
+          if (cambioDeDia || pasaronMasDe45Seg) {
             sincronizarSesionConSplash({
               dni: STATE.usuario.dni,
               token: STATE.tokenActivo,
@@ -1665,13 +1720,14 @@
                 hoyStr: STATE.hoyStr,
                 hoyPeruCompleto: STATE.hoyPeruCompleto,
                 etiquetaCiclo: STATE.etiquetaCiclo,
+                avisoBanner: STATE.avisoBanner,
                 modoPruebaQR: STATE.modoPruebaQR,
                 usuario: STATE.usuario,
                 diasSemana: STATE.diasSemana,
                 diaHoy: STATE.diaHoy,
                 hoyFisico: STATE.hoyFisico
               }
-            }, 650);
+            }, cambioDeDia);
           } else {
             actualizarResumenHeader();
             actualizarEstadoBotonQR();
@@ -1680,9 +1736,14 @@
       }
     });
 
-    // Revisa cada 20 segundos si se cruzó un horario de corte (10:00 AM / 4:00 PM / 12:00 PM / 6:00 PM)
+    // Revisa cada 20 segundos si se cruzó un horario de corte (10:00 AM / 4:00 PM / 12:00 PM / 6:00 PM) o medianoche
     setInterval(() => {
       if (STATE.usuario && document.visibilityState === 'visible') {
+        const hoyLima = obtenerFechaHoyLimaISO();
+        if (STATE.hoyStr && STATE.hoyStr !== hoyLima) {
+          sincronizarSesionConSplash({ dni: STATE.usuario.dni, token: STATE.tokenActivo, snapshot: null }, true);
+          return;
+        }
         let huboCambioCorte = false;
         const evaluar = (d) => {
           if (!d) return;
@@ -1728,6 +1789,7 @@
             hoyStr: STATE.hoyStr,
             hoyPeruCompleto: STATE.hoyPeruCompleto,
             etiquetaCiclo: STATE.etiquetaCiclo,
+            avisoBanner: STATE.avisoBanner,
             horaPeru: obtenerHoraPeruActual(),
             modoPruebaQR: STATE.modoPruebaQR,
             usuario: STATE.usuario,
@@ -1855,9 +1917,6 @@
       const hashCliente = await calcularHashSHA256Cliente(dni, clave);
 
       if (hashCliente && (esCreacion || hashGuardadoRAM)) {
-        const transcurrido = performance.now() - tInicio;
-        const esperaRestante = Math.max(0, 1000 - transcurrido);
-        await new Promise(r => setTimeout(r, esperaRestante));
 
         btn.disabled = false;
         btn.textContent = txtOriginal;
@@ -1881,9 +1940,6 @@
       }
 
       ejecutarConReintento('autenticarOConfigurarClave', [dni, clave, esCreacion], async res => {
-        const transcurrido = performance.now() - tInicio;
-        const esperaRestante = Math.max(0, 1000 - transcurrido);
-        await new Promise(r => setTimeout(r, esperaRestante));
 
         btn.disabled = false;
         btn.textContent = txtOriginal;
@@ -2466,6 +2522,27 @@
       return `<div>${tituloAlm}${deTxt}</div>`;
     }
 
+    function ajustarTextoUnaLinea(el, maxPx = 23, minPx = 13) {
+      if (!el) return;
+      let size = maxPx;
+      el.style.fontSize = size + 'px';
+      // Reduce en pasos de 0.5px solo si desborda el ancho disponible para asegurar siempre 1 sola línea
+      while (el.scrollWidth > el.clientWidth + 1 && size > minPx) {
+        size -= 0.5;
+        el.style.fontSize = size + 'px';
+      }
+    }
+
+    function obtenerDetalleAlmuerzoHoyParaTicket() {
+      const hoyISO = STATE.hoyStr || obtenerFechaHoyLimaISO();
+      const dHoy = (STATE.diaHoy && (STATE.diaHoy.esHoyFisico || STATE.diaHoy.fecha === hoyISO))
+        ? STATE.diaHoy
+        : (STATE.diasSemana || []).find(d => d.esHoyFisico || d.fecha === hoyISO);
+      const valAlm = String(dHoy ? dHoy.almuerzo : (STATE.usuario ? STATE.usuario.almDef : 'REGULAR')).toUpperCase().trim();
+      if (valAlm === 'ALTERNATIVO') return 'Alternativo';
+      return 'Regular';
+    }
+
     function mostrarTarjetaTicketCompacto(servicio, horaRaw, notaExtra, mantenerBotonVisible = false) {
       const btn = document.getElementById('btn-escanear-qr');
       const card = document.getElementById('card-ticket-compacto');
@@ -2477,35 +2554,23 @@
       const listaCes = obtenerCesionesServicioHoy(servicio);
 
       const opBox = document.getElementById('compact-ticket-opcion-box');
-      const kickerEl = document.getElementById('compact-ticket-kicker');
       const detEl = document.getElementById('compact-ticket-detalle');
       const cesBox = document.getElementById('compact-ticket-cedido-box');
       const cesKicker = document.getElementById('compact-ticket-cedido-kicker');
       const cesDet = document.getElementById('compact-ticket-cedido-detalle');
 
       if (tienePropia) {
+        const textoOpcion = (servicio === 'DESAYUNO')
+          ? (obtenerDetalleDesayunoHoyParaTicket() || 'Desayuno')
+          : obtenerDetalleAlmuerzoHoyParaTicket();
+        detEl.textContent = textoOpcion;
         opBox.style.display = 'flex';
-        if (servicio === 'DESAYUNO') {
-          const textoDes = obtenerDetalleDesayunoHoyParaTicket();
-          opBox.className = 'compact-ticket-opcion srv-des';
-          kickerEl.textContent = 'DESAYUNO';
-          if (textoDes) {
-            detEl.textContent = textoDes;
-            detEl.style.display = 'block';
-          } else {
-            detEl.style.display = 'none';
-          }
-        } else {
-          opBox.className = 'compact-ticket-opcion srv-alm';
-          kickerEl.textContent = 'ALMUERZO REGISTRADO';
-          detEl.style.display = 'none';
-        }
       } else {
         opBox.style.display = 'none';
       }
 
       if (listaCes.length > 0) {
-        cesKicker.textContent = tienePropia ? 'CEDIDO' : `${servicio} CEDIDO`;
+        cesKicker.textContent = 'CEDIDO';
         cesDet.innerHTML = construirHtmlDetalleCesion(servicio, listaCes, tienePropia);
         cesBox.style.display = 'flex';
       } else {
@@ -2527,12 +2592,17 @@
       }
       card.style.marginTop = mantenerBotonVisible ? '10px' : '2px';
       card.style.display = 'flex';
+
+      if (tienePropia) {
+        const basePx = window.innerWidth <= 480 ? 22 : 23;
+        requestAnimationFrame(() => ajustarTextoUnaLinea(detEl, basePx, 13));
+      }
     }
 
     async function refrescarCesionesSilenciosamente(servicioAbierto, horaGuardada) {
       if (!STATE.usuario || !STATE.usuario.dni || STATE.modoPruebaQR) return;
       try {
-        const res = await fetchConTimeout('sincronizarMiEstado', [STATE.usuario.dni, VERSION_LOCAL_APP], 3500);
+        const res = await fetchConTimeout('sincronizarMiEstado', [STATE.usuario.dni, VERSION_LOCAL_APP], 10000);
         if (!res || !res.ok || !res.registro || !res.registro.hoyFisico) return;
         const nuevoHf = res.registro.hoyFisico;
         STATE.hoyFisico.cedidosDes = Array.isArray(nuevoHf.cedidosDes) ? nuevoHf.cedidosDes : [];
@@ -3146,7 +3216,7 @@
           : `2 Panes: ${infoDes.pan1} y ${infoDes.pan2}`;
       }
       if (infoDes.op === 'OP2') return '3 Huevos';
-      if (infoDes.op === 'OP3') return `Mixto: Pan con ${infoDes.pan1} + 1 Huevo`;
+      if (infoDes.op === 'OP3') return `Pan con ${infoDes.pan1} + 1 Huevo`;
       if (infoDes.op === 'MANUAL') return 'Asignado por RRHH';
       return '';
     }

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal RRHH • Comedor SBS</title>
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=26">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=27">
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
@@ -555,6 +555,215 @@
     .retiro-item-sub { font-size: 11.5px; color: var(--muted); display: block; margin-top: 2px; }
     .retiro-item-lock { font-size: 11.5px; color: #dc2626; font-weight: 700; display: block; margin-top: 2px; }
 
+    /* ÚLTIMO ACCESO Y CHIPS RÁPIDOS DE CICLO */
+    .txt-last-access {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .txt-last-access.nunca {
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .btn-pill-cycle {
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 7px;
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      color: #334155;
+      cursor: pointer;
+      transition: 0.14s;
+    }
+    .btn-pill-cycle:hover { background: #e2e8f0; border-color: #cbd5e1; }
+    .btn-pill-cycle.active {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #047857;
+    }
+
+    /* MODAL CICLOS DE CORTE */
+    .ciclos-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .ciclo-card-box {
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      padding: 12px 14px;
+      background: #f8fafc;
+    }
+    .ciclo-card-box.vigente {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+    .ciclo-card-kicker {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .ciclo-card-box.vigente .ciclo-card-kicker { color: #047857; }
+    .ciclo-card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .ciclo-card-dates {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+    .ciclos-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .ciclos-table th {
+      background: #f8fafc;
+      padding: 8px 10px;
+      font-size: 11.8px;
+      font-weight: 700;
+      color: #475569;
+      border-bottom: 1px solid var(--border);
+    }
+    .ciclos-table td {
+      padding: 7px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ciclo-badge-vigente {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    /* MÓDULO EJECUTIVO DE ANÁLISIS */
+    .ana-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 1080px) { .ana-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 580px) { .ana-kpi-grid { grid-template-columns: 1fr; } }
+    .ana-kpi-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 15px 17px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .ana-kpi-lbl {
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--muted);
+    }
+    .ana-kpi-val {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--sbs-primary);
+      line-height: 1.1;
+      margin: 6px 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+    .ana-kpi-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+    }
+    .ana-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 1020px) { .ana-grid-2 { grid-template-columns: 1fr; } }
+    .ana-panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 16px 18px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .ana-panel h4 {
+      margin: 0 0 4px;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--sbs-primary);
+    }
+    .ana-panel p.ana-desc {
+      margin: 0 0 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .bar-list { display: flex; flex-direction: column; gap: 9px; }
+    .bar-row { display: flex; flex-direction: column; gap: 4px; }
+    .bar-row-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .bar-row-head b { font-variant-numeric: tabular-nums; }
+    .bar-track {
+      width: 100%;
+      height: 8px;
+      background: #f1f5f9;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--sbs-primary);
+      transition: width 0.25s ease;
+    }
+    .bar-fill.orange { background: var(--sbs-orange); }
+    .bar-fill.green { background: var(--sbs-accent); }
+    .bar-fill.blue { background: #0284c7; }
+    .ana-mini-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .ana-mini-pill {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .ana-scroll-list {
+      max-height: 230px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+    }
+
     #toast {
       position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: white;
       padding: 13px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
@@ -573,7 +782,7 @@
   <!-- 1. LOGIN -->
   <div id="view-login">
     <div class="login-card">
-      <img src="./Logo.jpg?v=26" alt="SBS" class="login-logo">
+      <img src="./Logo.jpg?v=27" alt="SBS" class="login-logo">
       <h1>Portal RRHH • Comedor SBS</h1>
 
       <div id="step-dni">
@@ -594,7 +803,7 @@
           Cambiar DNI
         </button>
       </div>
-      <div class="login-ver" id="lbl-ver-login-rrhh">v26</div>
+      <div class="login-ver" id="lbl-ver-login-rrhh">v27</div>
     </div>
   </div>
 
@@ -602,9 +811,9 @@
   <div id="view-portal">
     <header class="top-header">
       <div class="brand-wrap">
-        <img src="./Logo.jpg?v=26" alt="SBS" class="brand-logo">
+        <img src="./Logo.jpg?v=27" alt="SBS" class="brand-logo">
         <div>
-          <h2>Portal RRHH • Comedor SBS <span class="portal-ver-pill" id="lbl-ver-header-rrhh">v26</span></h2>
+          <h2>Portal RRHH • Comedor SBS <span class="portal-ver-pill" id="lbl-ver-header-rrhh">v27</span></h2>
           <span class="admin-sub" id="lbl-admin-activo"></span>
         </div>
       </div>
@@ -622,6 +831,9 @@
         </button>
         <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalMenu()">
           Menú y Aviso
+        </button>
+        <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalCiclosCorte()">
+          Ciclos de Corte
         </button>
         <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.14); color:white; border-color:rgba(255,255,255,0.28);" onclick="abrirModalResetClave()">
           Restablecer Contraseña
@@ -642,6 +854,9 @@
         </div>
         <div class="nav-tab" id="tab-planilla" onclick="cambiarModulo('PLANILLA')">
           Reporte de Planilla
+        </div>
+        <div class="nav-tab" id="tab-analisis" onclick="cambiarModulo('ANALISIS')">
+          Análisis
         </div>
       </div>
 
@@ -756,7 +971,7 @@
         </div>
       </section>
 
-      <!-- MÓDULO: BASE DE COLABORADORES (APP PRIMERO + BARRAS TRANSFORMABLES) -->
+      <!-- MÓDULO: BASE DE COLABORADORES (APP + ÚLTIMO ACCESO + BARRAS TRANSFORMABLES) -->
       <section id="mod-colaboradores" style="display:none;">
         <div class="action-bar">
           <div class="toolbar-group">
@@ -765,8 +980,12 @@
               <option value="ACTIVO">Activos</option>
               <option value="AUSENTE">Ausentes</option>
               <option value="VERSION_ANTIGUA">Con versión antigua</option>
+              <option value="NUNCA_INGRESO">Nunca ingresaron</option>
             </select>
             <input type="text" id="txt-buscar-bd" class="form-input" style="min-width:260px;" placeholder="Buscar por DNI o apellidos..." oninput="renderizarTablaColaboradores()">
+            <button class="btn btn-outline btn-sm" style="border-color:var(--sbs-primary); color:var(--sbs-primary); font-weight:800;" onclick="abrirModalNuevoColaborador()">
+              + Nuevo Colaborador
+            </button>
           </div>
 
           <div class="toolbar-group">
@@ -783,16 +1002,17 @@
           <table>
             <thead>
               <tr>
-                <th style="width:68px; text-align:center;">App</th>
-                <th style="width:98px;">DNI</th>
+                <th style="width:64px; text-align:center;">App</th>
+                <th style="width:118px;">Último acceso</th>
+                <th style="width:94px;">DNI</th>
                 <th>Apellidos y Nombres</th>
-                <th style="width:296px;">Desayuno</th>
-                <th style="width:226px;">Almuerzo</th>
-                <th style="width:190px;">Estado</th>
+                <th style="width:292px;">Desayuno</th>
+                <th style="width:222px;">Almuerzo</th>
+                <th style="width:186px;">Estado</th>
               </tr>
             </thead>
             <tbody id="tbody-colaboradores">
-              <tr><td colspan="6" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
+              <tr><td colspan="7" style="text-align:center; color:var(--muted);">Cargando colaboradores...</td></tr>
             </tbody>
           </table>
         </div>
@@ -802,6 +1022,8 @@
       <section id="mod-planilla" style="display:none;">
         <div class="action-bar">
           <div class="toolbar-group">
+            <button type="button" class="btn-pill-cycle" id="btn-pl-ciclo-actual" onclick="aplicarRangoCicloPlanilla('ACTUAL')">Ciclo actual</button>
+            <button type="button" class="btn-pill-cycle" id="btn-pl-ciclo-anterior" onclick="aplicarRangoCicloPlanilla('ANTERIOR')">Ciclo anterior</button>
             <label style="font-size:12.5px; font-weight:700;">Desde:</label>
             <input type="date" id="rep-ini" class="form-input">
             <label style="font-size:12.5px; font-weight:700;">Hasta:</label>
@@ -831,6 +1053,30 @@
               <tr><td colspan="7" style="text-align:center; color:var(--muted);">Selecciona el rango de fechas y presiona Consultar</td></tr>
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- MÓDULO: ANÁLISIS EJECUTIVO DE CONSUMO Y ADOPCIÓN -->
+      <section id="mod-analisis" style="display:none;">
+        <div class="action-bar" style="border-bottom: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px;">
+          <div class="toolbar-group">
+            <button type="button" class="btn-pill-cycle active" id="btn-ana-ciclo-actual" onclick="aplicarPeriodoAnalisis('ACTUAL')">Ciclo actual</button>
+            <button type="button" class="btn-pill-cycle" id="btn-ana-ciclo-anterior" onclick="aplicarPeriodoAnalisis('ANTERIOR')">Ciclo anterior</button>
+            <button type="button" class="btn-pill-cycle" id="btn-ana-7d" onclick="aplicarPeriodoAnalisis('7D')">Últimos 7 días</button>
+            <label style="font-size:12.5px; font-weight:700;">Desde:</label>
+            <input type="date" id="ana-ini" class="form-input">
+            <label style="font-size:12.5px; font-weight:700;">Hasta:</label>
+            <input type="date" id="ana-fin" class="form-input">
+            <button class="btn btn-primary" id="btn-consultar-analisis" onclick="cargarAnalisisRRHH()">Analizar</button>
+            <button class="btn btn-success" onclick="descargarExcelAnalisisRRHH()">Exportar Excel</button>
+          </div>
+          <div id="lbl-rango-analisis" style="font-size:12.5px; font-weight:700; color:var(--muted);"></div>
+        </div>
+
+        <div id="contenedor-analisis-body">
+          <div class="ana-panel" style="text-align:center; color:var(--muted); padding:28px;">
+            Cargando indicadores y tendencias del comedor...
+          </div>
         </div>
       </section>
     </main>
@@ -1005,9 +1251,120 @@
 
       <div id="contenedor-filas-menu"></div>
 
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
+        <label style="display:flex; align-items:center; gap:8px; font-size:12.8px; font-weight:700; color:var(--sbs-primary); cursor:pointer;">
+          <input type="checkbox" id="chk-confirmar-semana-menu">
+          <span id="lbl-confirmar-semana-menu">Confirmar menú de almuerzos para la semana</span>
+        </label>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-outline" onclick="cerrarModalMenu()">Cancelar</button>
+          <button class="btn btn-primary" id="btn-guardar-menu" onclick="guardarMenuSemanalUI()">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CICLOS DE CORTE DE PLANILLA -->
+  <div class="modal-overlay" id="modal-ciclos-corte" onclick="if(event.target===this) cerrarModalCiclosCorte()">
+    <div class="modal-box" style="max-width:650px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="margin:0; font-size:17px; color:var(--sbs-primary); font-weight:800;">Ciclos de Corte de Planilla</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalCiclosCorte()">Cerrar</button>
+      </div>
+
+      <div class="ciclos-summary-grid" id="grid-resumen-ciclos"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span style="font-size:12.5px; font-weight:700; color:var(--muted);">Programación de cortes mensuales:</span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="agregarFilaCicloCorte()">+ Agregar ciclo</button>
+      </div>
+
+      <div style="max-height:280px; overflow-y:auto; border:1px solid var(--border); border-radius:10px;">
+        <table class="ciclos-table">
+          <thead>
+            <tr>
+              <th>Período</th>
+              <th>Desde</th>
+              <th>Hasta</th>
+              <th style="width:92px; text-align:center;">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-ciclos-corte"></tbody>
+        </table>
+      </div>
+
       <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
-        <button class="btn btn-outline" onclick="cerrarModalMenu()">Cancelar</button>
-        <button class="btn btn-primary" id="btn-guardar-menu" onclick="guardarMenuSemanalUI()">Guardar cambios</button>
+        <button class="btn btn-outline" onclick="cerrarModalCiclosCorte()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-guardar-ciclos" onclick="guardarCiclosCorteUI()">Guardar ciclos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NUEVO COLABORADOR -->
+  <div class="modal-overlay" id="modal-nuevo-colaborador" onclick="if(event.target===this) cerrarModalNuevoColaborador()">
+    <div class="modal-box modal-sm">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="margin:0; font-size:17px; color:var(--sbs-primary); font-weight:800;">Nuevo Colaborador</h3>
+        <button class="btn btn-outline btn-sm" onclick="cerrarModalNuevoColaborador()">Cerrar</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="field-group">
+          <label for="new-colab-dni">DNI (8 dígitos):</label>
+          <input type="tel" id="new-colab-dni" class="form-input" maxlength="8" placeholder="Ej: 71031472">
+        </div>
+        <div class="field-group">
+          <label for="new-colab-tramo">Tramo salarial:</label>
+          <select id="new-colab-tramo" class="form-select">
+            <option value="MAYOR_1500" selected>&gt;= S/ 1,500</option>
+            <option value="MENOR_1500">&lt; S/ 1,500</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="new-colab-nombre">Apellidos y Nombres:</label>
+        <input type="text" id="new-colab-nombre" class="form-input" placeholder="Ej: Perez Gomez, Juan Carlos">
+      </div>
+
+      <div class="asig-opt-panel">
+        <label>Desayuno por defecto:</label>
+        <div class="seg-bar" style="width:100%; margin-bottom:8px;">
+          <button type="button" class="seg-btn sel-no" id="new-des-NO" onclick="seleccionarDesNuevoColab('NO')">No</button>
+          <button type="button" class="seg-btn" id="new-des-OP1" onclick="seleccionarDesNuevoColab('OP1')">Opc. 1</button>
+          <button type="button" class="seg-btn" id="new-des-OP2" onclick="seleccionarDesNuevoColab('OP2')">Opc. 2</button>
+          <button type="button" class="seg-btn" id="new-des-OP3" onclick="seleccionarDesNuevoColab('OP3')">Opc. 3</button>
+        </div>
+        <div id="wrap-new-panes" style="display:none; gap:8px; align-items:center;">
+          <select id="sel-new-pan1" class="form-select" style="flex:1;"></select>
+          <select id="sel-new-pan2" class="form-select" style="flex:1;"></select>
+          <span id="lbl-new-huevo" style="display:none; font-size:12.5px; font-weight:700; color:#475569; white-space:nowrap;">+ 1 huevo</span>
+        </div>
+        <div id="lbl-new-op2" style="display:none; font-size:12.5px; font-weight:600; color:#475569; text-align:center; padding:3px 0;">
+          Bebida + 3 huevos cocidos
+        </div>
+      </div>
+
+      <div class="asig-opt-panel">
+        <label>Almuerzo por defecto:</label>
+        <div class="seg-bar" style="width:100%;">
+          <button type="button" class="seg-btn" id="new-alm-NO" onclick="seleccionarAlmNuevoColab('NO')">No</button>
+          <button type="button" class="seg-btn sel-reg" id="new-alm-REGULAR" onclick="seleccionarAlmNuevoColab('REGULAR')">Regular</button>
+          <button type="button" class="seg-btn" id="new-alm-ALTERNATIVO" onclick="seleccionarAlmNuevoColab('ALTERNATIVO')">Alternativo</button>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-bottom:0;">
+        <label for="new-colab-rol">Perfil de acceso:</label>
+        <select id="new-colab-rol" class="form-select">
+          <option value="Usuario" selected>Colaborador (Usuario)</option>
+          <option value="Admin_RRHH">Administrador RRHH</option>
+        </select>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+        <button class="btn btn-outline" onclick="cerrarModalNuevoColaborador()">Cancelar</button>
+        <button class="btn btn-primary" id="btn-crear-colab" onclick="ejecutarCrearColaboradorRRHH()">Guardar colaborador</button>
       </div>
     </div>
   </div>
@@ -1037,7 +1394,7 @@
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCwg_FMmbdvnrDWdjE0iiKFEvWR1gxv_7h6A_YlIc3aGlFv477eXko7pBS4Fu0lYZiSQ/exec";
-    const VERSION_LOCAL_RRHH = "26";
+    const VERSION_LOCAL_RRHH = "27";
     const PANES_CATALOGO_BASE = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
     // Limpiar parámetro ?v=... tras recarga automática por nueva versión
@@ -1078,7 +1435,16 @@
       retiroSeleccionadoIdx: -1,
       asigOpDes: 'OP1',
       asigOpAlm: 'REGULAR',
+      newColabOpDes: 'NO',
+      newColabOpAlm: 'REGULAR',
       cesionTarget: null,
+      semanaMenuLunes: '',
+      proximoLunesApp: '',
+      ciclosConfig: [],
+      ciclosEditando: [],
+      cicloActual: null,
+      cicloAnterior: null,
+      datosAnalisis: null,
       timerAutoRefresh: null,
       cargandoFeed: false,
       recargandoVersion: false
@@ -1187,7 +1553,7 @@
     // DETECCIÓN Y AUTO-RECARGA ANTE NUEVA VERSIÓN DEL PORTAL RRHH
     // ========================================================================
     function hayModalAbiertoRRHH() {
-      const ids = ['modal-asignar-servicio', 'modal-ceder-reserva', 'modal-retirar-reserva', 'modal-menu', 'modal-reset-clave', 'modal-rango-ausencia'];
+      const ids = ['modal-asignar-servicio', 'modal-ceder-reserva', 'modal-retirar-reserva', 'modal-menu', 'modal-ciclos-corte', 'modal-nuevo-colaborador', 'modal-reset-clave', 'modal-rango-ausencia'];
       return ids.some(id => {
         const el = document.getElementById(id);
         return el && el.style.display === 'flex';
@@ -1583,6 +1949,11 @@
         if (typeof res.horaPeru === 'number') STATE.horaPeru = res.horaPeru;
         STATE.enHoraPico = !!res.enHoraPico;
         STATE.avisoBanner = res.avisoBanner || '';
+        STATE.semanaMenuLunes = res.semanaMenuLunes || '';
+        STATE.proximoLunesApp = res.proximoLunesApp || '';
+        STATE.ciclosConfig = Array.isArray(res.ciclosConfig) ? res.ciclosConfig : [];
+        STATE.cicloActual = res.cicloActual || null;
+        STATE.cicloAnterior = res.cicloAnterior || null;
         STATE.fechaSeleccionada = res.fechaConsultada;
         STATE.fechasSemana = res.fechasSemana || [];
         STATE.panesCatalogo = (Array.isArray(res.panesCatalogo) && res.panesCatalogo.length > 0)
@@ -1632,6 +2003,7 @@
       document.getElementById('mod-monitoreo').style.display = 'none';
       document.getElementById('mod-colaboradores').style.display = 'none';
       document.getElementById('mod-planilla').style.display = 'none';
+      document.getElementById('mod-analisis').style.display = 'none';
 
       if (mod === 'MONITOREO') {
         document.getElementById('tab-monitoreo').classList.add('active');
@@ -1651,6 +2023,14 @@
         document.getElementById('tab-planilla').classList.add('active');
         document.getElementById('mod-planilla').style.display = 'block';
         cargarReportePlanillaRRHH();
+      } else if (mod === 'ANALISIS') {
+        document.getElementById('tab-analisis').classList.add('active');
+        document.getElementById('mod-analisis').style.display = 'block';
+        if (!document.getElementById('ana-ini').value) {
+          aplicarPeriodoAnalisis('ACTUAL');
+        } else {
+          cargarAnalisisRRHH();
+        }
       }
     }
 
@@ -2543,6 +2923,9 @@
         if (filtroEst === 'VERSION_ANTIGUA') {
           return c.estadoOriginal !== 'CESADO' && !esVersionAlDia(actual.versionApp);
         }
+        if (filtroEst === 'NUNCA_INGRESO') {
+          return c.estadoOriginal !== 'CESADO' && !c.tieneClave && !c.ultimoAcceso;
+        }
         return true;
       });
 
@@ -2557,15 +2940,18 @@
 
       const tbody = document.getElementById('tbody-colaboradores');
       if (filtrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">Sin colaboradores para mostrar.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted);">Sin colaboradores para mostrar.</td></tr>';
         return;
       }
 
       tbody.innerHTML = filtrados.map(cOrig => {
         const c = obtenerEstadoActualColaborador(cOrig);
+        const ultTxt = cOrig.ultimoAcceso || 'Nunca';
+        const ultCls = cOrig.ultimoAcceso ? 'txt-last-access' : 'txt-last-access nunca';
         return `
           <tr id="row-colab-${c.dni}" class="${c.esModificado ? 'row-modified' : ''}">
             <td style="text-align:center;">${crearBadgeVersionApp(c.versionApp)}</td>
+            <td><span class="${ultCls}">${ultTxt}</span></td>
             <td class="dni-cell">${c.dni}</td>
             <td class="name-cell">${c.nombre}</td>
             <td id="cell-des-${c.dni}">${construirHtmlBarraDesayuno(c)}</td>
@@ -2818,6 +3204,17 @@
     function abrirModalMenu() {
       document.getElementById('txt-aviso-banner-menu').value = STATE.avisoBanner || '';
 
+      const lunesTarget = STATE.proximoLunesApp || '';
+      const chkConfirm = document.getElementById('chk-confirmar-semana-menu');
+      const lblConfirm = document.getElementById('lbl-confirmar-semana-menu');
+      if (lunesTarget) {
+        lblConfirm.textContent = `Confirmar menú de almuerzos para la semana del ${formatearFechaCortaDDMM(lunesTarget)}`;
+        chkConfirm.checked = (STATE.semanaMenuLunes === lunesTarget);
+      } else {
+        lblConfirm.textContent = 'Confirmar menú de almuerzos para la semana';
+        chkConfirm.checked = true;
+      }
+
       const cont = document.getElementById('contenedor-filas-menu');
       const dias = STATE.menuSemanal && STATE.menuSemanal.length === 5
         ? STATE.menuSemanal
@@ -2839,7 +3236,7 @@
             </div>
             <div>
               <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:3px;">Almuerzo:</span>
-              <input type="text" class="form-input" style="width:100%;" id="malm-${idx}" value="${d.almuerzo.replace(/"/g, '&quot;')}">
+              <input type="text" class="form-input" style="width:100%;" id="malm-${idx}" value="${d.almuerzo.replace(/"/g, '&quot;')}" oninput="document.getElementById('chk-confirmar-semana-menu').checked = true;">
             </div>
           </div>
         </div>
@@ -2854,6 +3251,7 @@
 
     async function guardarMenuSemanalUI() {
       const avisoBanner = document.getElementById('txt-aviso-banner-menu').value.trim();
+      const confirmarSemana = document.getElementById('chk-confirmar-semana-menu').checked;
       const nuevaLista = [];
       for (let i = 0; i < 5; i++) {
         nuevaLista.push({
@@ -2866,7 +3264,7 @@
       btn.textContent = 'Guardando...';
 
       try {
-        const res = await llamarAPI('guardarMenuSemanalDesdeRRHH', [STATE.admin.dni, nuevaLista, avisoBanner]);
+        const res = await llamarAPI('guardarMenuSemanalDesdeRRHH', [STATE.admin.dni, nuevaLista, avisoBanner, confirmarSemana]);
         btn.disabled = false;
         btn.textContent = 'Guardar cambios';
         if (res && res.ok) {
@@ -2885,15 +3283,272 @@
     }
 
     // ========================================================================
-    // MÓDULO: REPORTE DE PLANILLA (CACHEADO EN SERVIDOR + EXPORTACIÓN EXCEL)
+    // MODAL: CICLOS DE CORTE CONFIGURABLES
+    // ========================================================================
+    function abrirModalCiclosCorte() {
+      STATE.ciclosEditando = (STATE.ciclosConfig || []).map(c => ({ ...c }));
+      renderizarModalCiclosCorte();
+      document.getElementById('modal-ciclos-corte').style.display = 'flex';
+    }
+
+    function cerrarModalCiclosCorte() {
+      document.getElementById('modal-ciclos-corte').style.display = 'none';
+    }
+
+    function renderizarModalCiclosCorte() {
+      const grid = document.getElementById('grid-resumen-ciclos');
+      const ant = STATE.cicloAnterior;
+      const act = STATE.cicloActual;
+
+      grid.innerHTML = `
+        <div class="ciclo-card-box">
+          <span class="ciclo-card-kicker">Ciclo Anterior</span>
+          <div class="ciclo-card-title">${ant ? ant.nombre : 'Sin registro previo'}</div>
+          <div class="ciclo-card-dates">${ant ? `Del ${ant.etiqueta}` : '-'}</div>
+        </div>
+        <div class="ciclo-card-box vigente">
+          <span class="ciclo-card-kicker">Ciclo Vigente (App y Planilla)</span>
+          <div class="ciclo-card-title">${act ? act.nombre : 'Vigente'}</div>
+          <div class="ciclo-card-dates">${act ? `Del ${act.etiqueta}` : '-'}</div>
+        </div>
+      `;
+
+      const idVigente = act ? act.id : '';
+      const tbody = document.getElementById('tbody-ciclos-corte');
+      tbody.innerHTML = STATE.ciclosEditando.map((c, idx) => {
+        const esVig = (c.id === idVigente) || (STATE.hoyStr >= c.inicio && STATE.hoyStr <= c.fin);
+        const esPasado = (STATE.hoyStr > c.fin);
+        let badgeHtml = `<button type="button" class="btn-deshacer-sm" style="margin-left:0;" onclick="eliminarFilaCicloCorte(${idx})">Quitar</button>`;
+        if (esVig) badgeHtml = `<span class="ciclo-badge-vigente">Vigente</span>`;
+        else if (esPasado) badgeHtml = `<span style="font-size:11.5px; color:var(--muted); font-weight:600;">Cerrado</span>`;
+
+        return `
+          <tr>
+            <td><input type="text" class="form-input" style="width:100%; padding:6px 8px;" value="${String(c.nombre || '').replace(/"/g, '&quot;')}" onchange="STATE.ciclosEditando[${idx}].nombre = this.value"></td>
+            <td><input type="date" class="form-input" style="padding:6px 8px;" value="${c.inicio || ''}" onchange="STATE.ciclosEditando[${idx}].inicio = this.value"></td>
+            <td><input type="date" class="form-input" style="padding:6px 8px;" value="${c.fin || ''}" onchange="STATE.ciclosEditando[${idx}].fin = this.value"></td>
+            <td style="text-align:center;">${badgeHtml}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function agregarFilaCicloCorte() {
+      const lista = STATE.ciclosEditando;
+      let nuevoIni = '';
+      let nuevoFin = '';
+      let nombreSug = 'Nuevo ciclo';
+
+      if (lista.length > 0) {
+        const ult = lista[lista.length - 1];
+        if (ult.fin) {
+          const p = ult.fin.split('-');
+          const dIni = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]) + 1);
+          const dFin = new Date(dIni.getFullYear(), dIni.getMonth() + 1, 24);
+          nuevoIni = dIni.toISOString().split('T')[0];
+          nuevoFin = dFin.toISOString().split('T')[0];
+          const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+          nombreSug = `${meses[dFin.getMonth()]} ${dFin.getFullYear()}`;
+        }
+      }
+
+      lista.push({
+        id: nuevoFin ? nuevoFin.slice(0, 7) : ('CIC_' + Date.now()),
+        nombre: nombreSug,
+        inicio: nuevoIni,
+        fin: nuevoFin
+      });
+      renderizarModalCiclosCorte();
+    }
+
+    function eliminarFilaCicloCorte(idx) {
+      STATE.ciclosEditando.splice(idx, 1);
+      renderizarModalCiclosCorte();
+    }
+
+    async function guardarCiclosCorteUI() {
+      const btn = document.getElementById('btn-guardar-ciclos');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      try {
+        const res = await llamarAPI('guardarCiclosCorteRRHH', [STATE.admin.dni, STATE.ciclosEditando]);
+        btn.disabled = false;
+        btn.textContent = 'Guardar ciclos';
+
+        if (res && res.ok) {
+          cerrarModalCiclosCorte();
+          mostrarToast(res.msg);
+          await cargarDatosPortal(false);
+          inicializarFechasPlanilla();
+        } else {
+          mostrarToast(res ? res.msg : 'No se pudieron guardar los ciclos.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Guardar ciclos';
+        mostrarToast('Error de conexión con el servidor.');
+      }
+    }
+
+    // ========================================================================
+    // MODAL: NUEVO COLABORADOR
+    // ========================================================================
+    function abrirModalNuevoColaborador() {
+      document.getElementById('new-colab-dni').value = '';
+      document.getElementById('new-colab-nombre').value = '';
+      document.getElementById('new-colab-tramo').value = 'MAYOR_1500';
+      document.getElementById('new-colab-rol').value = 'Usuario';
+
+      const panes = STATE.panesCatalogo || PANES_CATALOGO_BASE;
+      const selP1 = document.getElementById('sel-new-pan1');
+      const selP2 = document.getElementById('sel-new-pan2');
+      selP1.innerHTML = panes.map(p => `<option value="${p}">${p}</option>`).join('');
+      selP2.innerHTML = panes.map((p, i) => `<option value="${p}" ${i === 1 ? 'selected' : ''}>${p}</option>`).join('');
+
+      seleccionarDesNuevoColab('NO');
+      seleccionarAlmNuevoColab('REGULAR');
+
+      document.getElementById('modal-nuevo-colaborador').style.display = 'flex';
+      setTimeout(() => document.getElementById('new-colab-dni').focus(), 80);
+    }
+
+    function cerrarModalNuevoColaborador() {
+      document.getElementById('modal-nuevo-colaborador').style.display = 'none';
+    }
+
+    function seleccionarDesNuevoColab(op) {
+      STATE.newColabOpDes = op;
+      document.getElementById('new-des-NO').className = 'seg-btn ' + (op === 'NO' ? 'sel-no' : '');
+      document.getElementById('new-des-OP1').className = 'seg-btn ' + (op === 'OP1' ? 'sel-des' : '');
+      document.getElementById('new-des-OP2').className = 'seg-btn ' + (op === 'OP2' ? 'sel-des' : '');
+      document.getElementById('new-des-OP3').className = 'seg-btn ' + (op === 'OP3' ? 'sel-des' : '');
+
+      const wrapPanes = document.getElementById('wrap-new-panes');
+      const selP2 = document.getElementById('sel-new-pan2');
+      const lblHuevo = document.getElementById('lbl-new-huevo');
+      const lblOp2 = document.getElementById('lbl-new-op2');
+
+      if (op === 'OP1') {
+        wrapPanes.style.display = 'flex';
+        selP2.style.display = 'block';
+        lblHuevo.style.display = 'none';
+        lblOp2.style.display = 'none';
+      } else if (op === 'OP3') {
+        wrapPanes.style.display = 'flex';
+        selP2.style.display = 'none';
+        lblHuevo.style.display = 'inline-block';
+        lblOp2.style.display = 'none';
+      } else if (op === 'OP2') {
+        wrapPanes.style.display = 'none';
+        lblOp2.style.display = 'block';
+      } else {
+        wrapPanes.style.display = 'none';
+        lblOp2.style.display = 'none';
+      }
+    }
+
+    function seleccionarAlmNuevoColab(op) {
+      STATE.newColabOpAlm = op;
+      document.getElementById('new-alm-NO').className = 'seg-btn ' + (op === 'NO' ? 'sel-no' : '');
+      document.getElementById('new-alm-REGULAR').className = 'seg-btn ' + (op === 'REGULAR' ? 'sel-reg' : '');
+      document.getElementById('new-alm-ALTERNATIVO').className = 'seg-btn ' + (op === 'ALTERNATIVO' ? 'sel-alt' : '');
+    }
+
+    async function ejecutarCrearColaboradorRRHH() {
+      const dni = normalizarDni(document.getElementById('new-colab-dni').value);
+      const nombre = document.getElementById('new-colab-nombre').value.trim();
+      const tramo = document.getElementById('new-colab-tramo').value;
+      const rol = document.getElementById('new-colab-rol').value;
+
+      if (dni.length !== 8) {
+        mostrarToast('Ingresa un DNI válido de 8 dígitos.');
+        return;
+      }
+      if (nombre.length < 4) {
+        mostrarToast('Ingresa los apellidos y nombres del colaborador.');
+        return;
+      }
+
+      let desDefCodigo = 'NO';
+      if (STATE.newColabOpDes === 'OP2') desDefCodigo = 'OP2';
+      else if (STATE.newColabOpDes === 'OP1') {
+        const p1 = document.getElementById('sel-new-pan1').value || 'Pollo';
+        const p2 = document.getElementById('sel-new-pan2').value || p1;
+        desDefCodigo = `OP1|${p1}|${p2}`;
+      } else if (STATE.newColabOpDes === 'OP3') {
+        const p1 = document.getElementById('sel-new-pan1').value || 'Pollo';
+        desDefCodigo = `OP3|${p1}`;
+      }
+
+      const btn = document.getElementById('btn-crear-colab');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      try {
+        const res = await llamarAPI('crearColaboradorRRHH', [STATE.admin.dni, {
+          dni: dni,
+          nombre: nombre,
+          tramo: tramo,
+          rol: rol,
+          estado: 'ACTIVO',
+          desDefCodigo: desDefCodigo,
+          almDef: STATE.newColabOpAlm || 'REGULAR'
+        }]);
+        btn.disabled = false;
+        btn.textContent = 'Guardar colaborador';
+
+        if (res && res.ok) {
+          cerrarModalNuevoColaborador();
+          mostrarToast(res.msg);
+          await cargarDatosPortal(false);
+        } else {
+          mostrarToast(res ? res.msg : 'No se pudo agregar al colaborador.');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Guardar colaborador';
+        mostrarToast('Error de conexión con el servidor.');
+      }
+    }
+
+    // ========================================================================
+    // MÓDULO: REPORTE DE PLANILLA (CON CICLOS CONFIGURABLES + EXCEL)
     // ========================================================================
     function inicializarFechasPlanilla() {
+      if (STATE.cicloActual && STATE.cicloActual.inicio && STATE.cicloActual.fin) {
+        document.getElementById('rep-ini').value = STATE.cicloActual.inicio;
+        document.getElementById('rep-fin').value = STATE.cicloActual.fin;
+        document.getElementById('btn-pl-ciclo-actual').classList.add('active');
+        document.getElementById('btn-pl-ciclo-anterior').classList.remove('active');
+        return;
+      }
       const baseStr = STATE.hoyStr || new Date().toISOString().split('T')[0];
       const hoyDate = new Date(baseStr + 'T00:00:00');
       let mes = hoyDate.getMonth(), anio = hoyDate.getFullYear();
       if (hoyDate.getDate() <= 24) mes = mes - 1;
       document.getElementById('rep-ini').value = new Date(anio, mes, 25).toISOString().split('T')[0];
       document.getElementById('rep-fin').value = new Date(anio, mes + 1, 24).toISOString().split('T')[0];
+    }
+
+    function aplicarRangoCicloPlanilla(tipo) {
+      const bAct = document.getElementById('btn-pl-ciclo-actual');
+      const bAnt = document.getElementById('btn-pl-ciclo-anterior');
+      if (tipo === 'ACTUAL' && STATE.cicloActual) {
+        document.getElementById('rep-ini').value = STATE.cicloActual.inicio;
+        document.getElementById('rep-fin').value = STATE.cicloActual.fin;
+        bAct.classList.add('active');
+        bAnt.classList.remove('active');
+        cargarReportePlanillaRRHH();
+      } else if (tipo === 'ANTERIOR' && STATE.cicloAnterior) {
+        document.getElementById('rep-ini').value = STATE.cicloAnterior.inicio;
+        document.getElementById('rep-fin').value = STATE.cicloAnterior.fin;
+        bAnt.classList.add('active');
+        bAct.classList.remove('active');
+        cargarReportePlanillaRRHH();
+      } else {
+        mostrarToast('No hay un ciclo anterior configurado.');
+      }
     }
 
     async function cargarReportePlanillaRRHH() {
@@ -3053,6 +3708,334 @@
 
       XLSX.writeFile(wb, `Planilla_Comedor_SBS_${STATE.hoyStr || 'RRHH'}.xlsx`);
       mostrarToast('Archivo Excel descargado.');
+    }
+
+    // ========================================================================
+    // MÓDULO: ANÁLISIS EJECUTIVO DE CONSUMO, PREFERENCIAS Y ADOPCIÓN
+    // ========================================================================
+    function aplicarPeriodoAnalisis(modo) {
+      ['btn-ana-ciclo-actual', 'btn-ana-ciclo-anterior', 'btn-ana-7d'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+
+      const hoy = STATE.hoyStr || new Date().toISOString().split('T')[0];
+      if (modo === 'ACTUAL' && STATE.cicloActual) {
+        document.getElementById('ana-ini').value = STATE.cicloActual.inicio;
+        document.getElementById('ana-fin').value = hoy < STATE.cicloActual.fin ? hoy : STATE.cicloActual.fin;
+        document.getElementById('btn-ana-ciclo-actual').classList.add('active');
+      } else if (modo === 'ANTERIOR' && STATE.cicloAnterior) {
+        document.getElementById('ana-ini').value = STATE.cicloAnterior.inicio;
+        document.getElementById('ana-fin').value = STATE.cicloAnterior.fin;
+        document.getElementById('btn-ana-ciclo-anterior').classList.add('active');
+      } else if (modo === '7D') {
+        const p = hoy.split('-');
+        const d7 = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]) - 6);
+        document.getElementById('ana-ini').value = d7.toISOString().split('T')[0];
+        document.getElementById('ana-fin').value = hoy;
+        document.getElementById('btn-ana-7d').classList.add('active');
+      }
+      cargarAnalisisRRHH();
+    }
+
+    function construirHtmlBarras(items, labelKey, valKey, colorCls = '', sufijo = '') {
+      if (!Array.isArray(items) || items.length === 0) {
+        return '<div style="font-size:12.5px; color:var(--muted);">Sin datos en el período seleccionado.</div>';
+      }
+      const maxVal = Math.max(...items.map(x => Number(x[valKey] || 0)), 1);
+      return `<div class="bar-list">` + items.map(it => {
+        const val = Number(it[valKey] || 0);
+        const pct = Math.round((val / maxVal) * 100);
+        return `
+          <div class="bar-row">
+            <div class="bar-row-head">
+              <span>${it[labelKey]}</span>
+              <b>${val}${sufijo}</b>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill ${colorCls}" style="width:${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('') + `</div>`;
+    }
+
+    async function cargarAnalisisRRHH() {
+      const fIni = document.getElementById('ana-ini').value;
+      const fFin = document.getElementById('ana-fin').value;
+      const btn = document.getElementById('btn-consultar-analisis');
+      const cont = document.getElementById('contenedor-analisis-body');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Analizando...';
+      }
+
+      try {
+        const res = await llamarAPI('obtenerAnalisisRRHH', [STATE.admin.dni, fIni, fFin]);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Analizar';
+        }
+        if (!res || !res.ok) {
+          cont.innerHTML = `<div class="ana-panel" style="color:var(--danger); text-align:center;">${res && res.msg ? res.msg : 'No se pudo cargar el análisis.'}</div>`;
+          return;
+        }
+
+        STATE.datosAnalisis = res;
+        document.getElementById('lbl-rango-analisis').textContent =
+          `Período: ${formatearFechaCortaDDMM(res.rango.inicio)} al ${formatearFechaCortaDDMM(res.rango.fin)} (${res.rango.diasHabiles} días hábiles)`;
+
+        const ad = res.adopcion;
+        const rs = res.resumen;
+        const ops = res.preferenciasDesayuno.opciones;
+        const almT = res.almuerzoTipos;
+        const cm = res.cambiosManuales;
+
+        const demoraTxt = (rs.demoraPromedioSeg !== null && rs.demoraPromedioSeg !== undefined)
+          ? `${rs.demoraPromedioSeg}s`
+          : '-';
+
+        const opcionesDesItems = [
+          { label: 'Opción 1 (2 panes)', cantidad: ops.op1 || 0 },
+          { label: 'Opción 2 (3 huevos)', cantidad: ops.op2 || 0 },
+          { label: 'Opción 3 (Mixto: pan + huevo)', cantidad: ops.op3 || 0 }
+        ];
+        if (ops.manual > 0) {
+          opcionesDesItems.push({ label: 'Asignado manual RRHH', cantidad: ops.manual });
+        }
+
+        const almTiposItems = [
+          { label: 'Almuerzo Regular', cantidad: almT.regular || 0 },
+          { label: 'Almuerzo Alternativo', cantidad: almT.alternativo || 0 }
+        ];
+
+        const diasChartItems = (res.porDiaSemana || []).map(d => ({
+          dia: `${d.dia} (Prom: ${d.promDes} Des / ${d.promAlm} Alm)`,
+          total: d.totDes + d.totAlm
+        }));
+
+        cont.innerHTML = `
+          <!-- FILA 1: 4 KPIS EJECUTIVOS -->
+          <div class="ana-kpi-grid">
+            <div class="ana-kpi-card">
+              <div class="ana-kpi-lbl">Usabilidad del Servicio</div>
+              <div class="ana-kpi-val">${ad.porcUsabilidad}%</div>
+              <div class="ana-kpi-sub">${ad.conUso} de ${ad.totalActivos} activos consumieron</div>
+            </div>
+            <div class="ana-kpi-card">
+              <div class="ana-kpi-lbl">Adopción App (Clave / 7d)</div>
+              <div class="ana-kpi-val">${ad.porcConClave}%</div>
+              <div class="ana-kpi-sub">${ad.ingresaron7d} ingresaron en últimos 7 días (${ad.porcIngresaron7d}%)</div>
+            </div>
+            <div class="ana-kpi-card">
+              <div class="ana-kpi-lbl">Cumplimiento Escaneo QR</div>
+              <div class="ana-kpi-val">${rs.tasaQrDes}% <span style="font-size:16px; color:var(--muted);">Des</span> / ${rs.tasaQrAlm}% <span style="font-size:16px; color:var(--muted);">Alm</span></div>
+              <div class="ana-kpi-sub">Des: ${rs.totDesAppQR}/${rs.totDesAppRes} • Alm: ${rs.totAlmAppQR}/${rs.totAlmAppRes}</div>
+            </div>
+            <div class="ana-kpi-card">
+              <div class="ana-kpi-lbl">Cesiones y Red QR</div>
+              <div class="ana-kpi-val">${rs.totCesiones} <span style="font-size:15px; color:#0369a1;">cedidos</span></div>
+              <div class="ana-kpi-sub">Retiros: ${rs.totRetiros} • Demora QR prom: ${demoraTxt}</div>
+            </div>
+          </div>
+
+          <!-- FILA 2: PREFERENCIAS DE DESAYUNO (PANES + OPCIONES) -->
+          <div class="ana-grid-2">
+            <div class="ana-panel">
+              <h4>Ranking de Panes Más Pedidos</h4>
+              <p class="ana-desc">Total de unidades elegidas en Opción 1 y Opción 3 durante el período</p>
+              ${construirHtmlBarras(res.preferenciasDesayuno.panesRanking, 'pan', 'cantidad', 'orange', ' und.')}
+            </div>
+
+            <div class="ana-panel">
+              <h4>Distribución por Opción de Desayuno y Almuerzo</h4>
+              <p class="ana-desc">Preferencia entre opciones de desayuno y menú regular vs. alternativo</p>
+              <div style="margin-bottom:16px;">
+                ${construirHtmlBarras(opcionesDesItems, 'label', 'cantidad', 'orange')}
+              </div>
+              <div style="padding-top:12px; border-top:1px solid var(--border);">
+                ${construirHtmlBarras(almTiposItems, 'label', 'cantidad', 'green')}
+              </div>
+            </div>
+          </div>
+
+          <!-- FILA 3: HORAS PICO (15 MIN) -->
+          <div class="ana-grid-2">
+            <div class="ana-panel">
+              <h4>Horas Pico de Atención — Desayuno</h4>
+              <p class="ana-desc">Distribución de escaneos QR por franjas de 15 minutos</p>
+              ${construirHtmlBarras(res.horasPico.desayuno, 'franja', 'cantidad', 'orange')}
+            </div>
+
+            <div class="ana-panel">
+              <h4>Horas Pico de Atención — Almuerzo</h4>
+              <p class="ana-desc">Distribución de escaneos QR por franjas de 15 minutos</p>
+              ${construirHtmlBarras(res.horasPico.almuerzo, 'franja', 'cantidad', 'green')}
+            </div>
+          </div>
+
+          <!-- FILA 4: TENDENCIAS POR DÍA + ADOPCIÓN / VERSIONES -->
+          <div class="ana-grid-2">
+            <div class="ana-panel">
+              <h4>Demanda por Día de Semana y Actividad Manual</h4>
+              <p class="ana-desc">Total y promedio diario de servicios (Lunes a Viernes)</p>
+              ${construirHtmlBarras(diasChartItems, 'dia', 'total', 'blue')}
+              <div class="ana-mini-pills" style="margin-top:14px; margin-bottom:0;">
+                <span class="ana-mini-pill">Activaciones: ${cm.activo}</span>
+                <span class="ana-mini-pill">Cancelaciones: ${cm.cancelo}</span>
+                <span class="ana-mini-pill">Cambios opción: ${cm.cambio}</span>
+                <span class="ana-mini-pill">Asignados RRHH: ${cm.asignado}</span>
+              </div>
+            </div>
+
+            <div class="ana-panel">
+              <h4>Estado de Versiones y Sin Ingreso (${ad.nuncaIngresaron.length})</h4>
+              <p class="ana-desc">Distribución de versiones de App y colaboradores activos que aún no ingresan</p>
+              <div class="ana-mini-pills">
+                ${(ad.versionesDist || []).map(v => `<span class="ana-mini-pill">${v.version}: <b>${v.cantidad}</b></span>`).join('')}
+              </div>
+              <div class="ana-scroll-list">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>DNI</th>
+                      <th>Colaboradores activos que nunca ingresaron</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${ad.nuncaIngresaron.length === 0
+                      ? '<tr><td colspan="2" style="text-align:center; color:#047857; font-weight:700;">Todos los colaboradores activos ya ingresaron a la App.</td></tr>'
+                      : ad.nuncaIngresaron.map(u => `<tr><td class="dni-cell">${u.dni}</td><td class="name-cell">${u.nombre}</td></tr>`).join('')
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- FILA 5: NO-SHOWS Y SIN CONSUMO EN EL CICLO -->
+          <div class="ana-grid-2">
+            <div class="ana-panel">
+              <h4>Reservas No Marcadas con QR ("No-Shows")</h4>
+              <p class="ana-desc">Colaboradores con reservas cerradas en la App sin escaneo QR registrado</p>
+              <div class="ana-scroll-list" style="max-height:260px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>DNI</th>
+                      <th>Apellidos y Nombres</th>
+                      <th style="text-align:center;">Desayuno</th>
+                      <th style="text-align:center;">Almuerzo</th>
+                      <th style="text-align:center;">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${res.noShows.length === 0
+                      ? '<tr><td colspan="5" style="text-align:center; color:#047857; font-weight:700;">Sin inasistencias al QR en el período.</td></tr>'
+                      : res.noShows.map(n => `
+                          <tr>
+                            <td class="dni-cell">${n.dni}</td>
+                            <td class="name-cell">${n.nombre}</td>
+                            <td style="text-align:center;">${n.faltasDes}</td>
+                            <td style="text-align:center;">${n.faltasAlm}</td>
+                            <td style="text-align:center; color:#dc2626; font-weight:800;">${n.totalFaltas}</td>
+                          </tr>
+                        `).join('')
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="ana-panel">
+              <h4>Activos Sin Consumo en el Período (${ad.sinUsoCount})</h4>
+              <p class="ana-desc">Colaboradores activos que no registran desayunos ni almuerzos en estas fechas</p>
+              <div class="ana-scroll-list" style="max-height:260px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>DNI</th>
+                      <th>Apellidos y Nombres</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${ad.sinUsoLista.length === 0
+                      ? '<tr><td colspan="2" style="text-align:center; color:#047857; font-weight:700;">El 100% de colaboradores activos usó el servicio.</td></tr>'
+                      : ad.sinUsoLista.map(u => `<tr><td class="dni-cell">${u.dni}</td><td class="name-cell">${u.nombre}</td></tr>`).join('')
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Analizar';
+        }
+        cont.innerHTML = '<div class="ana-panel" style="color:var(--danger); text-align:center;">Error al cargar el análisis.</div>';
+      }
+    }
+
+    function descargarExcelAnalisisRRHH() {
+      const d = STATE.datosAnalisis;
+      if (!d || !d.ok) {
+        mostrarToast('Consulta primero el análisis para exportarlo.');
+        return;
+      }
+
+      const wb = XLSX.utils.book_new();
+      const hdr = {
+        fill: { fgColor: { rgb: "13392A" } },
+        font: { color: { rgb: "FFFFFF" }, bold: true, sz: 11 },
+        alignment: { horizontal: "center", vertical: "center" }
+      };
+
+      const wsResumen = XLSX.utils.aoa_to_sheet([
+        [{ v: `ANÁLISIS EJECUTIVO COMEDOR SBS (${d.rango.inicio} al ${d.rango.fin})`, s: { font: { bold: true, sz: 13, color: { rgb: "13392A" } } } }],
+        [],
+        [{ v: "Indicador", s: hdr }, { v: "Valor", s: hdr }],
+        ["Colaboradores activos", d.adopcion.totalActivos],
+        ["Con contraseña creada (%)", `${d.adopcion.conClave} (${d.adopcion.porcConClave}%)`],
+        ["Ingresaron últimos 7 días (%)", `${d.adopcion.ingresaron7d} (${d.adopcion.porcIngresaron7d}%)`],
+        ["Usabilidad en el período (%)", `${d.adopcion.conUso} (${d.adopcion.porcUsabilidad}%)`],
+        ["Total desayunos contabilizados", d.resumen.totDesRes],
+        ["Cumplimiento QR Desayuno (%)", `${d.resumen.tasaQrDes}%`],
+        ["Total almuerzos contabilizados", d.resumen.totAlmRes],
+        ["Cumplimiento QR Almuerzo (%)", `${d.resumen.tasaQrAlm}%`],
+        ["Raciones cedidas", d.resumen.totCesiones],
+        ["Retiros manuales RRHH", d.resumen.totRetiros],
+        ["Demora promedio registro QR (seg)", d.resumen.demoraPromedioSeg !== null ? d.resumen.demoraPromedioSeg : "-"]
+      ]);
+      wsResumen['!cols'] = [{ wch: 36 }, { wch: 24 }];
+      XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen_KPIs");
+
+      const wsPanes = XLSX.utils.aoa_to_sheet([
+        [{ v: "Pan / Relleno", s: hdr }, { v: "Unidades Pedidas", s: hdr }],
+        ...(d.preferenciasDesayuno.panesRanking || []).map(p => [p.pan, p.cantidad])
+      ]);
+      wsPanes['!cols'] = [{ wch: 24 }, { wch: 18 }];
+      XLSX.utils.book_append_sheet(wb, wsPanes, "Ranking_Panes");
+
+      const wsNoShows = XLSX.utils.aoa_to_sheet([
+        [{ v: "DNI", s: hdr }, { v: "Apellidos y Nombres", s: hdr }, { v: "Faltas Desayuno", s: hdr }, { v: "Faltas Almuerzo", s: hdr }, { v: "Total No-Shows", s: hdr }],
+        ...(d.noShows || []).map(n => [n.dni, n.nombre, n.faltasDes, n.faltasAlm, n.totalFaltas])
+      ]);
+      wsNoShows['!cols'] = [{ wch: 13 }, { wch: 36 }, { wch: 16 }, { wch: 16 }, { wch: 16 }];
+      XLSX.utils.book_append_sheet(wb, wsNoShows, "No_Shows_QR");
+
+      const wsPicos = XLSX.utils.aoa_to_sheet([
+        [{ v: "Servicio", s: hdr }, { v: "Franja Horaria", s: hdr }, { v: "Escaneos QR", s: hdr }],
+        ...(d.horasPico.desayuno || []).map(x => ["DESAYUNO", x.franja, x.cantidad]),
+        ...(d.horasPico.almuerzo || []).map(x => ["ALMUERZO", x.franja, x.cantidad])
+      ]);
+      wsPicos['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 15 }];
+      XLSX.utils.book_append_sheet(wb, wsPicos, "Horas_Pico");
+
+      XLSX.writeFile(wb, `Analisis_Comedor_SBS_${d.rango.inicio}_${d.rango.fin}.xlsx`);
+      mostrarToast('Reporte de análisis descargado.');
     }
   </script>
 </body>

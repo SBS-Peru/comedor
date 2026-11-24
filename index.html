@@ -155,12 +155,56 @@
       gap: 4px;
       flex-shrink: 0;
     }
+    .topbar-ver-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding-right: 2px;
+    }
+    .btn-info-ver {
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.52);
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      font-style: italic;
+      font-family: Georgia, serif;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: transform 0.14s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .btn-info-ver:active { transform: scale(0.9); }
+    .btn-info-ver.breathing {
+      animation: infoBreathe 2.3s ease-in-out infinite;
+    }
+    @keyframes infoBreathe {
+      0%, 100% {
+        background: rgba(16, 185, 129, 0.28);
+        border-color: rgba(110, 231, 183, 0.92);
+        color: #ffffff;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55);
+        transform: scale(1);
+      }
+      50% {
+        background: #10b981;
+        border-color: #ffffff;
+        color: #ffffff;
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+        transform: scale(1.09);
+      }
+    }
     .topbar-ver-tag {
       font-size: 11px;
       font-weight: 700;
-      color: rgba(255, 255, 255, 0.65);
+      color: rgba(255, 255, 255, 0.68);
       letter-spacing: 0.3px;
-      padding-right: 4px;
     }
     .login-ver-tag {
       margin-top: 22px;
@@ -219,7 +263,8 @@
     }
     .pass-input:focus { border-color: var(--sbs-primary); }
 
-    .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+    .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.13s ease, background-color 0.18s ease, opacity 0.18s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+    .btn:not(:disabled):active { transform: scale(0.975); }
     .btn-primary { background: var(--sbs-primary); color: white; }
     .btn-success { background: var(--sbs-accent); color: white; }
     .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
@@ -234,30 +279,52 @@
     .top-bar p { margin: 7px 0 0; font-size: 13.8px; color: rgba(255,255,255,0.92); line-height: 1.35; }
     .btn-salir { background: rgba(255,255,255,0.18); color: white; border: none; padding: 8px 16px; border-radius: 9px; font-size: 13.8px; cursor: pointer; font-weight: 600; flex-shrink: 0; }
     .header-kpi-full-btn {
-      margin-top: 14px;
+      margin-top: 13px;
       width: 100%;
-      background: #10b981;
+      background: rgba(255, 255, 255, 0.14);
       color: #ffffff;
-      border: none;
-      border-radius: 11px;
-      padding: 11px 14px;
-      font-size: 14.5px;
-      font-weight: 800;
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      border-radius: 12px;
+      padding: 6px 6px 6px 13px;
+      font-size: 13.5px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
-      transition: transform 0.14s, opacity 0.14s;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+      transition: transform 0.14s ease, background-color 0.15s ease;
       text-align: left;
     }
-    .header-kpi-full-btn:active { transform: scale(0.985); opacity: 0.92; }
+    .header-kpi-full-btn:active { transform: scale(0.985); background: rgba(255, 255, 255, 0.22); }
+    .hdr-kpi-label {
+      color: rgba(255, 255, 255, 0.96);
+      font-size: 13.3px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+    .hdr-kpi-amount-pill {
+      background: #10b981;
+      color: #ffffff;
+      border-radius: 9px;
+      padding: 6px 9px 6px 12px;
+      font-size: 14px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
     .header-kpi-chevron {
-      font-size: 19px;
+      font-size: 17px;
       font-weight: 800;
       line-height: 1;
-      opacity: 0.88;
+      opacity: 0.92;
       flex-shrink: 0;
     }
     .menu-por-confirmar {
@@ -280,10 +347,17 @@
     }
 
     .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .tab { flex: 1; text-align: center; padding: 12px 6px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
+    .tab { flex: 1; text-align: center; padding: 12px 6px; font-size: 15px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; transition: color 0.16s ease, border-color 0.18s ease, transform 0.12s ease; }
+    .tab:active { transform: scale(0.965); }
     .tab.active { color: var(--sbs-primary); border-bottom-color: var(--sbs-primary); }
 
-    .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); }
+    .scroll-area { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--bg); scroll-behavior: smooth; }
+    #pane-semana { padding-bottom: 52px; }
+    .tab-pane-enter { animation: fadeSlideTab 0.18s cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes fadeSlideTab {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 12px; }
     .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16.5px; margin-bottom: 10px; }
 
@@ -312,7 +386,9 @@
     .srv-split-top {
       padding: 10px 6px; text-align: center; cursor: pointer; flex: 1;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
+      transition: transform 0.12s ease, opacity 0.12s ease;
     }
+    .srv-split-top:active { transform: scale(0.975); opacity: 0.88; }
     .srv-split-card.disabled-card .srv-split-top {
       padding: 9px 6px;
     }
@@ -329,6 +405,11 @@
 
     .pan-dropdown-wrap {
       display: flex; gap: 5px; padding: 0 6px 8px; justify-content: center; align-items: center;
+      animation: fadeSlideDown 0.16s ease-out;
+    }
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .pan-select {
       flex: 1; min-width: 0; width: 100%; height: 29px; padding: 0 3px;
@@ -344,7 +425,8 @@
     .srv-split-card.active-des .srv-split-bottom { border-top-color: #fdba74; }
     .srv-split-card.active-alm .srv-split-bottom { border-top-color: #a7f3d0; }
 
-    .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 10px 2px; font-size: 13.5px; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.15s; }
+    .op-sub-btn { flex: 1; border: none; border-right: 1px solid var(--border); background: transparent; padding: 10px 2px; font-size: 13.5px; font-weight: 700; color: var(--muted); cursor: pointer; transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease; }
+    .op-sub-btn:active { transform: scale(0.95); }
     .op-sub-btn:last-child { border-right: none; }
 
     .srv-split-card.active-des .op-sub-btn.selected-op { background: var(--sbs-orange); color: white; }
@@ -354,11 +436,51 @@
     .modal-backdrop {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(15, 23, 42, 0.72); z-index: 9997; justify-content: center; align-items: center; padding: 16px;
+      animation: fadeBackdrop 0.15s ease-out;
+    }
+    @keyframes fadeBackdrop {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
     .modal-panel {
       background: white; width: 100%; max-width: 440px; max-height: 86vh;
       border-radius: 20px; padding: 20px; display: flex; flex-direction: column;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.35); animation: popModal 0.16s ease-out;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35); animation: popModal 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .novedades-list {
+      margin: 4px 0 18px;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .novedades-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 13.6px;
+      line-height: 1.45;
+      color: #334155;
+      text-align: left;
+    }
+    .nov-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--sbs-primary);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
     }
     .modal-header-row {
       display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;
@@ -658,8 +780,16 @@
     }
 
     @keyframes popModal {
-      from { transform: scale(0.92); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      from { transform: scale(0.95) translateY(6px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
 
     @media (max-width: 480px) {
@@ -667,7 +797,9 @@
       .top-bar { padding: 18px 16px 14px; }
       .top-bar h2 { font-size: 19.5px; }
       .top-bar p { margin-top: 6px; font-size: 13px; }
-      .header-kpi-full-btn { margin-top: 12px; padding: 10px 12px; font-size: 13.6px; }
+      .header-kpi-full-btn { margin-top: 11px; padding: 5px 5px 5px 11px; }
+      .hdr-kpi-label { font-size: 12.3px; }
+      .hdr-kpi-amount-pill { padding: 5px 8px 5px 10px; font-size: 13px; }
       .tab { padding: 10px 4px; font-size: 14px; }
       .scroll-area { padding: 10px 12px; }
       .day-card { padding: 12px; margin-bottom: 10px; }
@@ -770,17 +902,23 @@
           </div>
           <div class="top-bar-right">
             <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
-            <span class="topbar-ver-tag" id="lbl-ver-main">v28</span>
+            <div class="topbar-ver-wrap">
+              <button type="button" class="btn-info-ver" id="btn-info-novedades" onclick="abrirModalNovedades()" title="Novedades de la versión" aria-label="Novedades de la versión">i</button>
+              <span class="topbar-ver-tag" id="lbl-ver-main">v28</span>
+            </div>
           </div>
         </div>
         <button class="header-kpi-full-btn" id="hdr-resumen-total" onclick="abrirModalDetalleConsumido()" title="Ver detalle de consumos del ciclo">
-          <span id="hdr-resumen-texto">Consumido: S/ 0.00</span>
-          <span class="header-kpi-chevron">›</span>
+          <span class="hdr-kpi-label" id="hdr-resumen-texto">Consumido:</span>
+          <span class="hdr-kpi-amount-pill">
+            <span id="hdr-resumen-monto">S/ 0.00</span>
+            <span class="header-kpi-chevron">›</span>
+          </span>
         </button>
       </div>
 
       <div class="tabs">
-        <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Hoy</div>
+        <div class="tab active" id="tab-btn-principal" onclick="cambiarTab('PRINCIPAL')">Comedor</div>
         <div class="tab" id="tab-btn-semana" onclick="cambiarTab('SEMANA')">Mi Semana</div>
         <div class="tab" id="tab-btn-rrhh" style="display:none;" onclick="cambiarTab('RRHH')">RRHH</div>
         <div class="tab" id="tab-btn-tecnico" style="display:none;" onclick="cambiarTab('TECNICO')">Técnico</div>
@@ -906,6 +1044,29 @@
 
         <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO -->
         <div id="pane-tecnico" style="display:none;">
+          <div class="rrhh-box" style="border-color:#a7f3d0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+              <h4 style="margin:0;">Modo Prueba Local (Solo Técnico)</h4>
+              <span id="badge-modo-prueba-tech" style="background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:8px; font-size:11.5px; font-weight:800;">INACTIVO</span>
+            </div>
+            <p style="font-size:12.5px; color:var(--muted); margin:0 0 11px; line-height:1.45;">
+              No afecta a los colaboradores. Al activarlo simula la pantalla de actualización, alterna cada escaneo QR entre <b>Desayuno</b> y <b>Almuerzo</b>, y al desactivarlo borra automáticamente los registros <code>TEST_</code> en Firebase.
+            </p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <button class="btn btn-primary" id="btn-toggle-modo-prueba" style="padding:11px; font-size:14px;" onclick="alternarModoPruebaTecnico()">
+                Activar Modo Prueba
+              </button>
+              <div id="wrap-acciones-modo-prueba" style="display:none; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline" style="flex:1; min-width:140px; padding:9px; font-size:12.5px;" onclick="simularPantallaActualizacionPrueba()">
+                  Simular actualización
+                </button>
+                <button class="btn btn-danger-outline" id="btn-limpiar-test-manual" style="flex:1; min-width:140px; padding:9px; font-size:12.5px;" onclick="limpiarRegistrosPruebaFirestore(true)">
+                  Borrar registros TEST_
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="rrhh-box">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
               <h4 style="margin:0;">Estado de Salud del Sistema</h4>
@@ -1007,20 +1168,34 @@
   <!-- MODAL: CONFIRMACIÓN OBLIGATORIA PARA CANCELAR DESAYUNO O ALMUERZO -->
   <div class="modal-backdrop" id="modal-confirmar-cancelacion" onclick="if(event.target===this) cerrarModalCancelarServicio()">
     <div class="modal-panel" style="max-width:370px; text-align:center; padding:24px 20px 20px;">
-      <h3 id="lbl-cancel-titulo" style="margin:0 0 8px; font-size:18.5px; font-weight:800; color:var(--sbs-primary);">
-        ¿Cancelar reserva?
+      <h3 id="lbl-cancel-titulo" style="margin:0 0 20px; font-size:18px; font-weight:800; color:var(--sbs-primary); line-height:1.35;">
+        ¿Deseas cancelar tu almuerzo?
       </h3>
-      <p id="lbl-cancel-mensaje" style="margin:0 0 20px; font-size:14px; color:#475569; line-height:1.48; font-weight:500;">
-        ¿Seguro que deseas cancelar este servicio?
-      </p>
       <div style="display:flex; flex-direction:column; gap:10px;">
-        <button class="btn btn-primary" style="padding:13px; font-size:15px;" onclick="cerrarModalCancelarServicio()">
-          Mantener reserva
-        </button>
         <button class="btn btn-danger-outline" style="padding:12px; font-size:14.5px;" onclick="confirmarCancelacionServicio()">
           Sí, cancelar
         </button>
+        <button class="btn btn-primary" style="padding:13px; font-size:15px;" onclick="cerrarModalCancelarServicio()">
+          Mantener reserva
+        </button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVEDADES DE LA VERSIÓN (ÍCONO i JUNTO A v28) -->
+  <div class="modal-backdrop" id="modal-novedades-version" onclick="if(event.target===this) cerrarModalNovedades()">
+    <div class="modal-panel" style="max-width:410px; padding:22px 20px 20px;">
+      <div class="modal-header-row">
+        <div>
+          <h3 id="lbl-novedades-titulo">Novedades v28</h3>
+          <p>Mejoras en tu App Comedor SBS</p>
+        </div>
+        <button class="btn-x-sm" onclick="cerrarModalNovedades()" title="Cerrar">✕</button>
+      </div>
+      <ol class="novedades-list" id="lista-novedades-version"></ol>
+      <button class="btn btn-primary" style="padding:12px; font-size:15px;" onclick="cerrarModalNovedades()">
+        Entendido
+      </button>
     </div>
   </div>
 
@@ -1069,6 +1244,7 @@
     let ENVIANDO_COLA_QR = false;
     let SINCRONIZANDO_AHORA = false;
     let ACTUALIZACION_OBLIGATORIA = false;
+    let SIMULANDO_ACTUALIZACION_PRUEBA = false;
     let CANCELACION_PENDIENTE = null;
 
     // Suscripciones en vivo de Firestore
@@ -1120,13 +1296,19 @@
       document.getElementById('btn-instalar-pwa').style.display = 'none';
     }
 
-    function mostrarPantallaActualizacion(notasVersion) {
-      ACTUALIZACION_OBLIGATORIA = true;
+    function mostrarPantallaActualizacion(notasVersion, esSimulacionPrueba = false) {
+      SIMULANDO_ACTUALIZACION_PRUEBA = !!esSimulacionPrueba;
+      if (!esSimulacionPrueba) ACTUALIZACION_OBLIGATORIA = true;
       ocultarSplash();
       cerrarEscanerQR();
       const modal = document.getElementById('modal-update-obligatorio');
+      const btn = document.getElementById('btn-actualizar-sbs');
       const txtNotas = document.getElementById('update-notas-texto');
       const textoFinal = (notasVersion && String(notasVersion).trim()) ? String(notasVersion).trim() : TEXTO_MEJORA_DEFECTO;
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = esSimulacionPrueba ? 'Actualizar Comedor SBS (Prueba)' : 'Actualizar Comedor SBS';
+      }
       if (txtNotas) {
         txtNotas.textContent = textoFinal;
         txtNotas.style.display = textoFinal ? 'block' : 'none';
@@ -1136,7 +1318,7 @@
 
     function verificarVersionServidor(versionRemota, notasVersion) {
       if (versionRemota && Number(versionRemota) > Number(VERSION_LOCAL_APP)) {
-        mostrarPantallaActualizacion(notasVersion);
+        mostrarPantallaActualizacion(notasVersion, false);
         return true;
       }
       return false;
@@ -1144,6 +1326,14 @@
 
     async function aplicarActualizacionApp() {
       vibrarHaptico(20);
+      if (SIMULANDO_ACTUALIZACION_PRUEBA) {
+        SIMULANDO_ACTUALIZACION_PRUEBA = false;
+        const modal = document.getElementById('modal-update-obligatorio');
+        if (modal) modal.style.display = 'none';
+        cambiarTab('PRINCIPAL');
+        mostrarToast('Simulación completada. Escaneo 1: Desayuno, Escaneo 2: Almuerzo.');
+        return;
+      }
       const btn = document.getElementById('btn-actualizar-sbs');
       if (btn) {
         btn.disabled = true;
@@ -1191,7 +1381,10 @@
       html5QrCode: null,
       procesandoEscaneo: false,
       ticketCompactoActivo: null,
-      ultimoTicketPrueba: null
+      ultimoTicketPrueba: null,
+      modoPruebaTecnicoLocal: (localStorage.getItem('SBS_TECH_MODO_PRUEBA') === '1'),
+      siguienteSrvPrueba: 'DESAYUNO',
+      fechaDiaPrincipalMostrado: ''
     };
 
     // ========================================================================
@@ -1646,6 +1839,133 @@
       return r === 'TECNICO' || r === 'ADMIN_TECNICO' || r === 'DEV';
     }
 
+    function esModoPruebaActivoEnApp() {
+      return (esUsuarioTecnico(STATE.usuario) && !!STATE.modoPruebaTecnicoLocal) || !!STATE.modoPruebaQR;
+    }
+
+    function actualizarEstadoBotonNovedades() {
+      const btn = document.getElementById('btn-info-novedades');
+      if (!btn) return;
+      const vistaVer = localStorage.getItem('SBS_NOVEDADES_VISTAS_VER');
+      btn.classList.toggle('breathing', vistaVer !== VERSION_LOCAL_APP);
+    }
+
+    function abrirModalNovedades() {
+      vibrarHaptico(14);
+      try { localStorage.setItem('SBS_NOVEDADES_VISTAS_VER', VERSION_LOCAL_APP); } catch (e) {}
+      actualizarEstadoBotonNovedades();
+
+      const tit = document.getElementById('lbl-novedades-titulo');
+      if (tit) tit.textContent = `Novedades v${VERSION_LOCAL_APP}`;
+
+      const ciclo = String(STATE.etiquetaCiclo || '').trim();
+      const textoCiclo = ciclo ? ` (${ciclo})` : '';
+      const lista = document.getElementById('lista-novedades-version');
+      if (lista) {
+        lista.innerHTML = `
+          <li><span class="nov-num">1</span><span>Tocar las opciones ya no cancela tu reserva. Para desactivar, toca el título <b>Desayuno</b> o <b>Almuerzo</b> y confirma.</span></li>
+          <li><span class="nov-num">2</span><span>Desde los viernes a las 12:00 PM ya podrás elegir tu menú de la siguiente semana en <b>Mi Semana</b>.</span></li>
+          <li><span class="nov-num">3</span><span>Toca <b>Consumido</b> arriba para ver tu historial día por día del ciclo actual${textoCiclo}.</span></li>
+        `;
+      }
+      document.getElementById('modal-novedades-version').style.display = 'flex';
+    }
+
+    function cerrarModalNovedades() {
+      vibrarHaptico(10);
+      document.getElementById('modal-novedades-version').style.display = 'none';
+    }
+
+    function actualizarUIModoPruebaTecnico() {
+      const activo = esUsuarioTecnico(STATE.usuario) && !!STATE.modoPruebaTecnicoLocal;
+      const badge = document.getElementById('badge-modo-prueba-tech');
+      const btn = document.getElementById('btn-toggle-modo-prueba');
+      const wrap = document.getElementById('wrap-acciones-modo-prueba');
+      if (badge) {
+        badge.textContent = activo ? 'ACTIVO (SOLO TÚ)' : 'INACTIVO';
+        badge.style.background = activo ? '#fef3c7' : '#f1f5f9';
+        badge.style.color = activo ? '#92400e' : '#475569';
+      }
+      if (btn) {
+        btn.textContent = activo ? 'Desactivar Modo Prueba y limpiar TEST_' : 'Activar Modo Prueba';
+        btn.className = activo ? 'btn btn-danger-outline' : 'btn btn-primary';
+        btn.style.padding = '11px';
+        btn.style.fontSize = '14px';
+      }
+      if (wrap) wrap.style.display = activo ? 'flex' : 'none';
+    }
+
+    function simularPantallaActualizacionPrueba() {
+      const notas = (STATE.configApp && STATE.configApp.notasVersion) ? STATE.configApp.notasVersion : TEXTO_MEJORA_DEFECTO;
+      mostrarPantallaActualizacion(notas, true);
+    }
+
+    async function alternarModoPruebaTecnico() {
+      if (!esUsuarioTecnico(STATE.usuario)) return;
+      vibrarHaptico(18);
+      const activando = !STATE.modoPruebaTecnicoLocal;
+      STATE.modoPruebaTecnicoLocal = activando;
+
+      if (activando) {
+        STATE.siguienteSrvPrueba = 'DESAYUNO';
+        STATE.ultimoTicketPrueba = null;
+        try { localStorage.setItem('SBS_TECH_MODO_PRUEBA', '1'); } catch (e) {}
+        actualizarUIModoPruebaTecnico();
+        actualizarEstadoBotonQR();
+        simularPantallaActualizacionPrueba();
+      } else {
+        STATE.ultimoTicketPrueba = null;
+        STATE.siguienteSrvPrueba = 'DESAYUNO';
+        try { localStorage.removeItem('SBS_TECH_MODO_PRUEBA'); } catch (e) {}
+        actualizarUIModoPruebaTecnico();
+        actualizarEstadoBotonQR();
+        await limpiarRegistrosPruebaFirestore(false);
+      }
+    }
+
+    async function limpiarRegistrosPruebaFirestore(esManual = false) {
+      const btnM = document.getElementById('btn-limpiar-test-manual');
+      if (btnM) { btnM.disabled = true; btnM.textContent = 'Limpiando...'; }
+      try {
+        const dni = STATE.usuario ? STATE.usuario.dni : '';
+        const consultas = [db.collection('asistencias').where('esPrueba', '==', true).get()];
+        if (dni) consultas.push(db.collection('asistencias').where('dni', '==', dni).get());
+        const snaps = await Promise.all(consultas);
+
+        const refsUnicos = {};
+        snaps.forEach(snap => {
+          snap.forEach(doc => {
+            const d = doc.data() || {};
+            if (String(doc.id).startsWith('TEST_') || d.esPrueba === true) {
+              refsUnicos[doc.id] = doc.ref;
+            }
+          });
+        });
+
+        const refs = Object.values(refsUnicos);
+        for (let i = 0; i < refs.length; i += 400) {
+          const batch = db.batch();
+          refs.slice(i, i + 400).forEach(r => batch.delete(r));
+          await batch.commit();
+        }
+
+        if (refs.length > 0) {
+          mostrarToast(esManual
+            ? `Se eliminaron ${refs.length} registro(s) de prueba.`
+            : `Modo Prueba desactivado. ${refs.length} registro(s) TEST_ eliminados.`);
+        } else {
+          mostrarToast(esManual
+            ? 'No había registros TEST_ en Firebase.'
+            : 'Modo Prueba desactivado. Sin registros TEST_ pendientes.');
+        }
+        cargarPanelSalud();
+      } catch (e) {
+        mostrarToast('No se pudieron borrar los registros de prueba.');
+      } finally {
+        if (btnM) { btnM.disabled = false; btnM.textContent = 'Borrar registros TEST_'; }
+      }
+    }
+
     function esUsuarioRRHH(u) {
       if (!u) return false;
       if (u.esRRHH) return true;
@@ -1990,11 +2310,6 @@
 
       guardarSnapshotLocal();
       renderizarBannerInformativo();
-      const dPrin = obtenerDiaPrincipalActual();
-      if (dPrin) {
-        const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
-        document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
-      }
       renderizarTarjetas();
       actualizarEstadoBotonQR();
 
@@ -2173,11 +2488,6 @@
           STATE.hoyFisico = reg.hoyFisico;
           guardarSnapshotLocal();
           renderizarBannerInformativo();
-          const dPrin = obtenerDiaPrincipalActual();
-          if (dPrin) {
-            const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
-            document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
-          }
           renderizarTarjetas();
           actualizarEstadoBotonQR();
         } else {
@@ -2293,13 +2603,8 @@
         if (STATE.diaHoy) evaluar(STATE.diaHoy);
 
         const dPrinActual = obtenerDiaPrincipalActual();
-        const tabBtn = document.getElementById('tab-btn-principal');
-        if (dPrinActual && tabBtn) {
-          const etiqEsperada = `${dPrinActual.diaTexto} ${dPrinActual.diaNumero || extraerDiaNumeroCliente(dPrinActual.fecha)}`;
-          if (tabBtn.textContent !== etiqEsperada) {
-            tabBtn.textContent = etiqEsperada;
-            huboCambioCorte = true;
-          }
+        if (dPrinActual && STATE.fechaDiaPrincipalMostrado && dPrinActual.fecha !== STATE.fechaDiaPrincipalMostrado) {
+          huboCambioCorte = true;
         }
 
         if (huboCambioCorte) {
@@ -2471,6 +2776,7 @@
       cerrarModalTicketVerde();
       cerrarModalDetalleConsumido();
       cerrarModalCancelarServicio();
+      cerrarModalNovedades();
       localStorage.removeItem('SBS_COMEDOR_AUTH');
       STATE.ultimoSyncMs = 0;
       STATE.usuario = null;
@@ -2601,11 +2907,10 @@
       if (!STATE.usuario) return;
       const calc = construirDetalleConsumoCiclo();
       const etiq = String(STATE.etiquetaCiclo || '').trim();
-      const texto = etiq
-        ? `Consumido del ${etiq}: S/ ${calc.totSoles.toFixed(2)}`
-        : `Consumido: S/ ${calc.totSoles.toFixed(2)}`;
-      const el = document.getElementById('hdr-resumen-texto');
-      if (el) el.textContent = texto;
+      const elLbl = document.getElementById('hdr-resumen-texto');
+      const elMonto = document.getElementById('hdr-resumen-monto');
+      if (elLbl) elLbl.textContent = etiq ? `Consumido del ${etiq}:` : 'Consumido:';
+      if (elMonto) elMonto.textContent = `S/ ${calc.totSoles.toFixed(2)}`;
     }
 
     function abrirModalDetalleConsumido() {
@@ -2707,7 +3012,7 @@
 
         infoBox.innerHTML = `
           <b>Motor de Datos:</b> Firebase Firestore (comedor-sbs) &nbsp;|&nbsp;
-          <b>Modo Prueba QR:</b> ${STATE.modoPruebaQR ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
+          <b>Modo Prueba QR:</b> ${esModoPruebaActivoEnApp() ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
           <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
           <b>Cambios personalizados hoy:</b> ${resSnap.size} &nbsp;|&nbsp;
           <b>Asistencias hoy:</b> ${qrDes + qrAlm}
@@ -2753,8 +3058,8 @@
       const btn = document.getElementById('btn-ejecutar-estres');
       box.style.display = 'block';
 
-      if (!STATE.modoPruebaQR) {
-        box.innerHTML = `<span style="color:#b45309; font-weight:700;">Activa primero el Modo Prueba en Firebase (config/app -> modoPruebaQR: true) para simular escritura de pruebas.</span>`;
+      if (!esModoPruebaActivoEnApp()) {
+        box.innerHTML = `<span style="color:#b45309; font-weight:700;">Activa primero el botón "Activar Modo Prueba" arriba para simular escritura de pruebas sin afectar producción.</span>`;
         return;
       }
 
@@ -2934,11 +3239,8 @@
       document.getElementById('tab-btn-rrhh').style.display = esUsuarioRRHH(STATE.usuario) ? 'block' : 'none';
       document.getElementById('tab-btn-tecnico').style.display = esUsuarioTecnico(STATE.usuario) ? 'block' : 'none';
 
-      const dPrin = obtenerDiaPrincipalActual();
-      if (dPrin) {
-        const numDiaPrin = dPrin.diaNumero || extraerDiaNumeroCliente(dPrin.fecha);
-        document.getElementById('tab-btn-principal').textContent = `${dPrin.diaTexto} ${numDiaPrin}`;
-      }
+      actualizarEstadoBotonNovedades();
+      actualizarUIModoPruebaTecnico();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       cambiarTab('PRINCIPAL', true);
@@ -3023,7 +3325,9 @@
         // Regla estricta: en almuerzo nunca muestra detalle (ni Regular ni Alternativo), solo "Almuerzo registrado"
         return 'Almuerzo registrado';
       }
-      return obtenerDetalleDesayunoHoyParaTicket() || 'Desayuno registrado';
+      const detReal = obtenerDetalleDesayunoHoyParaTicket();
+      if (detReal) return detReal;
+      return esModoPruebaActivoEnApp() ? '2 Panes: Pollo y Queso' : 'Desayuno registrado';
     }
 
     function mostrarTarjetaTicketCompacto(servicio, horaRaw, notaExtra, mantenerBotonVisible = false) {
@@ -3033,7 +3337,7 @@
 
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
       const horaVisual = formatearHoraTicket12h(horaRaw) || 'Registrado hoy';
-      const tienePropia = STATE.modoPruebaQR ? true : tieneReservaPropiaActivaHoy(servicio);
+      const tienePropia = esModoPruebaActivoEnApp() ? true : tieneReservaPropiaActivaHoy(servicio);
       const listaCes = obtenerCesionesServicioHoy(servicio);
 
       const opBox = document.getElementById('compact-ticket-opcion-box');
@@ -3090,15 +3394,15 @@
 
       const horaActual = obtenerHoraPeruActual();
 
-      if (STATE.modoPruebaQR) {
+      if (esModoPruebaActivoEnApp()) {
         btn.style.display = 'inline-flex';
         btn.disabled = false;
-        const srvPrueba = (horaActual < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
-        btn.textContent = (srvPrueba === 'DESAYUNO')
-          ? 'Escanear QR en Comedor (Desayuno)'
-          : 'Escanear QR en Comedor (Almuerzo)';
-        if (STATE.ultimoTicketPrueba && STATE.ultimoTicketPrueba.servicio === srvPrueba) {
-          mostrarTarjetaTicketCompacto(srvPrueba, STATE.ultimoTicketPrueba.hora, 'Modo prueba • Toca para ampliar', true);
+        const sigSrv = STATE.siguienteSrvPrueba || 'DESAYUNO';
+        btn.textContent = (sigSrv === 'DESAYUNO')
+          ? 'Escanear QR (Prueba: Desayuno)'
+          : 'Escanear QR (Prueba: Almuerzo)';
+        if (STATE.ultimoTicketPrueba) {
+          mostrarTarjetaTicketCompacto(STATE.ultimoTicketPrueba.servicio, STATE.ultimoTicketPrueba.hora, 'Modo prueba • Toca para ampliar', true);
         } else {
           ocultarTarjetaTicketCompacto();
         }
@@ -3203,8 +3507,27 @@
     function renderizarTarjetas() {
       actualizarResumenHeader();
       const dPrin = obtenerDiaPrincipalActual();
+      STATE.fechaDiaPrincipalMostrado = dPrin ? dPrin.fecha : '';
       document.getElementById('contenedor-principal').innerHTML = dPrin ? crearHTMLTarjetaDia(dPrin, true) : '';
       document.getElementById('contenedor-semana').innerHTML = (STATE.diasSemana || []).map(d => crearHTMLTarjetaDia(d, false)).join('');
+    }
+
+    function asegurarTarjetaVisibleEnScroll(fecha) {
+      requestAnimationFrame(() => {
+        const scrollEl = document.querySelector('.scroll-area');
+        const paneSem = document.getElementById('pane-semana');
+        const contenedor = (paneSem && paneSem.style.display !== 'none') ? paneSem : document.getElementById('pane-principal');
+        if (!scrollEl || !contenedor) return;
+        const card = contenedor.querySelector(`.day-card[data-fecha="${fecha}"]`);
+        if (!card) return;
+        const scrollRect = scrollEl.getBoundingClientRect();
+        const cardRect = card.getBoundingClientRect();
+        const margenInferior = 18;
+        if (cardRect.bottom > scrollRect.bottom - margenInferior) {
+          const delta = cardRect.bottom - (scrollRect.bottom - margenInferior);
+          scrollEl.scrollBy({ top: delta, behavior: 'smooth' });
+        }
+      });
     }
 
     function crearHTMLTarjetaDia(d, esVistaPrincipal) {
@@ -3291,7 +3614,7 @@
         : `seleccionarOpcionAlmuerzo('${d.fecha}', 'REGULAR')`;
 
       return `
-        <div class="day-card" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
+        <div class="day-card" data-fecha="${d.fecha}" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
           <div class="day-header">
             <span>${d.diaTexto} ${numDiaVisual}</span>
             ${badgeHtml}
@@ -3340,12 +3663,10 @@
 
       vibrarHaptico(15);
       CANCELACION_PENDIENTE = { fecha: fecha, servicio: servicio };
-      const nombreSrv = (servicio === 'DESAYUNO') ? 'Desayuno' : 'Almuerzo';
-      const numDia = dia.diaNumero || extraerDiaNumeroCliente(dia.fecha);
+      const nombreSrvMin = (servicio === 'DESAYUNO') ? 'desayuno' : 'almuerzo';
+      const diaMin = String(dia.diaTexto || '').toLowerCase();
 
-      document.getElementById('lbl-cancel-titulo').textContent = `¿Cancelar tu ${nombreSrv}?`;
-      document.getElementById('lbl-cancel-mensaje').textContent =
-        `¿Seguro que deseas desactivar tu ${nombreSrv} del ${dia.diaTexto} ${numDia}?`;
+      document.getElementById('lbl-cancel-titulo').textContent = `¿Deseas cancelar tu ${nombreSrvMin} del ${diaMin}?`;
       document.getElementById('modal-confirmar-cancelacion').style.display = 'flex';
     }
 
@@ -3463,6 +3784,9 @@
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
+      if (opElegida === 'OP1' || opElegida === 'OP3') {
+        asegurarTarjetaVisibleEnScroll(dia.fecha);
+      }
 
       encolarCambioServicio(dia.fecha, 'DESAYUNO', dia.desayuno);
     }
@@ -3517,31 +3841,47 @@
     function cambiarTab(tab, silencioso = false) {
       if (!silencioso) vibrarHaptico(12);
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('pane-principal').style.display = 'none';
-      document.getElementById('pane-semana').style.display = 'none';
-      document.getElementById('pane-rrhh').style.display = 'none';
-      document.getElementById('pane-tecnico').style.display = 'none';
+      const panes = ['pane-principal', 'pane-semana', 'pane-rrhh', 'pane-tecnico'];
+      panes.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.display = 'none';
+          el.classList.remove('tab-pane-enter');
+        }
+      });
       document.getElementById('app-shell').classList.remove('wide-rrhh');
 
+      let paneActivo = null;
       if (tab === 'PRINCIPAL') {
         document.getElementById('tab-btn-principal').classList.add('active');
-        document.getElementById('pane-principal').style.display = 'block';
+        paneActivo = document.getElementById('pane-principal');
       } else if (tab === 'SEMANA') {
         cerrarEscanerQR();
         document.getElementById('tab-btn-semana').classList.add('active');
-        document.getElementById('pane-semana').style.display = 'block';
+        paneActivo = document.getElementById('pane-semana');
       } else if (tab === 'RRHH') {
         cerrarEscanerQR();
         document.getElementById('tab-btn-rrhh').classList.add('active');
-        document.getElementById('pane-rrhh').style.display = 'block';
+        paneActivo = document.getElementById('pane-rrhh');
         cargarPendientesHoyRRHH();
       } else if (tab === 'TECNICO') {
         cerrarEscanerQR();
         document.getElementById('tab-btn-tecnico').classList.add('active');
-        document.getElementById('pane-tecnico').style.display = 'block';
+        paneActivo = document.getElementById('pane-tecnico');
         document.getElementById('app-shell').classList.add('wide-rrhh');
+        actualizarUIModoPruebaTecnico();
         cargarPanelSalud();
       }
+
+      if (paneActivo) {
+        paneActivo.style.display = 'block';
+        if (!silencioso) {
+          void paneActivo.offsetWidth;
+          paneActivo.classList.add('tab-pane-enter');
+        }
+      }
+      const scrollEl = document.querySelector('.scroll-area');
+      if (scrollEl && !silencioso) scrollEl.scrollTop = 0;
     }
 
     // ========================================================================
@@ -3561,11 +3901,11 @@
           if (STATE.html5QrCode.isScanning) {
             await STATE.html5QrCode.stop().catch(() => {});
           }
-          STATE.html5QrCode.clear();
         } else {
           STATE.html5QrCode = new Html5Qrcode("qr-reader");
         }
       } catch (e) {
+        try { if (STATE.html5QrCode) STATE.html5QrCode.clear(); } catch (e2) {}
         STATE.html5QrCode = new Html5Qrcode("qr-reader");
       }
 
@@ -3611,7 +3951,12 @@
       const horaEscaneoExacta = obtenerHoraLima24hActual();
       const horaVisual12h = formatearHoraTicket12h(horaEscaneoExacta);
       const tsEscaneoMs = Date.now();
-      const srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
+      const enModoPrueba = esModoPruebaActivoEnApp();
+      let srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
+      if (enModoPrueba) {
+        srvEsperado = STATE.siguienteSrvPrueba || 'DESAYUNO';
+        STATE.siguienteSrvPrueba = (srvEsperado === 'DESAYUNO') ? 'ALMUERZO' : 'DESAYUNO';
+      }
       const hoyStr = STATE.hoyFisico.fecha || obtenerFechaHoyLimaISO();
       const dniNorm = STATE.usuario.dni;
 
@@ -3645,13 +3990,13 @@
           : ((planHoy && planHoy.tsAlm) ? planHoy.tsAlm : 'Por defecto');
       }
 
-      const docId = STATE.modoPruebaQR
+      const docId = enModoPrueba
         ? `TEST_${dniNorm}_${hoyStr}_${srvEsperado}_QR_${tsEscaneoMs}`
         : (esSoloCesion
           ? `CESION_${dniNorm}_${hoyStr}_${srvEsperado}_QR`
           : `${dniNorm}_${hoyStr}_${srvEsperado}_QR`);
 
-      if (!STATE.modoPruebaQR) {
+      if (!enModoPrueba) {
         if (srvEsperado === 'DESAYUNO') {
           STATE.hoyFisico.consumioDes = true;
           STATE.hoyFisico.horaScanDes = horaVisual12h;
@@ -3694,6 +4039,7 @@
         origenReserva: origenReserva,
         esSoloCesion: esSoloCesion,
         esHistorico: false,
+        esPrueba: enModoPrueba,
         tsEscaneoMs: tsEscaneoMs,
         metodo: metodo
       });
@@ -3758,6 +4104,7 @@
             demoraRegistro: demoraTxt,
             esSoloCesion: !!actual.esSoloCesion,
             esHistorico: false,
+            esPrueba: !!actual.esPrueba || String(docId).startsWith('TEST_'),
             orden: Number(actual.tsEscaneoMs || Date.now())
           }, { merge: true });
 
@@ -3809,7 +4156,7 @@
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
       const horaExacta = horaGuardadaOpcional ? formatearHoraTicket12h(horaGuardadaOpcional) : obtenerHoraExactaActual();
       const nombreCorto = extraerNombreYApellidoCliente(STATE.usuario);
-      const tienePropia = STATE.modoPruebaQR ? true : tieneReservaPropiaActivaHoy(servicio);
+      const tienePropia = esModoPruebaActivoEnApp() ? true : tieneReservaPropiaActivaHoy(servicio);
       const listaCes = obtenerCesionesServicioHoy(servicio);
 
       document.getElementById('ticket-modal-nombre').textContent = nombreCorto;

@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Comedor SBS">
-  <link rel="apple-touch-icon" href="./Logo.jpg?v=28">
-  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=28">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=28">
+  <link rel="apple-touch-icon" href="./Logo.jpg?v=28.1">
+  <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=28.1">
+  <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=28.1">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -155,57 +155,194 @@
       gap: 4px;
       flex-shrink: 0;
     }
-    .topbar-ver-wrap {
+    .menu-trigger-wrap {
+      position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding-right: 2px;
     }
-    .btn-info-ver {
-      width: 21px;
-      height: 21px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255, 255, 255, 0.52);
+    .btn-header-menu {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      border: 1.5px solid rgba(255, 255, 255, 0.26);
       background: rgba(255, 255, 255, 0.14);
       color: #ffffff;
-      font-size: 12px;
-      font-weight: 800;
-      font-style: italic;
-      font-family: Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
       line-height: 1;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 0;
-      transition: transform 0.14s ease, background-color 0.2s ease, border-color 0.2s ease;
+      position: relative;
+      transition: transform 0.13s ease, background-color 0.15s ease;
     }
-    .btn-info-ver:active { transform: scale(0.9); }
-    .btn-info-ver.breathing {
-      animation: infoBreathe 2.3s ease-in-out infinite;
+    .btn-header-menu:active { transform: scale(0.93); background: rgba(255, 255, 255, 0.24); }
+    .menu-badge-dot {
+      display: none;
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid var(--sbs-primary);
+      animation: dotMenuBreathe 2.2s ease-in-out infinite;
     }
-    @keyframes infoBreathe {
+    .menu-badge-dot.visible { display: block; }
+    @keyframes dotMenuBreathe {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { transform: scale(1.22); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+    }
+    .header-menu-dropdown {
+      display: none;
+      position: absolute;
+      top: 46px;
+      right: 0;
+      width: 215px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 6px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.25);
+      z-index: 300;
+      animation: fadeSlideDown 0.15s ease-out;
+    }
+    .header-menu-dropdown.open { display: flex; flex-direction: column; gap: 2px; }
+    .menu-dd-item {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      padding: 11px 12px;
+      border-radius: 9px;
+      font-size: 13.8px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: background-color 0.12s ease;
+    }
+    .menu-dd-item:active { background: #f1f5f9; }
+    .menu-dd-pill-new {
+      font-size: 10.5px;
+      font-weight: 800;
+      background: #10b981;
+      color: #ffffff;
+      padding: 2px 7px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .menu-dd-pill-new.breathing {
+      animation: pillNewBreathe 2.2s ease-in-out infinite;
+    }
+    @keyframes pillNewBreathe {
       0%, 100% {
-        background: rgba(16, 185, 129, 0.28);
-        border-color: rgba(110, 231, 183, 0.92);
-        color: #ffffff;
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55);
+        background: #10b981;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.52);
         transform: scale(1);
       }
       50% {
-        background: #10b981;
-        border-color: #ffffff;
-        color: #ffffff;
-        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-        transform: scale(1.09);
+        background: #059669;
+        box-shadow: 0 0 0 5px rgba(16, 185, 129, 0);
+        transform: scale(1.06);
       }
     }
-    .topbar-ver-tag {
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.68);
-      letter-spacing: 0.3px;
+    /* SEGMENTADO COMPACTO PARA MI MENÚ POR DEFECTO */
+    .def-section {
+      margin-bottom: 14px;
+      text-align: left;
     }
+    .def-lbl {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--sbs-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 7px;
+    }
+    .def-seg-bar {
+      display: flex;
+      width: 100%;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    .def-seg-btn {
+      flex: 1;
+      border: none;
+      border-right: 1px solid #e2e8f0;
+      background: transparent;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 4px;
+      cursor: pointer;
+      transition: background-color 0.14s ease, color 0.14s ease;
+    }
+    .def-seg-btn:last-child { border-right: none; }
+    .def-seg-btn.sel-no { background: #fef2f2; color: #b91c1c; }
+    .def-seg-btn.sel-des { background: #fff7ed; color: #c2410c; }
+    .def-seg-btn.sel-reg { background: #ecfdf5; color: #047857; }
+    .def-seg-btn.sel-alt { background: #eff6ff; color: #0369a1; }
+    .def-pan-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .def-pan-select {
+      flex: 1;
+      min-width: 0;
+      height: 36px;
+      padding: 0 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #7c2d12;
+      background: #fff7ed;
+      border: 1.5px solid #fdba74;
+      border-radius: 8px;
+      outline: none;
+      text-align: center;
+      text-align-last: center;
+    }
+    .def-info-chip {
+      margin-top: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12.8px;
+      font-weight: 600;
+      color: #475569;
+      text-align: center;
+    }
+    .env-test-pill-login {
+      display: none;
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+      letter-spacing: 0.4px;
+    }
+    .menu-dd-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 3px 6px;
+    }
+    .menu-dd-item.danger { color: #dc2626; }
     .login-ver-tag {
       margin-top: 22px;
       font-size: 11.5px;
@@ -358,8 +495,120 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 12px; }
+    .day-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 15px; margin-bottom: 12px; transition: border-color 0.15s ease; }
+    .day-card.day-collapsed {
+      padding: 13px 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+    .day-card.day-collapsed:active { background: #f1f5f9; transform: scale(0.99); }
+    .day-collapsed-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: #475569;
+    }
+    .day-chevron-svg {
+      width: 20px;
+      height: 20px;
+      color: #64748b;
+      flex-shrink: 0;
+      transition: transform 0.18s ease;
+    }
+    .day-chevron-svg.rotated { transform: rotate(180deg); }
     .day-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16.5px; margin-bottom: 10px; }
+    .day-header.collapsible-head { cursor: pointer; }
+
+    /* MODAL ENCUESTA APP (5 ESTRELLAS + CHIPS CONTEXTUALES) */
+    .survey-stars-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0 6px;
+    }
+    .survey-star-btn {
+      background: transparent;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      color: #cbd5e1;
+      transition: transform 0.14s ease, color 0.14s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .survey-star-btn:active { transform: scale(0.88); }
+    .survey-star-btn.filled { color: #f59e0b; transform: scale(1.06); }
+    .survey-star-btn svg { width: 38px; height: 38px; }
+    .survey-rating-lbl {
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--sbs-primary);
+      min-height: 20px;
+      margin-bottom: 10px;
+    }
+    .survey-followup-wrap {
+      display: none;
+      animation: fadeSlideDown 0.18s ease-out;
+    }
+    .survey-q-sub {
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      margin: 2px 0 8px;
+      text-align: left;
+    }
+    .survey-chips-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+    .survey-chip {
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      color: #334155;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.13s;
+    }
+    .survey-chip.selected {
+      background: #ecfdf5;
+      border-color: var(--sbs-accent);
+      color: #047857;
+    }
+    .survey-textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      padding: 10px 12px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+      resize: none;
+      margin-bottom: 12px;
+    }
+    .survey-textarea:focus { border-color: var(--sbs-primary); }
+    .btn-link-muted {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
 
     .menu-box {
       background: #f8fafc; border-radius: 9px; padding: 10px 12px; font-size: 13.8px;
@@ -374,8 +623,11 @@
 
     .srv-split-card {
       flex: 1; border: 2px solid var(--border); border-radius: 11px; background: white;
-      display: flex; flex-direction: column; overflow: hidden; transition: 0.15s;
+      display: flex; flex-direction: column; overflow: hidden; transition: border-color 0.15s, background-color 0.15s;
       min-width: 0;
+    }
+    .srv-split-card.editable-tall {
+      min-height: 128px;
     }
     .srv-split-card.active-des { background: #fff7ed; border-color: var(--sbs-orange); }
     .srv-split-card.active-alm { background: #ecfdf5; border-color: var(--sbs-accent); }
@@ -405,6 +657,8 @@
 
     .pan-dropdown-wrap {
       display: flex; gap: 5px; padding: 0 6px 8px; justify-content: center; align-items: center;
+    }
+    .pan-dropdown-wrap.anim-dropdown {
       animation: fadeSlideDown 0.16s ease-out;
     }
     @keyframes fadeSlideDown {
@@ -840,6 +1094,148 @@
     .kpi-card-tech .num { font-size: 17px; font-weight: 800; color: var(--sbs-primary); display: block; }
     .kpi-card-tech .lbl { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 2px; display: block; }
 
+    /* VISTA TÉCNICO OPERATIVA MÓVIL */
+    .tech-srv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .tech-srv-card {
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease;
+    }
+    .tech-srv-card:active { transform: scale(0.97); }
+    .tech-srv-card.active-des {
+      background: #fff7ed;
+      border-color: var(--sbs-orange);
+    }
+    .tech-srv-card.active-alm {
+      background: #ecfdf5;
+      border-color: var(--sbs-accent);
+    }
+    .tech-srv-card.active-online {
+      background: #ecfdf5;
+      border-color: #059669;
+    }
+    .tech-srv-card.active-ver {
+      background: #eff6ff;
+      border-color: #0284c7;
+    }
+    .tech-kpi-mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .tech-list-banner {
+      padding: 8px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--sbs-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .tech-srv-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--muted);
+      display: block;
+    }
+    .tech-srv-card.active-des .tech-srv-title { color: #c2410c; }
+    .tech-srv-card.active-alm .tech-srv-title { color: #047857; }
+    .tech-srv-num {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--sbs-primary);
+      line-height: 1.15;
+      margin: 4px 0 2px;
+      display: block;
+      font-variant-numeric: tabular-nums;
+    }
+    .tech-srv-sub {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .tech-seg-tabs {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 11px;
+      padding: 3px;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+    .tech-seg-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #475569;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 9px 8px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background-color 0.14s ease, color 0.14s ease;
+    }
+    .tech-seg-btn.active {
+      background: #ffffff;
+      color: var(--sbs-primary);
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+    }
+    .tech-list-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      overflow: hidden;
+    }
+    .tech-person-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .tech-person-row:last-child { border-bottom: none; }
+    .tech-person-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .tech-ver-badge {
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-variant-numeric: tabular-nums;
+    }
+    .tech-ver-badge.ok { background: #dcfce7; color: #166534; }
+    .tech-ver-badge.old { background: #ffedd5; color: #c2410c; }
+    .tech-ver-badge.none { background: #f1f5f9; color: #94a3b8; }
+    .tech-asist-time {
+      font-size: 13px;
+      font-weight: 800;
+      color: #047857;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .tech-asist-delay {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #64748b;
+      margin-left: 3px;
+    }
+
     #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 11px; font-size: 14px; font-weight: 600; display: none; z-index: 9999; text-align: center; width: max-content; max-width: 90vw; }
   </style>
 </head>
@@ -848,7 +1244,7 @@
   <div class="app-shell" id="app-shell">
     <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
     <div id="view-splash">
-      <img src="./Logo.jpg?v=28" alt="Comedor SBS" class="splash-logo">
+      <img src="./Logo.jpg?v=28.1" alt="Comedor SBS" class="splash-logo">
       <div class="splash-spinner" id="splash-spinner"></div>
       <p id="splash-texto">Actualizando...</p>
       <div id="splash-retry-wrap">
@@ -861,8 +1257,9 @@
     <!-- 1. LOGIN -->
     <div id="view-login">
       <div class="login-logo-wrap">
-        <img id="img-logo-login" src="./Logo.jpg?v=28" alt="SBS">
+        <img id="img-logo-login" src="./Logo.jpg?v=28.1" alt="SBS">
       </div>
+      <div class="env-test-pill-login" id="badge-test-login-app">ENTORNO ESPEJO (TEST)</div>
 
       <div id="step-dni" style="width:100%;">
         <p style="color:var(--muted); font-size:15.5px; margin:4px 0 0;">Ingresa tu DNI para gestionar tu alimentación</p>
@@ -901,10 +1298,27 @@
             <p id="lbl-estado-rol">Tarifas aplicadas según planilla</p>
           </div>
           <div class="top-bar-right">
-            <button class="btn-salir" onclick="cerrarSesion()" title="Cerrar sesión">Salir</button>
-            <div class="topbar-ver-wrap">
-              <button type="button" class="btn-info-ver" id="btn-info-novedades" onclick="abrirModalNovedades()" title="Novedades de la versión" aria-label="Novedades de la versión">i</button>
-              <span class="topbar-ver-tag" id="lbl-ver-main">v28</span>
+            <div class="menu-trigger-wrap">
+              <button type="button" class="btn-header-menu" id="btn-header-menu" onclick="alternarMenuHeader(event)" aria-label="Menú">
+                ☰
+                <span class="menu-badge-dot" id="dot-menu-novedades"></span>
+              </button>
+              <div class="header-menu-dropdown" id="header-menu-dropdown" onclick="event.stopPropagation()">
+                <button type="button" class="menu-dd-item" onclick="cerrarMenuHeader(); abrirModalMenuDefecto()">
+                  <span>Mi menú por defecto</span>
+                </button>
+                <button type="button" class="menu-dd-item" onclick="cerrarMenuHeader(); abrirModalCambiarClave()">
+                  <span>Cambiar contraseña</span>
+                </button>
+                <button type="button" class="menu-dd-item" id="btn-menu-item-version" onclick="cerrarMenuHeader(); abrirModalNovedades()">
+                  <span id="lbl-menu-version-txt">Versión 28.1</span>
+                  <span class="menu-dd-pill-new" id="pill-menu-novedades" style="display:none;">Nuevo</span>
+                </button>
+                <div class="menu-dd-sep"></div>
+                <button type="button" class="menu-dd-item danger" onclick="cerrarMenuHeader(); cerrarSesion()">
+                  <span>Cerrar sesión</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1042,85 +1456,57 @@
           </div>
         </div>
 
-        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO -->
+        <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO (OPERATIVO MÓVIL EN TIEMPO REAL) -->
         <div id="pane-tecnico" style="display:none;">
-          <div class="rrhh-box" style="border-color:#a7f3d0;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-              <h4 style="margin:0;">Modo Prueba Local (Solo Técnico)</h4>
-              <span id="badge-modo-prueba-tech" style="background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:8px; font-size:11.5px; font-weight:800;">INACTIVO</span>
+          <div class="tech-kpi-mini-grid">
+            <div class="tech-srv-card" id="tech-card-ONLINE" onclick="seleccionarModoTecnico('ONLINE')">
+              <span class="tech-srv-title">Conectados Ahora</span>
+              <span class="tech-srv-num" id="tech-app-online" style="color:#047857;">0</span>
+              <span class="tech-srv-sub">En línea (&lt; 6 min)</span>
             </div>
-            <p style="font-size:12.5px; color:var(--muted); margin:0 0 11px; line-height:1.45;">
-              No afecta a los colaboradores. Al activarlo simula la pantalla de actualización, alterna cada escaneo QR entre <b>Desayuno</b> y <b>Almuerzo</b>, y al desactivarlo borra automáticamente los registros <code>TEST_</code> en Firebase.
+            <div class="tech-srv-card" id="tech-card-VERSION" onclick="seleccionarModoTecnico('VERSION_ANTIGUA')">
+              <span class="tech-srv-title">Versión Al Día</span>
+              <span class="tech-srv-num" id="tech-app-ver">0%</span>
+              <span class="tech-srv-sub" id="tech-app-ver-sub">0 de 0 activos</span>
+            </div>
+          </div>
+
+          <div class="tech-srv-grid">
+            <div class="tech-srv-card active-des" id="tech-card-DESAYUNO" onclick="seleccionarServicioTecnico('DESAYUNO')">
+              <span class="tech-srv-title">Desayuno</span>
+              <span class="tech-srv-num" id="tech-cnt-DESAYUNO">0 / 0</span>
+              <span class="tech-srv-sub" id="tech-sub-DESAYUNO">0 pendientes</span>
+            </div>
+            <div class="tech-srv-card" id="tech-card-ALMUERZO" onclick="seleccionarServicioTecnico('ALMUERZO')">
+              <span class="tech-srv-title">Almuerzo</span>
+              <span class="tech-srv-num" id="tech-cnt-ALMUERZO">0 / 0</span>
+              <span class="tech-srv-sub" id="tech-sub-ALMUERZO">0 pendientes</span>
+            </div>
+          </div>
+
+          <div class="tech-seg-tabs" id="tech-seg-tabs-wrap">
+            <button type="button" class="tech-seg-btn active" id="tech-tab-PENDIENTES" onclick="seleccionarFiltroListaTecnico('PENDIENTES')">
+              Pendientes (0)
+            </button>
+            <button type="button" class="tech-seg-btn" id="tech-tab-ASISTENTES" onclick="seleccionarFiltroListaTecnico('ASISTENTES')">
+              Asistentes (0)
+            </button>
+          </div>
+
+          <div class="tech-list-card" id="lista-operativa-tecnico">
+            <div style="padding:20px; text-align:center; color:var(--muted); font-size:13.5px;">Cargando asistencia en vivo...</div>
+          </div>
+
+          <div class="rrhh-box" style="margin-top:12px;">
+            <h4>Restablecer Contraseña</h4>
+            <p style="font-size:12.8px; color:var(--muted); margin:0 0 10px;">
+              Ingresa el DNI del colaborador para limpiar su contraseña actual.
             </p>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <button class="btn btn-primary" id="btn-toggle-modo-prueba" style="padding:11px; font-size:14px;" onclick="alternarModoPruebaTecnico()">
-                Activar Modo Prueba
+            <div class="form-row" style="margin-bottom:0;">
+              <input type="tel" id="tech-dni-reset" class="form-control" placeholder="DNI del colaborador (8 dígitos)" maxlength="8">
+              <button class="btn btn-primary" id="btn-tech-reset-clave" style="flex:0.6; padding:10px; font-size:14px;" onclick="ejecutarReseteoClaveTecnico()">
+                Restablecer
               </button>
-              <div id="wrap-acciones-modo-prueba" style="display:none; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-outline" style="flex:1; min-width:140px; padding:9px; font-size:12.5px;" onclick="simularPantallaActualizacionPrueba()">
-                  Simular actualización
-                </button>
-                <button class="btn btn-danger-outline" id="btn-limpiar-test-manual" style="flex:1; min-width:140px; padding:9px; font-size:12.5px;" onclick="limpiarRegistrosPruebaFirestore(true)">
-                  Borrar registros TEST_
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="rrhh-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-              <h4 style="margin:0;">Estado de Salud del Sistema</h4>
-              <span id="badge-salud-tech" style="background:#dcfce7; color:#166534; padding:4px 10px; border-radius:8px; font-size:11.5px; font-weight:800;">-</span>
-            </div>
-
-            <div class="kpi-grid-tech">
-              <div class="kpi-card-tech"><span class="num" id="tkpi-latencia">-</span><span class="lbl">Latencia Servidor</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-usuarios">-</span><span class="lbl">Activos / Con Clave</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-qr-hoy">-</span><span class="lbl">Asistencia Hoy (Des / Alm)</span></div>
-              <div class="kpi-card-tech"><span class="num" id="tkpi-errores">-</span><span class="lbl">Errores Registrados</span></div>
-            </div>
-
-            <div id="detalle-infraestructura-tech" style="font-size:12.5px; color:var(--muted); background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px; line-height:1.5;">
-              -
-            </div>
-
-            <button class="btn btn-primary" id="btn-refrescar-tech" style="padding:11px; font-size:14px;" onclick="cargarPanelSalud()">
-              Actualizar diagnóstico
-            </button>
-          </div>
-
-          <div class="rrhh-box">
-            <h4>Prueba de Estrés en Vivo (Simulación Hora Punta)</h4>
-            <p style="font-size:12.5px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
-              Simula <b>30 usuarios abriendo la App</b> y <b>15 escaneos QR simultáneos</b> en paralelo.
-            </p>
-            <div id="resultado-estres-tech" style="display:none; font-size:12.5px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; line-height:1.55;"></div>
-            <button class="btn btn-outline" id="btn-ejecutar-estres" style="padding:10px; font-size:13.5px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="ejecutarPruebaEstres()">
-              Simular Ráfaga Concurrente Ahora
-            </button>
-          </div>
-
-          <div class="rrhh-box">
-            <h4>Registro de Excepciones y Errores (Firebase logs_errores)</h4>
-            <div class="table-wrap" style="max-height:220px;">
-              <table>
-                <thead><tr><th>Fecha / Hora</th><th>Contexto</th><th>Motivo del Error</th></tr></thead>
-                <tbody id="tbody-errores-tech">
-                  <tr><td colspan="3" style="text-align:center; color:var(--muted);">-</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="rrhh-box">
-            <h4>Actividad Reciente de Hoy (Firebase asistencias)</h4>
-            <div class="table-wrap" style="max-height:220px;">
-              <table>
-                <thead><tr><th>Fecha / Hora</th><th>Evento</th><th>DNI</th><th>Servicio</th><th>Detalle</th></tr></thead>
-                <tbody id="tbody-eventos-tech">
-                  <tr><td colspan="5" style="text-align:center; color:var(--muted);">-</td></tr>
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
@@ -1199,10 +1585,113 @@
     </div>
   </div>
 
+  <!-- MODAL: CAMBIAR CONTRASEÑA (DESDE MENÚ HAMBURGUESA) -->
+  <div class="modal-backdrop" id="modal-cambiar-clave" onclick="if(event.target===this) cerrarModalCambiarClave()">
+    <div class="modal-panel" style="max-width:380px; padding:22px 20px 20px;">
+      <div class="modal-header-row">
+        <div>
+          <h3>Cambiar contraseña</h3>
+          <p>Actualiza tu clave de acceso</p>
+        </div>
+        <button class="btn-x-sm" onclick="cerrarModalCambiarClave()" title="Cerrar">✕</button>
+      </div>
+      <input type="password" id="txt-clave-actual-mod" class="pass-input" style="font-size:16px; padding:12px; margin:4px 0 10px;" placeholder="Contraseña actual" autocomplete="current-password">
+      <input type="password" id="txt-clave-nueva-mod" class="pass-input" style="font-size:16px; padding:12px; margin:0 0 10px;" placeholder="Nueva contraseña" autocomplete="new-password">
+      <input type="password" id="txt-clave-confirm-mod" class="pass-input" style="font-size:16px; padding:12px; margin:0 0 16px;" placeholder="Confirmar nueva contraseña" autocomplete="new-password">
+      <button class="btn btn-primary" id="btn-guardar-nueva-clave" style="padding:13px; font-size:15px;" onclick="ejecutarCambioClaveUsuario()">
+        Guardar nueva contraseña
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: MI MENÚ POR DEFECTO (AUTOGESTIÓN DEL COLABORADOR) -->
+  <div class="modal-backdrop" id="modal-menu-defecto" onclick="if(event.target===this) cerrarModalMenuDefecto()">
+    <div class="modal-panel" style="max-width:390px; padding:22px 20px 20px;">
+      <div class="modal-header-row">
+        <div>
+          <h3>Mi menú por defecto</h3>
+          <p>Aplica a tus próximos días abiertos</p>
+        </div>
+        <button class="btn-x-sm" onclick="cerrarModalMenuDefecto()" title="Cerrar">✕</button>
+      </div>
+
+      <div class="def-section">
+        <span class="def-lbl">Desayuno</span>
+        <div class="def-seg-bar">
+          <button type="button" class="def-seg-btn" id="def-des-NO" onclick="seleccionarDefDesayunoModal('NO')">No</button>
+          <button type="button" class="def-seg-btn" id="def-des-OP1" onclick="seleccionarDefDesayunoModal('OP1')">Opc. 1</button>
+          <button type="button" class="def-seg-btn" id="def-des-OP2" onclick="seleccionarDefDesayunoModal('OP2')">Opc. 2</button>
+          <button type="button" class="def-seg-btn" id="def-des-OP3" onclick="seleccionarDefDesayunoModal('OP3')">Opc. 3</button>
+        </div>
+        <div class="def-pan-row" id="wrap-def-panes" style="display:none;">
+          <select id="sel-def-pan1" class="def-pan-select" title="Primer pan"></select>
+          <select id="sel-def-pan2" class="def-pan-select" title="Segundo pan"></select>
+          <span id="lbl-def-huevo" style="display:none; font-size:13px; font-weight:700; color:#7c2d12; white-space:nowrap;">+ 1 huevo</span>
+        </div>
+        <div class="def-info-chip" id="lbl-def-op2" style="display:none;">3 huevos + bebida</div>
+      </div>
+
+      <div class="def-section" style="margin-bottom:18px;">
+        <span class="def-lbl">Almuerzo</span>
+        <div class="def-seg-bar">
+          <button type="button" class="def-seg-btn" id="def-alm-NO" onclick="seleccionarDefAlmuerzoModal('NO')">No</button>
+          <button type="button" class="def-seg-btn" id="def-alm-REGULAR" onclick="seleccionarDefAlmuerzoModal('REGULAR')">Regular</button>
+          <button type="button" class="def-seg-btn" id="def-alm-ALTERNATIVO" onclick="seleccionarDefAlmuerzoModal('ALTERNATIVO')">Alternativo</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-guardar-menu-defecto" style="padding:13px; font-size:15px;" onclick="guardarMenuDefectoUsuario()">
+        Guardar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ENCUESTA DE EXPERIENCIA DE LA APP (5 ESTRELLAS + CHIPS + COMENTARIO) -->
+  <div class="modal-backdrop" id="modal-encuesta-app">
+    <div class="modal-panel" style="max-width:400px; padding:24px 20px 18px;">
+      <div class="modal-header-row" style="margin-bottom:6px;">
+        <div>
+          <h3 id="lbl-encuesta-titulo">¿Qué tal tu experiencia con la App?</h3>
+          <p>Tu opinión nos ayuda a seguir mejorándola</p>
+        </div>
+      </div>
+
+      <div class="survey-stars-row" id="survey-stars-row">
+        <button type="button" class="survey-star-btn" id="star-btn-1" onclick="seleccionarEstrellaEncuesta(1)" aria-label="1 estrella">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+        <button type="button" class="survey-star-btn" id="star-btn-2" onclick="seleccionarEstrellaEncuesta(2)" aria-label="2 estrellas">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+        <button type="button" class="survey-star-btn" id="star-btn-3" onclick="seleccionarEstrellaEncuesta(3)" aria-label="3 estrellas">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+        <button type="button" class="survey-star-btn" id="star-btn-4" onclick="seleccionarEstrellaEncuesta(4)" aria-label="4 estrellas">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+        <button type="button" class="survey-star-btn" id="star-btn-5" onclick="seleccionarEstrellaEncuesta(5)" aria-label="5 estrellas">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+      </div>
+      <div class="survey-rating-lbl" id="lbl-encuesta-rating">Toca una estrella para calificar</div>
+
+      <div class="survey-followup-wrap" id="wrap-encuesta-followup">
+        <div class="survey-q-sub" id="lbl-encuesta-pregunta-chips">¿Qué podríamos mejorar?</div>
+        <div class="survey-chips-grid" id="survey-chips-grid"></div>
+        <textarea id="txt-encuesta-comentario" class="survey-textarea" rows="3" maxlength="280" placeholder="Cuéntanos qué mejorarías o qué función te gustaría ver (opcional)..."></textarea>
+        <button class="btn btn-primary" id="btn-enviar-encuesta" style="padding:13px; font-size:15px;" onclick="enviarEncuestaApp()">
+          Enviar opinión
+        </button>
+      </div>
+
+      <button type="button" class="btn-link-muted" onclick="posponerEncuestaApp()">Recuérdamelo más tarde</button>
+    </div>
+  </div>
+
   <!-- PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA -->
   <div id="modal-update-obligatorio">
     <div class="update-card">
-      <img src="./Logo.jpg?v=28" alt="Comedor SBS" class="update-logo">
+      <img src="./Logo.jpg?v=28.1" alt="Comedor SBS" class="update-logo">
       <h3>Actualiza Comedor SBS</h3>
       <button class="btn btn-primary" id="btn-actualizar-sbs" onclick="aplicarActualizacionApp()">
         Actualizar Comedor SBS
@@ -1217,7 +1706,20 @@
     // ========================================================================
     // CONFIGURACIÓN FIREBASE FIRESTORE (COMEDOR SBS — V28 TIEMPO REAL)
     // ========================================================================
-    const FIREBASE_CONFIG = {
+    // Detección automática de entorno (1 solo archivo para Test y Producción, cero edición manual)
+    const HOST_ACTUAL = String(window.location.hostname || '').toLowerCase();
+    const ES_ENTORNO_TEST = HOST_ACTUAL.includes('comedor-sbs-test') || HOST_ACTUAL === 'localhost' || HOST_ACTUAL === '127.0.0.1';
+
+    const FIREBASE_CONFIG_TEST = {
+      apiKey: "AIzaSyAQuF44IPkcPZ6kT4nT_s7AmwCTBTKEJm0",
+      authDomain: "comedor-sbs-test.firebaseapp.com",
+      projectId: "comedor-sbs-test",
+      storageBucket: "comedor-sbs-test.firebasestorage.app",
+      messagingSenderId: "467608366584",
+      appId: "1:467608366584:web:de0c8a310f31cfdd06ba0d"
+    };
+
+    const FIREBASE_CONFIG_PROD = {
       apiKey: "AIzaSyBxBy84E1CmVMQBK9D-EC82v-OC4BJIdUA",
       authDomain: "comedor-sbs.firebaseapp.com",
       projectId: "comedor-sbs",
@@ -1226,30 +1728,49 @@
       appId: "1:645268339422:web:433cb69c0be8ef9bce204f"
     };
 
-    const VERSION_LOCAL_APP = "28";
-    const TEXTO_MEJORA_DEFECTO = "• Confirmación obligatoria antes de cancelar un almuerzo o desayuno.\n• Pase verde ejecutivo más limpio y conexión en tiempo real ultrarrápida.";
+    const FIREBASE_CONFIG = ES_ENTORNO_TEST ? FIREBASE_CONFIG_TEST : FIREBASE_CONFIG_PROD;
+    const VERSION_LOCAL_APP = "28.1";
+    const QR_CODIGO_OFICIAL = "COMEDOR_SBS_OFICIAL";
+    const TEXTO_MEJORA_DEFECTO = "• Nuevo menú (☰) para configurar tu menú por defecto, cambiar contraseña y ver novedades.\n• Confirmación obligatoria antes de cancelar.\n• Validación estricta del QR oficial del comedor.";
 
     // Variables de arranque operativo (NO modificar en este ciclo)
     let FECHA_ARRANQUE_ALMUERZO = "2026-11-18";
     let FECHA_ARRANQUE_DESAYUNO = "2026-11-19";
     let PANES_POR_DEFECTO = ["Pollo", "Queso", "Aceituna", "Huevo", "Tortilla", "Hot dog"];
 
-    // Inicializar Firebase + persistencia offline nativa (IndexedDB)
+    // Inicializar Firebase sin multi-tab IndexedDB persistence (evita bloqueos de 'Verificando...')
+    // La resiliencia offline de reservas/QR se maneja con localStorage sin bloqueos entre pestañas.
     firebase.initializeApp(FIREBASE_CONFIG);
     const db = firebase.firestore();
-    db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+
+    function conTimeoutPromesa(promesa, ms = 9000) {
+      return Promise.race([
+        promesa,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Tiempo de espera agotado. Verifica tu conexión.')), ms))
+      ]);
+    }
 
     let COLA_CAMBIOS_RESERVA = {};
     let TIMER_LOTE_RESERVA = null;
     let ENVIANDO_COLA_QR = false;
     let SINCRONIZANDO_AHORA = false;
     let ACTUALIZACION_OBLIGATORIA = false;
-    let SIMULANDO_ACTUALIZACION_PRUEBA = false;
     let CANCELACION_PENDIENTE = null;
+    let SERVER_OFFSET_MS = 0;
+    let LAST_RENDER_SIGNATURE = '';
+    let ANIMAR_DROPDOWN_FECHA = '';
+    let LAST_HEARTBEAT_SENT_MS = 0;
+    let DIAS_EXPANDIDOS_SEMANA = {};
+    let ENCUESTA_ESTRELLAS = 0;
+    let ENCUESTA_CHIPS_SEL = [];
+    let ENCUESTA_EVALUANDO = false;
+    let ENCUESTA_POSPUESTA_MS = 0;
 
     // Suscripciones en vivo de Firestore
     let UNSUB_CONFIG = null;
+    let UNSUB_TELEMETRIA_USER = null;
     let UNSUB_USER_LIST = [];
+    let UNSUB_TECH_LIST = [];
 
     // Limpiar parámetro ?v=... de la URL al cargar (cuida permiso de cámara en iOS)
     (function limpiarParametroVersionURL() {
@@ -1296,9 +1817,8 @@
       document.getElementById('btn-instalar-pwa').style.display = 'none';
     }
 
-    function mostrarPantallaActualizacion(notasVersion, esSimulacionPrueba = false) {
-      SIMULANDO_ACTUALIZACION_PRUEBA = !!esSimulacionPrueba;
-      if (!esSimulacionPrueba) ACTUALIZACION_OBLIGATORIA = true;
+    function mostrarPantallaActualizacion(notasVersion) {
+      ACTUALIZACION_OBLIGATORIA = true;
       ocultarSplash();
       cerrarEscanerQR();
       const modal = document.getElementById('modal-update-obligatorio');
@@ -1307,7 +1827,7 @@
       const textoFinal = (notasVersion && String(notasVersion).trim()) ? String(notasVersion).trim() : TEXTO_MEJORA_DEFECTO;
       if (btn) {
         btn.disabled = false;
-        btn.textContent = esSimulacionPrueba ? 'Actualizar Comedor SBS (Prueba)' : 'Actualizar Comedor SBS';
+        btn.textContent = 'Actualizar Comedor SBS';
       }
       if (txtNotas) {
         txtNotas.textContent = textoFinal;
@@ -1318,7 +1838,7 @@
 
     function verificarVersionServidor(versionRemota, notasVersion) {
       if (versionRemota && Number(versionRemota) > Number(VERSION_LOCAL_APP)) {
-        mostrarPantallaActualizacion(notasVersion, false);
+        mostrarPantallaActualizacion(notasVersion);
         return true;
       }
       return false;
@@ -1326,14 +1846,6 @@
 
     async function aplicarActualizacionApp() {
       vibrarHaptico(20);
-      if (SIMULANDO_ACTUALIZACION_PRUEBA) {
-        SIMULANDO_ACTUALIZACION_PRUEBA = false;
-        const modal = document.getElementById('modal-update-obligatorio');
-        if (modal) modal.style.display = 'none';
-        cambiarTab('PRINCIPAL');
-        mostrarToast('Simulación completada. Escaneo 1: Desayuno, Escaneo 2: Almuerzo.');
-        return;
-      }
       const btn = document.getElementById('btn-actualizar-sbs');
       if (btn) {
         btn.disabled = true;
@@ -1381,23 +1893,44 @@
       html5QrCode: null,
       procesandoEscaneo: false,
       ticketCompactoActivo: null,
-      ultimoTicketPrueba: null,
-      modoPruebaTecnicoLocal: (localStorage.getItem('SBS_TECH_MODO_PRUEBA') === '1'),
-      siguienteSrvPrueba: 'DESAYUNO',
-      fechaDiaPrincipalMostrado: ''
+      fechaDiaPrincipalMostrado: '',
+      techServicioSel: 'DESAYUNO',
+      techListaTab: 'PENDIENTES',
+      techModoVista: 'SERVICIO',
+      techColabsMap: {},
+      techReservasHoyMap: {},
+      techAsistHoyMap: {},
+      techCesionesHoy: [],
+      techTelemetriaMap: {}
     };
 
     // ========================================================================
     // RELOJ REAL DE LIMA (AMERICA/LIMA) Y REGLAS DE CORTE / SEMANA / CICLOS
     // ========================================================================
+    async function sincronizarRelojServidor() {
+      try {
+        const t0 = Date.now();
+        const resp = await fetch(window.location.pathname + '?ping=' + t0, { method: 'HEAD', cache: 'no-store' });
+        const dateHdr = resp.headers.get('Date');
+        if (dateHdr) {
+          const srvMs = new Date(dateHdr).getTime();
+          const rtt = Date.now() - t0;
+          if (!isNaN(srvMs) && srvMs > 1700000000000) {
+            SERVER_OFFSET_MS = (srvMs + Math.round(rtt / 2)) - Date.now();
+          }
+        }
+      } catch (e) {}
+    }
+
     function obtenerPartesLimaActual() {
+      const ahoraCorregido = new Date(Date.now() + SERVER_OFFSET_MS);
       try {
         const partes = new Intl.DateTimeFormat('en-GB', {
           timeZone: 'America/Lima',
           year: 'numeric', month: '2-digit', day: '2-digit',
           hour: '2-digit', minute: '2-digit', second: '2-digit',
           hour12: false
-        }).formatToParts(new Date());
+        }).formatToParts(ahoraCorregido);
         const get = (t) => Number(partes.find(p => p.type === t).value);
         const h = get('hour');
         return {
@@ -1839,21 +2372,76 @@
       return r === 'TECNICO' || r === 'ADMIN_TECNICO' || r === 'DEV';
     }
 
-    function esModoPruebaActivoEnApp() {
-      return (esUsuarioTecnico(STATE.usuario) && !!STATE.modoPruebaTecnicoLocal) || !!STATE.modoPruebaQR;
+    // ========================================================================
+    // MENÚ HAMBURGUESA, CAMBIO DE CONTRASEÑA, NOVEDADES (3 DÍAS / 1 APERTURA) Y TELEMETRÍA
+    // ========================================================================
+    function alternarMenuHeader(ev) {
+      if (ev) ev.stopPropagation();
+      vibrarHaptico(12);
+      const dd = document.getElementById('header-menu-dropdown');
+      if (!dd) return;
+      const vaAbrir = !dd.classList.contains('open');
+      dd.classList.toggle('open');
+      if (vaAbrir) {
+        try { localStorage.setItem('SBS_MENU_OPENED_VER', VERSION_LOCAL_APP); } catch (e) {}
+        actualizarEstadoBotonNovedades();
+      }
+    }
+
+    function cerrarMenuHeader() {
+      const dd = document.getElementById('header-menu-dropdown');
+      if (dd) dd.classList.remove('open');
+    }
+
+    document.addEventListener('click', () => cerrarMenuHeader());
+
+    function dentroVentana3DiasVersion() {
+      const hoyStr = obtenerFechaHoyLimaISO();
+      let fechaRef = (STATE.configApp && STATE.configApp.fechaVersionISO) ? String(STATE.configApp.fechaVersionISO).trim() : '';
+      if (!fechaRef || !/^\d{4}-\d{2}-\d{2}$/.test(fechaRef)) {
+        const keyFirst = 'SBS_VER_FIRST_SEEN_' + VERSION_LOCAL_APP;
+        fechaRef = localStorage.getItem(keyFirst) || '';
+        if (!fechaRef) {
+          fechaRef = hoyStr;
+          try { localStorage.setItem(keyFirst, hoyStr); } catch (e) {}
+        }
+      }
+      const dVer = new Date(fechaRef + 'T00:00:00');
+      const dHoy = new Date(hoyStr + 'T00:00:00');
+      const diffDias = Math.floor((dHoy.getTime() - dVer.getTime()) / 86400000);
+      return diffDias >= 0 && diffDias < 3;
     }
 
     function actualizarEstadoBotonNovedades() {
-      const btn = document.getElementById('btn-info-novedades');
-      if (!btn) return;
-      const vistaVer = localStorage.getItem('SBS_NOVEDADES_VISTAS_VER');
-      btn.classList.toggle('breathing', vistaVer !== VERSION_LOCAL_APP);
+      const enVentana3Dias = dentroVentana3DiasVersion();
+      const yaAbrioMenu = (localStorage.getItem('SBS_MENU_OPENED_VER') === VERSION_LOCAL_APP);
+      const mostrarPuntito = enVentana3Dias && !yaAbrioMenu;
+      const mostrarNuevo = enVentana3Dias;
+
+      const dot = document.getElementById('dot-menu-novedades');
+      const pillNew = document.getElementById('pill-menu-novedades');
+      const lblVer = document.getElementById('lbl-menu-version-txt');
+
+      if (lblVer) lblVer.textContent = `Versión ${VERSION_LOCAL_APP}`;
+      if (dot) dot.classList.toggle('visible', mostrarPuntito);
+      if (pillNew) {
+        pillNew.style.display = mostrarNuevo ? 'inline-flex' : 'none';
+        pillNew.classList.toggle('breathing', mostrarNuevo);
+      }
     }
 
     function abrirModalNovedades() {
       vibrarHaptico(14);
       try { localStorage.setItem('SBS_NOVEDADES_VISTAS_VER', VERSION_LOCAL_APP); } catch (e) {}
       actualizarEstadoBotonNovedades();
+
+      if (STATE.usuario && STATE.usuario.dni) {
+        db.collection('telemetria').doc(STATE.usuario.dni).set(
+          { novedadesVistasVer: VERSION_LOCAL_APP },
+          { merge: true }
+        ).catch(() => {});
+        registrarAccionTelemetria('Abrió novedades', `Versión ${VERSION_LOCAL_APP}`);
+      }
 
       const tit = document.getElementById('lbl-novedades-titulo');
       if (tit) tit.textContent = `Novedades v${VERSION_LOCAL_APP}`;
@@ -1863,9 +2451,10 @@
       const lista = document.getElementById('lista-novedades-version');
       if (lista) {
         lista.innerHTML = `
-          <li><span class="nov-num">1</span><span>Tocar las opciones ya no cancela tu reserva. Para desactivar, toca el título <b>Desayuno</b> o <b>Almuerzo</b> y confirma.</span></li>
-          <li><span class="nov-num">2</span><span>Desde los viernes a las 12:00 PM ya podrás elegir tu menú de la siguiente semana en <b>Mi Semana</b>.</span></li>
-          <li><span class="nov-num">3</span><span>Toca <b>Consumido</b> arriba para ver tu historial día por día del ciclo actual${textoCiclo}.</span></li>
+          <li><span class="nov-num">1</span><span>Nuevo menú <b>(☰)</b> arriba a la derecha para configurar <b>Mi menú por defecto</b>, cambiar contraseña o cerrar sesión.</span></li>
+          <li><span class="nov-num">2</span><span>Tocar las opciones ya no cancela tu reserva. Para desactivar, toca el título <b>Desayuno</b> o <b>Almuerzo</b> y confirma.</span></li>
+          <li><span class="nov-num">3</span><span>Desde los viernes a las 12:00 PM ya podrás elegir tu menú de la siguiente semana en <b>Mi Semana</b>.</span></li>
+          <li><span class="nov-num">4</span><span>Toca <b>Consumido</b> arriba para ver tu historial día por día del ciclo actual${textoCiclo}.</span></li>
         `;
       }
       document.getElementById('modal-novedades-version').style.display = 'flex';
@@ -1876,93 +2465,854 @@
       document.getElementById('modal-novedades-version').style.display = 'none';
     }
 
-    function actualizarUIModoPruebaTecnico() {
-      const activo = esUsuarioTecnico(STATE.usuario) && !!STATE.modoPruebaTecnicoLocal;
-      const badge = document.getElementById('badge-modo-prueba-tech');
-      const btn = document.getElementById('btn-toggle-modo-prueba');
-      const wrap = document.getElementById('wrap-acciones-modo-prueba');
-      if (badge) {
-        badge.textContent = activo ? 'ACTIVO (SOLO TÚ)' : 'INACTIVO';
-        badge.style.background = activo ? '#fef3c7' : '#f1f5f9';
-        badge.style.color = activo ? '#92400e' : '#475569';
-      }
-      if (btn) {
-        btn.textContent = activo ? 'Desactivar Modo Prueba y limpiar TEST_' : 'Activar Modo Prueba';
-        btn.className = activo ? 'btn btn-danger-outline' : 'btn btn-primary';
-        btn.style.padding = '11px';
-        btn.style.fontSize = '14px';
-      }
-      if (wrap) wrap.style.display = activo ? 'flex' : 'none';
+    function abrirModalCambiarClave() {
+      vibrarHaptico(14);
+      document.getElementById('txt-clave-actual-mod').value = '';
+      document.getElementById('txt-clave-nueva-mod').value = '';
+      document.getElementById('txt-clave-confirm-mod').value = '';
+      document.getElementById('modal-cambiar-clave').style.display = 'flex';
+      setTimeout(() => document.getElementById('txt-clave-actual-mod').focus(), 80);
     }
 
-    function simularPantallaActualizacionPrueba() {
-      const notas = (STATE.configApp && STATE.configApp.notasVersion) ? STATE.configApp.notasVersion : TEXTO_MEJORA_DEFECTO;
-      mostrarPantallaActualizacion(notas, true);
+    function cerrarModalCambiarClave() {
+      document.getElementById('modal-cambiar-clave').style.display = 'none';
     }
 
-    async function alternarModoPruebaTecnico() {
-      if (!esUsuarioTecnico(STATE.usuario)) return;
-      vibrarHaptico(18);
-      const activando = !STATE.modoPruebaTecnicoLocal;
-      STATE.modoPruebaTecnicoLocal = activando;
+    async function ejecutarCambioClaveUsuario() {
+      if (!STATE.usuario) return;
+      const actual = document.getElementById('txt-clave-actual-mod').value;
+      const nueva = document.getElementById('txt-clave-nueva-mod').value;
+      const confirm = document.getElementById('txt-clave-confirm-mod').value;
 
-      if (activando) {
-        STATE.siguienteSrvPrueba = 'DESAYUNO';
-        STATE.ultimoTicketPrueba = null;
-        try { localStorage.setItem('SBS_TECH_MODO_PRUEBA', '1'); } catch (e) {}
-        actualizarUIModoPruebaTecnico();
-        actualizarEstadoBotonQR();
-        simularPantallaActualizacionPrueba();
-      } else {
-        STATE.ultimoTicketPrueba = null;
-        STATE.siguienteSrvPrueba = 'DESAYUNO';
-        try { localStorage.removeItem('SBS_TECH_MODO_PRUEBA'); } catch (e) {}
-        actualizarUIModoPruebaTecnico();
-        actualizarEstadoBotonQR();
-        await limpiarRegistrosPruebaFirestore(false);
+      if (!actual || !nueva || !confirm) {
+        mostrarToast('Completa todos los campos.');
+        return;
       }
-    }
+      if (nueva.length < 4) {
+        mostrarToast('La nueva contraseña debe tener al menos 4 caracteres.');
+        return;
+      }
+      if (nueva !== confirm) {
+        mostrarToast('La nueva contraseña y su confirmación no coinciden.');
+        return;
+      }
 
-    async function limpiarRegistrosPruebaFirestore(esManual = false) {
-      const btnM = document.getElementById('btn-limpiar-test-manual');
-      if (btnM) { btnM.disabled = true; btnM.textContent = 'Limpiando...'; }
+      const btn = document.getElementById('btn-guardar-nueva-clave');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
       try {
-        const dni = STATE.usuario ? STATE.usuario.dni : '';
-        const consultas = [db.collection('asistencias').where('esPrueba', '==', true).get()];
-        if (dni) consultas.push(db.collection('asistencias').where('dni', '==', dni).get());
-        const snaps = await Promise.all(consultas);
+        const dni = STATE.usuario.dni;
+        const hashActualCalc = await calcularHashSHA256Cliente(dni, actual);
+        const hashGuardado = (STATE.colabDoc && STATE.colabDoc.hashClave) || STATE.usuario.hashClave || STATE.tokenActivo;
+        if (hashGuardado && hashActualCalc !== hashGuardado) {
+          btn.disabled = false;
+          btn.textContent = 'Guardar nueva contraseña';
+          mostrarToast('La contraseña actual es incorrecta.');
+          return;
+        }
 
-        const refsUnicos = {};
-        snaps.forEach(snap => {
-          snap.forEach(doc => {
-            const d = doc.data() || {};
-            if (String(doc.id).startsWith('TEST_') || d.esPrueba === true) {
-              refsUnicos[doc.id] = doc.ref;
-            }
-          });
+        const nuevoHash = await calcularHashSHA256Cliente(dni, nueva);
+        // Actualizar token local ANTES de escribir en Firestore para mantener esta sesión abierta
+        STATE.tokenActivo = nuevoHash;
+        STATE.usuario.hashClave = nuevoHash;
+        if (STATE.colabDoc) STATE.colabDoc.hashClave = nuevoHash;
+        guardarSnapshotLocal();
+
+        await db.collection('colaboradores').doc(dni).set({ hashClave: nuevoHash }, { merge: true });
+        registrarAccionTelemetria('Cambió contraseña', 'Desde menú de usuario');
+
+        btn.disabled = false;
+        btn.textContent = 'Guardar nueva contraseña';
+        cerrarModalCambiarClave();
+        mostrarToast('Contraseña actualizada correctamente.');
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Guardar nueva contraseña';
+        mostrarToast('No se pudo actualizar la contraseña.');
+      }
+    }
+
+    // ========================================================================
+    // MÓDULO: MI MENÚ POR DEFECTO (AUTOGESTIÓN DEL COLABORADOR)
+    // ========================================================================
+    let DEF_MODAL_DES = 'NO';
+    let DEF_MODAL_ALM = 'REGULAR';
+
+    function convertirDesACodigoTextoApp(cod) {
+      const info = desglosarDesayuno(cod, PANES_POR_DEFECTO);
+      if (info.op === 'NO') return 'NO';
+      if (info.op === 'OP2') return 'OP2 (Huevos)';
+      if (info.op === 'OP1') return `OP1 (${info.pan1}, ${info.pan2})`;
+      if (info.op === 'OP3') return `OP3 (${info.pan1})`;
+      return 'NO';
+    }
+
+    function abrirModalMenuDefecto() {
+      if (!STATE.usuario) return;
+      vibrarHaptico(14);
+
+      const panes = PANES_POR_DEFECTO.slice();
+      const infoDes = desglosarDesayuno(STATE.usuario.desDef || 'NO', panes);
+      const selP1 = document.getElementById('sel-def-pan1');
+      const selP2 = document.getElementById('sel-def-pan2');
+      selP1.innerHTML = panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>${p}</option>`).join('');
+      selP2.innerHTML = panes.map(p => `<option value="${p}" ${p === infoDes.pan2 ? 'selected' : ''}>${p}</option>`).join('');
+
+      const opIni = (infoDes.op === 'OP1' || infoDes.op === 'OP2' || infoDes.op === 'OP3') ? infoDes.op : 'NO';
+      const almIni = (STATE.usuario.almDef === 'REGULAR' || STATE.usuario.almDef === 'ALTERNATIVO') ? STATE.usuario.almDef : 'NO';
+      seleccionarDefDesayunoModal(opIni);
+      seleccionarDefAlmuerzoModal(almIni);
+
+      document.getElementById('modal-menu-defecto').style.display = 'flex';
+    }
+
+    function cerrarModalMenuDefecto() {
+      document.getElementById('modal-menu-defecto').style.display = 'none';
+    }
+
+    function seleccionarDefDesayunoModal(op) {
+      DEF_MODAL_DES = op;
+      document.getElementById('def-des-NO').className = 'def-seg-btn ' + (op === 'NO' ? 'sel-no' : '');
+      document.getElementById('def-des-OP1').className = 'def-seg-btn ' + (op === 'OP1' ? 'sel-des' : '');
+      document.getElementById('def-des-OP2').className = 'def-seg-btn ' + (op === 'OP2' ? 'sel-des' : '');
+      document.getElementById('def-des-OP3').className = 'def-seg-btn ' + (op === 'OP3' ? 'sel-des' : '');
+
+      const wrapPanes = document.getElementById('wrap-def-panes');
+      const selP2 = document.getElementById('sel-def-pan2');
+      const lblHuevo = document.getElementById('lbl-def-huevo');
+      const lblOp2 = document.getElementById('lbl-def-op2');
+
+      if (op === 'OP1') {
+        wrapPanes.style.display = 'flex';
+        selP2.style.display = 'block';
+        lblHuevo.style.display = 'none';
+        lblOp2.style.display = 'none';
+      } else if (op === 'OP3') {
+        wrapPanes.style.display = 'flex';
+        selP2.style.display = 'none';
+        lblHuevo.style.display = 'inline-block';
+        lblOp2.style.display = 'none';
+      } else if (op === 'OP2') {
+        wrapPanes.style.display = 'none';
+        lblOp2.style.display = 'block';
+      } else {
+        wrapPanes.style.display = 'none';
+        lblOp2.style.display = 'none';
+      }
+    }
+
+    function seleccionarDefAlmuerzoModal(op) {
+      DEF_MODAL_ALM = op;
+      document.getElementById('def-alm-NO').className = 'def-seg-btn ' + (op === 'NO' ? 'sel-no' : '');
+      document.getElementById('def-alm-REGULAR').className = 'def-seg-btn ' + (op === 'REGULAR' ? 'sel-reg' : '');
+      document.getElementById('def-alm-ALTERNATIVO').className = 'def-seg-btn ' + (op === 'ALTERNATIVO' ? 'sel-alt' : '');
+    }
+
+    async function guardarMenuDefectoUsuario() {
+      if (!STATE.usuario) return;
+      vibrarHaptico(16);
+
+      let nuevoDesDef = 'NO';
+      if (DEF_MODAL_DES === 'OP2') nuevoDesDef = 'OP2';
+      else if (DEF_MODAL_DES === 'OP1') {
+        const p1 = document.getElementById('sel-def-pan1').value || PANES_POR_DEFECTO[0];
+        const p2 = document.getElementById('sel-def-pan2').value || p1;
+        nuevoDesDef = `OP1|${p1}|${p2}`;
+      } else if (DEF_MODAL_DES === 'OP3') {
+        const p1 = document.getElementById('sel-def-pan1').value || PANES_POR_DEFECTO[0];
+        nuevoDesDef = `OP3|${p1}`;
+      }
+      const nuevoAlmDef = DEF_MODAL_ALM || 'NO';
+      const desTexto = convertirDesACodigoTextoApp(nuevoDesDef);
+
+      const btn = document.getElementById('btn-guardar-menu-defecto');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      try {
+        const dni = STATE.usuario.dni;
+        const tsCorto = obtenerTimestampCortoLima();
+        const batch = db.batch();
+
+        // 1. Actualizar defaults en colaboradores/{dni}
+        batch.set(db.collection('colaboradores').doc(dni), {
+          desDef: nuevoDesDef,
+          desDefTexto: desTexto,
+          almDef: nuevoAlmDef
+        }, { merge: true });
+
+        // 2. Propagar a días abiertos de Mi Semana que ya tenían documento personalizado en reservas/
+        const diasEvaluar = (STATE.diasSemana || []).slice();
+        if (STATE.diaHoy && !diasEvaluar.some(x => x.fecha === STATE.diaHoy.fecha)) diasEvaluar.push(STATE.diaHoy);
+
+        diasEvaluar.forEach(d => {
+          if (!d || !d.fecha) return;
+          const patchRes = {};
+          const teniaDoc = !!STATE.reservasMap[d.fecha];
+          if (d.puedeEditarDesayuno && esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
+            d.desayuno = nuevoDesDef;
+            if (d.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (nuevoDesDef !== 'NO');
+            if (teniaDoc) { patchRes.des = nuevoDesDef; patchRes.tsDes = tsCorto; }
+          }
+          if (d.puedeEditarAlmuerzo && esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
+            d.almuerzo = nuevoAlmDef;
+            if (d.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (nuevoAlmDef !== 'NO');
+            if (teniaDoc) { patchRes.alm = nuevoAlmDef; patchRes.tsAlm = tsCorto; }
+          }
+          if (Object.keys(patchRes).length > 0) {
+            patchRes.fecha = d.fecha;
+            patchRes.dni = dni;
+            batch.set(db.collection('reservas').doc(`${d.fecha}_${dni}`), patchRes, { merge: true });
+          }
         });
 
-        const refs = Object.values(refsUnicos);
-        for (let i = 0; i < refs.length; i += 400) {
-          const batch = db.batch();
-          refs.slice(i, i + 400).forEach(r => batch.delete(r));
-          await batch.commit();
+        await conTimeoutPromesa(batch.commit(), 9000);
+
+        STATE.usuario.desDef = nuevoDesDef;
+        STATE.usuario.almDef = nuevoAlmDef;
+        if (STATE.colabDoc) {
+          STATE.colabDoc.desDef = nuevoDesDef;
+          STATE.colabDoc.desDefTexto = desTexto;
+          STATE.colabDoc.almDef = nuevoAlmDef;
+        }
+        LAST_RENDER_SIGNATURE = '';
+        guardarSnapshotLocal();
+        renderizarTarjetas();
+        actualizarEstadoBotonQR();
+
+        const detTele = `Des: ${desTexto} · Alm: ${nuevoAlmDef}`;
+        registrarAccionTelemetria('Cambió menú por defecto', detTele);
+
+        btn.disabled = false;
+        btn.textContent = 'Guardar';
+        cerrarModalMenuDefecto();
+      const mEnc = document.getElementById('modal-encuesta-app'); if (mEnc) mEnc.style.display = 'none';
+        mostrarToast('Tu menú por defecto se actualizó.');
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Guardar';
+        mostrarToast('No se pudo guardar tu menú por defecto.');
+      }
+    }
+
+    // ========================================================================
+    // ENCUESTA DE EXPERIENCIA DE LA APP (5 ESTRELLAS + CHIPS, FUERA DE HORAS PICO)
+    // ========================================================================
+    function hayAlgunModalAbiertoApp() {
+      const ids = [
+        'modal-qr-overlay', 'modal-ticket-overlay', 'modal-detalle-consumido',
+        'modal-confirmar-cancelacion', 'modal-novedades-version', 'modal-cambiar-clave',
+        'modal-menu-defecto', 'modal-encuesta-app', 'modal-update-obligatorio'
+      ];
+      return ids.some(id => {
+        const el = document.getElementById(id);
+        return el && el.style.display === 'flex';
+      });
+    }
+
+    function tieneServicioListoParaEscanearAhora() {
+      const hf = STATE.hoyFisico;
+      if (!hf) return false;
+      const horaActual = obtenerHoraPeruActual();
+      const tienePropDes = tieneReservaPropiaActivaHoy('DESAYUNO');
+      const cedidosDes = obtenerCesionesServicioHoy('DESAYUNO');
+      const habDesQR = tienePropDes || cedidosDes.length > 0;
+
+      const tienePropAlm = tieneReservaPropiaActivaHoy('ALMUERZO');
+      const cedidosAlm = obtenerCesionesServicioHoy('ALMUERZO');
+      const habAlmQR = tienePropAlm || cedidosAlm.length > 0;
+
+      // Nunca interferir si tiene desayuno pendiente por escanear (desde 8:20 AM hasta 12:00 PM)
+      if (habDesQR && !hf.consumioDes && horaActual >= 8.33 && horaActual < 12.0) {
+        return true;
+      }
+      // Nunca interferir si tiene almuerzo pendiente por escanear (desde 11:50 AM hasta 6:00 PM)
+      if (habAlmQR && !hf.consumioAlm && horaActual >= 11.83 && horaActual <= 18.0) {
+        return true;
+      }
+      return false;
+    }
+
+    function cumpleUsoMinimoEncuestaApp() {
+      // En entorno TEST se permite validar de inmediato sin exigir historial previo
+      if (ES_ENTORNO_TEST) return true;
+      const diasSet = {};
+      let totalServicios = 0;
+
+      Object.keys(STATE.asistenciasMap || {}).forEach(f => {
+        const a = STATE.asistenciasMap[f];
+        if (!a) return;
+        let hubo = false;
+        if (a.des) { totalServicios++; hubo = true; }
+        if (a.alm) { totalServicios++; hubo = true; }
+        if (hubo) diasSet[f] = true;
+      });
+
+      const hist = (STATE.usuario && Array.isArray(STATE.usuario.historialCiclo)) ? STATE.usuario.historialCiclo : [];
+      hist.forEach(item => {
+        const f = item[0];
+        if (!f || diasSet[f]) return;
+        const d = item[2] ? 1 : 0;
+        const a = item[3] ? 1 : 0;
+        if (d || a) {
+          diasSet[f] = true;
+          totalServicios += (d + a);
+        }
+      });
+
+      const diasUsados = Object.keys(diasSet).length;
+      // Regla de elegibilidad: al menos 2 días distintos de uso o 3 servicios consumidos
+      return diasUsados >= 2 || totalServicios >= 3;
+    }
+
+    async function evaluarMostrarEncuestaApp() {
+      if (ENCUESTA_EVALUANDO || ACTUALIZACION_OBLIGATORIA || !STATE.usuario || !STATE.configApp) return;
+      if (STATE.configApp.encuestaAppActiva !== true) return;
+      if (hayAlgunModalAbiertoApp()) return;
+
+      // Regla 1: Nunca interferir si tiene un servicio listo para escanear QR ahora
+      if (tieneServicioListoParaEscanearAhora()) return;
+
+      // Regla 2: Solo colaboradores con experiencia real usando la App (>= 2 días o >= 3 servicios)
+      if (!cumpleUsoMinimoEncuestaApp()) return;
+
+      // Regla 3: Si tocó "Recuérdamelo más tarde" en esta sesión, esperar a su siguiente ingreso
+      if (ENCUESTA_POSPUESTA_MS > 0) return;
+
+      const dni = STATE.usuario.dni;
+      const encId = String(STATE.configApp.encuestaAppId || ('ENC_APP_' + VERSION_LOCAL_APP)).trim();
+
+      if (localStorage.getItem(`SBS_ENC_DONE_${dni}_${encId}`) === '1') return;
+
+      ENCUESTA_EVALUANDO = true;
+      try {
+        const docSnap = await db.collection('encuestas_app').doc(`${encId}_${dni}`).get();
+        if (docSnap.exists) {
+          localStorage.setItem(`SBS_ENC_DONE_${dni}_${encId}`, '1');
+          ENCUESTA_EVALUANDO = false;
+          return;
+        }
+        if (hayAlgunModalAbiertoApp() || !STATE.usuario || tieneServicioListoParaEscanearAhora()) {
+          ENCUESTA_EVALUANDO = false;
+          return;
+        }
+        abrirModalEncuestaApp();
+      } catch (e) {
+      } finally {
+        ENCUESTA_EVALUANDO = false;
+      }
+    }
+
+    function abrirModalEncuestaApp() {
+      ENCUESTA_ESTRELLAS = 0;
+      ENCUESTA_CHIPS_SEL = [];
+      const tit = (STATE.configApp && STATE.configApp.encuestaAppTitulo)
+        ? String(STATE.configApp.encuestaAppTitulo).trim()
+        : '¿Qué tal tu experiencia con la App?';
+      document.getElementById('lbl-encuesta-titulo').textContent = tit;
+      document.getElementById('lbl-encuesta-rating').textContent = 'Toca una estrella para calificar';
+      document.getElementById('wrap-encuesta-followup').style.display = 'none';
+      document.getElementById('txt-encuesta-comentario').value = '';
+      for (let i = 1; i <= 5; i++) {
+        const b = document.getElementById('star-btn-' + i);
+        if (b) b.classList.remove('filled');
+      }
+      document.getElementById('modal-encuesta-app').style.display = 'flex';
+    }
+
+    function seleccionarEstrellaEncuesta(num) {
+      vibrarHaptico(14);
+      ENCUESTA_ESTRELLAS = num;
+      ENCUESTA_CHIPS_SEL = [];
+      const textos = {
+        1: 'Muy mala',
+        2: 'Mejorable',
+        3: 'Regular',
+        4: 'Buena',
+        5: 'Excelente'
+      };
+      for (let i = 1; i <= 5; i++) {
+        const b = document.getElementById('star-btn-' + i);
+        if (b) b.classList.toggle('filled', i <= num);
+      }
+      document.getElementById('lbl-encuesta-rating').textContent = `${num} de 5 — ${textos[num] || ''}`;
+
+      const esBajo = (num <= 3);
+      document.getElementById('lbl-encuesta-pregunta-chips').textContent = esBajo
+        ? '¿Qué podríamos mejorar?'
+        : '¿Qué te gustaría que mejoremos o agreguemos?';
+
+      const chips = esBajo
+        ? ['Velocidad', 'Escaneo QR', 'Cambiar menú', 'Diseño / Claridad', 'Otro']
+        : ['Recordatorios', 'Ver menú antes', 'Más rápido', 'Todo excelente'];
+
+      const grid = document.getElementById('survey-chips-grid');
+      grid.innerHTML = chips.map(ch =>
+        `<button type="button" class="survey-chip" onclick="alternarChipEncuesta(this, '${ch}')">${ch}</button>`
+      ).join('');
+
+      document.getElementById('wrap-encuesta-followup').style.display = 'block';
+    }
+
+    function alternarChipEncuesta(btnEl, etiqueta) {
+      vibrarHaptico(10);
+      const idxPos = ENCUESTA_CHIPS_SEL.indexOf(etiqueta);
+      if (idxPos === -1) {
+        ENCUESTA_CHIPS_SEL.push(etiqueta);
+        btnEl.classList.add('selected');
+      } else {
+        ENCUESTA_CHIPS_SEL.splice(idxPos, 1);
+        btnEl.classList.remove('selected');
+      }
+    }
+
+    function posponerEncuestaApp() {
+      vibrarHaptico(10);
+      document.getElementById('modal-encuesta-app').style.display = 'none';
+      ENCUESTA_POSPUESTA_MS = Date.now();
+    }
+
+    async function enviarEncuestaApp() {
+      if (!STATE.usuario || ENCUESTA_ESTRELLAS < 1) {
+        mostrarToast('Selecciona una calificación de 1 a 5 estrellas.');
+        return;
+      }
+      vibrarHaptico(18);
+      const btn = document.getElementById('btn-enviar-encuesta');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+
+      try {
+        const dni = STATE.usuario.dni;
+        const encId = String((STATE.configApp && STATE.configApp.encuestaAppId) || ('ENC_APP_' + VERSION_LOCAL_APP)).trim();
+        const comentario = String(document.getElementById('txt-encuesta-comentario').value || '').trim();
+        const hoyStr = obtenerFechaHoyLimaISO();
+        const horaStr = obtenerHoraLima24hActual();
+        const dispo = await detectarInfoDispositivoCliente();
+
+        await conTimeoutPromesa(db.collection('encuestas_app').doc(`${encId}_${dni}`).set({
+          id: `${encId}_${dni}`,
+          encuestaId: encId,
+          dni: dni,
+          nombre: STATE.usuario.nombre || '',
+          primerNombre: extraerPrimerNombreCliente(STATE.usuario),
+          estrellas: ENCUESTA_ESTRELLAS,
+          etiquetas: ENCUESTA_CHIPS_SEL.slice(),
+          comentario: comentario,
+          versionApp: VERSION_LOCAL_APP,
+          dispositivo: dispo,
+          fecha: hoyStr,
+          hora: horaStr,
+          tsMs: Date.now()
+        }), 9000);
+
+        try { localStorage.setItem(`SBS_ENC_DONE_${dni}_${encId}`, '1'); } catch (e) {}
+        registrarAccionTelemetria('Respondió encuesta App', `${ENCUESTA_ESTRELLAS}★` + (ENCUESTA_CHIPS_SEL.length ? ' · ' + ENCUESTA_CHIPS_SEL.join(', ') : ''));
+
+        document.getElementById('modal-encuesta-app').style.display = 'none';
+        mostrarToast('¡Gracias por tu opinión!');
+      } catch (e) {
+        mostrarToast('No se pudo enviar tu opinión. Intenta nuevamente.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enviar opinión';
+      }
+    }
+
+    async function detectarInfoDispositivoCliente() {
+      const esPWA = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true);
+      const modoTxt = esPWA ? 'PWA' : 'Navegador';
+      const ua = navigator.userAgent || '';
+
+      try {
+        if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+          const info = await navigator.userAgentData.getHighEntropyValues(['model', 'platform', 'platformVersion']);
+          const modelo = String(info.model || '').trim();
+          const plat = String(info.platform || '').trim();
+          if (modelo) return `${modelo} (${plat}) · ${modoTxt}`;
+          if (plat) return `${plat} · ${modoTxt}`;
+        }
+      } catch (e) {}
+
+      if (/iPhone/i.test(ua)) return `iPhone · iOS · ${modoTxt}`;
+      if (/iPad/i.test(ua)) return `iPad · iPadOS · ${modoTxt}`;
+      if (/Android/i.test(ua)) {
+        const m = ua.match(/Android\s+[\d.]+;\s*([^;)]+)/i);
+        const mod = m ? m[1].replace(/\s*Build\/.*$/i, '').trim() : 'Android';
+        return `${mod} · ${modoTxt}`;
+      }
+      if (/Windows/i.test(ua)) return `PC Windows · ${modoTxt}`;
+      if (/Mac/i.test(ua)) return `Mac · ${modoTxt}`;
+      return modoTxt;
+    }
+
+    function obtenerTsTelemetriaLima() {
+      const p = obtenerPartesLimaActual();
+      return `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`;
+    }
+
+    async function actualizarPresenciaTelemetria(enLineaBool, forzarAhora = false) {
+      if (!STATE.usuario || !STATE.usuario.dni) return;
+      const ahoraMs = Date.now();
+      if (!forzarAhora && enLineaBool && (ahoraMs - LAST_HEARTBEAT_SENT_MS) < 180000) return;
+      if (enLineaBool) LAST_HEARTBEAT_SENT_MS = ahoraMs;
+
+      try {
+        const dni = STATE.usuario.dni;
+        const tsISO = obtenerTsTelemetriaLima();
+        const dispo = await detectarInfoDispositivoCliente();
+        const verGuardada = localStorage.getItem('SBS_TEL_VER_REG_' + dni);
+        const patch = {
+          dni: dni,
+          versionApp: VERSION_LOCAL_APP,
+          dispositivo: dispo,
+          enLinea: !!enLineaBool,
+          ultimoHeartbeatMs: ahoraMs,
+          ultimoAccesoISO: tsISO
+        };
+        if (verGuardada !== VERSION_LOCAL_APP) {
+          patch.actualizadoEnISO = tsISO;
+          localStorage.setItem('SBS_TEL_VER_REG_' + dni, VERSION_LOCAL_APP);
+        }
+        db.collection('telemetria').doc(dni).set(patch, { merge: true }).catch(() => {});
+      } catch (e) {}
+    }
+
+    function registrarAccionTelemetria(accion, detalle = '') {
+      if (!STATE.usuario || !STATE.usuario.dni) return;
+      try {
+        const dni = STATE.usuario.dni;
+        const tsISO = obtenerTsTelemetriaLima();
+        const keyLocal = 'SBS_TEL_HIST_' + dni;
+        let hist = [];
+        try { hist = JSON.parse(localStorage.getItem(keyLocal) || '[]'); } catch (e) { hist = []; }
+        if (!Array.isArray(hist)) hist = [];
+        hist.push({ accion: String(accion), detalle: String(detalle), ts: tsISO });
+        if (hist.length > 20) hist = hist.slice(hist.length - 20);
+        localStorage.setItem(keyLocal, JSON.stringify(hist));
+
+        db.collection('telemetria').doc(dni).set({
+          dni: dni,
+          versionApp: VERSION_LOCAL_APP,
+          enLinea: true,
+          ultimoHeartbeatMs: Date.now(),
+          ultimaAccion: String(accion),
+          ultimaAccionISO: tsISO,
+          ultimasAcciones: hist
+        }, { merge: true }).catch(() => {});
+      } catch (e) {}
+    }
+
+    // ========================================================================
+    // PERFIL TÉCNICO MÓVIL (TARJETAS DESAYUNO/ALMUERZO + PENDIENTES/ASISTENTES)
+    // ========================================================================
+    function detenerListenersTecnicoMovil() {
+      UNSUB_TECH_LIST.forEach(fn => { try { fn(); } catch (e) {} });
+      UNSUB_TECH_LIST = [];
+    }
+
+    function iniciarListenersTecnicoMovil() {
+      if (UNSUB_TECH_LIST.length > 0) return;
+      const hoyStr = obtenerFechaHoyLimaISO();
+      STATE.techServicioSel = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
+      STATE.techModoVista = 'SERVICIO';
+
+      UNSUB_TECH_LIST.push(
+        db.collection('colaboradores').onSnapshot(snap => {
+          const mapa = {};
+          snap.forEach(doc => { mapa[normalizarDniCliente(doc.id)] = { dni: normalizarDniCliente(doc.id), ...doc.data() }; });
+          STATE.techColabsMap = mapa;
+          renderizarVistaTecnicoMovil();
+        }, () => {})
+      );
+
+      UNSUB_TECH_LIST.push(
+        db.collection('telemetria').onSnapshot(snap => {
+          const mapa = {};
+          snap.forEach(doc => { mapa[normalizarDniCliente(doc.id)] = { dni: normalizarDniCliente(doc.id), ...doc.data() }; });
+          STATE.techTelemetriaMap = mapa;
+          renderizarVistaTecnicoMovil();
+        }, () => {})
+      );
+
+      UNSUB_TECH_LIST.push(
+        db.collection('reservas').where('fecha', '==', hoyStr).onSnapshot(snap => {
+          const mapa = {};
+          snap.forEach(doc => { const x = doc.data(); if (x && x.dni) mapa[normalizarDniCliente(x.dni)] = x; });
+          STATE.techReservasHoyMap = mapa;
+          renderizarVistaTecnicoMovil();
+        }, () => {})
+      );
+
+      UNSUB_TECH_LIST.push(
+        db.collection('asistencias').where('fecha', '==', hoyStr).onSnapshot(snap => {
+          const mapa = {};
+          snap.forEach(doc => {
+            const idA = String(doc.id || '');
+            const a = doc.data() || {};
+            if (idA.includes('TEST_') || a.esPrueba === true || !a.dni || !a.servicio) return;
+            const d = normalizarDniCliente(a.dni);
+            const srv = String(a.servicio).toUpperCase().trim();
+            if (!mapa[d]) mapa[d] = { des: false, horaDes: '', demoraDes: '', ordDes: 0, alm: false, horaAlm: '', demoraAlm: '', ordAlm: 0 };
+            if (srv === 'DESAYUNO') {
+              mapa[d].des = true;
+              mapa[d].horaDes = a.horaEscaneo || '';
+              mapa[d].demoraDes = a.demoraRegistro || '';
+              mapa[d].ordDes = Math.max(mapa[d].ordDes, Number(a.orden || 0));
+            } else if (srv === 'ALMUERZO') {
+              mapa[d].alm = true;
+              mapa[d].horaAlm = a.horaEscaneo || '';
+              mapa[d].demoraAlm = a.demoraRegistro || '';
+              mapa[d].ordAlm = Math.max(mapa[d].ordAlm, Number(a.orden || 0));
+            }
+          });
+          STATE.techAsistHoyMap = mapa;
+          renderizarVistaTecnicoMovil();
+        }, () => {})
+      );
+
+      UNSUB_TECH_LIST.push(
+        db.collection('cesiones').where('fecha', '==', hoyStr).onSnapshot(snap => {
+          const arr = [];
+          snap.forEach(doc => arr.push(doc.data()));
+          STATE.techCesionesHoy = arr;
+          renderizarVistaTecnicoMovil();
+        }, () => {})
+      );
+    }
+
+    function seleccionarModoTecnico(modo) {
+      vibrarHaptico(12);
+      STATE.techModoVista = (STATE.techModoVista === modo) ? 'SERVICIO' : modo;
+      renderizarVistaTecnicoMovil();
+    }
+
+    function seleccionarServicioTecnico(srv) {
+      vibrarHaptico(12);
+      STATE.techModoVista = 'SERVICIO';
+      STATE.techServicioSel = srv;
+      renderizarVistaTecnicoMovil();
+    }
+
+    function seleccionarFiltroListaTecnico(tab) {
+      vibrarHaptico(12);
+      STATE.techModoVista = 'SERVICIO';
+      STATE.techListaTab = tab;
+      renderizarVistaTecnicoMovil();
+    }
+
+    async function ejecutarReseteoClaveTecnico() {
+      vibrarHaptico(15);
+      const dniTarget = normalizarDniCliente(document.getElementById('tech-dni-reset').value);
+      if (dniTarget.length < 7) {
+        mostrarToast('Ingresa el DNI de 8 dígitos del colaborador.');
+        return;
+      }
+      const btn = document.getElementById('btn-tech-reset-clave');
+      btn.disabled = true;
+      btn.textContent = 'Procesando...';
+
+      try {
+        const ref = db.collection('colaboradores').doc(dniTarget);
+        const snap = await ref.get();
+        if (!snap.exists) {
+          mostrarToast(`El DNI ${dniTarget} no existe en BD_COLABORADORES.`);
+        } else {
+          await ref.set({ hashClave: '' }, { merge: true });
+          document.getElementById('tech-dni-reset').value = '';
+          registrarAccionTelemetria('Restableció clave', dniTarget);
+          mostrarToast(`Contraseña de ${snap.data().nombre || dniTarget} restablecida.`);
+        }
+      } catch (e) {
+        mostrarToast('Error al restablecer la clave.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Restablecer';
+      }
+    }
+
+    function esAusenteIndefinidoOCesadoApp(c) {
+      if (!c) return true;
+      const est = String(c.estado || 'ACTIVO').toUpperCase().trim();
+      if (est === 'CESADO') return true;
+      if (esEstadoAusenciaCliente(est) && !c.fechaInicioEstado && !c.fechaFinEstado) return true;
+      return false;
+    }
+
+    function renderizarVistaTecnicoMovil() {
+      const hoyStr = obtenerFechaHoyLimaISO();
+      const srvSel = STATE.techServicioSel || 'DESAYUNO';
+      const tabSel = STATE.techListaTab || 'PENDIENTES';
+      const modo = STATE.techModoVista || 'SERVICIO';
+      const verVigente = String((STATE.configApp && STATE.configApp.versionApp) || VERSION_LOCAL_APP);
+      const targetVerNum = Number(verVigente) || Number(VERSION_LOCAL_APP);
+
+      document.getElementById('tech-card-ONLINE').className = 'tech-srv-card' + (modo === 'ONLINE' ? ' active-online' : '');
+      document.getElementById('tech-card-VERSION').className = 'tech-srv-card' + (modo === 'VERSION_ANTIGUA' ? ' active-ver' : '');
+      document.getElementById('tech-card-DESAYUNO').className = 'tech-srv-card' + (modo === 'SERVICIO' && srvSel === 'DESAYUNO' ? ' active-des' : '');
+      document.getElementById('tech-card-ALMUERZO').className = 'tech-srv-card' + (modo === 'SERVICIO' && srvSel === 'ALMUERZO' ? ' active-alm' : '');
+      document.getElementById('tech-tab-PENDIENTES').classList.toggle('active', tabSel === 'PENDIENTES');
+      document.getElementById('tech-tab-ASISTENTES').classList.toggle('active', tabSel === 'ASISTENTES');
+      const segWrap = document.getElementById('tech-seg-tabs-wrap');
+      if (segWrap) segWrap.style.display = (modo === 'SERVICIO') ? 'flex' : 'none';
+
+      const cedioDes = {}, recibioDes = {}, cedioAlm = {}, recibioAlm = {};
+      (STATE.techCesionesHoy || []).forEach(ces => {
+        if (!ces || ces.estado === 'ANULADA') return;
+        const dc = normalizarDniCliente(ces.dniCedente);
+        const dr = normalizarDniCliente(ces.dniReceptor);
+        if (ces.servicio === 'DESAYUNO') { cedioDes[dc] = true; recibioDes[dr] = true; }
+        if (ces.servicio === 'ALMUERZO') { cedioAlm[dc] = true; recibioAlm[dr] = true; }
+      });
+
+      const stats = {
+        DESAYUNO: { res: 0, asist: 0, pendList: [], asistList: [] },
+        ALMUERZO: { res: 0, asist: 0, pendList: [], asistList: [] }
+      };
+      let totVigentes = 0, totAlDia = 0;
+      const listaOnline = [];
+      const listaVerAntigua = [];
+
+      Object.keys(STATE.techColabsMap || {}).forEach(dni => {
+        const c = STATE.techColabsMap[dni];
+        if (!c || esAusenteIndefinidoOCesadoApp(c)) return;
+        totVigentes++;
+        const nombreCorto = extraerNombreYApellidoCliente(c);
+        const tel = (STATE.techTelemetriaMap && STATE.techTelemetriaMap[dni]) ? STATE.techTelemetriaMap[dni] : {};
+        const ver = String(tel.versionApp || c.versionApp || '').trim();
+        const verNum = Number(ver);
+        const alDia = !!(ver && !isNaN(verNum) && verNum >= targetVerNum);
+        const enLinea = !!(tel.enLinea && Number(tel.ultimoHeartbeatMs || 0) > 0 && (Date.now() - Number(tel.ultimoHeartbeatMs || 0)) <= 360000);
+
+        if (alDia) totAlDia++;
+        else listaVerAntigua.push({ nombre: nombreCorto, ver: ver });
+        if (enLinea) listaOnline.push({ nombre: nombreCorto, ver: ver, dispo: tel.dispositivo || '' });
+
+        const activo = estaColaboradorActivoEnFechaCliente(c, hoyStr);
+        const p = STATE.techReservasHoyMap[dni] || null;
+        const a = STATE.techAsistHoyMap[dni] || { des: false, horaDes: '', demoraDes: '', ordDes: 0, alm: false, horaAlm: '', demoraAlm: '', ordAlm: 0 };
+
+        // Desayuno
+        const esAsigDes = !!(p && (p.des === 'MANUAL' || String(p.tsDes || '').includes('Asignado RRHH')));
+        const habDes = (hoyStr >= FECHA_ARRANQUE_DESAYUNO) || esAsigDes;
+        const valDes = (activo && habDes) ? ((p && p.des) ? p.des : (c.desDef || 'NO')) : 'NO';
+        const tieneDes = (valDes !== 'NO' && !cedioDes[dni]) || !!recibioDes[dni];
+        if (tieneDes) {
+          stats.DESAYUNO.res++;
+          if (a.des) {
+            stats.DESAYUNO.asist++;
+            stats.DESAYUNO.asistList.push({ nombre: nombreCorto, hora: formatearHoraTicket12h(a.horaDes), demora: a.demoraDes, ord: a.ordDes });
+          } else {
+            stats.DESAYUNO.pendList.push({ nombre: nombreCorto, ver: ver });
+          }
         }
 
-        if (refs.length > 0) {
-          mostrarToast(esManual
-            ? `Se eliminaron ${refs.length} registro(s) de prueba.`
-            : `Modo Prueba desactivado. ${refs.length} registro(s) TEST_ eliminados.`);
-        } else {
-          mostrarToast(esManual
-            ? 'No había registros TEST_ en Firebase.'
-            : 'Modo Prueba desactivado. Sin registros TEST_ pendientes.');
+        // Almuerzo
+        const habAlm = (hoyStr >= FECHA_ARRANQUE_ALMUERZO);
+        const valAlm = (activo && habAlm) ? ((p && p.alm) ? p.alm : (c.almDef || 'NO')) : 'NO';
+        const tieneAlm = (valAlm !== 'NO' && !cedioAlm[dni]) || !!recibioAlm[dni];
+        if (tieneAlm) {
+          stats.ALMUERZO.res++;
+          if (a.alm) {
+            stats.ALMUERZO.asist++;
+            stats.ALMUERZO.asistList.push({ nombre: nombreCorto, hora: formatearHoraTicket12h(a.horaAlm), demora: a.demoraAlm, ord: a.ordAlm });
+          } else {
+            stats.ALMUERZO.pendList.push({ nombre: nombreCorto, ver: ver });
+          }
         }
-        cargarPanelSalud();
-      } catch (e) {
-        mostrarToast('No se pudieron borrar los registros de prueba.');
-      } finally {
-        if (btnM) { btnM.disabled = false; btnM.textContent = 'Borrar registros TEST_'; }
+      });
+
+      const pctAlDia = totVigentes > 0 ? Math.round((totAlDia / totVigentes) * 100) : 0;
+      document.getElementById('tech-app-online').textContent = String(listaOnline.length);
+      document.getElementById('tech-app-ver').textContent = `${pctAlDia}%`;
+      document.getElementById('tech-app-ver-sub').textContent = `${totAlDia} de ${totVigentes} en v${verVigente}`;
+
+      document.getElementById('tech-cnt-DESAYUNO').textContent = `${stats.DESAYUNO.asist} / ${stats.DESAYUNO.res}`;
+      document.getElementById('tech-sub-DESAYUNO').textContent = `${stats.DESAYUNO.pendList.length} pendientes`;
+      document.getElementById('tech-cnt-ALMUERZO').textContent = `${stats.ALMUERZO.asist} / ${stats.ALMUERZO.res}`;
+      document.getElementById('tech-sub-ALMUERZO').textContent = `${stats.ALMUERZO.pendList.length} pendientes`;
+
+      const cont = document.getElementById('lista-operativa-tecnico');
+
+      if (modo === 'ONLINE') {
+        listaOnline.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+        const head = `<div class="tech-list-banner">Conectados ahora (${listaOnline.length})</div>`;
+        if (listaOnline.length === 0) {
+          cont.innerHTML = head + '<div style="padding:18px; text-align:center; color:var(--muted); font-size:13.5px;">Nadie conectado en este momento.</div>';
+          return;
+        }
+        cont.innerHTML = head + listaOnline.map(it => {
+          const vTxt = !it.ver ? 'Sin App' : (/^\d/.test(it.ver) ? 'v' + it.ver : it.ver);
+          return `
+            <div class="tech-person-row">
+              <div>
+                <div class="tech-person-name">${it.nombre}</div>
+                ${it.dispo ? `<div style="font-size:11.5px; color:var(--muted);">${it.dispo}</div>` : ''}
+              </div>
+              <span class="tech-ver-badge ok">${vTxt}</span>
+            </div>
+          `;
+        }).join('');
+        return;
+      }
+
+      if (modo === 'VERSION_ANTIGUA') {
+        listaVerAntigua.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+        const head = `<div class="tech-list-banner">Pendientes de actualizar a v${verVigente} (${listaVerAntigua.length})</div>`;
+        if (listaVerAntigua.length === 0) {
+          cont.innerHTML = head + '<div style="padding:18px; text-align:center; color:#047857; font-weight:700; font-size:13.5px;">Todos están al día en v' + verVigente + '.</div>';
+          return;
+        }
+        cont.innerHTML = head + listaVerAntigua.map(it => {
+          const vCls = !it.ver ? 'none' : 'old';
+          const vTxt = !it.ver ? 'Sin ingreso' : (/^\d/.test(it.ver) ? 'v' + it.ver : it.ver);
+          return `
+            <div class="tech-person-row">
+              <span class="tech-person-name">${it.nombre}</span>
+              <span class="tech-ver-badge ${vCls}">${vTxt}</span>
+            </div>
+          `;
+        }).join('');
+        return;
+      }
+
+      const actual = stats[srvSel];
+      document.getElementById('tech-tab-PENDIENTES').textContent = `Pendientes (${actual.pendList.length})`;
+      document.getElementById('tech-tab-ASISTENTES').textContent = `Asistentes (${actual.asistList.length})`;
+
+      if (tabSel === 'PENDIENTES') {
+        actual.pendList.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+        if (actual.pendList.length === 0) {
+          cont.innerHTML = '<div style="padding:20px; text-align:center; color:#047857; font-weight:700; font-size:13.5px;">Sin pendientes por marcar.</div>';
+          return;
+        }
+        cont.innerHTML = actual.pendList.map(it => {
+          const vNum = Number(it.ver);
+          const vCls = !it.ver ? 'none' : (!isNaN(vNum) && vNum >= targetVerNum ? 'ok' : 'old');
+          const vTxt = !it.ver ? 'Sin App' : (/^\d/.test(it.ver) ? 'v' + it.ver : it.ver);
+          return `
+            <div class="tech-person-row">
+              <span class="tech-person-name">${it.nombre}</span>
+              <span class="tech-ver-badge ${vCls}">${vTxt}</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        actual.asistList.sort((a, b) => (b.ord - a.ord) || b.hora.localeCompare(a.hora));
+        if (actual.asistList.length === 0) {
+          cont.innerHTML = '<div style="padding:20px; text-align:center; color:var(--muted); font-size:13.5px;">Aún no hay escaneos registrados.</div>';
+          return;
+        }
+        cont.innerHTML = actual.asistList.map(it => {
+          const demHtml = (it.demora && it.demora !== '-') ? `<span class="tech-asist-delay">(${it.demora})</span>` : '';
+          return `
+            <div class="tech-person-row">
+              <span class="tech-person-name">${it.nombre}</span>
+              <span><span class="tech-asist-time">${it.hora}</span>${demHtml}</span>
+            </div>
+          `;
+        }).join('');
       }
     }
 
@@ -1983,7 +3333,7 @@
       if (cfg.fechaInicioDesayuno) FECHA_ARRANQUE_DESAYUNO = cfg.fechaInicioDesayuno;
       if (Array.isArray(cfg.panesDefecto) && cfg.panesDefecto.length > 0) PANES_POR_DEFECTO = cfg.panesDefecto;
       STATE.avisoBanner = cfg.avisoBanner || '';
-      STATE.modoPruebaQR = !!cfg.modoPruebaQR;
+      STATE.modoPruebaQR = false;
 
       if (cfg.versionApp) {
         verificarVersionServidor(cfg.versionApp, cfg.notasVersion);
@@ -1993,7 +3343,7 @@
     function construirRegistroDesdeFirestore(colab, cfg, reservasMap, asistenciasMap, cesionesHoy) {
       const hoyDate = obtenerDateLimaActual();
       const hoyStr = formatearFechaISOFromDate(hoyDate);
-      const modoPrueba = !!(cfg && cfg.modoPruebaQR);
+      const modoPrueba = false;
       const fechasSemana = obtenerFechasSemanaOperativaCliente(12.0);
       const cicloMensual = obtenerCicloActualCliente(cfg);
       const tarifas = obtenerTarifasCliente(colab.tramo, cfg);
@@ -2273,12 +3623,15 @@
         if (!snap.exists) return;
         aplicarConfigGlobal(snap.data());
         if (STATE.usuario && STATE.colabDoc && !ACTUALIZACION_OBLIGATORIA) {
+          actualizarEstadoBotonNovedades();
           reconstruirYRefrescarUIEnVivo();
+          setTimeout(() => evaluarMostrarEncuestaApp(), 500);
         }
       }, () => {});
     }
 
     function detenerListenersUsuario() {
+      if (UNSUB_TELEMETRIA_USER) { try { UNSUB_TELEMETRIA_USER(); } catch (e) {} UNSUB_TELEMETRIA_USER = null; }
       UNSUB_USER_LIST.forEach(fn => { try { fn(); } catch (e) {} });
       UNSUB_USER_LIST = [];
     }
@@ -2361,17 +3714,28 @@
           reconstruirYRefrescarUIEnVivo();
         }, () => {})
       );
+
+      UNSUB_TELEMETRIA_USER = db.collection('telemetria').doc(dniNorm).onSnapshot(snap => {
+        if (!snap.exists) return;
+        const d = snap.data() || {};
+        const forzadoTs = Number(d.forzarRecargaTs || 0);
+        const ultimoAplicado = Number(localStorage.getItem('SBS_LAST_FORCED_RELOAD') || 0);
+        if (forzadoTs > 0 && forzadoTs > ultimoAplicado && (Date.now() - forzadoTs) < 600000) {
+          try { localStorage.setItem('SBS_LAST_FORCED_RELOAD', String(forzadoTs)); } catch (e) {}
+          aplicarActualizacionApp();
+        }
+      }, () => {});
     }
 
     async function cargarTodoUsuarioFirestore(dniNorm) {
       const hoyStr = obtenerFechaHoyLimaISO();
-      const [cfgSnap, colabSnap, resSnap, asistSnap, cesSnap] = await Promise.all([
+      const [cfgSnap, colabSnap, resSnap, asistSnap, cesSnap] = await conTimeoutPromesa(Promise.all([
         db.collection('config').doc('app').get(),
         db.collection('colaboradores').doc(dniNorm).get(),
         db.collection('reservas').where('dni', '==', dniNorm).get(),
         db.collection('asistencias').where('dni', '==', dniNorm).get(),
         db.collection('cesiones').where('fecha', '==', hoyStr).get()
-      ]);
+      ]), 9000);
 
       const cfg = cfgSnap.exists ? cfgSnap.data() : {};
       aplicarConfigGlobal(cfg);
@@ -2523,10 +3887,16 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const lblVerLogin = document.getElementById('lbl-ver-login');
-      const lblVerMain = document.getElementById('lbl-ver-main');
-      if (lblVerLogin) lblVerLogin.textContent = 'v' + VERSION_LOCAL_APP;
-      if (lblVerMain) lblVerMain.textContent = 'v' + VERSION_LOCAL_APP;
+      const lblMenuVer = document.getElementById('lbl-menu-version-txt');
+      if (lblVerLogin) lblVerLogin.textContent = 'v' + VERSION_LOCAL_APP + (ES_ENTORNO_TEST ? ' • TEST' : '');
+      if (lblMenuVer) lblMenuVer.textContent = 'Versión ' + VERSION_LOCAL_APP;
+      if (ES_ENTORNO_TEST) {
+        document.title = 'Comedor SBS (TEST v' + VERSION_LOCAL_APP + ')';
+        const bTest = document.getElementById('badge-test-login-app');
+        if (bTest) bTest.style.display = 'inline-block';
+      }
 
+      sincronizarRelojServidor();
       iniciarListenerConfigGlobal();
       procesarColaQRSegundoPlano();
 
@@ -2561,6 +3931,7 @@
     // Al volver de segundo plano: si cambió el día (abierta desde ayer), recarga de inmediato con splash y reinicia listeners para hoy
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
+        sincronizarRelojServidor();
         procesarColaQRSegundoPlano();
         if (STATE.usuario && STATE.tokenActivo) {
           const hoyLima = obtenerFechaHoyLimaISO();
@@ -2572,10 +3943,18 @@
             }, true);
           } else {
             registrarVersionYUltimoAccesoFirestore(STATE.usuario.dni);
+            actualizarPresenciaTelemetria(true, false);
             actualizarResumenHeader();
             actualizarEstadoBotonQR();
+            const minPausaMs = ES_ENTORNO_TEST ? 15000 : 180000;
+            if (ENCUESTA_POSPUESTA_MS > 0 && (Date.now() - ENCUESTA_POSPUESTA_MS) >= minPausaMs) {
+              ENCUESTA_POSPUESTA_MS = 0;
+            }
+            setTimeout(() => evaluarMostrarEncuestaApp(), 650);
           }
         }
+      } else if (document.visibilityState === 'hidden') {
+        actualizarPresenciaTelemetria(false, true);
       }
     });
 
@@ -2607,11 +3986,7 @@
           huboCambioCorte = true;
         }
 
-        if (huboCambioCorte) {
-          renderizarTarjetas();
-        } else {
-          actualizarResumenHeader();
-        }
+        renderizarTarjetas();
         actualizarEstadoBotonQR();
       }
     }, 20000);
@@ -2760,6 +4135,8 @@
 
       guardarSnapshotLocal();
       renderizarVistaPrincipal();
+      actualizarPresenciaTelemetria(true, true);
+      registrarAccionTelemetria('Ingresó a la App', 'v' + VERSION_LOCAL_APP);
 
       if (window.AUTO_CHECKIN_QR === '1') {
         window.AUTO_CHECKIN_QR = '0';
@@ -2771,12 +4148,17 @@
 
     function cerrarSesion() {
       vibrarHaptico(15);
+      registrarAccionTelemetria('Cerró sesión', '');
+      actualizarPresenciaTelemetria(false, true);
+      detenerListenersTecnicoMovil();
       detenerListenersUsuario();
       cerrarEscanerQR();
       cerrarModalTicketVerde();
       cerrarModalDetalleConsumido();
       cerrarModalCancelarServicio();
       cerrarModalNovedades();
+      cerrarModalCambiarClave();
+      cerrarModalMenuDefecto();
       localStorage.removeItem('SBS_COMEDOR_AUTH');
       STATE.ultimoSyncMs = 0;
       STATE.usuario = null;
@@ -2788,7 +4170,6 @@
       STATE.tokenActivo = '';
       STATE.registroPendienteLogin = null;
       STATE.ticketCompactoActivo = null;
-      STATE.ultimoTicketPrueba = null;
       ocultarTarjetaTicketCompacto();
       document.getElementById('txt-dni').value = '';
       document.getElementById('txt-clave').value = '';
@@ -2943,169 +4324,6 @@
     }
 
     // ========================================================================
-    // MÓDULO TÉCNICO EN MÓVIL (DIRECTO SOBRE FIREBASE FIRESTORE)
-    // ========================================================================
-    async function cargarPanelSalud() {
-      const badge = document.getElementById('badge-salud-tech');
-      const infoBox = document.getElementById('detalle-infraestructura-tech');
-      const btnRef = document.getElementById('btn-refrescar-tech');
-      if (btnRef) { btnRef.disabled = true; btnRef.textContent = 'Actualizando...'; }
-      if (badge) { badge.textContent = 'CONSULTANDO'; badge.style.background = '#e2e8f0'; badge.style.color = '#334155'; }
-
-      const t0 = performance.now();
-      try {
-        const hoyStr = obtenerFechaHoyLimaISO();
-        const [colabsSnap, asistHoySnap, logsSnap, resSnap] = await Promise.all([
-          db.collection('colaboradores').get(),
-          db.collection('asistencias').where('fecha', '==', hoyStr).get(),
-          db.collection('logs_errores').get(),
-          db.collection('reservas').where('fecha', '==', hoyStr).get()
-        ]);
-
-        const latMs = Math.round(performance.now() - t0);
-        let totalActivos = 0, conClave = 0;
-        const dnisMuestra = [];
-
-        colabsSnap.forEach(doc => {
-          const c = { dni: doc.id, ...doc.data() };
-          if (estaColaboradorActivoEnFechaCliente(c, hoyStr)) {
-            totalActivos++;
-            if (dnisMuestra.length < 15) dnisMuestra.push(c.dni);
-          }
-          if (c.hashClave) conClave++;
-        });
-        STATE.dnisActivosMuestra = dnisMuestra;
-
-        let qrDes = 0, qrAlm = 0;
-        const eventos = [];
-        asistHoySnap.forEach(doc => {
-          const a = doc.data();
-          if (String(doc.id).includes('TEST_')) return;
-          if (a.servicio === 'DESAYUNO') qrDes++;
-          if (a.servicio === 'ALMUERZO') qrAlm++;
-          eventos.push({
-            orden: Number(a.orden || 0),
-            fecha: `${a.fecha || hoyStr} ${a.horaEscaneo || '-'}`,
-            tipo: 'ASISTENCIA_QR',
-            dni: a.dni || '-',
-            servicio: a.servicio || '-',
-            valor: a.opcionElegida || '-'
-          });
-        });
-        eventos.sort((a, b) => b.orden - a.orden);
-
-        const logs = [];
-        logsSnap.forEach(doc => logs.push(doc.data()));
-        logs.sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || '')));
-
-        const totErr = logs.length;
-        if (badge) {
-          badge.textContent = totErr === 0 ? 'ESTABLE (FIREBASE LIVE)' : 'CON ALERTAS';
-          badge.style.background = totErr === 0 ? '#dcfce7' : '#fef3c7';
-          badge.style.color = totErr === 0 ? '#166534' : '#92400e';
-        }
-
-        document.getElementById('tkpi-latencia').textContent = `${latMs} ms`;
-        document.getElementById('tkpi-usuarios').textContent = `${totalActivos} / ${conClave}`;
-        document.getElementById('tkpi-qr-hoy').textContent = `${qrDes} / ${qrAlm}`;
-        document.getElementById('tkpi-errores').textContent = String(totErr);
-
-        infoBox.innerHTML = `
-          <b>Motor de Datos:</b> Firebase Firestore (comedor-sbs) &nbsp;|&nbsp;
-          <b>Modo Prueba QR:</b> ${esModoPruebaActivoEnApp() ? 'ACTIVO' : 'DESACTIVADO'} &nbsp;|&nbsp;
-          <b>Versión App:</b> v${VERSION_LOCAL_APP}<br>
-          <b>Cambios personalizados hoy:</b> ${resSnap.size} &nbsp;|&nbsp;
-          <b>Asistencias hoy:</b> ${qrDes + qrAlm}
-        `;
-
-        const tbErr = document.getElementById('tbody-errores-tech');
-        if (logs.length === 0) {
-          tbErr.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#047857; font-weight:700;">Sin errores registrados.</td></tr>';
-        } else {
-          tbErr.innerHTML = logs.slice(0, 15).map(l => `
-            <tr>
-              <td style="white-space:nowrap;">${valSeguro(l.fecha)}</td>
-              <td><b>${valSeguro(l.contexto)}</b></td>
-              <td style="color:#dc2626; font-weight:600;">${valSeguro(l.motivo)}</td>
-            </tr>
-          `).join('');
-        }
-
-        const tbEv = document.getElementById('tbody-eventos-tech');
-        if (eventos.length === 0) {
-          tbEv.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted);">Sin escaneos registrados hoy.</td></tr>';
-        } else {
-          tbEv.innerHTML = eventos.slice(0, 12).map(ev => `
-            <tr>
-              <td style="white-space:nowrap;">${valSeguro(ev.fecha)}</td>
-              <td><b>${valSeguro(ev.tipo)}</b></td>
-              <td>${valSeguro(ev.dni)}</td>
-              <td>${valSeguro(ev.servicio)}</td>
-              <td>${valSeguro(ev.valor)}</td>
-            </tr>
-          `).join('');
-        }
-      } catch (e) {
-        if (badge) { badge.textContent = 'SIN CONEXIÓN'; badge.style.background = '#fee2e2'; badge.style.color = '#991b1b'; }
-      } finally {
-        if (btnRef) { btnRef.disabled = false; btnRef.textContent = 'Actualizar diagnóstico'; }
-      }
-    }
-
-    async function ejecutarPruebaEstres() {
-      vibrarHaptico(15);
-      const box = document.getElementById('resultado-estres-tech');
-      const btn = document.getElementById('btn-ejecutar-estres');
-      box.style.display = 'block';
-
-      if (!esModoPruebaActivoEnApp()) {
-        box.innerHTML = `<span style="color:#b45309; font-weight:700;">Activa primero el botón "Activar Modo Prueba" arriba para simular escritura de pruebas sin afectar producción.</span>`;
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Ejecutando ráfaga en Firebase (45 ops)...';
-      const muestra = (STATE.dnisActivosMuestra && STATE.dnisActivosMuestra.length > 0) ? STATE.dnisActivosMuestra : [STATE.usuario.dni];
-      const dnisL = Array.from({ length: 30 }, (_, i) => muestra[i % muestra.length]);
-      const dnisW = Array.from({ length: 15 }, (_, i) => muestra[i % muestra.length]);
-      const tGlobal = performance.now();
-
-      const pLect = dnisL.map(d => {
-        const t0 = performance.now();
-        return db.collection('colaboradores').doc(d).get({ source: 'server' })
-          .then(() => ({ ok: true, ms: Math.round(performance.now() - t0) }))
-          .catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
-      });
-
-      const hoyStr = obtenerFechaHoyLimaISO();
-      const pEsc = dnisW.map((d, idx) => {
-        const t0 = performance.now();
-        const idT = `TEST_${d}_${hoyStr}_${Date.now()}_${idx}`;
-        return db.collection('asistencias').doc(idT).set({
-          id: idT, fecha: hoyStr, dni: d, servicio: 'ALMUERZO', horaEscaneo: obtenerHoraLima24hActual(), orden: Date.now()
-        }).then(() => db.collection('asistencias').doc(idT).delete())
-          .then(() => ({ ok: true, ms: Math.round(performance.now() - t0) }))
-          .catch(() => ({ ok: false, ms: Math.round(performance.now() - t0) }));
-      });
-
-      const [rL, rW] = await Promise.all([Promise.all(pLect), Promise.all(pEsc)]);
-      const totSeg = ((performance.now() - tGlobal) / 1000).toFixed(2);
-      const okL = rL.filter(x => x.ok).length;
-      const okW = rW.filter(x => x.ok).length;
-      const promL = Math.round(rL.reduce((a, b) => a + b.ms, 0) / rL.length);
-      const promW = Math.round(rW.reduce((a, b) => a + b.ms, 0) / rW.length);
-
-      btn.disabled = false;
-      btn.textContent = 'Simular Ráfaga Concurrente Ahora';
-      box.innerHTML = `
-        <b style="color:#047857;">Prueba Firebase completada en ${totSeg} seg (auto-limpiada):</b><br>
-        - <b>Lecturas servidor (30):</b> ${okL}/30 exitosas (Prom: ${promL} ms)<br>
-        - <b>Escrituras QR (15):</b> ${okW}/15 exitosas (Prom: ${promW} ms)
-      `;
-      cargarPanelSalud();
-    }
-
-    // ========================================================================
     // MÓDULO RRHH EN MÓVIL (RESETEO DE CLAVE + PENDIENTES HOY EN FIRESTORE)
     // ========================================================================
     async function ejecutarReseteoClaveRRHH() {
@@ -3240,10 +4458,10 @@
       document.getElementById('tab-btn-tecnico').style.display = esUsuarioTecnico(STATE.usuario) ? 'block' : 'none';
 
       actualizarEstadoBotonNovedades();
-      actualizarUIModoPruebaTecnico();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       cambiarTab('PRINCIPAL', true);
+      setTimeout(() => evaluarMostrarEncuestaApp(), 700);
     }
 
     function obtenerDiaPrincipalActual() {
@@ -3325,9 +4543,7 @@
         // Regla estricta: en almuerzo nunca muestra detalle (ni Regular ni Alternativo), solo "Almuerzo registrado"
         return 'Almuerzo registrado';
       }
-      const detReal = obtenerDetalleDesayunoHoyParaTicket();
-      if (detReal) return detReal;
-      return esModoPruebaActivoEnApp() ? '2 Panes: Pollo y Queso' : 'Desayuno registrado';
+      return obtenerDetalleDesayunoHoyParaTicket() || 'Desayuno registrado';
     }
 
     function mostrarTarjetaTicketCompacto(servicio, horaRaw, notaExtra, mantenerBotonVisible = false) {
@@ -3337,7 +4553,7 @@
 
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
       const horaVisual = formatearHoraTicket12h(horaRaw) || 'Registrado hoy';
-      const tienePropia = esModoPruebaActivoEnApp() ? true : tieneReservaPropiaActivaHoy(servicio);
+      const tienePropia = tieneReservaPropiaActivaHoy(servicio);
       const listaCes = obtenerCesionesServicioHoy(servicio);
 
       const opBox = document.getElementById('compact-ticket-opcion-box');
@@ -3393,21 +4609,6 @@
       if (!hf || !btn) return;
 
       const horaActual = obtenerHoraPeruActual();
-
-      if (esModoPruebaActivoEnApp()) {
-        btn.style.display = 'inline-flex';
-        btn.disabled = false;
-        const sigSrv = STATE.siguienteSrvPrueba || 'DESAYUNO';
-        btn.textContent = (sigSrv === 'DESAYUNO')
-          ? 'Escanear QR (Prueba: Desayuno)'
-          : 'Escanear QR (Prueba: Almuerzo)';
-        if (STATE.ultimoTicketPrueba) {
-          mostrarTarjetaTicketCompacto(STATE.ultimoTicketPrueba.servicio, STATE.ultimoTicketPrueba.hora, 'Modo prueba • Toca para ampliar', true);
-        } else {
-          ocultarTarjetaTicketCompacto();
-        }
-        return;
-      }
 
       const cedidosDes = obtenerCesionesServicioHoy('DESAYUNO');
       const cedidosAlm = obtenerCesionesServicioHoy('ALMUERZO');
@@ -3504,12 +4705,42 @@
       }
     }
 
+    function esDiaContraibleEnSemana(d) {
+      if (!d || !d.fecha) return false;
+      const hoyLima = obtenerFechaHoyLimaISO();
+      if (d.fecha < hoyLima) return true;
+      if (d.fecha === hoyLima && obtenerHoraPeruActual() >= 18.0) return true;
+      return false;
+    }
+
+    function alternarDiaSemanaComprimido(fecha) {
+      if (!fecha) return;
+      vibrarHaptico(10);
+      DIAS_EXPANDIDOS_SEMANA[fecha] = !DIAS_EXPANDIDOS_SEMANA[fecha];
+      LAST_RENDER_SIGNATURE = '';
+      renderizarTarjetas();
+    }
+
+    function calcularFirmaRenderTarjetas(dPrin) {
+      const ser = (d) => {
+        if (!d) return '';
+        const col = esDiaContraibleEnSemana(d) ? (DIAS_EXPANDIDOS_SEMANA[d.fecha] ? 'E' : 'C') : 'A';
+        return `${d.fecha}|${d.desayuno}|${d.almuerzo}|${d.puedeEditarDesayuno ? 1 : 0}|${d.puedeEditarAlmuerzo ? 1 : 0}|${d.menuDesayuno}|${d.menuAlmuerzo}|${col}`;
+      };
+      return ser(dPrin) + '||' + (STATE.diasSemana || []).map(ser).join(';');
+    }
+
     function renderizarTarjetas() {
       actualizarResumenHeader();
       const dPrin = obtenerDiaPrincipalActual();
       STATE.fechaDiaPrincipalMostrado = dPrin ? dPrin.fecha : '';
+      const nuevaFirma = calcularFirmaRenderTarjetas(dPrin) + '|' + ANIMAR_DROPDOWN_FECHA;
+      if (nuevaFirma === LAST_RENDER_SIGNATURE) return;
+      LAST_RENDER_SIGNATURE = nuevaFirma;
+
       document.getElementById('contenedor-principal').innerHTML = dPrin ? crearHTMLTarjetaDia(dPrin, true) : '';
       document.getElementById('contenedor-semana').innerHTML = (STATE.diasSemana || []).map(d => crearHTMLTarjetaDia(d, false)).join('');
+      ANIMAR_DROPDOWN_FECHA = '';
     }
 
     function asegurarTarjetaVisibleEnScroll(fecha) {
@@ -3531,6 +4762,17 @@
     }
 
     function crearHTMLTarjetaDia(d, esVistaPrincipal) {
+      const numDiaVisual = d.diaNumero || extraerDiaNumeroCliente(d.fecha);
+      const esContraible = !esVistaPrincipal && esDiaContraibleEnSemana(d);
+      if (esContraible && !DIAS_EXPANDIDOS_SEMANA[d.fecha]) {
+        return `
+          <div class="day-card day-collapsed" data-fecha="${d.fecha}" onclick="alternarDiaSemanaComprimido('${d.fecha}')">
+            <span class="day-collapsed-title">${d.diaTexto} ${numDiaVisual}</span>
+            <svg class="day-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        `;
+      }
+
       const habDes = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
       const habAlm = (d.fecha >= FECHA_ARRANQUE_ALMUERZO);
 
@@ -3569,8 +4811,10 @@
       const txtDes = !habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado');
       const txtAlm = !habAlm ? 'Registro en hoja RRHH' : (almActivo ? 'Confirmado' : 'Cancelado');
 
-      const lockDesClass = !editableDes ? 'disabled-card' : '';
-      const lockAlmClass = !editableAlm ? 'disabled-card' : '';
+      const tallClass = editableDes ? 'editable-tall' : '';
+      const lockDesClass = (!editableDes ? 'disabled-card' : '') + ' ' + tallClass;
+      const lockAlmClass = (!editableAlm ? 'disabled-card' : '') + ' ' + tallClass;
+      const animDropCls = (ANIMAR_DROPDOWN_FECHA === d.fecha) ? 'anim-dropdown' : '';
 
       let dropdownsPanesHtml = '';
       if (desActivo && editableDes) {
@@ -3578,7 +4822,7 @@
           const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>${p}</option>`).join('');
           const opts2 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan2 ? 'selected' : ''}>${p}</option>`).join('');
           dropdownsPanesHtml = `
-            <div class="pan-dropdown-wrap" onclick="event.stopPropagation()">
+            <div class="pan-dropdown-wrap ${animDropCls}" onclick="event.stopPropagation()">
               <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 1, this.value)" title="Primer pan">${opts1}</select>
               <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 2, this.value)" title="Segundo pan">${opts2}</select>
             </div>
@@ -3586,14 +4830,12 @@
         } else if (opBase === 'OP3') {
           const opts1 = infoMenu.panes.map(p => `<option value="${p}" ${p === infoDes.pan1 ? 'selected' : ''}>${p}</option>`).join('');
           dropdownsPanesHtml = `
-            <div class="pan-dropdown-wrap" onclick="event.stopPropagation()">
+            <div class="pan-dropdown-wrap ${animDropCls}" onclick="event.stopPropagation()">
               <select class="pan-select" onchange="cambiarPanDesayuno('${d.fecha}', 1, this.value)" title="Tipo de pan">${opts1}</select>
             </div>
           `;
         }
       }
-
-      const numDiaVisual = d.diaNumero || extraerDiaNumeroCliente(d.fecha);
 
       let badgeHtml = '';
       if (d.esHoyFisico) {
@@ -3606,6 +4848,10 @@
         }
       }
 
+      const chevronExpHtml = esContraible
+        ? '<svg class="day-chevron-svg rotated" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>'
+        : '';
+
       const accionTopDes = desActivo
         ? `solicitarCancelacionServicio('${d.fecha}', 'DESAYUNO')`
         : `seleccionarOpcionDesayuno('${d.fecha}', 'OP1')`;
@@ -3615,9 +4861,9 @@
 
       return `
         <div class="day-card" data-fecha="${d.fecha}" style="${esVistaPrincipal ? 'border-color: var(--sbs-primary); border-width: 2px;' : ''}">
-          <div class="day-header">
+          <div class="day-header ${esContraible ? 'collapsible-head' : ''}" ${esContraible ? `onclick="alternarDiaSemanaComprimido('${d.fecha}')"` : ''}>
             <span>${d.diaTexto} ${numDiaVisual}</span>
-            ${badgeHtml}
+            <span style="display:inline-flex; align-items:center; gap:8px;">${badgeHtml}${chevronExpHtml}</span>
           </div>
           <div class="menu-box">
             <div>${lineaMenuDesayunoHtml}</div>
@@ -3700,6 +4946,7 @@
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
+      registrarAccionTelemetria(`Canceló ${servicio === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo'}`, dia.diaTexto + ' ' + (dia.diaNumero || ''));
       mostrarToast(`${servicio === 'DESAYUNO' ? 'Desayuno' : 'Almuerzo'} cancelado.`);
     }
 
@@ -3781,12 +5028,16 @@
 
       dia.desayuno = nVal;
       if (dia.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (dia.desayuno !== 'NO');
+      if (opElegida === 'OP1' || opElegida === 'OP3') {
+        ANIMAR_DROPDOWN_FECHA = dia.fecha;
+      }
       guardarSnapshotLocal();
       renderizarTarjetas();
       actualizarEstadoBotonQR();
       if (opElegida === 'OP1' || opElegida === 'OP3') {
         asegurarTarjetaVisibleEnScroll(dia.fecha);
       }
+      registrarAccionTelemetria('Eligió Desayuno ' + opElegida, dia.diaTexto + ' ' + (dia.diaNumero || ''));
 
       encolarCambioServicio(dia.fecha, 'DESAYUNO', dia.desayuno);
     }
@@ -3835,6 +5086,7 @@
       renderizarTarjetas();
       actualizarEstadoBotonQR();
 
+      registrarAccionTelemetria('Eligió Almuerzo ' + opElegida, dia.diaTexto + ' ' + (dia.diaNumero || ''));
       encolarCambioServicio(dia.fecha, 'ALMUERZO', dia.almuerzo);
     }
 
@@ -3868,9 +5120,8 @@
         cerrarEscanerQR();
         document.getElementById('tab-btn-tecnico').classList.add('active');
         paneActivo = document.getElementById('pane-tecnico');
-        document.getElementById('app-shell').classList.add('wide-rrhh');
-        actualizarUIModoPruebaTecnico();
-        cargarPanelSalud();
+        iniciarListenersTecnicoMovil();
+        renderizarVistaTecnicoMovil();
       }
 
       if (paneActivo) {
@@ -3912,8 +5163,16 @@
       STATE.procesandoEscaneo = false;
       const configQR = { fps: 24, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
 
-      const onScanExito = () => {
+      const onScanExito = (decodedText) => {
         if (STATE.procesandoEscaneo) return;
+        const textoQR = String(decodedText || '').trim();
+        if (textoQR !== QR_CODIGO_OFICIAL) {
+          STATE.procesandoEscaneo = true;
+          vibrarHaptico([70, 50, 70]);
+          cerrarEscanerQR();
+          mostrarToast('Código QR no válido. Escanea el cartel oficial del Comedor SBS.');
+          return;
+        }
         STATE.procesandoEscaneo = true;
         cerrarEscanerQR();
         procesarRegistroQRInteligente('QR_VIVO_APP');
@@ -3946,23 +5205,39 @@
 
     function procesarRegistroQRInteligente(metodo = 'QR_APP') {
       if (ACTUALIZACION_OBLIGATORIA || !STATE.usuario || !STATE.hoyFisico) return;
+      if (STATE.usuario.activoHoy === false) {
+        mostrarToast('No puedes marcar asistencia mientras figuras como Ausente.');
+        return;
+      }
+
+      const horaActual = obtenerHoraPeruActual();
+      if (horaActual < 8.5 || horaActual > 18.0) {
+        mostrarToast('Fuera del horario de atención del comedor.');
+        return;
+      }
+
+      const srvEsperado = (horaActual < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
+      const tienePropia = tieneReservaPropiaActivaHoy(srvEsperado);
+      const listaCes = obtenerCesionesServicioHoy(srvEsperado);
+      const esSoloCesion = (!tienePropia && listaCes.length > 0);
+
+      if (!tienePropia && !esSoloCesion) {
+        mostrarToast(`Sin reserva activa de ${srvEsperado.toLowerCase()} para hoy.`);
+        return;
+      }
+
+      if ((srvEsperado === 'DESAYUNO' && STATE.hoyFisico.consumioDes) ||
+          (srvEsperado === 'ALMUERZO' && STATE.hoyFisico.consumioAlm)) {
+        actualizarEstadoBotonQR();
+        return;
+      }
 
       vibrarHaptico([35, 45, 35]);
       const horaEscaneoExacta = obtenerHoraLima24hActual();
       const horaVisual12h = formatearHoraTicket12h(horaEscaneoExacta);
-      const tsEscaneoMs = Date.now();
-      const enModoPrueba = esModoPruebaActivoEnApp();
-      let srvEsperado = (obtenerHoraPeruActual() < 12.0) ? 'DESAYUNO' : 'ALMUERZO';
-      if (enModoPrueba) {
-        srvEsperado = STATE.siguienteSrvPrueba || 'DESAYUNO';
-        STATE.siguienteSrvPrueba = (srvEsperado === 'DESAYUNO') ? 'ALMUERZO' : 'DESAYUNO';
-      }
-      const hoyStr = STATE.hoyFisico.fecha || obtenerFechaHoyLimaISO();
+      const tsEscaneoMs = Date.now() + SERVER_OFFSET_MS;
+      const hoyStr = obtenerFechaHoyLimaISO();
       const dniNorm = STATE.usuario.dni;
-
-      const tienePropia = tieneReservaPropiaActivaHoy(srvEsperado);
-      const listaCes = obtenerCesionesServicioHoy(srvEsperado);
-      const esSoloCesion = (!tienePropia && listaCes.length > 0);
 
       const dHoy = (STATE.diaHoy && (STATE.diaHoy.esHoyFisico || STATE.diaHoy.fecha === hoyStr))
         ? STATE.diaHoy
@@ -3990,43 +5265,39 @@
           : ((planHoy && planHoy.tsAlm) ? planHoy.tsAlm : 'Por defecto');
       }
 
-      const docId = enModoPrueba
-        ? `TEST_${dniNorm}_${hoyStr}_${srvEsperado}_QR_${tsEscaneoMs}`
-        : (esSoloCesion
-          ? `CESION_${dniNorm}_${hoyStr}_${srvEsperado}_QR`
-          : `${dniNorm}_${hoyStr}_${srvEsperado}_QR`);
+      const docId = esSoloCesion
+        ? `CESION_${dniNorm}_${hoyStr}_${srvEsperado}_QR`
+        : `${dniNorm}_${hoyStr}_${srvEsperado}_QR`;
 
-      if (!enModoPrueba) {
-        if (srvEsperado === 'DESAYUNO') {
-          STATE.hoyFisico.consumioDes = true;
-          STATE.hoyFisico.horaScanDes = horaVisual12h;
-          if (esSoloCesion) STATE.hoyFisico.soloCesionDes = true;
-        }
-        if (srvEsperado === 'ALMUERZO') {
-          STATE.hoyFisico.consumioAlm = true;
-          STATE.hoyFisico.horaScanAlm = horaVisual12h;
-          if (esSoloCesion) STATE.hoyFisico.soloCesionAlm = true;
-        }
-        try {
-          localStorage.setItem('SBS_QR_CONFIRMADO_HOY', JSON.stringify({
-            dni: dniNorm,
-            fecha: hoyStr,
-            des: STATE.hoyFisico.consumioDes,
-            alm: STATE.hoyFisico.consumioAlm,
-            horaDes: STATE.hoyFisico.horaScanDes || '',
-            horaAlm: STATE.hoyFisico.horaScanAlm || '',
-            soloCesDes: !!STATE.hoyFisico.soloCesionDes,
-            soloCesAlm: !!STATE.hoyFisico.soloCesionAlm
-          }));
-        } catch (e) {}
-        guardarSnapshotLocal();
-      } else {
-        STATE.ultimoTicketPrueba = { servicio: srvEsperado, hora: horaVisual12h };
+      if (srvEsperado === 'DESAYUNO') {
+        STATE.hoyFisico.consumioDes = true;
+        STATE.hoyFisico.horaScanDes = horaVisual12h;
+        if (esSoloCesion) STATE.hoyFisico.soloCesionDes = true;
+      }
+      if (srvEsperado === 'ALMUERZO') {
+        STATE.hoyFisico.consumioAlm = true;
+        STATE.hoyFisico.horaScanAlm = horaVisual12h;
+        if (esSoloCesion) STATE.hoyFisico.soloCesionAlm = true;
       }
 
+      try {
+        localStorage.setItem('SBS_QR_CONFIRMADO_HOY', JSON.stringify({
+          dni: dniNorm,
+          fecha: hoyStr,
+          des: STATE.hoyFisico.consumioDes,
+          alm: STATE.hoyFisico.consumioAlm,
+          horaDes: STATE.hoyFisico.horaScanDes || '',
+          horaAlm: STATE.hoyFisico.horaScanAlm || '',
+          soloCesDes: !!STATE.hoyFisico.soloCesionDes,
+          soloCesAlm: !!STATE.hoyFisico.soloCesionAlm
+        }));
+      } catch (e) {}
+
+      guardarSnapshotLocal();
       actualizarResumenHeader();
       mostrarTicketVerdeConfirmado(srvEsperado, horaVisual12h);
       actualizarEstadoBotonQR();
+      registrarAccionTelemetria('Escaneó QR ' + srvEsperado, horaVisual12h);
 
       encolarRegistroQRSegundoPlano({
         id: docId,
@@ -4039,7 +5310,6 @@
         origenReserva: origenReserva,
         esSoloCesion: esSoloCesion,
         esHistorico: false,
-        esPrueba: enModoPrueba,
         tsEscaneoMs: tsEscaneoMs,
         metodo: metodo
       });
@@ -4079,6 +5349,25 @@
         actualizarAvisoColaQR(0);
         return;
       }
+
+      // Blindaje estricto: purgar cualquier registro sin fecha explícita o de un día distinto a hoy
+      const hoyActual = obtenerFechaHoyLimaISO();
+      lista = lista.filter(it => {
+        if (!it || !it.fecha || it.fecha !== hoyActual) return false;
+        const tsItem = Number(it.tsEscaneoMs || 0);
+        if (tsItem > 1700000000000) {
+          const fechaTs = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date(tsItem));
+          if (fechaTs !== hoyActual) return false;
+        }
+        return true;
+      });
+      try { localStorage.setItem('SBS_COLA_QR_V1', JSON.stringify(lista)); } catch (e) {}
+
+      if (lista.length === 0) {
+        actualizarAvisoColaQR(0);
+        return;
+      }
+
       ENVIANDO_COLA_QR = true;
       actualizarAvisoColaQR(lista.length);
 
@@ -4087,27 +5376,33 @@
         let exitoEnvio = false;
 
         try {
-          // Compatibilidad con ítems antiguos que hubieran quedado en cola antes de migrar a v28
-          const docId = actual.id || `${actual.dni}_${actual.fecha || obtenerFechaHoyLimaISO()}_${actual.servicio}_QR`;
-          const diffMs = Math.max(0, Date.now() - Number(actual.tsEscaneoMs || Date.now()));
-          const demoraTxt = diffMs < 10000 ? `${(diffMs / 1000).toFixed(1)}s` : `${Math.round(diffMs / 1000)}s`;
+          const dniItem = normalizarDniCliente(actual.dni);
+          const srvItem = String(actual.servicio || '').toUpperCase().trim();
+          const docId = actual.id || `${dniItem}_${actual.fecha}_${srvItem}_QR`;
+          const docRef = db.collection('asistencias').doc(docId);
 
-          await db.collection('asistencias').doc(docId).set({
-            id: docId,
-            horaEscaneo: actual.horaEscaneo || obtenerHoraLima24hActual(),
-            fecha: actual.fecha || obtenerFechaHoyLimaISO(),
-            dni: normalizarDniCliente(actual.dni),
-            nombre: actual.nombre || (STATE.usuario ? STATE.usuario.nombre : ''),
-            servicio: actual.servicio,
-            opcionElegida: actual.opcionElegida || actual.servicio,
-            origenReserva: actual.origenReserva || 'Por defecto',
-            demoraRegistro: demoraTxt,
-            esSoloCesion: !!actual.esSoloCesion,
-            esHistorico: false,
-            esPrueba: !!actual.esPrueba || String(docId).startsWith('TEST_'),
-            orden: Number(actual.tsEscaneoMs || Date.now())
-          }, { merge: true });
+          // Nunca sobrescribir un registro de asistencia ya existente en Firestore
+          const prevSnap = await docRef.get();
+          if (!prevSnap.exists) {
+            const ahoraCorr = Date.now() + SERVER_OFFSET_MS;
+            const diffMs = Math.max(0, ahoraCorr - Number(actual.tsEscaneoMs || ahoraCorr));
+            const demoraTxt = diffMs < 10000 ? `${(diffMs / 1000).toFixed(1)}s` : `${Math.round(diffMs / 1000)}s`;
 
+            await docRef.set({
+              id: docId,
+              horaEscaneo: actual.horaEscaneo || obtenerHoraLima24hActual(),
+              fecha: actual.fecha,
+              dni: dniItem,
+              nombre: actual.nombre || (STATE.usuario ? STATE.usuario.nombre : ''),
+              servicio: srvItem,
+              opcionElegida: actual.opcionElegida || srvItem,
+              origenReserva: actual.origenReserva || 'Por defecto',
+              demoraRegistro: demoraTxt,
+              esSoloCesion: !!actual.esSoloCesion,
+              esHistorico: false,
+              orden: Number(actual.tsEscaneoMs || ahoraCorr)
+            });
+          }
           exitoEnvio = true;
         } catch (err) {
           exitoEnvio = false;
@@ -4156,7 +5451,7 @@
       const fechaHoy = STATE.hoyPeruCompleto || STATE.hoyStr;
       const horaExacta = horaGuardadaOpcional ? formatearHoraTicket12h(horaGuardadaOpcional) : obtenerHoraExactaActual();
       const nombreCorto = extraerNombreYApellidoCliente(STATE.usuario);
-      const tienePropia = esModoPruebaActivoEnApp() ? true : tieneReservaPropiaActivaHoy(servicio);
+      const tienePropia = tieneReservaPropiaActivaHoy(servicio);
       const listaCes = obtenerCesionesServicioHoy(servicio);
 
       document.getElementById('ticket-modal-nombre').textContent = nombreCorto;
@@ -4195,6 +5490,7 @@
     function cerrarModalTicketVerde() {
       vibrarHaptico(10);
       document.getElementById('modal-ticket-overlay').style.display = 'none';
+      setTimeout(() => evaluarMostrarEncuestaApp(), 500);
     }
   </script>
 </body>

@@ -14,6 +14,7 @@
   <link rel="apple-touch-icon-precomposed" href="./Logo.jpg?v=28.1">
   <link rel="icon" type="image/jpeg" href="./Logo.jpg?v=28.1">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
@@ -349,6 +350,65 @@
       font-weight: 600;
       color: #94a3b8;
       letter-spacing: 0.3px;
+    }
+
+    /* BANNER ROJO DE DETECTOR DE CONECTIVIDAD REAL (DOBLE DETECCIÓN) */
+    #banner-offline-sbs {
+      display: none;
+      background: #dc2626;
+      color: #ffffff;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-shrink: 0;
+      z-index: 3500;
+      line-height: 1.3;
+    }
+    .btn-retry-offline {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 8px;
+      padding: 5px 11px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-retry-offline:active { background: rgba(255, 255, 255, 0.35); }
+    .qr-share-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin: 6px 0 12px;
+      min-height: 224px;
+    }
+    .qr-share-box img, .qr-share-box svg {
+      width: 210px;
+      height: 210px;
+      display: block;
+    }
+    .qr-url-chip {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      word-break: break-all;
+      text-align: center;
+      margin-bottom: 12px;
     }
 
     /* BANNER INFORMATIVO DINÁMICO (DESDE MENU_SEMANAL) */
@@ -1242,6 +1302,11 @@
 <body>
 
   <div class="app-shell" id="app-shell">
+    <!-- DETECTOR DE CONECTIVIDAD REAL (DOBLE DETECCIÓN: NATIVO + PING REAL) -->
+    <div id="banner-offline-sbs">
+      <span id="texto-offline-sbs">Sin conexión a internet. Revisa tu Wi-Fi o datos móviles.</span>
+      <button type="button" class="btn-retry-offline" id="btn-retry-offline" onclick="verificarConectividadReal(true)">Reintentar</button>
+    </div>
     <!-- PANTALLA DE CARGA RÁPIDA CON LOGO (EVITA MOSTRAR DATA DESACTUALIZADA) -->
     <div id="view-splash">
       <img src="./Logo.jpg?v=28.1" alt="Comedor SBS" class="splash-logo">
@@ -1446,6 +1511,16 @@
           </div>
 
           <div class="rrhh-box">
+            <h4>Instalar App en Nuevos Colaboradores</h4>
+            <p style="font-size:13px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
+              Muestra este código QR para que los nuevos ingresos abran e instalen directamente la App del Comedor SBS.
+            </p>
+            <button type="button" class="btn btn-primary" style="font-size:14px; padding:11px;" onclick="abrirModalQRInstalarApp()">
+              Mostrar QR de instalación
+            </button>
+          </div>
+
+          <div class="rrhh-box">
             <h4>Portal RRHH - Comedor (Escritorio)</h4>
             <p style="font-size:13px; color:var(--muted); margin:0 0 10px; line-height:1.45;">
               El monitoreo completo, la asignación manual de servicios, la base de colaboradores y el reporte de planilla están disponibles en el Portal Web de Escritorio.
@@ -1459,10 +1534,10 @@
         <!-- PESTAÑA 3B: PERFIL EXCLUSIVO TÉCNICO (OPERATIVO MÓVIL EN TIEMPO REAL) -->
         <div id="pane-tecnico" style="display:none;">
           <div class="tech-kpi-mini-grid">
-            <div class="tech-srv-card" id="tech-card-ONLINE" onclick="seleccionarModoTecnico('ONLINE')">
-              <span class="tech-srv-title">Conectados Ahora</span>
-              <span class="tech-srv-num" id="tech-app-online" style="color:#047857;">0</span>
-              <span class="tech-srv-sub">En línea (&lt; 6 min)</span>
+            <div class="tech-srv-card" id="tech-card-ACTIVIDAD" onclick="seleccionarModoTecnico('ACTIVIDAD_HOY')">
+              <span class="tech-srv-title">Gestiones Hoy</span>
+              <span class="tech-srv-num" id="tech-app-act-hoy" style="color:#047857;">0</span>
+              <span class="tech-srv-sub">Con actividad hoy</span>
             </div>
             <div class="tech-srv-card" id="tech-card-VERSION" onclick="seleccionarModoTecnico('VERSION_ANTIGUA')">
               <span class="tech-srv-title">Versión Al Día</span>
@@ -1495,6 +1570,16 @@
 
           <div class="tech-list-card" id="lista-operativa-tecnico">
             <div style="padding:20px; text-align:center; color:var(--muted); font-size:13.5px;">Cargando asistencia en vivo...</div>
+          </div>
+
+          <div class="rrhh-box" style="margin-top:12px;">
+            <h4>Instalar App en Nuevos Colaboradores</h4>
+            <p style="font-size:12.8px; color:var(--muted); margin:0 0 10px;">
+              Muestra este código QR para que los nuevos colaboradores abran e instalen la App Comedor SBS.
+            </p>
+            <button type="button" class="btn btn-primary" style="padding:11px; font-size:14px;" onclick="abrirModalQRInstalarApp()">
+              Mostrar QR de instalación
+            </button>
           </div>
 
           <div class="rrhh-box" style="margin-top:12px;">
@@ -1688,6 +1773,29 @@
     </div>
   </div>
 
+  <!-- MODAL: QR PARA INSTALAR APP COMEDOR SBS (NUEVOS COLABORADORES) -->
+  <div class="modal-backdrop" id="modal-qr-instalar-app" onclick="if(event.target===this) cerrarModalQRInstalarApp()">
+    <div class="modal-panel" style="max-width:380px; padding:22px 20px 18px; text-align:center;">
+      <div class="modal-header-row" style="margin-bottom:6px; text-align:left;">
+        <div>
+          <h3>Instalar Comedor SBS</h3>
+          <p>Escanea con la cámara para abrir la App</p>
+        </div>
+        <button class="btn-x-sm" onclick="cerrarModalQRInstalarApp()" title="Cerrar">✕</button>
+      </div>
+      <div class="qr-share-box" id="qr-instalar-app-render"></div>
+      <div class="qr-url-chip" id="lbl-qr-instalar-url"></div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button type="button" class="btn btn-outline" style="padding:11px; font-size:14px; border-color:var(--sbs-primary); color:var(--sbs-primary);" onclick="copiarEnlaceAppInstalacion()">
+          Copiar enlace
+        </button>
+        <button type="button" class="btn btn-primary" style="padding:11px; font-size:14.5px;" onclick="cerrarModalQRInstalarApp()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- PANTALLA COMPLETA DIFUMINADA DE ACTUALIZACIÓN OBLIGATORIA -->
   <div id="modal-update-obligatorio">
     <div class="update-card">
@@ -1765,6 +1873,9 @@
     let ENCUESTA_CHIPS_SEL = [];
     let ENCUESTA_EVALUANDO = false;
     let ENCUESTA_POSPUESTA_MS = 0;
+    let APP_SIN_INTERNET = false;
+    let CHECK_CONECTIVIDAD_EN_CURSO = false;
+    let LISTENER_USER_READY = false;
 
     // Suscripciones en vivo de Firestore
     let UNSUB_CONFIG = null;
@@ -2687,7 +2798,6 @@
         btn.disabled = false;
         btn.textContent = 'Guardar';
         cerrarModalMenuDefecto();
-      const mEnc = document.getElementById('modal-encuesta-app'); if (mEnc) mEnc.style.display = 'none';
         mostrarToast('Tu menú por defecto se actualizó.');
       } catch (e) {
         btn.disabled = false;
@@ -2703,7 +2813,7 @@
       const ids = [
         'modal-qr-overlay', 'modal-ticket-overlay', 'modal-detalle-consumido',
         'modal-confirmar-cancelacion', 'modal-novedades-version', 'modal-cambiar-clave',
-        'modal-menu-defecto', 'modal-encuesta-app', 'modal-update-obligatorio'
+        'modal-menu-defecto', 'modal-encuesta-app', 'modal-qr-instalar-app', 'modal-update-obligatorio'
       ];
       return ids.some(id => {
         const el = document.getElementById(id);
@@ -2952,11 +3062,130 @@
       return `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`;
     }
 
-    async function actualizarPresenciaTelemetria(enLineaBool, forzarAhora = false) {
+    // ========================================================================
+    // DETECTOR DE CONECTIVIDAD REAL (DOBLE DETECCIÓN: NATIVO + PING HTTP REAL)
+    // ========================================================================
+    function actualizarBannerSinInternet(estaSinInternet) {
+      APP_SIN_INTERNET = !!estaSinInternet;
+      const b = document.getElementById('banner-offline-sbs');
+      if (b) b.style.display = APP_SIN_INTERNET ? 'flex' : 'none';
+    }
+
+    async function verificarConectividadReal(mostrarFeedback = false) {
+      if (CHECK_CONECTIVIDAD_EN_CURSO) return !APP_SIN_INTERNET;
+      CHECK_CONECTIVIDAD_EN_CURSO = true;
+      const btn = document.getElementById('btn-retry-offline');
+      if (btn && mostrarFeedback) { btn.disabled = true; btn.textContent = 'Probando...'; }
+
+      if (navigator && navigator.onLine === false) {
+        actualizarBannerSinInternet(true);
+        if (mostrarFeedback) mostrarToast('Sin señal. Activa tu Wi-Fi o datos móviles.');
+        if (btn) { btn.disabled = false; btn.textContent = 'Reintentar'; }
+        CHECK_CONECTIVIDAD_EN_CURSO = false;
+        return false;
+      }
+
+      try {
+        const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+        const tOut = setTimeout(() => { if (ctrl) ctrl.abort(); }, 3500);
+        const resp = await fetch('./manifest.json?net=' + Date.now(), {
+          method: 'HEAD',
+          cache: 'no-store',
+          signal: ctrl ? ctrl.signal : undefined
+        });
+        clearTimeout(tOut);
+        if (resp && (resp.ok || resp.status < 500)) {
+          const estabaOffline = APP_SIN_INTERNET;
+          actualizarBannerSinInternet(false);
+          if (estabaOffline) {
+            procesarColaQRSegundoPlano();
+            if (mostrarFeedback) mostrarToast('Conexión restablecida.');
+          }
+          if (btn) { btn.disabled = false; btn.textContent = 'Reintentar'; }
+          CHECK_CONECTIVIDAD_EN_CURSO = false;
+          return true;
+        }
+        throw new Error('offline');
+      } catch (e) {
+        actualizarBannerSinInternet(true);
+        if (mostrarFeedback) mostrarToast('Sin acceso real a internet. Revisa tus datos móviles o Wi-Fi.');
+        if (btn) { btn.disabled = false; btn.textContent = 'Reintentar'; }
+        CHECK_CONECTIVIDAD_EN_CURSO = false;
+        return false;
+      }
+    }
+
+    window.addEventListener('offline', () => actualizarBannerSinInternet(true));
+    window.addEventListener('online', () => verificarConectividadReal(false));
+
+    // ========================================================================
+    // MODAL: QR DE INSTALACIÓN DE LA APP (PARA NUEVOS COLABORADORES)
+    // ========================================================================
+    function obtenerUrlOficialAppInstalacion() {
+      if (STATE.configApp && STATE.configApp.urlAppOficial && String(STATE.configApp.urlAppOficial).trim()) {
+        return String(STATE.configApp.urlAppOficial).trim();
+      }
+      const cleanPath = String(window.location.pathname || '/').replace(/index\.html$/i, '');
+      return window.location.origin + cleanPath;
+    }
+
+    function renderizarQRHtml(urlTexto) {
+      try {
+        if (typeof qrcode === 'function') {
+          const qr = qrcode(0, 'M');
+          qr.addData(urlTexto);
+          qr.make();
+          return qr.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
+        }
+      } catch (e) {}
+      const enc = encodeURIComponent(urlTexto);
+      return `<img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${enc}" alt="QR App Comedor SBS">`;
+    }
+
+    function abrirModalQRInstalarApp() {
+      vibrarHaptico(14);
+      const url = obtenerUrlOficialAppInstalacion();
+      document.getElementById('qr-instalar-app-render').innerHTML = renderizarQRHtml(url);
+      document.getElementById('lbl-qr-instalar-url').textContent = url;
+      document.getElementById('modal-qr-instalar-app').style.display = 'flex';
+    }
+
+    function cerrarModalQRInstalarApp() {
+      document.getElementById('modal-qr-instalar-app').style.display = 'none';
+    }
+
+    async function copiarEnlaceAppInstalacion() {
+      vibrarHaptico(12);
+      const url = obtenerUrlOficialAppInstalacion();
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+          mostrarToast('Enlace copiado al portapapeles.');
+          return;
+        }
+      } catch (e) {}
+      mostrarToast('Copia este enlace: ' + url);
+    }
+
+    function publicarUrlAppSiFalta() {
+      try {
+        if (ES_ENTORNO_TEST || !STATE.usuario || (!STATE.usuario.esRRHH && !STATE.usuario.esTecnico)) return;
+        if (STATE.configApp && STATE.configApp.urlAppOficial) return;
+        const cleanPath = String(window.location.pathname || '/').replace(/index\.html$/i, '');
+        const urlActual = window.location.origin + cleanPath;
+        if (!urlActual.startsWith('http')) return;
+        db.collection('config').doc('app').set({ urlAppOficial: urlActual }, { merge: true }).catch(() => {});
+      } catch (e) {}
+    }
+
+    // ========================================================================
+    // TELEMETRÍA CENTRADA EN HISTORIAL DE GESTIONES (SIN ESTADO "EN LÍNEA")
+    // ========================================================================
+    async function actualizarDispositivoYAccesoTelemetria(forzarAhora = false) {
       if (!STATE.usuario || !STATE.usuario.dni) return;
       const ahoraMs = Date.now();
-      if (!forzarAhora && enLineaBool && (ahoraMs - LAST_HEARTBEAT_SENT_MS) < 180000) return;
-      if (enLineaBool) LAST_HEARTBEAT_SENT_MS = ahoraMs;
+      if (!forzarAhora && (ahoraMs - LAST_HEARTBEAT_SENT_MS) < 1800000) return;
+      LAST_HEARTBEAT_SENT_MS = ahoraMs;
 
       try {
         const dni = STATE.usuario.dni;
@@ -2967,8 +3196,6 @@
           dni: dni,
           versionApp: VERSION_LOCAL_APP,
           dispositivo: dispo,
-          enLinea: !!enLineaBool,
-          ultimoHeartbeatMs: ahoraMs,
           ultimoAccesoISO: tsISO
         };
         if (verGuardada !== VERSION_LOCAL_APP) {
@@ -2979,11 +3206,13 @@
       } catch (e) {}
     }
 
-    function registrarAccionTelemetria(accion, detalle = '') {
+    async function registrarAccionTelemetria(accion, detalle = '') {
       if (!STATE.usuario || !STATE.usuario.dni) return;
       try {
         const dni = STATE.usuario.dni;
         const tsISO = obtenerTsTelemetriaLima();
+        const ahoraMs = Date.now();
+        const dispo = await detectarInfoDispositivoCliente();
         const keyLocal = 'SBS_TEL_HIST_' + dni;
         let hist = [];
         try { hist = JSON.parse(localStorage.getItem(keyLocal) || '[]'); } catch (e) { hist = []; }
@@ -2992,15 +3221,22 @@
         if (hist.length > 20) hist = hist.slice(hist.length - 20);
         localStorage.setItem(keyLocal, JSON.stringify(hist));
 
-        db.collection('telemetria').doc(dni).set({
+        const verGuardada = localStorage.getItem('SBS_TEL_VER_REG_' + dni);
+        const patch = {
           dni: dni,
           versionApp: VERSION_LOCAL_APP,
-          enLinea: true,
-          ultimoHeartbeatMs: Date.now(),
+          dispositivo: dispo,
+          ultimoAccesoISO: tsISO,
           ultimaAccion: String(accion),
           ultimaAccionISO: tsISO,
+          ultimaAccionMs: ahoraMs,
           ultimasAcciones: hist
-        }, { merge: true }).catch(() => {});
+        };
+        if (verGuardada !== VERSION_LOCAL_APP) {
+          patch.actualizadoEnISO = tsISO;
+          localStorage.setItem('SBS_TEL_VER_REG_' + dni, VERSION_LOCAL_APP);
+        }
+        db.collection('telemetria').doc(dni).set(patch, { merge: true }).catch(() => {});
       } catch (e) {}
     }
 
@@ -3148,7 +3384,7 @@
       const verVigente = String((STATE.configApp && STATE.configApp.versionApp) || VERSION_LOCAL_APP);
       const targetVerNum = Number(verVigente) || Number(VERSION_LOCAL_APP);
 
-      document.getElementById('tech-card-ONLINE').className = 'tech-srv-card' + (modo === 'ONLINE' ? ' active-online' : '');
+      document.getElementById('tech-card-ACTIVIDAD').className = 'tech-srv-card' + (modo === 'ACTIVIDAD_HOY' ? ' active-online' : '');
       document.getElementById('tech-card-VERSION').className = 'tech-srv-card' + (modo === 'VERSION_ANTIGUA' ? ' active-ver' : '');
       document.getElementById('tech-card-DESAYUNO').className = 'tech-srv-card' + (modo === 'SERVICIO' && srvSel === 'DESAYUNO' ? ' active-des' : '');
       document.getElementById('tech-card-ALMUERZO').className = 'tech-srv-card' + (modo === 'SERVICIO' && srvSel === 'ALMUERZO' ? ' active-alm' : '');
@@ -3171,7 +3407,7 @@
         ALMUERZO: { res: 0, asist: 0, pendList: [], asistList: [] }
       };
       let totVigentes = 0, totAlDia = 0;
-      const listaOnline = [];
+      const listaActHoy = [];
       const listaVerAntigua = [];
 
       Object.keys(STATE.techColabsMap || {}).forEach(dni => {
@@ -3183,11 +3419,22 @@
         const ver = String(tel.versionApp || c.versionApp || '').trim();
         const verNum = Number(ver);
         const alDia = !!(ver && !isNaN(verNum) && verNum >= targetVerNum);
-        const enLinea = !!(tel.enLinea && Number(tel.ultimoHeartbeatMs || 0) > 0 && (Date.now() - Number(tel.ultimoHeartbeatMs || 0)) <= 360000);
+        const ultAccISO = String(tel.ultimaAccionISO || '').trim();
+        const hizoGestionHoy = !!(tel.ultimaAccion && ultAccISO.startsWith(hoyStr));
 
         if (alDia) totAlDia++;
         else listaVerAntigua.push({ nombre: nombreCorto, ver: ver });
-        if (enLinea) listaOnline.push({ nombre: nombreCorto, ver: ver, dispo: tel.dispositivo || '' });
+
+        if (hizoGestionHoy) {
+          const horaPart = ultAccISO.includes(' ') ? formatearHoraTicket12h(ultAccISO.split(' ')[1] + ':00').replace(/:00\s/, ' ') : '';
+          listaActHoy.push({
+            nombre: nombreCorto,
+            accion: String(tel.ultimaAccion || ''),
+            hora: horaPart,
+            ms: Number(tel.ultimaAccionMs || 0),
+            iso: ultAccISO
+          });
+        }
 
         const activo = estaColaboradorActivoEnFechaCliente(c, hoyStr);
         const p = STATE.techReservasHoyMap[dni] || null;
@@ -3224,7 +3471,7 @@
       });
 
       const pctAlDia = totVigentes > 0 ? Math.round((totAlDia / totVigentes) * 100) : 0;
-      document.getElementById('tech-app-online').textContent = String(listaOnline.length);
+      document.getElementById('tech-app-act-hoy').textContent = String(listaActHoy.length);
       document.getElementById('tech-app-ver').textContent = `${pctAlDia}%`;
       document.getElementById('tech-app-ver-sub').textContent = `${totAlDia} de ${totVigentes} en v${verVigente}`;
 
@@ -3235,25 +3482,22 @@
 
       const cont = document.getElementById('lista-operativa-tecnico');
 
-      if (modo === 'ONLINE') {
-        listaOnline.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
-        const head = `<div class="tech-list-banner">Conectados ahora (${listaOnline.length})</div>`;
-        if (listaOnline.length === 0) {
-          cont.innerHTML = head + '<div style="padding:18px; text-align:center; color:var(--muted); font-size:13.5px;">Nadie conectado en este momento.</div>';
+      if (modo === 'ACTIVIDAD_HOY') {
+        listaActHoy.sort((a, b) => (b.ms - a.ms) || b.iso.localeCompare(a.iso));
+        const head = `<div class="tech-list-banner">Gestiones de hoy (${listaActHoy.length})</div>`;
+        if (listaActHoy.length === 0) {
+          cont.innerHTML = head + '<div style="padding:18px; text-align:center; color:var(--muted); font-size:13.5px;">Aún no hay gestiones registradas hoy.</div>';
           return;
         }
-        cont.innerHTML = head + listaOnline.map(it => {
-          const vTxt = !it.ver ? 'Sin App' : (/^\d/.test(it.ver) ? 'v' + it.ver : it.ver);
-          return `
-            <div class="tech-person-row">
-              <div>
-                <div class="tech-person-name">${it.nombre}</div>
-                ${it.dispo ? `<div style="font-size:11.5px; color:var(--muted);">${it.dispo}</div>` : ''}
-              </div>
-              <span class="tech-ver-badge ok">${vTxt}</span>
+        cont.innerHTML = head + listaActHoy.map(it => `
+          <div class="tech-person-row">
+            <div>
+              <div class="tech-person-name">${it.nombre}</div>
+              <div style="font-size:11.8px; color:var(--muted);">${it.accion}</div>
             </div>
-          `;
-        }).join('');
+            <span class="tech-asist-time">${it.hora}</span>
+          </div>
+        `).join('');
         return;
       }
 
@@ -3596,31 +3840,34 @@
       return mapa;
     }
 
+    function esHashSHA256Valido(str) {
+      return typeof str === 'string' && /^[a-f0-9]{64}$/i.test(str.trim());
+    }
+
     function registrarVersionYUltimoAccesoFirestore(dniNorm) {
       try {
-        const key = 'SBS_ULT_ACCESO_THR_' + dniNorm;
-        const prev = JSON.parse(localStorage.getItem(key) || '{}');
-        const ahoraMs = Date.now();
-        // Throttle de 30 minutos: si la versión ya es v28 y registramos hace <30m, 0 escrituras
-        if (prev.ver === VERSION_LOCAL_APP && prev.ts && (ahoraMs - prev.ts) < 1800000) return;
-
-        const p = obtenerPartesLimaActual();
-        const tsISO = `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`;
-        db.collection('colaboradores').doc(dniNorm).set(
-          { versionApp: VERSION_LOCAL_APP, ultimoAccesoISO: tsISO },
-          { merge: true }
-        ).catch(() => {});
-        localStorage.setItem(key, JSON.stringify({ ver: VERSION_LOCAL_APP, ts: ahoraMs }));
+        // Solo actualizar colaboradores/{dni} si realmente cambió versionApp (usa .update, NUNCA .set merge parcial!)
+        // Así evitamos escrituras cada 30m y el snapshot parcial optimista que borraba hashClave en RAM.
+        if (STATE.colabDoc && STATE.colabDoc._fromServer && STATE.colabDoc.versionApp !== VERSION_LOCAL_APP) {
+          const p = obtenerPartesLimaActual();
+          const tsISO = `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`;
+          STATE.colabDoc.versionApp = VERSION_LOCAL_APP;
+          db.collection('colaboradores').doc(dniNorm).update({
+            versionApp: VERSION_LOCAL_APP,
+            ultimoAccesoISO: tsISO
+          }).catch(() => {});
+        }
       } catch (e) {}
     }
 
     // ========================================================================
-    // SUSCRIPCIONES EN TIEMPO REAL DE FIRESTORE (VERSIÓN ESTRICTA + DATOS LIVE)
+    // SUSCRIPCIONES EN TIEMPO REAL DE FIRESTORE (OPTIMIZADO: 0 DOBLE LECTURA + SESIÓN BLINDADA)
     // ========================================================================
     function iniciarListenerConfigGlobal() {
       if (UNSUB_CONFIG) return;
       UNSUB_CONFIG = db.collection('config').doc('app').onSnapshot(snap => {
         if (!snap.exists) return;
+        actualizarBannerSinInternet(false);
         aplicarConfigGlobal(snap.data());
         if (STATE.usuario && STATE.colabDoc && !ACTUALIZACION_OBLIGATORIA) {
           actualizarEstadoBotonNovedades();
@@ -3631,13 +3878,43 @@
     }
 
     function detenerListenersUsuario() {
+      LISTENER_USER_READY = false;
       if (UNSUB_TELEMETRIA_USER) { try { UNSUB_TELEMETRIA_USER(); } catch (e) {} UNSUB_TELEMETRIA_USER = null; }
       UNSUB_USER_LIST.forEach(fn => { try { fn(); } catch (e) {} });
       UNSUB_USER_LIST = [];
     }
 
-    function reconstruirYRefrescarUIEnVivo() {
+    function debeCerrarSesionPorServidor(colabDocObj, tokenLocal) {
+      // Blindaje absoluto: NUNCA cerrar sesión ante snapshots parciales, caché local o escrituras pendientes
+      if (!colabDocObj || colabDocObj._fromServer !== true) return false;
+      if (!colabDocObj.nombre || String(colabDocObj.nombre).trim().length < 2) return false;
+      if (!Object.prototype.hasOwnProperty.call(colabDocObj, 'hashClave')) return false;
+
+      const hashSrv = String(colabDocObj.hashClave || '').trim();
+      // Caso 1: RRHH restableció explícitamente la contraseña a vacío en el servidor
+      if (hashSrv === '') return true;
+      // Caso 2: Ambos son hashes SHA-256 reales y distintos (cambió contraseña en otro equipo)
+      const tok = String(tokenLocal || '').trim();
+      if (esHashSHA256Valido(tok) && esHashSHA256Valido(hashSrv) && hashSrv !== tok) {
+        return true;
+      }
+      return false;
+    }
+
+    function reconstruirYRefrescarUIEnVivo(esPrimeraCargaSesion = false) {
       if (!STATE.colabDoc || !STATE.configApp || ACTUALIZACION_OBLIGATORIA) return;
+      if (!STATE.colabDoc.nombre) return;
+
+      const tokenComp = STATE.tokenActivo || (() => {
+        try { return (JSON.parse(localStorage.getItem('SBS_COMEDOR_AUTH') || '{}').token) || ''; } catch (e) { return ''; }
+      })();
+
+      if (debeCerrarSesionPorServidor(STATE.colabDoc, tokenComp)) {
+        ocultarSplash();
+        cerrarSesion('CLAVE_RESET');
+        return;
+      }
+
       const reg = construirRegistroDesdeFirestore(
         STATE.colabDoc,
         STATE.configApp,
@@ -3645,9 +3922,10 @@
         STATE.asistenciasMap,
         STATE.cesionesHoy
       );
-      if (!reg.usuario.tieneClave || (STATE.tokenActivo && reg.usuario.hashClave && reg.usuario.hashClave !== STATE.tokenActivo)) {
-        cerrarSesion();
-        return;
+
+      // Si el usuario venía con un token viejo no-SHA256 pero la clave en servidor existe, alinear token local silenciosamente
+      if (reg.usuario.hashClave && (!STATE.tokenActivo || !esHashSHA256Valido(STATE.tokenActivo))) {
+        STATE.tokenActivo = reg.usuario.hashClave;
       }
 
       STATE.hoyStr = reg.hoyStr;
@@ -3656,33 +3934,75 @@
       STATE.avisoBanner = reg.avisoBanner;
       STATE.modoPruebaQR = reg.modoPruebaQR;
       STATE.ultimoSyncMs = Date.now();
+
+      const estabaEnLoginOSplash = (!STATE.usuario) || (document.getElementById('view-main').style.display !== 'flex');
       STATE.usuario = reg.usuario;
       STATE.diasSemana = reg.diasSemana;
       STATE.diaHoy = reg.diaHoy;
       STATE.hoyFisico = reg.hoyFisico;
 
       guardarSnapshotLocal();
-      renderizarBannerInformativo();
-      renderizarTarjetas();
-      actualizarEstadoBotonQR();
 
-      // Si el pase ampliado está abierto, refresca en vivo por si llegó una cesión
+      if (estabaEnLoginOSplash || esPrimeraCargaSesion) {
+        ocultarSplash();
+        renderizarVistaPrincipal();
+        registrarVersionYUltimoAccesoFirestore(reg.usuario.dni);
+        actualizarDispositivoYAccesoTelemetria(false);
+        publicarUrlAppSiFalta();
+      } else {
+        renderizarBannerInformativo();
+        renderizarTarjetas();
+        actualizarEstadoBotonQR();
+      }
+
       const overlay = document.getElementById('modal-ticket-overlay');
       if (overlay && overlay.style.display === 'flex' && STATE.ticketCompactoActivo) {
         mostrarTicketVerdeConfirmado(STATE.ticketCompactoActivo.servicio, STATE.ticketCompactoActivo.hora);
       }
     }
 
-    function iniciarListenersUsuario(dniNorm) {
+    function iniciarListenersUsuario(dniNorm, onReadyCallback = null) {
       detenerListenersUsuario();
       const hoyStr = obtenerFechaHoyLimaISO();
+      let colabListo = !!STATE.colabDoc;
+      let resListo = false;
+      let asistListo = false;
+      let notificado = false;
+
+      const intentarRenderInicial = () => {
+        if (!colabListo || !STATE.configApp) return;
+        if (!notificado && resListo && asistListo) {
+          notificado = true;
+          LISTENER_USER_READY = true;
+          SINCRONIZANDO_AHORA = false;
+          reconstruirYRefrescarUIEnVivo(true);
+          if (typeof onReadyCallback === 'function') onReadyCallback();
+          return;
+        }
+        if (notificado) {
+          reconstruirYRefrescarUIEnVivo(false);
+        }
+      };
 
       UNSUB_USER_LIST.push(
         db.collection('colaboradores').doc(dniNorm).onSnapshot(snap => {
           if (!snap.exists) return;
-          STATE.colabDoc = { dni: dniNorm, ...snap.data() };
-          reconstruirYRefrescarUIEnVivo();
-        }, () => {})
+          actualizarBannerSinInternet(false);
+          const data = snap.data() || {};
+          const esDeServidor = !snap.metadata.hasPendingWrites && !snap.metadata.fromCache;
+          // Jamás reemplazar STATE.colabDoc con un documento parcial sin nombre
+          if (data.nombre) {
+            STATE.colabDoc = { dni: dniNorm, ...data, _fromServer: esDeServidor };
+          } else if (STATE.colabDoc) {
+            STATE.colabDoc = { ...STATE.colabDoc, ...data };
+          } else {
+            return;
+          }
+          colabListo = true;
+          intentarRenderInicial();
+        }, () => {
+          verificarConectividadReal(false);
+        })
       );
 
       UNSUB_USER_LIST.push(
@@ -3693,7 +4013,8 @@
             if (d && d.fecha) mapa[d.fecha] = d;
           });
           STATE.reservasMap = mapa;
-          reconstruirYRefrescarUIEnVivo();
+          resListo = true;
+          intentarRenderInicial();
         }, () => {})
       );
 
@@ -3702,7 +4023,8 @@
           const arr = [];
           snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
           STATE.asistenciasMap = procesarDocsAsistenciaUsuario(arr);
-          reconstruirYRefrescarUIEnVivo();
+          asistListo = true;
+          intentarRenderInicial();
         }, () => {})
       );
 
@@ -3711,7 +4033,7 @@
           const arr = [];
           snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
           STATE.cesionesHoy = arr;
-          reconstruirYRefrescarUIEnVivo();
+          if (notificado) reconstruirYRefrescarUIEnVivo(false);
         }, () => {})
       );
 
@@ -3727,47 +4049,49 @@
       }, () => {});
     }
 
-    async function cargarTodoUsuarioFirestore(dniNorm) {
-      const hoyStr = obtenerFechaHoyLimaISO();
-      const [cfgSnap, colabSnap, resSnap, asistSnap, cesSnap] = await conTimeoutPromesa(Promise.all([
-        db.collection('config').doc('app').get(),
-        db.collection('colaboradores').doc(dniNorm).get(),
-        db.collection('reservas').where('dni', '==', dniNorm).get(),
-        db.collection('asistencias').where('dni', '==', dniNorm).get(),
-        db.collection('cesiones').where('fecha', '==', hoyStr).get()
-      ]), 9000);
+    // Login ligero: solo lee config/app (si no existe en RAM) + colaboradores/{dni} (1 lectura!)
+    async function verificarColaboradorLigeroFirestore(dniNorm) {
+      const promesas = [
+        STATE.configApp ? Promise.resolve(null) : db.collection('config').doc('app').get(),
+        db.collection('colaboradores').doc(dniNorm).get()
+      ];
+      const [cfgSnap, colabSnap] = await conTimeoutPromesa(Promise.all(promesas), 9000);
+      actualizarBannerSinInternet(false);
 
-      const cfg = cfgSnap.exists ? cfgSnap.data() : {};
-      aplicarConfigGlobal(cfg);
+      if (cfgSnap && cfgSnap.exists) {
+        aplicarConfigGlobal(cfgSnap.data());
+      }
       if (ACTUALIZACION_OBLIGATORIA) return { bloqueadoVersion: true };
 
       if (!colabSnap.exists) {
         return { ok: false, msg: `El DNI ${dniNorm} no figura en BD_COLABORADORES.` };
       }
 
-      const colab = { dni: dniNorm, ...colabSnap.data() };
-      const reservasMap = {};
-      resSnap.forEach(d => {
-        const data = d.data();
-        if (data && data.fecha) reservasMap[data.fecha] = data;
-      });
-      const asistArr = [];
-      asistSnap.forEach(d => asistArr.push({ id: d.id, ...d.data() }));
-      const asistMap = procesarDocsAsistenciaUsuario(asistArr);
-      const cesArr = [];
-      cesSnap.forEach(d => cesArr.push({ id: d.id, ...d.data() }));
-
+      const colab = { dni: dniNorm, ...colabSnap.data(), _fromServer: true };
       STATE.colabDoc = colab;
-      STATE.reservasMap = reservasMap;
-      STATE.asistenciasMap = asistMap;
-      STATE.cesionesHoy = cesArr;
+      const cfg = STATE.configApp || {};
+      const tarifas = obtenerTarifasCliente(colab.tramo, cfg);
 
-      const reg = construirRegistroDesdeFirestore(colab, cfg, reservasMap, asistMap, cesArr);
-      return { ok: true, registro: reg };
+      return {
+        ok: true,
+        usuario: {
+          dni: dniNorm,
+          nombre: colab.nombre || '',
+          primerNombre: colab.primerNombre || extraerPrimerNombreCliente(colab),
+          estado: colab.estado || 'ACTIVO',
+          rol: colab.rol || 'Usuario',
+          esRRHH: esUsuarioRRHH(colab),
+          esTecnico: esUsuarioTecnico(colab),
+          tieneClave: !!(colab.hashClave && String(colab.hashClave).trim() !== ''),
+          hashClave: String(colab.hashClave || '').trim(),
+          costoDesayuno: tarifas.desayuno,
+          costoAlmuerzo: tarifas.almuerzo
+        }
+      };
     }
 
     // ========================================================================
-    // PANTALLA DE CARGA (SPLASH) + ARRANQUE INSTANTÁNEO + SINCRONIZACIÓN
+    // PANTALLA DE CARGA (SPLASH) + ARRANQUE INSTANTÁNEO + SINCRONIZACIÓN SIN DOBLE LECTURA
     // ========================================================================
     function mostrarSplash(texto = 'Cargando...', conBotonReintentar = false) {
       const sp = document.getElementById('view-splash');
@@ -3810,6 +4134,8 @@
       const tieneSnapshotDeHoy = !!(sesionGuardada && sesionGuardada.snapshot && sesionGuardada.snapshot.hoyStr === hoyLima);
       const modoSilencioso = (!forzarBloqueoSplash && tieneSnapshotDeHoy);
 
+      STATE.tokenActivo = (sesionGuardada && sesionGuardada.token) ? String(sesionGuardada.token) : STATE.tokenActivo;
+
       if (modoSilencioso) {
         if (!STATE.usuario) restaurarSnapshotHoyInstantaneo(sesionGuardada);
       } else {
@@ -3818,52 +4144,28 @@
 
       try {
         const dniNorm = normalizarDniCliente(sesionGuardada.dni);
-        const res = await cargarTodoUsuarioFirestore(dniNorm);
-        if (res && res.bloqueadoVersion) {
-          SINCRONIZANDO_AHORA = false;
-          return;
-        }
-        if (!res || !res.ok || !res.registro) {
-          ocultarSplash();
-          SINCRONIZANDO_AHORA = false;
-          if (!modoSilencioso) cerrarSesion();
-          return;
+        if (!STATE.configApp) {
+          const cfgSnap = await conTimeoutPromesa(db.collection('config').doc('app').get(), 8000);
+          if (cfgSnap.exists) aplicarConfigGlobal(cfgSnap.data());
+          if (ACTUALIZACION_OBLIGATORIA) { SINCRONIZANDO_AHORA = false; return; }
         }
 
-        const reg = res.registro;
-        if (!reg.usuario.tieneClave || (sesionGuardada.token && reg.usuario.hashClave && reg.usuario.hashClave !== sesionGuardada.token)) {
-          ocultarSplash();
-          SINCRONIZANDO_AHORA = false;
-          cerrarSesion();
-          return;
-        }
-
-        STATE.hoyStr = reg.hoyStr;
-        STATE.hoyPeruCompleto = reg.hoyPeruCompleto;
-        STATE.etiquetaCiclo = reg.etiquetaCiclo;
-        STATE.avisoBanner = reg.avisoBanner;
-        STATE.modoPruebaQR = reg.modoPruebaQR;
-        STATE.ultimoSyncMs = Date.now();
-
-        if (modoSilencioso && STATE.usuario) {
-          STATE.usuario = reg.usuario;
-          STATE.diasSemana = reg.diasSemana;
-          STATE.diaHoy = reg.diaHoy;
-          STATE.hoyFisico = reg.hoyFisico;
-          guardarSnapshotLocal();
-          renderizarBannerInformativo();
-          renderizarTarjetas();
-          actualizarEstadoBotonQR();
-        } else {
-          asignarUsuarioYEntrar(reg, sesionGuardada.token || reg.usuario.hashClave);
-          ocultarSplash();
-        }
-
-        registrarVersionYUltimoAccesoFirestore(dniNorm);
+        // Arranca directamente los listeners en vivo (CERO doble lectura .get() + .onSnapshot())
         iniciarListenersUsuario(dniNorm);
-        SINCRONIZANDO_AHORA = false;
+
+        // Red de seguridad si tarda > 9s sin señal (mantiene sesión, jamás la cierra!)
+        setTimeout(() => {
+          if (SINCRONIZANDO_AHORA && !LISTENER_USER_READY) {
+            SINCRONIZANDO_AHORA = false;
+            verificarConectividadReal(false);
+            if (!modoSilencioso && !STATE.usuario) {
+              mostrarSplash('Sin conexión. Toca para reintentar.', true);
+            }
+          }
+        }, 9000);
       } catch (err) {
         SINCRONIZANDO_AHORA = false;
+        verificarConectividadReal(false);
         if (modoSilencioso) return;
         if (restaurarSnapshotHoyInstantaneo(sesionGuardada)) return;
         mostrarSplash('Sin conexión. Toca para reintentar.', true);
@@ -3897,6 +4199,7 @@
       }
 
       sincronizarRelojServidor();
+      verificarConectividadReal(false);
       iniciarListenerConfigGlobal();
       procesarColaQRSegundoPlano();
 
@@ -3932,6 +4235,7 @@
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         sincronizarRelojServidor();
+        verificarConectividadReal(false);
         procesarColaQRSegundoPlano();
         if (STATE.usuario && STATE.tokenActivo) {
           const hoyLima = obtenerFechaHoyLimaISO();
@@ -3942,8 +4246,7 @@
               snapshot: null
             }, true);
           } else {
-            registrarVersionYUltimoAccesoFirestore(STATE.usuario.dni);
-            actualizarPresenciaTelemetria(true, false);
+            actualizarDispositivoYAccesoTelemetria(false);
             actualizarResumenHeader();
             actualizarEstadoBotonQR();
             const minPausaMs = ES_ENTORNO_TEST ? 15000 : 180000;
@@ -3953,8 +4256,6 @@
             setTimeout(() => evaluarMostrarEncuestaApp(), 650);
           }
         }
-      } else if (document.visibilityState === 'hidden') {
-        actualizarPresenciaTelemetria(false, true);
       }
     });
 
@@ -4028,25 +4329,21 @@
       btn.textContent = 'Verificando...';
 
       try {
-        const res = await cargarTodoUsuarioFirestore(dni);
+        const res = await verificarColaboradorLigeroFirestore(dni);
         btn.disabled = false;
         btn.textContent = 'Continuar';
         if (ACTUALIZACION_OBLIGATORIA || (res && res.bloqueadoVersion)) return;
 
-        if (res && res.ok && res.registro) {
-          STATE.hoyStr = res.registro.hoyStr;
-          STATE.hoyPeruCompleto = res.registro.hoyPeruCompleto;
-          STATE.etiquetaCiclo = res.registro.etiquetaCiclo;
-          STATE.avisoBanner = res.registro.avisoBanner;
-          STATE.modoPruebaQR = res.registro.modoPruebaQR;
-          abrirFormularioClave(res.registro);
+        if (res && res.ok && res.usuario) {
+          abrirFormularioClave({ usuario: res.usuario });
         } else {
           mostrarToast(res && res.msg ? res.msg : 'DNI no registrado.');
         }
       } catch (err) {
         btn.disabled = false;
         btn.textContent = 'Continuar';
-        mostrarToast('No se pudo conectar con el servidor.');
+        verificarConectividadReal(false);
+        mostrarToast('Sin conexión a internet. Revisa tu Wi-Fi o datos móviles.');
       }
     }
 
@@ -4099,26 +4396,37 @@
         btn.disabled = false;
         btn.textContent = txtOriginal;
 
-        if (!esCreacion) {
-          if (hashCliente === hashGuardado) {
-            document.getElementById('txt-clave').value = '';
-            asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
-            registrarVersionYUltimoAccesoFirestore(dni);
-            iniciarListenersUsuario(dni);
-          } else {
-            mostrarToast('Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
-          }
-        } else {
+        if (!esCreacion && hashCliente !== hashGuardado) {
+          mostrarToast('Contraseña incorrecta. Si la olvidaste, solicita el reseteo a RRHH.');
+          return;
+        }
+
+        if (esCreacion) {
           STATE.registroPendienteLogin.usuario.tieneClave = true;
           STATE.registroPendienteLogin.usuario.hashClave = hashCliente;
           if (STATE.colabDoc) STATE.colabDoc.hashClave = hashCliente;
-          document.getElementById('txt-clave').value = '';
-          asignarUsuarioYEntrar(STATE.registroPendienteLogin, hashCliente);
-
-          db.collection('colaboradores').doc(dni).set({ hashClave: hashCliente }, { merge: true }).catch(() => {});
-          registrarVersionYUltimoAccesoFirestore(dni);
-          iniciarListenersUsuario(dni);
+          db.collection('colaboradores').doc(dni).update({ hashClave: hashCliente }).catch(() => {
+            db.collection('colaboradores').doc(dni).set({ hashClave: hashCliente }, { merge: true }).catch(() => {});
+          });
         }
+
+        document.getElementById('txt-clave').value = '';
+        STATE.tokenActivo = hashCliente;
+        STATE.usuario = STATE.registroPendienteLogin.usuario;
+        try {
+          localStorage.setItem('SBS_COMEDOR_AUTH', JSON.stringify({ dni: dni, token: hashCliente, snapshot: null }));
+        } catch (e) {}
+
+        mostrarSplash('Cargando tu menú...', false);
+        iniciarListenersUsuario(dni, () => {
+          registrarAccionTelemetria('Ingresó a la App', 'v' + VERSION_LOCAL_APP);
+          if (window.AUTO_CHECKIN_QR === '1') {
+            window.AUTO_CHECKIN_QR = '0';
+            if (!document.getElementById('btn-escanear-qr').disabled) {
+              procesarRegistroQRInteligente('QR_INVERSO_DIRECTO');
+            }
+          }
+        });
       } catch (err) {
         btn.disabled = false;
         btn.textContent = txtOriginal;
@@ -4126,30 +4434,13 @@
       }
     }
 
-    function asignarUsuarioYEntrar(registro, tokenSesion) {
-      STATE.usuario = registro.usuario;
-      STATE.diasSemana = registro.diasSemana;
-      STATE.diaHoy = registro.diaHoy || null;
-      STATE.hoyFisico = registro.hoyFisico;
-      if (tokenSesion) STATE.tokenActivo = tokenSesion;
-
-      guardarSnapshotLocal();
-      renderizarVistaPrincipal();
-      actualizarPresenciaTelemetria(true, true);
-      registrarAccionTelemetria('Ingresó a la App', 'v' + VERSION_LOCAL_APP);
-
-      if (window.AUTO_CHECKIN_QR === '1') {
-        window.AUTO_CHECKIN_QR = '0';
-        if (!document.getElementById('btn-escanear-qr').disabled) {
-          procesarRegistroQRInteligente('QR_INVERSO_DIRECTO');
-        }
-      }
-    }
-
-    function cerrarSesion() {
+    function cerrarSesion(motivo = 'MANUAL') {
       vibrarHaptico(15);
-      registrarAccionTelemetria('Cerró sesión', '');
-      actualizarPresenciaTelemetria(false, true);
+      if (motivo === 'MANUAL') {
+        registrarAccionTelemetria('Cerró sesión', '');
+      } else if (motivo === 'CLAVE_RESET') {
+        registrarAccionTelemetria('Clave restablecida', 'Requiere nuevo ingreso');
+      }
       detenerListenersTecnicoMovil();
       detenerListenersUsuario();
       cerrarEscanerQR();
@@ -4159,6 +4450,8 @@
       cerrarModalNovedades();
       cerrarModalCambiarClave();
       cerrarModalMenuDefecto();
+      cerrarModalQRInstalarApp();
+      const mEnc = document.getElementById('modal-encuesta-app'); if (mEnc) mEnc.style.display = 'none';
       localStorage.removeItem('SBS_COMEDOR_AUTH');
       STATE.ultimoSyncMs = 0;
       STATE.usuario = null;
@@ -5005,7 +5298,8 @@
           });
           await batch.commit();
         } catch (err) {
-          mostrarToast('Error al sincronizar tu cambio. Verifica tu señal.');
+          verificarConectividadReal(false);
+          mostrarToast('Sin conexión. No se pudo guardar tu cambio.');
         }
       }, 450);
     }
@@ -5103,6 +5397,9 @@
       });
       document.getElementById('app-shell').classList.remove('wide-rrhh');
 
+      if (tab !== 'TECNICO') {
+        detenerListenersTecnicoMovil();
+      }
       let paneActivo = null;
       if (tab === 'PRINCIPAL') {
         document.getElementById('tab-btn-principal').classList.add('active');
@@ -5141,6 +5438,13 @@
     async function abrirEscanerQR() {
       if (ACTUALIZACION_OBLIGATORIA) return;
       if (document.getElementById('btn-escanear-qr').disabled) return;
+      if (APP_SIN_INTERNET || (navigator && navigator.onLine === false)) {
+        actualizarBannerSinInternet(true);
+        vibrarHaptico([60, 40, 60]);
+        mostrarToast('Sin conexión a internet. Conéctate al Wi-Fi o revisa tus datos móviles.');
+        verificarConectividadReal(false);
+        return;
+      }
       vibrarHaptico(15);
 
       const overlay = document.getElementById('modal-qr-overlay');

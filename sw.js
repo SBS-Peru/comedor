@@ -2,7 +2,7 @@
  * Service Worker - Comedor SBS (v28)
  * Estrategia Network-First para evitar que los celulares se queden en versiones antiguas.
  */
-const CACHE_NAME = 'comedor-sbs-v28-1-u4';
+const CACHE_NAME = 'comedor-sbs-v28-1-u5';
 const ASSETS_BASE = [
   './',
   './index.html',

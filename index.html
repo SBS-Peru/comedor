@@ -2126,10 +2126,39 @@
       return `${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
     }
 
-    function esEditableEnTiempoReal(fechaStr, tipoServicio) {
+    function esServicioBloqueadoPorCierreGeneralApp(fechaStr, tipoServicio, cfgObj) {
+      const cfg = cfgObj || STATE.configApp || {};
+      const lista = Array.isArray(cfg.cierresGenerales) ? cfg.cierresGenerales : [];
+      for (let i = 0; i < lista.length; i++) {
+        const c = lista[i];
+        if (!c || !c.inicio || !c.fin) continue;
+        if (fechaStr < c.inicio || fechaStr > c.fin) continue;
+        const mot = String(c.motivo || '').trim() || 'Sin servicio';
+        if (c.inicio === c.fin) {
+          if (tipoServicio === 'DESAYUNO' && !c.inicioHabilitarDesayuno) return { bloqueado: true, motivo: mot };
+          if (tipoServicio === 'ALMUERZO' && !c.inicioHabilitarAlmuerzo) return { bloqueado: true, motivo: mot };
+        } else if (fechaStr === c.inicio) {
+          if (tipoServicio === 'DESAYUNO' && !c.inicioHabilitarDesayuno) return { bloqueado: true, motivo: mot };
+          if (tipoServicio === 'ALMUERZO' && !c.inicioHabilitarAlmuerzo) return { bloqueado: true, motivo: mot };
+        } else if (fechaStr === c.fin) {
+          if (tipoServicio === 'DESAYUNO' && !c.finHabilitarDesayuno) return { bloqueado: true, motivo: mot };
+          if (tipoServicio === 'ALMUERZO' && !c.finHabilitarAlmuerzo) return { bloqueado: true, motivo: mot };
+        } else {
+          return { bloqueado: true, motivo: mot };
+        }
+      }
+      return { bloqueado: false, motivo: '' };
+    }
+
+    function esServicioHabilitadoApp(fechaStr, tipoServicio, cfgObj) {
       if (!fechaStr) return false;
-      if (tipoServicio === 'DESAYUNO' && fechaStr < FECHA_ARRANQUE_DESAYUNO) return false;
-      if (tipoServicio === 'ALMUERZO' && fechaStr < FECHA_ARRANQUE_ALMUERZO) return false;
+      if (esServicioBloqueadoPorCierreGeneralApp(fechaStr, tipoServicio, cfgObj).bloqueado) return false;
+      if (tipoServicio === 'DESAYUNO') return fechaStr >= FECHA_ARRANQUE_DESAYUNO;
+      return fechaStr >= FECHA_ARRANQUE_ALMUERZO;
+    }
+
+    function esEditableEnTiempoReal(fechaStr, tipoServicio) {
+      if (!esServicioHabilitadoApp(fechaStr, tipoServicio)) return false;
 
       const ahora = obtenerDateLimaActual();
       const partes = String(fechaStr).split('-');
@@ -3444,7 +3473,7 @@
 
         // Desayuno
         const esAsigDes = !!(p && (p.des === 'MANUAL' || String(p.tsDes || '').includes('Asignado RRHH')));
-        const habDes = (hoyStr >= FECHA_ARRANQUE_DESAYUNO) || esAsigDes;
+        const habDes = esServicioHabilitadoApp(hoyStr, 'DESAYUNO') || esAsigDes;
         const valDes = (activo && habDes) ? ((p && p.des) ? p.des : (c.desDef || 'NO')) : 'NO';
         const tieneDes = (valDes !== 'NO' && !cedioDes[dni]) || !!recibioDes[dni];
         if (tieneDes) {
@@ -3458,7 +3487,7 @@
         }
 
         // Almuerzo
-        const habAlm = (hoyStr >= FECHA_ARRANQUE_ALMUERZO);
+        const habAlm = esServicioHabilitadoApp(hoyStr, 'ALMUERZO');
         const valAlm = (activo && habAlm) ? ((p && p.alm) ? p.alm : (c.almDef || 'NO')) : 'NO';
         const tieneAlm = (valAlm !== 'NO' && !cedioAlm[dni]) || !!recibioAlm[dni];
         if (tieneAlm) {
@@ -3616,8 +3645,8 @@
         const aAnt = asistenciasMap[fCiclo] || { des: false, alm: false };
 
         const esAsigDesAnt = !!(pAnt && (pAnt.des === 'MANUAL' || String(pAnt.tsDes || '').includes('Asignado RRHH')));
-        const habD = (fCiclo >= FECHA_ARRANQUE_DESAYUNO) || esAsigDesAnt;
-        const habA = (fCiclo >= FECHA_ARRANQUE_ALMUERZO);
+        const habD = esServicioHabilitadoApp(fCiclo, 'DESAYUNO', cfg) || esAsigDesAnt;
+        const habA = esServicioHabilitadoApp(fCiclo, 'ALMUERZO', cfg);
         const cerradoDes = !esEditableEnTiempoReal(fCiclo, 'DESAYUNO');
         const cerradoAlm = !esEditableEnTiempoReal(fCiclo, 'ALMUERZO');
 
@@ -3660,8 +3689,8 @@
         const activoEnDia = estaColaboradorActivoEnFechaCliente(colab, f);
         const enCicloActual = (f >= cicloMensual.inicioStr && f <= cicloMensual.finStr);
         const esAsigDesDia = !!(pDia && (pDia.des === 'MANUAL' || String(pDia.tsDes || '').includes('Asignado RRHH')));
-        const habDesDia = (f >= FECHA_ARRANQUE_DESAYUNO) || esAsigDesDia;
-        const habAlmDia = (f >= FECHA_ARRANQUE_ALMUERZO);
+        const habDesDia = esServicioHabilitadoApp(f, 'DESAYUNO', cfg) || esAsigDesDia;
+        const habAlmDia = esServicioHabilitadoApp(f, 'ALMUERZO', cfg);
 
         const dVal = (activoEnDia && habDesDia) ? ((pDia && pDia.des) ? pDia.des : (colab.desDef || 'NO')) : 'NO';
         const aVal = (activoEnDia && habAlmDia) ? ((pDia && pDia.alm) ? pDia.alm : (colab.almDef || 'NO')) : 'NO';
@@ -3702,8 +3731,8 @@
       const activoHoy = estaColaboradorActivoEnFechaCliente(colab, hoyStr);
       const planHoy = reservasMap[hoyStr] || null;
       const esAsigDesHoy = !!(planHoy && (planHoy.des === 'MANUAL' || String(planHoy.tsDes || '').includes('Asignado RRHH')));
-      const habDesHoy = (hoyStr >= FECHA_ARRANQUE_DESAYUNO) || esAsigDesHoy;
-      const habAlmHoy = (hoyStr >= FECHA_ARRANQUE_ALMUERZO);
+      const habDesHoy = esServicioHabilitadoApp(hoyStr, 'DESAYUNO', cfg) || esAsigDesHoy;
+      const habAlmHoy = esServicioHabilitadoApp(hoyStr, 'ALMUERZO', cfg);
 
       const resHoyDes = (activoHoy && habDesHoy) ? ((planHoy && planHoy.des) ? planHoy.des : (colab.desDef || 'NO')) : 'NO';
       const resHoyAlm = (activoHoy && habAlmHoy) ? ((planHoy && planHoy.alm) ? planHoy.alm : (colab.almDef || 'NO')) : 'NO';
@@ -4535,13 +4564,14 @@
         const cerradoAlm = !d.puedeEditarAlmuerzo || !esEditableEnTiempoReal(d.fecha, 'ALMUERZO');
 
         const esAsigDesHoy = (d.esHoyFisico && hf && hf.asignadoDes) || (d.desayuno === 'MANUAL');
-        const habDesFecha = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || esAsigDesHoy;
+        const habDesFecha = esServicioHabilitadoApp(d.fecha, 'DESAYUNO') || esAsigDesHoy;
+        const habAlmFecha = esServicioHabilitadoApp(d.fecha, 'ALMUERZO');
         const asistDesPropia = (d.esHoyFisico && hf && hf.consumioDes && !hf.soloCesionDes);
         const asistAlmPropia = (d.esHoyFisico && hf && hf.consumioAlm && !hf.soloCesionAlm);
         const desConsumido = asistDesPropia ||
           (habDesFecha && d.desayuno !== 'NO' && (cerradoDes || esAsigDesHoy));
         const almConsumido = asistAlmPropia ||
-          (d.almuerzo !== 'NO' && cerradoAlm);
+          (habAlmFecha && d.almuerzo !== 'NO' && cerradoAlm);
 
         const prev = mapaPorFecha[d.fecha];
         const desFinal = (prev && (d.fecha < hoyRef || d.fecha < FECHA_ARRANQUE_DESAYUNO))
@@ -4690,7 +4720,7 @@
           recibioSet[normalizarDniCliente(x.dniReceptor)] = true;
         });
 
-        const habSrv = esDesayuno ? (hoyStr >= FECHA_ARRANQUE_DESAYUNO) : (hoyStr >= FECHA_ARRANQUE_ALMUERZO);
+        const habSrv = esServicioHabilitadoApp(hoyStr, srvObjetivo);
         const pendientes = [];
 
         colabsSnap.forEach(doc => {
@@ -5068,8 +5098,10 @@
         `;
       }
 
-      const habDes = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
-      const habAlm = (d.fecha >= FECHA_ARRANQUE_ALMUERZO);
+      const cierrDes = esServicioBloqueadoPorCierreGeneralApp(d.fecha, 'DESAYUNO');
+      const cierrAlm = esServicioBloqueadoPorCierreGeneralApp(d.fecha, 'ALMUERZO');
+      const habDes = (!cierrDes.bloqueado && d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
+      const habAlm = (!cierrAlm.bloqueado && d.fecha >= FECHA_ARRANQUE_ALMUERZO);
 
       const infoMenu = obtenerInfoMenuDia(d);
       const infoDes = desglosarDesayuno(d.desayuno, infoMenu.panes);
@@ -5103,8 +5135,8 @@
       else if (opBase === 'OP3') detalleDes = 'bebida + pan + huevo';
       else if (opBase === 'MANUAL') detalleDes = 'Asignado RRHH';
 
-      const txtDes = !habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado');
-      const txtAlm = !habAlm ? 'Registro en hoja RRHH' : (almActivo ? 'Confirmado' : 'Cancelado');
+      const txtDes = cierrDes.bloqueado ? 'Sin servicio' : (!habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado'));
+      const txtAlm = cierrAlm.bloqueado ? 'Sin servicio' : (!habAlm ? 'Registro en hoja RRHH' : (almActivo ? 'Confirmado' : 'Cancelado'));
 
       const tallClass = editableDes ? 'editable-tall' : '';
       const lockDesClass = (!editableDes ? 'disabled-card' : '') + ' ' + tallClass;
@@ -5307,7 +5339,7 @@
     }
 
     function seleccionarOpcionDesayuno(fecha, opElegida) {
-      if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
+      if (!esServicioHabilitadoApp(fecha, 'DESAYUNO')) return;
       const dia = buscarDiaPorFecha(fecha);
       if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
 
@@ -5339,7 +5371,7 @@
     }
 
     function cambiarPanDesayuno(fecha, numPan, nuevoPan) {
-      if (fecha < FECHA_ARRANQUE_DESAYUNO) return;
+      if (!esServicioHabilitadoApp(fecha, 'DESAYUNO')) return;
       const dia = buscarDiaPorFecha(fecha);
       if (!dia || !dia.puedeEditarDesayuno || !esEditableEnTiempoReal(fecha, 'DESAYUNO')) return;
 
@@ -5366,7 +5398,7 @@
     }
 
     function seleccionarOpcionAlmuerzo(fecha, opElegida) {
-      if (fecha < FECHA_ARRANQUE_ALMUERZO) return;
+      if (!esServicioHabilitadoApp(fecha, 'ALMUERZO')) return;
       const dia = buscarDiaPorFecha(fecha);
       if (!dia || !dia.puedeEditarAlmuerzo || !esEditableEnTiempoReal(fecha, 'ALMUERZO')) return;
 

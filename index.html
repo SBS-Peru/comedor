@@ -2236,6 +2236,8 @@
     }
 
     function estaColaboradorActivoEnFechaCliente(colab, fechaISO) {
+      const fIng = String(colab.fechaIngreso || '').trim();
+      if (fIng && fechaISO < fIng) return false;
       const est = String(colab.estado || 'ACTIVO').toUpperCase().trim();
       if (est === 'ACTIVO') return true;
       if (est === 'CESADO') return false;

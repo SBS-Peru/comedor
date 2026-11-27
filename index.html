@@ -2126,33 +2126,43 @@
       return `${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')} ${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}:${String(p.second).padStart(2, '0')}`;
     }
 
-    function esServicioBloqueadoPorCierreGeneralApp(fechaStr, tipoServicio, cfgObj) {
+    function estaEnAusenciaGrupalApp(fechaStr, tipoServicio, areaColab, cfgObj) {
+      const areaNorm = String(areaColab || '').trim();
+      if (!areaNorm) return false;
       const cfg = cfgObj || STATE.configApp || {};
-      const lista = Array.isArray(cfg.cierresGenerales) ? cfg.cierresGenerales : [];
+      const lista = Array.isArray(cfg.ausenciasGrupales) ? cfg.ausenciasGrupales : [];
       for (let i = 0; i < lista.length; i++) {
         const c = lista[i];
         if (!c || !c.inicio || !c.fin) continue;
         if (fechaStr < c.inicio || fechaStr > c.fin) continue;
-        const mot = String(c.motivo || '').trim() || 'Sin servicio';
+        const areas = Array.isArray(c.areas) ? c.areas : [];
+        if (!areas.includes(areaNorm)) continue;
         if (c.inicio === c.fin) {
-          if (tipoServicio === 'DESAYUNO' && !c.inicioHabilitarDesayuno) return { bloqueado: true, motivo: mot };
-          if (tipoServicio === 'ALMUERZO' && !c.inicioHabilitarAlmuerzo) return { bloqueado: true, motivo: mot };
+          if (tipoServicio === 'DESAYUNO' && !c.inicioHabilitarDesayuno) return true;
+          if (tipoServicio === 'ALMUERZO' && !c.inicioHabilitarAlmuerzo) return true;
         } else if (fechaStr === c.inicio) {
-          if (tipoServicio === 'DESAYUNO' && !c.inicioHabilitarDesayuno) return { bloqueado: true, motivo: mot };
-          if (tipoServicio === 'ALMUERZO' && !c.inicioHabilitarAlmuerzo) return { bloqueado: true, motivo: mot };
+          if (tipoServicio === 'DESAYUNO' && !c.inicioHabilitarDesayuno) return true;
+          if (tipoServicio === 'ALMUERZO' && !c.inicioHabilitarAlmuerzo) return true;
         } else if (fechaStr === c.fin) {
-          if (tipoServicio === 'DESAYUNO' && !c.finHabilitarDesayuno) return { bloqueado: true, motivo: mot };
-          if (tipoServicio === 'ALMUERZO' && !c.finHabilitarAlmuerzo) return { bloqueado: true, motivo: mot };
+          if (tipoServicio === 'DESAYUNO' && !c.finHabilitarDesayuno) return true;
+          if (tipoServicio === 'ALMUERZO' && !c.finHabilitarAlmuerzo) return true;
         } else {
-          return { bloqueado: true, motivo: mot };
+          return true;
         }
       }
-      return { bloqueado: false, motivo: '' };
+      return false;
+    }
+
+    function obtenerDefectoEfectivoApp(colab, fechaStr, tipoServicio, cfgObj) {
+      if (estaEnAusenciaGrupalApp(fechaStr, tipoServicio, colab && colab.area, cfgObj)) {
+        return 'NO';
+      }
+      if (tipoServicio === 'DESAYUNO') return (colab && colab.desDef) || 'NO';
+      return (colab && colab.almDef) || 'NO';
     }
 
     function esServicioHabilitadoApp(fechaStr, tipoServicio, cfgObj) {
       if (!fechaStr) return false;
-      if (esServicioBloqueadoPorCierreGeneralApp(fechaStr, tipoServicio, cfgObj).bloqueado) return false;
       if (tipoServicio === 'DESAYUNO') return fechaStr >= FECHA_ARRANQUE_DESAYUNO;
       return fechaStr >= FECHA_ARRANQUE_ALMUERZO;
     }
@@ -2792,12 +2802,12 @@
           if (!d || !d.fecha) return;
           const patchRes = {};
           const teniaDoc = !!STATE.reservasMap[d.fecha];
-          if (d.puedeEditarDesayuno && esEditableEnTiempoReal(d.fecha, 'DESAYUNO')) {
+          if (d.puedeEditarDesayuno && esEditableEnTiempoReal(d.fecha, 'DESAYUNO') && !estaEnAusenciaGrupalApp(d.fecha, 'DESAYUNO', STATE.usuario.area)) {
             d.desayuno = nuevoDesDef;
             if (d.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoDes = (nuevoDesDef !== 'NO');
             if (teniaDoc) { patchRes.des = nuevoDesDef; patchRes.tsDes = tsCorto; }
           }
-          if (d.puedeEditarAlmuerzo && esEditableEnTiempoReal(d.fecha, 'ALMUERZO')) {
+          if (d.puedeEditarAlmuerzo && esEditableEnTiempoReal(d.fecha, 'ALMUERZO') && !estaEnAusenciaGrupalApp(d.fecha, 'ALMUERZO', STATE.usuario.area)) {
             d.almuerzo = nuevoAlmDef;
             if (d.esHoyFisico && STATE.hoyFisico) STATE.hoyFisico.reservoAlm = (nuevoAlmDef !== 'NO');
             if (teniaDoc) { patchRes.alm = nuevoAlmDef; patchRes.tsAlm = tsCorto; }
@@ -3474,7 +3484,7 @@
         // Desayuno
         const esAsigDes = !!(p && (p.des === 'MANUAL' || String(p.tsDes || '').includes('Asignado RRHH')));
         const habDes = esServicioHabilitadoApp(hoyStr, 'DESAYUNO') || esAsigDes;
-        const valDes = (activo && habDes) ? ((p && p.des) ? p.des : (c.desDef || 'NO')) : 'NO';
+        const valDes = (activo && habDes) ? ((p && p.des) ? p.des : obtenerDefectoEfectivoApp(c, hoyStr, 'DESAYUNO')) : 'NO';
         const tieneDes = (valDes !== 'NO' && !cedioDes[dni]) || !!recibioDes[dni];
         if (tieneDes) {
           stats.DESAYUNO.res++;
@@ -3488,7 +3498,7 @@
 
         // Almuerzo
         const habAlm = esServicioHabilitadoApp(hoyStr, 'ALMUERZO');
-        const valAlm = (activo && habAlm) ? ((p && p.alm) ? p.alm : (c.almDef || 'NO')) : 'NO';
+        const valAlm = (activo && habAlm) ? ((p && p.alm) ? p.alm : obtenerDefectoEfectivoApp(c, hoyStr, 'ALMUERZO')) : 'NO';
         const tieneAlm = (valAlm !== 'NO' && !cedioAlm[dni]) || !!recibioAlm[dni];
         if (tieneAlm) {
           stats.ALMUERZO.res++;
@@ -3650,8 +3660,8 @@
         const cerradoDes = !esEditableEnTiempoReal(fCiclo, 'DESAYUNO');
         const cerradoAlm = !esEditableEnTiempoReal(fCiclo, 'ALMUERZO');
 
-        const dVal = (actCiclo && habD) ? ((pAnt && pAnt.des) ? pAnt.des : (colab.desDef || 'NO')) : 'NO';
-        const aVal = (actCiclo && habA) ? ((pAnt && pAnt.alm) ? pAnt.alm : (colab.almDef || 'NO')) : 'NO';
+        const dVal = (actCiclo && habD) ? ((pAnt && pAnt.des) ? pAnt.des : obtenerDefectoEfectivoApp(colab, fCiclo, 'DESAYUNO', cfg)) : 'NO';
+        const aVal = (actCiclo && habA) ? ((pAnt && pAnt.alm) ? pAnt.alm : obtenerDefectoEfectivoApp(colab, fCiclo, 'ALMUERZO', cfg)) : 'NO';
 
         const asistDesPropia = !!(aAnt.des && !aAnt.desSoloCesion);
         const asistAlmPropia = !!(aAnt.alm && !aAnt.almSoloCesion);
@@ -3692,8 +3702,8 @@
         const habDesDia = esServicioHabilitadoApp(f, 'DESAYUNO', cfg) || esAsigDesDia;
         const habAlmDia = esServicioHabilitadoApp(f, 'ALMUERZO', cfg);
 
-        const dVal = (activoEnDia && habDesDia) ? ((pDia && pDia.des) ? pDia.des : (colab.desDef || 'NO')) : 'NO';
-        const aVal = (activoEnDia && habAlmDia) ? ((pDia && pDia.alm) ? pDia.alm : (colab.almDef || 'NO')) : 'NO';
+        const dVal = (activoEnDia && habDesDia) ? ((pDia && pDia.des) ? pDia.des : obtenerDefectoEfectivoApp(colab, f, 'DESAYUNO', cfg)) : 'NO';
+        const aVal = (activoEnDia && habAlmDia) ? ((pDia && pDia.alm) ? pDia.alm : obtenerDefectoEfectivoApp(colab, f, 'ALMUERZO', cfg)) : 'NO';
 
         return {
           fecha: f,
@@ -3734,8 +3744,8 @@
       const habDesHoy = esServicioHabilitadoApp(hoyStr, 'DESAYUNO', cfg) || esAsigDesHoy;
       const habAlmHoy = esServicioHabilitadoApp(hoyStr, 'ALMUERZO', cfg);
 
-      const resHoyDes = (activoHoy && habDesHoy) ? ((planHoy && planHoy.des) ? planHoy.des : (colab.desDef || 'NO')) : 'NO';
-      const resHoyAlm = (activoHoy && habAlmHoy) ? ((planHoy && planHoy.alm) ? planHoy.alm : (colab.almDef || 'NO')) : 'NO';
+      const resHoyDes = (activoHoy && habDesHoy) ? ((planHoy && planHoy.des) ? planHoy.des : obtenerDefectoEfectivoApp(colab, hoyStr, 'DESAYUNO', cfg)) : 'NO';
+      const resHoyAlm = (activoHoy && habAlmHoy) ? ((planHoy && planHoy.alm) ? planHoy.alm : obtenerDefectoEfectivoApp(colab, hoyStr, 'ALMUERZO', cfg)) : 'NO';
 
       const asistHoyReal = asistenciasMap[hoyStr] || { des: false, horaDes: '', desSoloCesion: false, alm: false, horaAlm: '', almSoloCesion: false };
       const asistHoy = modoPrueba
@@ -3780,6 +3790,7 @@
           activoHoy: activoHoy,
           fechaInicioEstado: colab.fechaInicioEstado || '',
           fechaFinEstado: colab.fechaFinEstado || '',
+          area: String(colab.area || '').trim(),
           rol: colab.rol || 'Usuario',
           desDef: colab.desDef || 'NO',
           almDef: colab.almDef || 'NO',
@@ -4730,7 +4741,7 @@
           const p = planHoyMap[c.dni] || null;
           const esAsigDes = esDesayuno && !!(p && (p.des === 'MANUAL' || String(p.tsDes || '').includes('Asignado RRHH')));
           const valSrv = (activoHoy && (habSrv || esAsigDes))
-            ? (esDesayuno ? ((p && p.des) ? p.des : (c.desDef || 'NO')) : ((p && p.alm) ? p.alm : (c.almDef || 'NO')))
+            ? (esDesayuno ? ((p && p.des) ? p.des : obtenerDefectoEfectivoApp(c, hoyStr, 'DESAYUNO')) : ((p && p.alm) ? p.alm : obtenerDefectoEfectivoApp(c, hoyStr, 'ALMUERZO')))
             : 'NO';
 
           const debeRecoger = (valSrv !== 'NO' && !cedioSet[c.dni]) || !!recibioSet[c.dni];
@@ -5098,10 +5109,8 @@
         `;
       }
 
-      const cierrDes = esServicioBloqueadoPorCierreGeneralApp(d.fecha, 'DESAYUNO');
-      const cierrAlm = esServicioBloqueadoPorCierreGeneralApp(d.fecha, 'ALMUERZO');
-      const habDes = (!cierrDes.bloqueado && d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
-      const habAlm = (!cierrAlm.bloqueado && d.fecha >= FECHA_ARRANQUE_ALMUERZO);
+      const habDes = (d.fecha >= FECHA_ARRANQUE_DESAYUNO) || (d.desayuno === 'MANUAL');
+      const habAlm = (d.fecha >= FECHA_ARRANQUE_ALMUERZO);
 
       const infoMenu = obtenerInfoMenuDia(d);
       const infoDes = desglosarDesayuno(d.desayuno, infoMenu.panes);
@@ -5135,8 +5144,8 @@
       else if (opBase === 'OP3') detalleDes = 'bebida + pan + huevo';
       else if (opBase === 'MANUAL') detalleDes = 'Asignado RRHH';
 
-      const txtDes = cierrDes.bloqueado ? 'Sin servicio' : (!habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado'));
-      const txtAlm = cierrAlm.bloqueado ? 'Sin servicio' : (!habAlm ? 'Registro en hoja RRHH' : (almActivo ? 'Confirmado' : 'Cancelado'));
+      const txtDes = !habDes ? 'Registro en hoja RRHH' : (desActivo ? detalleDes : 'No solicitado');
+      const txtAlm = !habAlm ? 'Registro en hoja RRHH' : (almActivo ? 'Confirmado' : 'Cancelado');
 
       const tallClass = editableDes ? 'editable-tall' : '';
       const lockDesClass = (!editableDes ? 'disabled-card' : '') + ' ' + tallClass;
